@@ -24,10 +24,14 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <SignAssembly>True</SignAssembly>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>C:\Microsoft Robotics Studio (1.0)\bin\services</OutputPath>
@@ -106,6 +110,7 @@
       <SpecificVersion>False</SpecificVersion>
       <ExecutableExtension>.exe</ExecutableExtension>
       <HintPath>..\SerialControl\obj\Debug\SerialControl.exe</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SickLRF.Y2005.M12.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=d12f30389d94881d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

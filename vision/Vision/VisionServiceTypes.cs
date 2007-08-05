@@ -35,8 +35,8 @@ namespace Vision {
         public GameObjects[] PrevGameObjects {
             get { return prevGameObjects; }
             set { prevGameObjects = value; }
-        }
-        */
+        }//*/
+        
         public VisionServiceState() {
            // prevGameObjects = new GameObjects[Constants.get<int>("FRAMES_TO_REMEMBER")];
         }

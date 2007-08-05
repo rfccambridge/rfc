@@ -3,7 +3,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DCB46829-26D6-4B44-91F3-BB59DDFC3316}</ProjectGuid>
+    <ProjectGuid>{66577B02-E168-4040-B954-D43FC2A78773}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
@@ -72,19 +72,19 @@
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
-    <Reference Include="Ccr.Core">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="DssBase">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
     <Reference Include="DssRuntime.Proxy">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
     <Reference Include="DssRuntime">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="Ccr.Core">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="DssBase">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
@@ -96,11 +96,11 @@
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
-    <Reference Include="Ccr.Adapters.WinForms">
+    <Reference Include="System">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
-    <Reference Include="System">
+    <Reference Include="Ccr.Adapters.WinForms">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>

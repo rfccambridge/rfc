@@ -11,10 +11,14 @@
     <AssemblyName>Navigation</AssemblyName>
     <StartupObject>
     </StartupObject>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>kmod.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -22,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -58,7 +62,7 @@
     <None Include="kmod.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\Microsoft Robotics Studio %281.0%29\samples\Infrastructure\Infrastructure.csproj">
+    <ProjectReference Include="..\..\system\Infrastructure\Infrastructure.csproj">
       <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
       <Name>Infrastructure</Name>
     </ProjectReference>

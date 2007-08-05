@@ -3,7 +3,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CA52947E-7E61-4285-BC4E-331414B30E5E}</ProjectGuid>
+    <ProjectGuid>{12E8D564-DE60-4A32-8264-BAA996F4B961}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
@@ -72,6 +72,10 @@
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
+    <Reference Include="Infrastructure">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
     <Reference Include="DssBase">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
@@ -96,23 +100,11 @@
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
-    <Reference Include="Infrastructure">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
     <Reference Include="System.Drawing">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
-    <Reference Include="System">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
     <Reference Include="CoreRobotics">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="SimDrive.Y2006.M08.Proxy">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
@@ -124,7 +116,19 @@
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
+    <Reference Include="SimDrive.Y2006.M08.Proxy">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
     <Reference Include="RoboticsCommon.Proxy">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="Constants">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>

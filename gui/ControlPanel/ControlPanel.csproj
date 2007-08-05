@@ -24,10 +24,14 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <SignAssembly>True</SignAssembly>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>C:\Microsoft Robotics Studio (1.0)\bin\services</OutputPath>
@@ -87,6 +91,21 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Constants, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\Constants.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CorePlayFiles, Version=0.2.2773.28919, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\CorePlayFiles.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CoreRobotics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\CoreRobotics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="DssBase, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\DssBase.dll</HintPath>
@@ -100,6 +119,11 @@
     <Reference Include="DssRuntime.proxy, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\DssRuntime.proxy.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1086359baebd40ef, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\Infrastructure.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PhysicsEngine, Version=1.0.2406.25171, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=x86">
@@ -155,6 +179,9 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
+    <Reference Include="Vision, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6167838637cd631e, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Vision.Proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=6167838637cd631e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -192,29 +219,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ControlPanel.manifest.xml" />
+    <None Include="Resources\cleanfield.jpg" />
     <None Include="mrisamples.snk" />
     <None Include="obj\Debug\cleanfield.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\vision\Vision Processing\Vision\Vision\Vision.csproj">
-      <Project>{08383292-7063-4436-ADE4-CCD3AD048D46}</Project>
-      <Name>Vision</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Constants\Constants.csproj">
-      <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
-      <Name>Constants</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\CoreRobotics\CoreRobotics.csproj">
-      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
-      <Name>CoreRobotics</Name>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
-      <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
-      <Name>Infrastructure</Name>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

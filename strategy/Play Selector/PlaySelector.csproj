@@ -11,10 +11,14 @@
     <AssemblyName>PlaySelector</AssemblyName>
     <StartupObject>
     </StartupObject>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>kmod.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -22,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,6 +42,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1086359baebd40ef, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\Infrastructure.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -64,11 +73,6 @@
     <ProjectReference Include="..\Core Play Files\CorePlayFiles.csproj">
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
       <Name>CorePlayFiles</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="C:\Microsoft Robotics Studio %281.0%29\samples\Infrastructure\Infrastructure.csproj">
-      <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
-      <Name>Infrastructure</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

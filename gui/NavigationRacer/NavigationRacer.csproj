@@ -10,16 +10,20 @@
     <RootNamespace>NavigationRacer</RootNamespace>
     <AssemblyName>NavigationRacer</AssemblyName>
     <StartupObject>NavigationRacer.Program</StartupObject>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,10 +37,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CorePlayFiles, Version=0.2.2624.35147, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
+    <Reference Include="Navigation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Core Play Files\bin\Debug\CorePlayFiles.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\strategy\Navigation\bin\Debug\Navigation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -93,15 +97,10 @@
     <Compile Include="TestResults.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Navigation\Navigation.csproj">
-      <Project>{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}</Project>
-      <Name>Navigation</Name>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="C:\Microsoft Robotics Studio %281.0%29\samples\Infrastructure\Infrastructure.csproj">
+    <ProjectReference Include="..\..\system\Infrastructure\Infrastructure.csproj">
       <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
       <Name>Infrastructure</Name>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

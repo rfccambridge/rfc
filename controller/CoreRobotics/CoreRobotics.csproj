@@ -9,10 +9,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Robocup.CoreRobotics</RootNamespace>
     <AssemblyName>CoreRobotics</AssemblyName>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>kmod.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -20,7 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,9 +38,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1086359baebd40ef, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\Infrastructure.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Navigation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\My Projects\C sharp\Robocup\Navigation\NavigationRace\Navigation\bin\Debug\Navigation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -57,20 +67,15 @@
     <None Include="kmod.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Constants\Constants.csproj">
+    <ProjectReference Include="..\..\system\Constants\Constants.csproj">
       <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
       <Name>Constants</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
-      <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
-      <Name>Infrastructure</Name>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="D:\My Projects\C sharp\Robocup\Core Play Files\CorePlayFiles.csproj">
+    <ProjectReference Include="..\..\strategy\Core Play Files\CorePlayFiles.csproj">
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
       <Name>CorePlayFiles</Name>
     </ProjectReference>
-    <ProjectReference Include="D:\My Projects\C sharp\Robocup\Play Selector\PlaySelector.csproj">
+    <ProjectReference Include="..\..\strategy\Play Selector\PlaySelector.csproj">
       <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
       <Name>PlaySelector</Name>
     </ProjectReference>

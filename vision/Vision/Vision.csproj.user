@@ -5,4 +5,7 @@
     <StartArguments>/p:50002 /t:50003 /m:".\vision\Vision Processing\Vision\Vision\VisionService.manifest.xml"</StartArguments>
     <StartWorkingDirectory>C:\Microsoft Robotics Studio (1.0)</StartWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>C:\Microsoft Robotics Studio (1.0)\bin\Debug\;C:\Microsoft Robotics Studio (1.0)\bin\;C:\Microsoft Robotics Studio (1.0)\bin\services\</ReferencePath>
+  </PropertyGroup>
 </Project>

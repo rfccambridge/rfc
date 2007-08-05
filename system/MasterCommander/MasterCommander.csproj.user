@@ -1,5 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ReferencePath>C:\Microsoft Robotics Studio (1.0)\bin\;C:\Microsoft Robotics Studio (1.0)\bin\services\</ReferencePath>
+    <ReferencePath>C:\Microsoft Robotics Studio (1.0)\bin\;C:\Microsoft Robotics Studio (1.0)\bin\services\;C:\Microsoft Robotics Studio (1.0)\bin\Debug\</ReferencePath>
   </PropertyGroup>
 </Project>

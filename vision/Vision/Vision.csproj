@@ -9,21 +9,25 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Vision</RootNamespace>
     <AssemblyName>Vision</AssemblyName>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>mrisamples.snk</AssemblyOriginatorKeyFile>
     <StartupObject>
     </StartupObject>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\bin\services\</OutputPath>
+    <OutputPath>..\..\bin\services\</OutputPath>
     <DefineConstants>TRACE;DEBUG;INSTRUMENTED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,29 +45,33 @@
   <ItemGroup>
     <Reference Include="Ccr.Adapters.WinForms, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\Ccr.Adapters.WinForms.dll</HintPath>
+      <HintPath>..\..\bin\Ccr.Adapters.WinForms.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Ccr.Core, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\Ccr.Core.dll</HintPath>
+      <HintPath>..\..\bin\Ccr.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DssBase, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\DssBase.dll</HintPath>
+      <HintPath>..\..\bin\DssBase.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DssRuntime, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\DssRuntime.dll</HintPath>
+      <HintPath>..\..\bin\DssRuntime.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DssRuntime.proxy, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\DssRuntime.proxy.dll</HintPath>
+      <HintPath>..\..\bin\DssRuntime.proxy.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SelectionBox, Version=1.0.2730.34786, Culture=neutral, PublicKeyToken=6189cba2a7b395a7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SelectionBox\bin\Debug\SelectionBox.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -182,7 +190,7 @@
     <Content Include="VisionService.manifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\samples\Constants\Constants.csproj">
+    <ProjectReference Include="..\..\system\Constants\Constants.csproj">
       <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
       <Name>Constants</Name>
     </ProjectReference>
@@ -196,6 +204,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.0)\bin\dssproxy.exe" /dll:"$(TargetPath)" /proxyprojectpath:"$(ProjectDir)Proxy " /keyfile:"C:\Microsoft Robotics Studio (1.0)\samples\mrisamples.snk" /binpath:". " /referencepath:"C:\Microsoft Robotics Studio (1.0)\bin " /referencepath:"C:\Microsoft Robotics Studio (1.0)\bin\services "</PostBuildEvent>
+    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.0)\bin\dssproxy.exe" /dll:"$(TargetPath)" /proxyprojectpath:"$(ProjectDir)Proxy " /keyfile:"C:\Microsoft Robotics Studio (1.0)\samples\mrisamples.snk" /binpath:". " @(ReferencePath->'/referencepath:"%25(RootDir)%25(Directory) "', ' ')</PostBuildEvent>
   </PropertyGroup>
 </Project>
