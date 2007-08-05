@@ -1,0 +1,8 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Microsoft Robotics Studio (1.0)\bin\DssHost.exe</StartProgram>
+    <StartArguments>/p:50002 /t:50003 /m:".\vision\Vision Processing\Vision\Vision\VisionService.manifest.xml"</StartArguments>
+    <StartWorkingDirectory>C:\Microsoft Robotics Studio (1.0)</StartWorkingDirectory>
+  </PropertyGroup>
+</Project>

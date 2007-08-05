@@ -1,0 +1,27 @@
+Metadata:
+type NormalPlay
+name SmartClear
+score #ml1.31061456231334#ml
+Objects:
+point2 (pointof ball)
+robot0 (closest friendly point2 loose)
+robot3 (closest enemy point2 loose)
+topLeftCorner (point -2.45 -1.7)
+bottomLeftCorner (point -2.45 1.7)
+topRightCorner (point 2.45 1.7)
+bottomRightCorner (point 2.45 -1.7)
+ourgoal (point -2.53 0)
+theirgoal (point 2.53 0)
+point1 (pointof robot0)
+point4 (pointof robot3)
+circle7 (circle point4 (pointpointdistance point4 point1))
+line6 (line point1 point4)
+ydiff (- (getYcoord point4) (getYcoord point2))
+circle8 (circle point1 (/ (linelength line6) (+ 1 (floatAbs ydiff))))
+point9 (circlecircleintersection circle7 circle8 (if_int (floatcomparison ydiff <= 0) -1 1))
+line5 (line point1 point2)
+Conditions:
+(floatcomparison (pointpointdistance ourgoal point2) <= 1.5)
+Actions:
+(robotpointkick robot0 point9)
+

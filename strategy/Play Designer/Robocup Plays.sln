@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayDesigner", "PlayDesigner.csproj", "{C57C048E-0954-44CD-8FF6-BD7269962214}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\Core Play Files\CorePlayFiles.csproj", "{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://magneto.rfccambridge.com:8080/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ..\\Core\u0020Play\u0020Files\\CorePlayFiles.csproj
+		SccProjectName1 = ../Core\u0020Play\u0020Files
+		SccLocalPath1 = ..\\Core\u0020Play\u0020Files
+		SccProjectUniqueName2 = PlayDesigner.csproj
+		SccLocalPath2 = .
+		SccProjectUniqueName3 = ..\\Play\u0020Selector\\PlaySelector.csproj
+		SccProjectName3 = ../Play\u0020Selector
+		SccLocalPath3 = ..\\Play\u0020Selector
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C57C048E-0954-44CD-8FF6-BD7269962214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C57C048E-0954-44CD-8FF6-BD7269962214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C57C048E-0954-44CD-8FF6-BD7269962214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C57C048E-0954-44CD-8FF6-BD7269962214}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

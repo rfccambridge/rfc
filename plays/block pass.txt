@@ -1,0 +1,25 @@
+Metadata:
+type NormalPlay
+name BlockPass
+score #ml0.202465632420801#ml
+Objects:
+ourgoal (point -2.53 0)
+robot0 (closest enemy ourgoal loose)
+point1 (pointof robot0)
+robot2 (closest friendly point1 loose)
+point6 (pointof ball)
+robot4 (closest enemy point6 loose)
+topLeftCorner (point -2.45 -1.7)
+bottomLeftCorner (point -2.45 1.7)
+topRightCorner (point 2.45 1.7)
+bottomRightCorner (point 2.45 -1.7)
+theirgoal (point 2.53 0)
+point3 (pointof robot2)
+point5 (pointof robot4)
+line9 (line point5 point1)
+circle7 (circle point1 0.3)
+point10 (linecircleintersection line9 circle7 0)
+Conditions:
+Actions:
+(robotpointmove robot2 point10)
+

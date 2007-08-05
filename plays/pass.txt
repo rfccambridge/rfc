@@ -1,0 +1,22 @@
+Metadata:
+type NormalPlay
+name Pass
+score #ml-0.228907254574387#ml
+Objects:
+point4 (pointof ball)
+robot0 (closest friendly point4 loose)
+theirgoal (point 2.53 0)
+robot2 (closest friendly theirgoal target)
+topLeftCorner (point -2.45 -1.7)
+bottomLeftCorner (point -2.45 1.7)
+topRightCorner (point 2.45 1.7)
+bottomRightCorner (point 2.45 -1.7)
+ourgoal (point -2.53 0)
+point1 (pointof robot0)
+point3 (pointof robot2)
+line5 (line point4 point3)
+Conditions:
+(< 0.2 (closestRobotToLine line5 enemy))
+Actions:
+(robotpointkick robot0 point3)
+

@@ -1,0 +1,27 @@
+Metadata:
+type NormalPlay
+ID 1177768029
+score .8
+name SmartPass
+Objects:
+robot6 (closest friendly point8 loose)
+robot13 (closest friendly point7 target)
+point0 (point -2.45 -1.7)
+point1 (point -2.45 1.7)
+point2 (point 2.45 1.7)
+point3 (point 2.45 -1.7)
+point4 (point -2.53 0)
+goal (point 2.53 0)
+point7 (pointof robot6)
+point8 (pointof ball)
+point14 (pointof robot13)
+point12 (circlecircleintersection circle10 circle11 -1)
+line9 (line point14 point8)
+circle10 (circle point14 (pointpointdistance point14 point8))
+circle11 (circle point8 0.1)
+passingforward (floatcomparison (pointpointdistance goal point14) < (pointpointdistance goal point7))
+Conditions:
+passingforward
+Actions:
+(if_Action (floatcomparison (closestRobotToLine line9 enemy) < 0.12) (robotpointdribble robot6 point12) (robotpointkick robot6 point14))
+

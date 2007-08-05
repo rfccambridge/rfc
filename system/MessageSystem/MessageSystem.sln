@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageSystem", "MessageSystem.csproj", "{1C7044F7-B506-46B2-AF61-E38E224EC33A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{B3F1B53E-3162-4DF9-B22D-4BEA702AA2DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "TestServer\TestServer.csproj", "{EBE5095C-FCF7-4D80-B1F7-263EE66E009E}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://magneto.rfccambridge.com:8080/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = MessageSystem.csproj
+		SccLocalPath1 = .
+		SccProjectUniqueName2 = TestClient\\TestClient.csproj
+		SccProjectName2 = TestClient
+		SccLocalPath2 = TestClient
+		SccProjectUniqueName3 = TestServer\\TestServer.csproj
+		SccProjectName3 = TestServer
+		SccLocalPath3 = TestServer
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C7044F7-B506-46B2-AF61-E38E224EC33A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C7044F7-B506-46B2-AF61-E38E224EC33A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C7044F7-B506-46B2-AF61-E38E224EC33A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C7044F7-B506-46B2-AF61-E38E224EC33A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F1B53E-3162-4DF9-B22D-4BEA702AA2DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F1B53E-3162-4DF9-B22D-4BEA702AA2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F1B53E-3162-4DF9-B22D-4BEA702AA2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F1B53E-3162-4DF9-B22D-4BEA702AA2DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBE5095C-FCF7-4D80-B1F7-263EE66E009E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBE5095C-FCF7-4D80-B1F7-263EE66E009E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBE5095C-FCF7-4D80-B1F7-263EE66E009E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBE5095C-FCF7-4D80-B1F7-263EE66E009E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,8 @@
+C:\Microsoft Robotics Studio (1.0)\bin\services\Vision.Proxy.dll
+C:\Microsoft Robotics Studio (1.0)\bin\services\Vision.Proxy.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\Vision.Resources.DssModel.dss
+obj\Debug\Vision.Properties.Resources.resources
+obj\Debug\Vision.proxy.csproj.GenerateResource.Cache
+obj\Debug\Vision.Proxy.dll
+obj\Debug\Vision.Proxy.pdb

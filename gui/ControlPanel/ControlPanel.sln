@@ -1,0 +1,149 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlPanel", "ControlPanel.csproj", "{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimDrive", "..\SimDrive\SimDrive.csproj", "{70A0BCA1-0A17-4CBA-B972-C49F9BB20616}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimBall", "..\SimBall\SimBall.csproj", "{5FC7B6DD-1E61-4F5B-8CBB-25009DBF63A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sim", "..\Sim\Sim.csproj", "{DFDC51DD-FABC-4650-B260-CA6996FAC7C1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0582271D-08D1-4539-A4CD-67FE197B3C00} = {0582271D-08D1-4539-A4CD-67FE197B3C00}
+		{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630} = {0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterCommander", "..\MasterCommander\MasterCommander.csproj", "{0582271D-08D1-4539-A4CD-67FE197B3C00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "..\Infrastructure\Infrastructure.csproj", "{5A581DB2-B25E-4DDB-B870-4C63D8876D19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\..\strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\..\strategy\Core Play Files\CorePlayFiles.csproj", "{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreRobotics", "..\CoreRobotics\CoreRobotics.csproj", "{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "..\Constants\Constants.csproj", "{064297F9-12D0-4BD1-BF96-146E2B28461D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialControl", "..\SerialControl\SerialControl.csproj", "{3CCB17A5-8943-4535-A148-7AE8D237BA32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vision", "..\..\vision\Vision Processing\Vision\Vision\Vision.csproj", "{08383292-7063-4436-ADE4-CCD3AD048D46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelectionBox", "..\..\vision\Vision Processing\Vision\SelectionBox\SelectionBox.csproj", "{850D79D3-A132-4280-997D-EF106C423D8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RFCTester", "..\..\RFCTester\RFCTester.csproj", "{AF996C3B-A025-4A50-9465-C087449DCAB5}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 15
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://rfccambridge.com:8080/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ControlPanel.csproj
+		SccLocalPath1 = .
+		SccProjectUniqueName2 = ..\\SimDrive\\SimDrive.csproj
+		SccProjectName2 = ../SimDrive
+		SccLocalPath2 = ..\\SimDrive
+		SccProjectUniqueName3 = ..\\SimBall\\SimBall.csproj
+		SccProjectName3 = ../SimBall
+		SccLocalPath3 = ..\\SimBall
+		SccProjectUniqueName4 = ..\\Sim\\Sim.csproj
+		SccProjectName4 = ../Sim
+		SccLocalPath4 = ..\\Sim
+		SccProjectUniqueName5 = ..\\MasterCommander\\MasterCommander.csproj
+		SccProjectName5 = ../MasterCommander
+		SccLocalPath5 = ..\\MasterCommander
+		SccProjectUniqueName6 = ..\\Infrastructure\\Infrastructure.csproj
+		SccProjectName6 = ../Infrastructure
+		SccLocalPath6 = ..\\Infrastructure
+		SccProjectUniqueName7 = ..\\..\\strategy\\Play\u0020Selector\\PlaySelector.csproj
+		SccProjectName7 = ../../Strategy/Play\u0020Selector
+		SccLocalPath7 = ..\\..\\strategy\\Play\u0020Selector
+		SccProjectUniqueName8 = ..\\..\\strategy\\Core\u0020Play\u0020Files\\CorePlayFiles.csproj
+		SccProjectName8 = ../../Strategy/Core\u0020Play\u0020Files
+		SccLocalPath8 = ..\\..\\strategy\\Core\u0020Play\u0020Files
+		SccProjectUniqueName9 = ..\\CoreRobotics\\CoreRobotics.csproj
+		SccProjectName9 = ../CoreRobotics
+		SccLocalPath9 = ..\\CoreRobotics
+		SccProjectUniqueName10 = ..\\Constants\\Constants.csproj
+		SccProjectName10 = ../Constants
+		SccLocalPath10 = ..\\Constants
+		SccProjectUniqueName11 = ..\\SerialControl\\SerialControl.csproj
+		SccProjectName11 = ../SerialControl
+		SccLocalPath11 = ..\\SerialControl
+		SccProjectUniqueName12 = ..\\..\\vision\\Vision\u0020Processing\\Vision\\Vision\\Vision.csproj
+		SccProjectName12 = ../../Vision\u0020System/Vision\u0020Processing/Vision/Vision
+		SccLocalPath12 = ..\\..\\vision\\Vision\u0020Processing\\Vision\\Vision
+		SccProjectUniqueName13 = ..\\..\\vision\\Vision\u0020Processing\\Vision\\SelectionBox\\SelectionBox.csproj
+		SccProjectName13 = ../../Vision\u0020System/Vision\u0020Processing/Vision/SelectionBox
+		SccLocalPath13 = ..\\..\\vision\\Vision\u0020Processing\\Vision\\SelectionBox
+		SccProjectUniqueName14 = ..\\..\\RFCTester\\RFCTester.csproj
+		SccProjectName14 = ../RFCTester
+		SccLocalPath14 = ..\\..\\RFCTester
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70A0BCA1-0A17-4CBA-B972-C49F9BB20616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70A0BCA1-0A17-4CBA-B972-C49F9BB20616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70A0BCA1-0A17-4CBA-B972-C49F9BB20616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70A0BCA1-0A17-4CBA-B972-C49F9BB20616}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FC7B6DD-1E61-4F5B-8CBB-25009DBF63A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FC7B6DD-1E61-4F5B-8CBB-25009DBF63A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FC7B6DD-1E61-4F5B-8CBB-25009DBF63A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FC7B6DD-1E61-4F5B-8CBB-25009DBF63A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFDC51DD-FABC-4650-B260-CA6996FAC7C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFDC51DD-FABC-4650-B260-CA6996FAC7C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFDC51DD-FABC-4650-B260-CA6996FAC7C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFDC51DD-FABC-4650-B260-CA6996FAC7C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08383292-7063-4436-ADE4-CCD3AD048D46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08383292-7063-4436-ADE4-CCD3AD048D46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08383292-7063-4436-ADE4-CCD3AD048D46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08383292-7063-4436-ADE4-CCD3AD048D46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{850D79D3-A132-4280-997D-EF106C423D8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{850D79D3-A132-4280-997D-EF106C423D8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{850D79D3-A132-4280-997D-EF106C423D8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{850D79D3-A132-4280-997D-EF106C423D8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF996C3B-A025-4A50-9465-C087449DCAB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF996C3B-A025-4A50-9465-C087449DCAB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF996C3B-A025-4A50-9465-C087449DCAB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF996C3B-A025-4A50-9465-C087449DCAB5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

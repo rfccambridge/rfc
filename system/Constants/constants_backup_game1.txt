@@ -1,0 +1,85 @@
+# comments come in this form
+# NOTE: the values for string constants are not extracted out of quotes
+#       e.g. string MYCONST "text" is returned as "text" NOT text
+
+string OUR_TEAM_COLOR BLUE
+
+# RFCSystem constants
+int UPDATE_SLEEP_TIME 200
+
+# movement models "Two"-wheeled or "Four"-wheeled
+# "TWO-FLBR" for left-front right-back
+# "TWO-FRBL" for right-front left-back
+# "FOUR"
+string ROBOT_0 "TWO-FLBR"
+string ROBOT_1 "TWO-FRBL"
+string ROBOT_2 "FOUR"
+string ROBOT_3 "TWO-FLBR"
+string ROBOT_4 "TWO-FLBR"
+string ROBOT_5 "TWO-FLBR"
+string ROBOT_6 "TWO-FLBR"
+string ROBOT_7 "TWO-FLBR"
+string ROBOT_8 "TWO-FLBR"
+string ROBOT_9 "TWO-FLBR"
+
+# movement constants
+float MOVETOL .6
+int DISCR_TIMEOUT 50
+float TURNHYSTERESIS 3
+int startpower 90
+int maxMovePower 125
+int minMovePower 70
+float ANGLE_P 1.0
+int maxturn 65
+int minturn 55
+int moveTurnPower 25
+
+# robot dot patterns: FrontLeft, FrontRight, RearLeft, RearRight (P = Pink, C = Cyan, G = Green)
+string DOTS_R_2 PGPG
+string DOTS_R_4 GPPG
+string DOTS_R_1 PGGP
+string DOTS_R_3 PPGG
+
+# vision constants
+int FRAMES_TO_REMEMBER 5
+int FORGET_AFTER_FRAMES 2
+
+# camera 1 for top, camera 2 for bottom
+int CAMERA_ID_LAMBDA 2
+int CAMERA_ID_OMEGA 1
+
+int THEIR_ID_OFFSET_LAMBDA 0
+int THEIR_ID_OFFSET_OMEGA 10
+
+# areas and errors are in sq. mm
+
+float AREA_BALL 1700
+float ERROR_BALL 900
+
+float AREA_BLUE_CENTER_DOT 1900
+float AREA_YELLOW_CENTER_DOT 2000
+
+float ERROR_BLUE_CENTER_DOT 1100
+float ERROR_YELLOW_CENTER_DOT 900
+
+float AREA_CYAN_DOT 1200
+float AREA_PINK_DOT 1800
+float AREA_GREEN_DOT 1200
+
+float ERROR_CYAN_DOT 700
+float ERROR_PINK_DOT 900
+float ERROR_GREEN_DOT 700
+
+float DIST_SQ_TO_CENTER 9000
+float FRONT_ANGLE 135
+float ERROR_ANGLE 40
+float DIST_SHORT_SQ 12300
+
+# float BALL_HEIGHT_TSAI 300
+# float ROBOT_HEIGHT_TSAI 100
+
+# float BALL_HEIGHT_TSAI 20
+# float ROBOT_HEIGHT_TSAI -70
+
+float BALL_HEIGHT_TSAI -20
+float ROBOT_HEIGHT_TSAI -150

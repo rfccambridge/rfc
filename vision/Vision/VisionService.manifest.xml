@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" ?>
+<m:Manifest 
+  xmlns:m="http://schemas.microsoft.com/xw/2004/10/manifest.html"
+  xmlns:dssp="http://schemas.microsoft.com/xw/2004/10/dssp.html"
+  xmlns:new1="http://schemas.microsoft.com/robotics/2006/06/messagebox.html">
+
+  <m:CreateServiceList>
+    <m:ServiceRecordType>
+      <dssp:Contract>http://schemas.tempuri.org/2007/02/VisionService.html</dssp:Contract>
+    </m:ServiceRecordType>
+  </m:CreateServiceList>
+
+</m:Manifest>

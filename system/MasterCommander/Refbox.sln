@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterCommander", "MasterCommander.csproj", "{0582271D-08D1-4539-A4CD-67FE197B3C00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "..\Infrastructure\Infrastructure.csproj", "{5A581DB2-B25E-4DDB-B870-4C63D8876D19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "..\Constants\Constants.csproj", "{064297F9-12D0-4BD1-BF96-146E2B28461D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialControl", "..\SerialControl\SerialControl.csproj", "{3CCB17A5-8943-4535-A148-7AE8D237BA32}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://rfccambridge.com:8080/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = MasterCommander.csproj
+		SccLocalPath1 = .
+		SccProjectUniqueName2 = ..\\Infrastructure\\Infrastructure.csproj
+		SccProjectName2 = ../Infrastructure
+		SccLocalPath2 = ..\\Infrastructure
+		SccProjectUniqueName3 = ..\\Constants\\Constants.csproj
+		SccProjectName3 = ../Constants
+		SccLocalPath3 = ..\\Constants
+		SccProjectUniqueName4 = ..\\SerialControl\\SerialControl.csproj
+		SccProjectName4 = ../SerialControl
+		SccLocalPath4 = ..\\SerialControl
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

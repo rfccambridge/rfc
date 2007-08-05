@@ -1,0 +1,13 @@
+Metadata:
+type NormalPlay
+name GetOpen
+score #ml1.14979512952543#ml
+Objects:
+robot0 (closest friendly (point 2.53 0) loose)
+point1 (pointof robot0)
+high (< 0 (getYcoord point1))
+point2 (point 2 (if_float high 0.7 -0.7))
+Conditions:
+Actions:
+(robotpointmove robot0 point2)
+

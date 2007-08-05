@@ -1,0 +1,22 @@
+Metadata:
+type NormalPlay
+name LastBlock
+score #ml2.11343588704172#ml
+Objects:
+ourgoal (point -2.53 0)
+robot1 (closest friendly ourgoal loose)
+topLeftCorner (point -2.45 -1.7)
+bottomLeftCorner (point -2.45 1.7)
+bottomRightCorner (point 2.45 1.7)
+topRightCorner (point 2.45 -1.7)
+theirgoal (point 2.53 0)
+point0 (pointof ball)
+point2 (pointof robot1)
+line3 (line point0 ourgoal)
+circle4 (circle point0 0.17)
+point5 (linecircleintersection line3 circle4 1)
+Conditions:
+(< (pointpointdistance ourgoal point0) 0.6)
+Actions:
+(robotpointmove robot1 point5)
+

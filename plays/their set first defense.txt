@@ -1,0 +1,21 @@
+Metadata:
+type SetPlay_Theirs
+name FirstDefense
+score 5.004898
+Objects:
+robot1 (closest friendly point0 loose)
+topLeftCorner (point -2.45 -1.7)
+bottomLeftCorner (point -2.45 1.7)
+bottomRightCorner (point 2.45 1.7)
+topRightCorner (point 2.45 -1.7)
+ourgoal (point -2.53 0)
+theirgoal (point 2.53 0)
+point0 (pointof ball)
+point2 (pointof robot1)
+point5 (linecircleintersection line3 circle4 1)
+line3 (line point0 theirgoal)
+circle4 (circle point0 0.65)
+Conditions:
+Actions:
+(robotpointmove robot1 point5)
+
