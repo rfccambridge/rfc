@@ -1,0 +1,28 @@
+The url for svn:
+
+rfccambridge.com:3690/<repository name>
+
+The main code repository is RFC, so to access it the TortoiseSVN repo-browser URL is
+
+svn://rfccambridge.com:3690/RFC
+
+anonymous checkout is enabled, though you will need to get an account added to make commits
+
+
+To setup a workspace equivalent
+------------------------------
+suppose you want to check out to D:\dev\project1. Select the folder D:\dev\project1, 
+right click and choose Windows Menu ? Properties  from the context menu. The 
+Properties Dialog comes up. Then go to the Subversion tab. There, you can set properties. 
+Select the svn:externals property from the combobox and write in the edit box the 
+repository url in the format name url  or if you want to specify a particular revision, 
+name -rREV url  You can add multiple external projects, 1 per line. Note that URLs must 
+be properly escaped or they will not work properly. For example you must replace each 
+space with %20. Note that it is not possible to use foldernames with spaces in them. 
+Suppose that you have set these properties on D:\dev\project1:
+
+sounds   http://sounds.red-bean.com/repos
+quick_graphs  http://graphics.red-bean.com/repos/fast%20graphics
+skins/toolkit -r21 http://svn.red-bean.com/repos/skin-maker
+
+Now click Set and commit your changes. 
