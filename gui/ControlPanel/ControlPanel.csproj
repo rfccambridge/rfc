@@ -12,7 +12,8 @@
     </AssemblyKeyContainerName>
     <AssemblyName>ControlPanel.Y2006.M08</AssemblyName>
     <RootNamespace>Robotics.ControlPanel</RootNamespace>
-    <AssemblyOriginatorKeyFile>mrisamples.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -220,7 +221,6 @@
   <ItemGroup>
     <Content Include="ControlPanel.manifest.xml" />
     <None Include="Resources\cleanfield.jpg" />
-    <None Include="mrisamples.snk" />
     <None Include="obj\Debug\cleanfield.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

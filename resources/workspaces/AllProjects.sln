@@ -1,39 +1,39 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlPanel", "gui\ControlPanel\ControlPanel.csproj", "{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlPanel", "..\..\gui\ControlPanel\ControlPanel.csproj", "{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterCommander", "system\MasterCommander\MasterCommander.csproj", "{0582271D-08D1-4539-A4CD-67FE197B3C00}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterCommander", "..\..\system\MasterCommander\MasterCommander.csproj", "{0582271D-08D1-4539-A4CD-67FE197B3C00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "system\Infrastructure\Infrastructure.csproj", "{5A581DB2-B25E-4DDB-B870-4C63D8876D19}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "..\..\system\Infrastructure\Infrastructure.csproj", "{5A581DB2-B25E-4DDB-B870-4C63D8876D19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\..\strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "strategy\Core Play Files\CorePlayFiles.csproj", "{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\..\strategy\Core Play Files\CorePlayFiles.csproj", "{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreRobotics", "controller\CoreRobotics\CoreRobotics.csproj", "{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreRobotics", "..\..\controller\CoreRobotics\CoreRobotics.csproj", "{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "system\Constants\Constants.csproj", "{064297F9-12D0-4BD1-BF96-146E2B28461D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "..\..\system\Constants\Constants.csproj", "{064297F9-12D0-4BD1-BF96-146E2B28461D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialControl", "system\SerialControl\SerialControl.csproj", "{3CCB17A5-8943-4535-A148-7AE8D237BA32}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialControl", "..\..\system\SerialControl\SerialControl.csproj", "{3CCB17A5-8943-4535-A148-7AE8D237BA32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vision", "vision\Vision\Vision.csproj", "{08383292-7063-4436-ADE4-CCD3AD048D46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vision", "..\..\vision\Vision\Vision.csproj", "{08383292-7063-4436-ADE4-CCD3AD048D46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelectionBox", "vision\SelectionBox\SelectionBox.csproj", "{850D79D3-A132-4280-997D-EF106C423D8C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelectionBox", "..\..\vision\SelectionBox\SelectionBox.csproj", "{850D79D3-A132-4280-997D-EF106C423D8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTester", "gui\InterpreterTester\InterpreterTester.csproj", "{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTester", "..\..\gui\InterpreterTester\InterpreterTester.csproj", "{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationRacer", "strategy\Navigation\NavigationRacer\NavigationRacer.csproj", "{CB7165CE-ADD5-42A0-ADA8-5FD454FABA41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationRacer", "..\..\strategy\Navigation\NavigationRacer\NavigationRacer.csproj", "{CB7165CE-ADD5-42A0-ADA8-5FD454FABA41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearning", "strategy\MachineLearning\MachineLearning.csproj", "{74322154-87D4-4D6B-9A5F-AAA368FDEABD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearning", "..\..\strategy\MachineLearning\MachineLearning.csproj", "{74322154-87D4-4D6B-9A5F-AAA368FDEABD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navigation", "strategy\Navigation\Navigation.csproj", "{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navigation", "..\..\strategy\Navigation\Navigation.csproj", "{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayDesigner", "strategy\Play Designer\PlayDesigner.csproj", "{C57C048E-0954-44CD-8FF6-BD7269962214}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayDesigner", "..\..\strategy\Play Designer\PlayDesigner.csproj", "{C57C048E-0954-44CD-8FF6-BD7269962214}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageSystem", "system\MessageSystem\MessageSystem.csproj", "{1C7044F7-B506-46B2-AF61-E38E224EC33A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageSystem", "..\..\system\MessageSystem\MessageSystem.csproj", "{1C7044F7-B506-46B2-AF61-E38E224EC33A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KalmanFilter", "vision\KalmanFilter\KalmanFilter.csproj", "{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KalmanFilter", "..\..\vision\KalmanFilter\KalmanFilter.csproj", "{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
