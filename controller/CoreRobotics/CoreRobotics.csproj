@@ -18,7 +18,7 @@
     <SccProvider>
     </SccProvider>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>kmod.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,9 +64,6 @@
     <Compile Include="TwoWheeledMovement.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="kmod.snk" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\system\Constants\Constants.csproj">
       <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
       <Name>Constants</Name>
@@ -79,6 +76,9 @@
       <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
       <Name>PlaySelector</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="rfc.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -3,7 +3,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{12E8D564-DE60-4A32-8264-BAA996F4B961}</ProjectGuid>
+    <ProjectGuid>{186F8164-4803-4B89-905A-ECE521F6B405}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
@@ -12,7 +12,7 @@
     </AssemblyKeyContainerName>
     <AssemblyName>ControlPanel.Y2006.M08.Proxy</AssemblyName>
     <RootNamespace>Robotics.ControlPanel</RootNamespace>
-    <AssemblyOriginatorKeyFile>C:\Microsoft Robotics Studio (1.0)\samples\mrisamples.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>C:\Microsoft Robotics Studio (1.0)\resources\rfc.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>

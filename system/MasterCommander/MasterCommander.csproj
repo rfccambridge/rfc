@@ -12,7 +12,7 @@
     </AssemblyKeyContainerName>
     <AssemblyName>Commander.Y2006.M08</AssemblyName>
     <RootNamespace>Robotics.Commander</RootNamespace>
-    <AssemblyOriginatorKeyFile>C:\Microsoft Robotics Studio (1.0)\samples\mrisamples.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -23,7 +23,7 @@
     </StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -106,12 +106,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SerialControl, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1086359baebd40ef, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <ExecutableExtension>.exe</ExecutableExtension>
-      <HintPath>..\SerialControl\obj\Debug\SerialControl.exe</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="SickLRF.Y2005.M12.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=d12f30389d94881d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -160,8 +154,8 @@
   <ItemGroup>
     <Content Include="Commander.manifest.xml" />
     <Content Include="scaling.txt" />
-    <None Include="mrisamples.snk" />
     <None Include="obj\Debug\cleanfield.jpg" />
+    <None Include="rfc.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Constants\Constants.csproj">
@@ -169,11 +163,16 @@
       <Name>Constants</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SerialControl\SerialControl.csproj">
+      <Project>{3CCB17A5-8943-4535-A148-7AE8D237BA32}</Project>
+      <Name>SerialControl</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.0)\bin\dssproxy.exe" /dll:"$(TargetPath)" /proxyprojectpath:"$(ProjectDir)Proxy " /keyfile:"C:\Microsoft Robotics Studio (1.0)\samples\mrisamples.snk" /binpath:". " @(ReferencePath->'/referencepath:"%(RootDir)%(Directory) "', ' ')</PostBuildEvent>
+    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.0)\bin\dssproxy.exe" @"$(ProjectDir)mastercommander.postbuild "</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -12,8 +12,7 @@
     </AssemblyKeyContainerName>
     <AssemblyName>ControlPanel.Y2006.M08</AssemblyName>
     <RootNamespace>Robotics.ControlPanel</RootNamespace>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -24,7 +23,7 @@
     </StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -122,9 +121,8 @@
       <HintPath>..\..\bin\DssRuntime.proxy.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1086359baebd40ef, processorArchitecture=MSIL">
+    <Reference Include="Infrastructure, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Debug\Infrastructure.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PhysicsEngine, Version=1.0.2406.25171, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=x86">
@@ -181,6 +179,7 @@
       <Name>System.XML</Name>
     </Reference>
     <Reference Include="Vision, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6167838637cd631e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="Vision.Proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=6167838637cd631e, processorArchitecture=MSIL">
@@ -222,11 +221,12 @@
     <Content Include="ControlPanel.manifest.xml" />
     <None Include="Resources\cleanfield.jpg" />
     <None Include="obj\Debug\cleanfield.jpg" />
+    <None Include="rfc.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.0)\bin\dssproxy.exe" /dll:"$(TargetPath)" /proxyprojectpath:"$(ProjectDir)Proxy " /keyfile:"C:\Microsoft Robotics Studio (1.0)\samples\mrisamples.snk" /binpath:". " @(ReferencePath->'/referencepath:"%(RootDir)%(Directory) "', ' ')</PostBuildEvent>
+    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.0)\bin\dssproxy.exe" @"$(ProjectDir)controlpanel.postbuild"</PostBuildEvent>
   </PropertyGroup>
 </Project>

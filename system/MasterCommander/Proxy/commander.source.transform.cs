@@ -2,7 +2,7 @@ using System;
 using Microsoft.Dss.Core.Attributes;
 using Microsoft.Dss.Core.Transforms;
 
-[assembly: ServiceDeclaration(DssServiceDeclaration.Transform, SourceAssemblyKey = @"Commander.Y2006.M08, Version=0.0.0.0, Culture=neutral, PublicKeyToken=ff207bcee59b1d39")]
+[assembly: ServiceDeclaration(DssServiceDeclaration.Transform, SourceAssemblyKey = @"Commander.Y2006.M08, Version=0.0.0.0, Culture=neutral, PublicKeyToken=66359fb00c7dbe93")]
 [assembly: System.Security.SecurityTransparent]
 [assembly: System.Security.AllowPartiallyTrustedCallers]
 

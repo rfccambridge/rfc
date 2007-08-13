@@ -6,7 +6,7 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3CCB17A5-8943-4535-A148-7AE8D237BA32}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SerialControl</RootNamespace>
     <AssemblyName>SerialControl</AssemblyName>
@@ -21,7 +21,7 @@
     <StartupObject>
     </StartupObject>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>mrisamples.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -74,9 +74,10 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
       <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
       <Name>Infrastructure</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="mrisamples.snk" />
+    <None Include="rfc.snk" />
   </ItemGroup>
 </Project>

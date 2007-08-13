@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+ <SecuritySettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                   xmlns="http://schemas.microsoft.com/robotics/2006/10/security.html">
+   <AuthenticationRequired>false</AuthenticationRequired>
+   <OnlySignedAssemblies>false</OnlySignedAssemblies>
+   <Users />
+</SecuritySettings>
+

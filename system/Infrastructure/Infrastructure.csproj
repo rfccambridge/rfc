@@ -18,8 +18,7 @@
     <SccProvider>
     </SccProvider>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,6 +61,9 @@
     <Compile Include="UsefulFunctions.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="WheelSpeeds.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="rfc.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -17,8 +17,9 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>kmod.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -163,7 +164,6 @@
     <None Include="Resources\lineicon.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="kmod.snk" />
     <None Include="Resources\pointicon.bmp" />
   </ItemGroup>
   <ItemGroup>

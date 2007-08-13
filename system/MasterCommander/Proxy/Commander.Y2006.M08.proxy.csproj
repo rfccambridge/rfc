@@ -3,7 +3,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6E78DEAB-B3A4-415E-8C95-A12C42D9A357}</ProjectGuid>
+    <ProjectGuid>{0208653B-6200-4DB0-90F2-64C48D19CFB3}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
@@ -12,7 +12,7 @@
     </AssemblyKeyContainerName>
     <AssemblyName>Commander.Y2006.M08.Proxy</AssemblyName>
     <RootNamespace>Robotics.Commander</RootNamespace>
-    <AssemblyOriginatorKeyFile>C:\Microsoft Robotics Studio (1.0)\samples\mrisamples.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>C:\Microsoft Robotics Studio (1.0)\resources\rfc.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>

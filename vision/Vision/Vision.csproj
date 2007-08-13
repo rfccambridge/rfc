@@ -18,7 +18,7 @@
     <SccProvider>
     </SccProvider>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>mrisamples.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
     <StartupObject>
     </StartupObject>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -66,11 +66,6 @@
     <Reference Include="DssRuntime.proxy, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\DssRuntime.proxy.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SelectionBox, Version=1.0.2730.34786, Culture=neutral, PublicKeyToken=6189cba2a7b395a7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SelectionBox\bin\Debug\SelectionBox.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -174,9 +169,6 @@
     <None Include="bin\Debug\point.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="mrisamples.snk" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\pencilIcon.png" />
     <None Include="Resources\point.gif" />
     <None Include="Resources\cross.gif" />
@@ -187,12 +179,18 @@
     <None Include="Resources\openIcon.JPG" />
     <None Include="Resources\saveIcon.JPG" />
     <None Include="Resources\test.GIF" />
+    <None Include="rfc.snk" />
     <Content Include="VisionService.manifest.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\system\Constants\Constants.csproj">
       <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
       <Name>Constants</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SelectionBox\SelectionBox.csproj">
+      <Project>{850D79D3-A132-4280-997D-EF106C423D8C}</Project>
+      <Name>SelectionBox</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

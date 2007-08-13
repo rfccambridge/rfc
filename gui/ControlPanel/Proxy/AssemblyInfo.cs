@@ -14,8 +14,8 @@ using System;
 using System.Collections.Generic;
 using interopservices = System.Runtime.InteropServices;
 
-[assembly: ServiceDeclaration(DssServiceDeclaration.Proxy, SourceAssemblyKey="ControlPanel.Y2006.M08, Version=0.0.0.0, Culture=neutral, PublicKeyToken=ad56b222" +
-    "e218a47e")]
+[assembly: ServiceDeclaration(DssServiceDeclaration.Proxy, SourceAssemblyKey="ControlPanel.Y2006.M08, Version=0.0.0.0, Culture=neutral, PublicKeyToken=66359fb0" +
+    "0c7dbe93")]
 [assembly: System.Security.SecurityTransparentAttribute()]
 [assembly: System.Security.AllowPartiallyTrustedCallersAttribute()]
 [assembly: interopservices.ComVisible(true)]
