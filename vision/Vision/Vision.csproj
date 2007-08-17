@@ -202,6 +202,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.0)\bin\dssproxy.exe" /dll:"$(TargetPath)" /proxyprojectpath:"$(ProjectDir)Proxy " /keyfile:"C:\Microsoft Robotics Studio (1.0)\samples\mrisamples.snk" /binpath:". " @(ReferencePath->'/referencepath:"%25(RootDir)%25(Directory) "', ' ')</PostBuildEvent>
+    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.0)\bin\dssproxy.exe" @"$(ProjectDir)vision.postbuild"</PostBuildEvent>
   </PropertyGroup>
 </Project>
