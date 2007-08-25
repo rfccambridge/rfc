@@ -22,10 +22,7 @@ namespace Robocup.CoreRobotics
         IRobots _commander;
         ISplitInfoAcceptor _acceptor;
 
-        RefBoxListener reflistener;
-        Vector2 markedPosition;
-        bool marking = false;
-        PlayTypes playsToRun;
+        RefBoxState _refbox;
 
         public IPredictor Predictor
         {
@@ -51,9 +48,6 @@ namespace Robocup.CoreRobotics
             running = false;
             _sleepTime = Constants.Constants.get<int>("UPDATE_SLEEP_TIME");
             isYellow = Constants.Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
-            playsToRun = PlayTypes.NormalPlay;
-            reflistener = new RefBoxListener(REFBOX_PORT);
-            
         }
 
         public void initialize()
@@ -81,6 +75,8 @@ namespace Robocup.CoreRobotics
             {
                 _acceptor = new BasicPredictor();
             }
+
+            _refbox = new RefBoxState(new RefBoxListener(REFBOX_PORT), _predictor, isYellow);
 
 
             // create helper interfaces
@@ -193,7 +189,7 @@ namespace Robocup.CoreRobotics
                 _sleepTime = Constants.Constants.get<int>("UPDATE_SLEEP_TIME");
                 isYellow = Constants.Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
 
-                reflistener.start();
+                _refbox.start();
                 worker = new Thread(run);
                 worker.Start();
                 counter = 0;
@@ -206,7 +202,7 @@ namespace Robocup.CoreRobotics
             if (running)
             {
                 running = false;
-                reflistener.stop();
+                _refbox.stop();
                 foreach (RobotInfo info in Predictor.getOurTeamInfo())
                 {
                     _controller.stop(info.ID);
@@ -243,159 +239,15 @@ namespace Robocup.CoreRobotics
 
         private void _runRound()
         {
-            if (marking)
-            {
-                if (hasBallMoved(.02f))
-                {
-                    playsToRun = PlayTypes.NormalPlay;
-                    clearBallMark();
-                }
-            }
-            if (reflistener.hasNewCommand())
-            {
-                //Console.WriteLine("new command: [" + reflistener.getLastCommand() + "]");
-                switch (reflistener.getLastCommand())
-                {
-                    case RefBoxListener.HALT:
-                        // stop bots completely
-                        Console.WriteLine("halting");
-                        playsToRun = PlayTypes.Halt;
-                        break;
-                    case RefBoxListener.START:
-                        Console.WriteLine("force start");
-                        playsToRun = PlayTypes.NormalPlay;
-                        break;
-                    case RefBoxListener.CANCEL:
-                    case RefBoxListener.STOP:
-                    case RefBoxListener.TIMEOUT_BLUE:
-                    case RefBoxListener.TIMEOUT_YELLOW:
-                        //go to stopped/waiting state
-                        Console.WriteLine("Stopped/waiting state");
-                        playsToRun = PlayTypes.Stopped;
-                        break;
-                    case RefBoxListener.TIMEOUT_END_BLUE:
-                    case RefBoxListener.TIMEOUT_END_YELLOW:
-                    case RefBoxListener.READY:
-                        Console.WriteLine("awaiting play");
-                        if (playsToRun == PlayTypes.PenaltyKick_Ours_Setup)
-                            playsToRun = PlayTypes.PenaltyKick_Ours;
-                        if (playsToRun == PlayTypes.KickOff_Ours_Setup)
-                            playsToRun = PlayTypes.KickOff_Ours;
-                        setBallMark();
-
-                        break;
-                    case RefBoxListener.KICKOFF_BLUE:
-                        if (isYellow)
-                        {
-                            Console.WriteLine("kickoff from enemy");
-                            playsToRun = PlayTypes.KickOff_Theirs;
-                        }
-                        else
-                        {
-                            Console.WriteLine("kickoff for us");
-                            playsToRun = PlayTypes.KickOff_Ours_Setup;
-                        }
-                        break;
-                    case RefBoxListener.INDIRECT_BLUE:
-                    case RefBoxListener.DIRECT_BLUE:
-                        if (isYellow)
-                        {
-                            Console.WriteLine("kick from enemy");
-                            playsToRun = PlayTypes.SetPlay_Theirs;
-                        }
-                        else
-                        {
-                            Console.WriteLine("kick for us");
-                            playsToRun = PlayTypes.SetPlay_Ours;
-                        }
-                        setBallMark();
-                        break;
-                    case RefBoxListener.KICKOFF_YELLOW:
-                        if (!isYellow)
-                        {
-                            Console.WriteLine("kickoff from enemy");
-                            playsToRun = PlayTypes.KickOff_Theirs;
-                        }
-                        else
-                        {
-                            Console.WriteLine("kickoff for us");
-                            playsToRun = PlayTypes.KickOff_Ours_Setup;
-                        }
-                        break;
-                    case RefBoxListener.INDIRECT_YELLOW:
-                    case RefBoxListener.DIRECT_YELLOW:
-                        if (!isYellow)
-                        {
-                            Console.WriteLine("kick from enemy");
-                            playsToRun = PlayTypes.SetPlay_Theirs;
-                        }
-                        else
-                        {
-                            Console.WriteLine("kick for us");
-                            playsToRun = PlayTypes.SetPlay_Ours;
-                        }
-                        setBallMark();
-                        break;
-                    case RefBoxListener.PENALTY_BLUE:
-                        // handle penalty
-                        if (isYellow)
-                        {
-                            Console.WriteLine("defending penalty");
-                            playsToRun = PlayTypes.PenaltyKick_Theirs;
-                        }
-                        else
-                        {
-                            Console.WriteLine("shooting penalty");
-                            playsToRun = PlayTypes.PenaltyKick_Ours_Setup;
-                        }
-                        break;
-                    case RefBoxListener.PENALTY_YELLOW:
-                        // penalty kick
-                        // handle penalty
-                        if (! isYellow)
-                        {
-                            Console.WriteLine("defending penalty");
-                            playsToRun = PlayTypes.PenaltyKick_Theirs;
-                        }
-                        else
-                        {
-                            Console.WriteLine("shooting penalty");
-                            playsToRun = PlayTypes.PenaltyKick_Ours_Setup;
-                        }
-                        break;
-                   
-                }
-            }
-
-            Console.WriteLine("Play type: " + playsToRun);
-
             _controller.clearArrows();
             _interpreter.interpret( 
-                playsToRun 
+                _refbox.getCurrentPlayType()
             );
         }
 
         public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter)
         {
             _controller.drawCurrent(g, converter);
-        }
-
-        void setBallMark()
-        {
-            markedPosition = new Vector2(_predictor.getBallInfo().Position.X, _predictor.getBallInfo().Position.Y);
-            marking = true;
-        }
-
-        bool hasBallMoved(float dist_mm)
-        {
-            if (!marking) return true;
-            bool ret = markedPosition.distanceSq(_predictor.getBallInfo().Position) > dist_mm * dist_mm;
-            return ret;
-        }
-
-        void clearBallMark()
-        {
-            marking = false;
         }
     }
 }

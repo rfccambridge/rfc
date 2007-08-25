@@ -88,8 +88,6 @@ namespace Robocup.CoreRobotics
         EndPoint ep;
         StateObject so;
         RefboxPacket packet;
-        int lastCount;
-        volatile bool isNew;
 
         public RefBoxListener(int port)
         {
@@ -104,9 +102,6 @@ namespace Robocup.CoreRobotics
             so.sock = s;
             so.ep = ep;
             running = false;
-
-            lastCount = 0;
-            isNew = true;
         }
 
 
@@ -121,15 +116,13 @@ namespace Robocup.CoreRobotics
             running = false;
         }
 
-        public bool hasNewCommand()
+        public int getCmdCounter()
         {
-            return isNew;
+            return packet.cmd_counter;
         }
 
         public char getLastCommand()
         {
-            lastCount = packet.cmd_counter;
-            isNew = false;
             return packet.cmd;
         }
 
@@ -145,9 +138,6 @@ namespace Robocup.CoreRobotics
                 /*Console.WriteLine("command: " + packet.cmd + " counter: " + packet.cmd_counter
                     + " blue: " + packet.goals_blue + " yellow: " + packet.goals_yellow+
                     " time left: " + packet.time_remaining);*/
-
-                if (packet.cmd_counter > lastCount)
-                    isNew = true;
                 
             }
 

@@ -93,9 +93,7 @@ namespace SoccerSim
 
         #region IPredictor Members
         public RobotInfo getCurrentInformation(int i)
-        {
-            RobotInfo ret = null;
-            
+        {          
             return getRobot(i);
         }
         public List<RobotInfo> getOurTeamInfo()

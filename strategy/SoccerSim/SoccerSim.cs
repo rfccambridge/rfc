@@ -39,6 +39,7 @@ namespace SoccerSim
             _state = new FieldState();
             _fieldView = new FieldView(_state);
             // TODO make configurable how many to load
+
             RefBoxListener refbox = new RefBoxListener(10001);
 
             _player1 = new SimSystem(_fieldView,_state,refbox,true);
