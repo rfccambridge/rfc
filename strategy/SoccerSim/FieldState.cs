@@ -65,7 +65,7 @@ namespace SoccerSim
         # endregion
 
         # region Accessors
-
+        
         private RobotInfo getRobot(int i)
         {
             lock (_ourRobots)
@@ -95,10 +95,8 @@ namespace SoccerSim
         public RobotInfo getCurrentInformation(int i)
         {
             RobotInfo ret = null;
-            ret = getRobot(i);
-            if (ret == null)
-                ret = getRobot(i);
-            return ret;
+            
+            return getRobot(i);
         }
         public List<RobotInfo> getOurTeamInfo()
         {
@@ -112,7 +110,7 @@ namespace SoccerSim
 
         public BallInfo getBallInfo()
         {
-            return _ballInfo;
+            return new BallInfo(_ballInfo);
         }
 
         #endregion

@@ -62,7 +62,7 @@ namespace SoccerSim
             if(isYellow)
                 _interpreter = new Interpreter(false, dictionaryToArray(playFiles), _predictor, _controller);
             else
-                _interpreter = new Interpreter(false, dictionaryToArray(playFiles), new TeamFlipperPredictor(_predictor), _controller);
+                _interpreter = new Interpreter(true, dictionaryToArray(playFiles), new TeamFlipperPredictor(_predictor), _controller);
         }
         public void savePlays()
         {

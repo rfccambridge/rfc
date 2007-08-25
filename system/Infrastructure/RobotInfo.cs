@@ -28,6 +28,13 @@ namespace Robocup.Infrastructure
             this.dx = dx;
             this.dy = dy;
         }
+        public BallInfo(BallInfo copy)
+        {
+            this.position = copy.position;
+            this.dx = copy.dx;
+            this.dy = copy.dy;
+        }
+
         public override string ToString()
         {
             return "BallInfo: " + position;
