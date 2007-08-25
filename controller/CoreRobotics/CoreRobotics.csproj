@@ -67,6 +67,7 @@
     <ProjectReference Include="..\..\system\Constants\Constants.csproj">
       <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
       <Name>Constants</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\strategy\Core Play Files\CorePlayFiles.csproj">
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>

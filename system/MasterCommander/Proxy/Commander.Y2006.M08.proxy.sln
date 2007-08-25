@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commander.Y2006.M08.proxy", "Commander.Y2006.M08.proxy.csproj", "{9A74A3A5-11B3-422D-A37E-051800D230C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commander.Y2006.M08.proxy", "Commander.Y2006.M08.proxy.csproj", "{BDE566A8-0160-4414-AB89-B9445344EEC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,10 +8,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9A74A3A5-11B3-422D-A37E-051800D230C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A74A3A5-11B3-422D-A37E-051800D230C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A74A3A5-11B3-422D-A37E-051800D230C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A74A3A5-11B3-422D-A37E-051800D230C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDE566A8-0160-4414-AB89-B9445344EEC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDE566A8-0160-4414-AB89-B9445344EEC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDE566A8-0160-4414-AB89-B9445344EEC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDE566A8-0160-4414-AB89-B9445344EEC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

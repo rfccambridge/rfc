@@ -120,8 +120,8 @@ namespace Robocup.Constants
             }
             return rtn;
         }
-        //static readonly private string defaultFileName = "C:/Microsoft Robotics Studio (1.0)/bin/services/constants.txt";
-        static readonly private string defaultFileName = "C:/Microsoft Robotics Studio (1.0)/simulator/Constants/constants.txt";
+
+        static readonly private string defaultFileName = "../../resources/constants.txt";
         static Constants()
         {
             Load(defaultFileName);

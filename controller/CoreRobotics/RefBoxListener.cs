@@ -91,12 +91,12 @@ namespace Robocup.CoreRobotics
         int lastCount;
         volatile bool isNew;
 
-        public RefBoxListener()
+        public RefBoxListener(int port)
         {
             packet = new RefboxPacket();
             packet.cmd = 'H';
             s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            ep = (EndPoint)new IPEndPoint(IPAddress.Any, 10001);
+            ep = (EndPoint)new IPEndPoint(IPAddress.Any, port);
             s.Bind(ep);
             s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse("224.5.23.1")));
 

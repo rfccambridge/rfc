@@ -246,6 +246,11 @@ namespace Robocup.CoreRobotics
         {
             their_helper.updateHalfInfos(newInfos, splitName);
         }
+
+        public void updateRobot(int id, RobotInfo newInfo)
+        {
+            throw new ApplicationException("this is not implemented");
+        }
         #endregion
     }
 }

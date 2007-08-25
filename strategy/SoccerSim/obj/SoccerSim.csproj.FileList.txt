@@ -1,0 +1,10 @@
+bin\Debug\SoccerSim.exe
+bin\Debug\SoccerSim.pdb
+..\..\bin\Debug\SoccerSim.exe
+..\..\bin\Debug\SoccerSim.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\SoccerSim.Properties.Resources.resources
+obj\Debug\SoccerSim.SoccerSim.resources
+obj\Debug\SoccerSim.csproj.GenerateResource.Cache
+obj\Debug\SoccerSim.exe
+obj\Debug\SoccerSim.pdb

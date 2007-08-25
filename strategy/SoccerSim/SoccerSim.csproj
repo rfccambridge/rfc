@@ -4,20 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}</ProjectGuid>
+    <ProjectGuid>{8DAD1CA8-6B0B-4186-B337-72085101396C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InterpreterTester</RootNamespace>
-    <AssemblyName>InterpreterTester</AssemblyName>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
-    <StartupObject>InterpreterTester.Program</StartupObject>
+    <RootNamespace>SoccerSim</RootNamespace>
+    <AssemblyName>SoccerSim</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,24 +36,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HighResTimer.cs" />
-    <Compile Include="InterpreterTester.cs">
+    <Compile Include="FieldState.cs" />
+    <Compile Include="FieldView.cs" />
+    <Compile Include="SimController.cs" />
+    <Compile Include="SimEngine.cs" />
+    <Compile Include="SimSystem.cs" />
+    <Compile Include="SoccerSim.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InterpreterTester.Designer.cs">
-      <DependentUpon>InterpreterTester.cs</DependentUpon>
+    <Compile Include="SoccerSim.Designer.cs">
+      <DependentUpon>SoccerSim.cs</DependentUpon>
     </Compile>
-    <Compile Include="PlayScorer.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Launcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="InterpreterTester.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>InterpreterTester.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SoccerSim.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SoccerSim.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -79,24 +73,34 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\strategy\Core Play Files\CorePlayFiles.csproj">
-      <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
-      <Name>CorePlayFiles</Name>
+    <ProjectReference Include="..\..\controller\CoreRobotics\CoreRobotics.csproj">
+      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
+      <Name>CoreRobotics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\strategy\Navigation\Navigation.csproj">
-      <Project>{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}</Project>
-      <Name>Navigation</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\strategy\Play Selector\PlaySelector.csproj">
-      <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
-      <Name>PlaySelector</Name>
+    <ProjectReference Include="..\..\system\Constants\Constants.csproj">
+      <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
+      <Name>Constants</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\system\Infrastructure\Infrastructure.csproj">
       <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
       <Name>Infrastructure</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Core Play Files\CorePlayFiles.csproj">
+      <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
+      <Name>CorePlayFiles</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Navigation\Navigation.csproj">
+      <Project>{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}</Project>
+      <Name>Navigation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Play Selector\PlaySelector.csproj">
+      <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
+      <Name>PlaySelector</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

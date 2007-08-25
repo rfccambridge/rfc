@@ -1,42 +1,31 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.IO;
 using System.Threading;
 
 using Robocup.Constants;
 using Robocup.Infrastructure;
 using RobocupPlays;
+using Robocup.CoreRobotics;
 
-
-namespace Robocup.CoreRobotics
+namespace SoccerSim
 {
-    // make this load/instantiate from a text file
-    public class RFCSystem
+    class SimSystem
     {
-        const int REFBOX_PORT = 10001;
-
         IPredictor _predictor;
-        RFCController _controller;
-        Interpreter _interpreter;
-        IRobots _commander;
-        ISplitInfoAcceptor _acceptor;
+        IInfoAcceptor _acceptor;
+        FieldView _view;
+        FieldState _state;
 
+        IController _controller;
+        Interpreter _interpreter;
+        
         RefBoxListener reflistener;
         Vector2 markedPosition;
         bool marking = false;
         PlayTypes playsToRun;
 
-        public IPredictor Predictor
-        {
-            get { return _predictor; }
-        }
-        public ISplitInfoAcceptor Acceptor
-        {
-            get { return _acceptor; }
-        }
-
-
+      
         Thread worker;
         private volatile bool running;
         private bool initialized;
@@ -45,16 +34,41 @@ namespace Robocup.CoreRobotics
         private int _sleepTime;
         private bool isYellow;
 
-        public RFCSystem()
+        public SimSystem(FieldView view, FieldState state, RefBoxListener refbox, bool isYell)
         {
+            _view = view;
             initialized = false;
             running = false;
-            _sleepTime = Constants.Constants.get<int>("UPDATE_SLEEP_TIME");
-            isYellow = Constants.Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
+            _sleepTime = Constants.get<int>("UPDATE_SLEEP_TIME");
+            isYellow = isYell;
             playsToRun = PlayTypes.NormalPlay;
-            reflistener = new RefBoxListener(REFBOX_PORT);
-            
+            reflistener = refbox;
+
+            _state = state;
+            initialize();
         }
+
+        # region Play Resource Management
+        Dictionary<InterpreterPlay, string> playFiles;
+        public InterpreterPlay[] dictionaryToArray(Dictionary<InterpreterPlay, string> plays)
+        {
+            InterpreterPlay[] toRet = new InterpreterPlay[plays.Keys.Count];
+            plays.Keys.CopyTo(toRet, 0);
+            return toRet;
+        }
+        public void loadPlays(string path)
+        {
+            playFiles = PlayUtils.loadPlays(path);
+            if(isYellow)
+                _interpreter = new Interpreter(false, dictionaryToArray(playFiles), _predictor, _controller);
+            else
+                _interpreter = new Interpreter(false, dictionaryToArray(playFiles), new TeamFlipperPredictor(_predictor), _controller);
+        }
+        public void savePlays()
+        {
+            PlayUtils.savePlays(playFiles);
+        }
+        # endregion
 
         public void initialize()
         {
@@ -67,115 +81,26 @@ namespace Robocup.CoreRobotics
                 System.Threading.Thread.Sleep(1000);
             }
             // create predictor
-            if (_predictor == null && _acceptor == null)
+            if (_predictor == null || _acceptor == null)
             {
-                BasicPredictor basicPredictor = new BasicPredictor();
-                _predictor = basicPredictor;
-                _acceptor = basicPredictor;
-            }
-            else if (_predictor == null)
-            {
-                _predictor = new BasicPredictor();
-            }
-            else if (_acceptor == null)
-            {
-                _acceptor = new BasicPredictor();
-            }
-
-
-            // create helper interfaces
-            if(_commander==null)
-                _commander = new StubRobots();
-
-            INavigator navigator = new Navigation.Examples.LookAheadBug();
-
-            Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
-            for (int i = 0; i < 10; i++)
-            {
-                string move_model;
-                bool exists = Constants.Constants.nondestructiveGet<string>("ROBOT_" + i, out move_model);
-                if (!exists)
-                    continue;
-                if (move_model.Equals("TWO-FLBR"))
-                {
-                    planners[i] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
-                }
-                else if (move_model.Equals("TWO-FRBL"))
-                {
-                    planners[i] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontRightBackLeft);
-                }
-                /*else if (move_model.Equals("FOUR"))
-                {
-                    //planners[i] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
-                    throw new ApplicationException("Unsupported Movement Model");
-                }*/
-                else
-                {
-                    throw new ApplicationException("invalid movement model: " + move_model);
-                }
-
-                //planners[6] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
+                _predictor = _state;
+                _acceptor = _state;
             }
 
             // create controller
-            _controller = new RFCController(
-                _commander, planners, navigator, _predictor
-            );
+            _controller = new SimController(_predictor, _acceptor, _view);
 
             // create interpreter from file
-            PlayLoader loader = new PlayLoader();
-            string[] files = System.IO.Directory.GetFiles("C:/Microsoft Robotics Studio (1.0)/simulator/Simulator/Plays/temp");
-            List<InterpreterPlay> plays = new List<InterpreterPlay>();
-            Dictionary<InterpreterPlay, string> filenames = new Dictionary<InterpreterPlay, string>();
-            foreach (string fname in files)
-            {
-                string extension = fname.Substring(1 + fname.LastIndexOf('.'));
-                if (extension != "txt")
-                    continue;
-                StreamReader reader = new StreamReader(fname);
-                string filecontents = reader.ReadToEnd();
-                reader.Close();
-                reader.Dispose();
-
-                try
-                {
-                    InterpreterPlay p = loader.load(filecontents);
-                    plays.Add(p);
-                    filenames.Add(p, fname);
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("error loading play \"" + fname + "\"");
-                }
-            }
-
-            _interpreter = new Interpreter(false, plays.ToArray(), _predictor, _controller);
+            loadPlays("../../plays");
 
             running = false;
             if (wasRunning)
             {
                 start();
             }
+            
             initialized = true;
 
-        }
-
-        public void registerCommander(IRobots commander)
-        {
-            if ( ! initialized )
-                _commander = commander;
-        }
-
-        public void registerPredictor(IPredictor predictor)
-        {
-            if (!initialized)
-                _predictor = predictor;
-        }
-
-        public void registerAcceptor(ISplitInfoAcceptor acceptor)
-        {
-            if (!initialized)
-                _acceptor = acceptor;
         }
 
         public void setSleepTime(int millis)
@@ -183,6 +108,7 @@ namespace Robocup.CoreRobotics
             _sleepTime = millis;
         }
 
+        # region Start/Stop
         public void start()
         {
             if (!running)
@@ -190,8 +116,8 @@ namespace Robocup.CoreRobotics
                 if (!initialized)
                     initialize();
 
-                _sleepTime = Constants.Constants.get<int>("UPDATE_SLEEP_TIME");
-                isYellow = Constants.Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
+                _sleepTime = Constants.get<int>("UPDATE_SLEEP_TIME");
+                isYellow = Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
 
                 reflistener.start();
                 worker = new Thread(run);
@@ -207,13 +133,15 @@ namespace Robocup.CoreRobotics
             {
                 running = false;
                 reflistener.stop();
-                foreach (RobotInfo info in Predictor.getOurTeamInfo())
+                foreach (RobotInfo info in _predictor.getOurTeamInfo())
                 {
                     _controller.stop(info.ID);
                 }
             }
-            
+
         }
+
+        # endregion
 
         public void run()
         {
@@ -222,26 +150,19 @@ namespace Robocup.CoreRobotics
             {
 
                 //int curTime = DateTime.Now.Millisecond;
-                if( counter % 100 == 0)
+                if (counter % 100 == 0)
                     Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
 
-                _runRound();
-                
-                /*int timeToSleep = DateTime.Now.Millisecond - curTime;
-                if(timeToSleep < 0)
-                    timeToSleep = timeToSleep + 1000;*/
+                runRound();
 
-
-
-                //Thread.Sleep(Math.Max(1,_sleepTime - timeToSleep));
                 counter++;
                 Thread.Sleep(_sleepTime);
-                
+
             }
             Console.WriteLine("--------------DONE RUNNING: -----------------");
         }
 
-        private void _runRound()
+        public void runRound()
         {
             if (marking)
             {
@@ -352,7 +273,7 @@ namespace Robocup.CoreRobotics
                     case RefBoxListener.PENALTY_YELLOW:
                         // penalty kick
                         // handle penalty
-                        if (! isYellow)
+                        if (!isYellow)
                         {
                             Console.WriteLine("defending penalty");
                             playsToRun = PlayTypes.PenaltyKick_Theirs;
@@ -363,23 +284,16 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayTypes.PenaltyKick_Ours_Setup;
                         }
                         break;
-                   
+
                 }
             }
 
             Console.WriteLine("Play type: " + playsToRun);
 
-            _controller.clearArrows();
-            _interpreter.interpret( 
-                playsToRun 
-            );
+            interpret(playsToRun);
         }
 
-        public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter)
-        {
-            _controller.drawCurrent(g, converter);
-        }
-
+        # region Ball Mark
         void setBallMark()
         {
             markedPosition = new Vector2(_predictor.getBallInfo().Position.X, _predictor.getBallInfo().Position.Y);
@@ -397,5 +311,31 @@ namespace Robocup.CoreRobotics
         {
             marking = false;
         }
+        # endregion
+
+        private void interpret(PlayTypes toRun)
+        {
+            _view.clearArrows();
+            // TODO: do goalie better
+            foreach (RobotInfo r in _predictor.getOurTeamInfo())
+            {
+                r.Tags.Clear();
+                if (isYellow)
+                {
+                    if (r.ID == 0)
+                        r.Tags.Add("goalie");
+                }
+                else
+                {
+                    if (r.ID == 5)
+                        r.Tags.Add("goalie");
+                }
+                r.setFree();
+            }
+            foreach (RobotInfo r in _predictor.getTheirTeamInfo())
+                r.setFree();
+            _interpreter.interpret(toRun);
+        }
+
     }
 }

@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageSystem", "..\..\syst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KalmanFilter", "..\..\vision\KalmanFilter\KalmanFilter.csproj", "{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerSim", "..\..\strategy\SoccerSim\SoccerSim.csproj", "{8DAD1CA8-6B0B-4186-B337-72085101396C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,10 @@ Global
 		{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DAD1CA8-6B0B-4186-B337-72085101396C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DAD1CA8-6B0B-4186-B337-72085101396C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DAD1CA8-6B0B-4186-B337-72085101396C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DAD1CA8-6B0B-4186-B337-72085101396C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

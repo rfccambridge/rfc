@@ -67,6 +67,7 @@
     <Compile Include="PlayEvaluator.cs" />
     <Compile Include="PlayLoader.cs" />
     <Compile Include="PlaySelector.cs" />
+    <Compile Include="PlayUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

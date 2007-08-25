@@ -1,5 +1,5 @@
 Metadata:
-type Defense
+type NormalPlay
 ID 534578004
 score 1
 name SHOOT

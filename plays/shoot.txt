@@ -1,9 +1,8 @@
 Metadata:
 type NormalPlay
 ID 1905833798
-numruns 1
 Objects:
-robot6 (closest friendly point8)
+robot6 (closest friendly point8 loose)
 point0 (point -2.45 -1.7)
 point1 (point -2.45 1.7)
 point2 (point 2.45 1.7)
