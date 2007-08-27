@@ -60,10 +60,11 @@ namespace SoccerSim
             else
                 _interpreter = new Interpreter(true, dictionaryToArray(playFiles), new TeamFlipperPredictor(_predictor), _controller);
         }
-        public void savePlays()
+        //Plays loaded for the interpreter no longer save
+        /*public void savePlays()
         {
             PlayUtils.savePlays(playFiles);
-        }
+        }*/
         # endregion
 
         public void initialize()

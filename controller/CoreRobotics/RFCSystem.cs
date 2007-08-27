@@ -119,7 +119,8 @@ namespace Robocup.CoreRobotics
             );
 
             // create interpreter from file
-            PlayLoader loader = new PlayLoader();
+            PlayLoader<InterpreterPlay, InterpreterExpression> loader =
+                new PlayLoader<InterpreterPlay, InterpreterExpression>(new InterpreterExpression.Factory());
             string[] files = System.IO.Directory.GetFiles("C:/Microsoft Robotics Studio (1.0)/simulator/Simulator/Plays/temp");
             List<InterpreterPlay> plays = new List<InterpreterPlay>();
             Dictionary<InterpreterPlay, string> filenames = new Dictionary<InterpreterPlay, string>();
