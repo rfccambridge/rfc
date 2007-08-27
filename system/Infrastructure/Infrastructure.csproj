@@ -48,7 +48,6 @@
   <ItemGroup>
     <Compile Include="Arrow.cs" />
     <Compile Include="Circle.cs" />
-    <Compile Include="CommonFunctions.cs" />
     <Compile Include="CoordinateConverter.cs" />
     <Compile Include="GeneralPID.cs" />
     <Compile Include="INavigator.cs" />

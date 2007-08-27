@@ -158,21 +158,21 @@ namespace RobocupPlays
             {
                 Line l1 = (Line)objects[0];
                 Line l2 = (Line)objects[1];
-                return CommonFunctions.intersect(l1, l2);
+                return Intersections.intersect(l1, l2);
                 //return new Vector2(new LineLineIntersection(l1, l2));
             });
             addFunction("linecircleintersection", "Line, Circle - Intersection", typeof(Vector2), new Type[] { typeof(Line), typeof(Circle), typeof(int) }, "The intersection of line ~ and circle ~, number ~", delegate(EvaluatorState state, object[] objects)
             {
                 Line line = (Line)objects[0];
                 Circle circle = (Circle)objects[1];
-                return CommonFunctions.intersect(line, circle, (int)objects[2]);
+                return Intersections.intersect(line, circle, (int)objects[2]);
                 //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
             });
             addFunction("circlecircleintersection", "Circle, Circle - Intersection", typeof(Vector2), new Type[] { typeof(Circle), typeof(Circle), typeof(int) }, "The intersection of circles ~ and ~, number ~", delegate(EvaluatorState state, object[] objects)
             {
                 Circle c1 = (Circle)objects[0];
                 Circle c2 = (Circle)objects[1];
-                return CommonFunctions.intersect(c1, c2, (int)objects[2]);
+                return Intersections.intersect(c1, c2, (int)objects[2]);
                 //return new Vector2(new PlayCircleCircleIntersection(c1, c2, (int)objects[2]));
             });
             addFunction("pointpointdistance", "Point, Point - Distance", typeof(float), new Type[] { typeof(Vector2), typeof(Vector2) }, "The distance between ~ and ~ (in meters)", delegate(EvaluatorState state, object[] objects)

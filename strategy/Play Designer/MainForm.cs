@@ -490,31 +490,19 @@ namespace RobocupPlays
                         //play.Points.Add(new DesignerPoint(new DesignerCircleCircleIntersection(clickedCircles[0], clickedCircles[1], clickPoint)));
                         Circle c1 = (Circle)clickedCircles[0].getValue(tick, null);
                         Circle c2 = (Circle)clickedCircles[1].getValue(tick, null);
-                        play.AddPlayObject(new DesignerExpression(Function.getFunction("circlecircleintersection"), clickedCircles[0], clickedCircles[1], PlayCircleCircleIntersection.anglesign(c2.getCenter(), c1.getCenter(), clickPoint)));
+                        play.AddPlayObject(new DesignerExpression(Function.getFunction("circlecircleintersection"), 
+                            clickedCircles[0], clickedCircles[1],
+                            PlayCircleCircleIntersection.WhichIntersection(c1, c2, clickPoint)));
                     }
                     else if (numcirclesclicked == 1 && numlinesclicked == 1)
                     {
 
                         Line line = (Line)clickedLines[0].getValue(tick, null);
                         Circle circle = (Circle)clickedCircles[0].getValue(tick, null);
-                        LineCircleIntersection intersection = new LineCircleIntersection(line, circle, -1);
-                        Vector2 p = clickPoint;
 
-                        Vector2[] points = intersection.getPoints();
-                        double dist = LineCircleIntersection.distalongline(p, line.getPoints());
-                        float d0 = UsefulFunctions.distancesq(points[0], p);
-                        float d1 = UsefulFunctions.distancesq(points[1], p);
-                        Vector2 otherpoint = points[0];
-                        if (d1 > d0)
-                            otherpoint = points[1];
-                        double dist2 = LineCircleIntersection.distalongline(otherpoint, line.getPoints());
-                        int whichintersection = -1;
-                        if (dist > dist2)
-                            whichintersection = 0;
-                        else
-                            whichintersection = 1;
-                        //play.Points.Add(new DesignerPoint(new DesignerLineCircleIntersection(clickedLines[0], clickedCircles[0], clickPoint)));
-                        play.AddPlayObject(new DesignerExpression(Function.getFunction("linecircleintersection"), clickedLines[0], clickedCircles[0], whichintersection));
+                        play.AddPlayObject(new DesignerExpression(Function.getFunction("linecircleintersection"),
+                            clickedLines[0], clickedCircles[0],
+                            LineCircleIntersection.WhichIntersection(line, circle, clickPoint)));
                     }
                     repaint();
                 }

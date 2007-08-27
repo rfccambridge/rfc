@@ -19,9 +19,26 @@ using System.Drawing;
  */
 namespace Robocup.Infrastructure
 {
+
+    public static class Intersections
+    {
+        static public Vector2 intersect(Line l1, Line l2)
+        {
+            return LineLineIntersection.Intersect(l1, l2);
+        }
+        static public Vector2 intersect(Line l, Circle c, int whichintersection)
+        {
+            return LineCircleIntersection.Intersect(l, c, whichintersection);
+        }
+        static public Vector2 intersect(Circle c1, Circle c2, int whichintersection)
+        {
+            return PlayCircleCircleIntersection.Intersect(c1, c2, whichintersection);
+        }
+    }
+
     /// <summary>
-    /// This signifies that an assumption implicitly built into a play (such as the fact that a certain intersection exists)
-    /// has failed;
+    /// This signifies that an assumption implicitly built into a play
+    /// (such as the fact that a certain intersection exists) has failed.
     /// </summary>
     public class ImplicitAssumptionFailedException : ApplicationException
     {
@@ -37,65 +54,59 @@ namespace Robocup.Infrastructure
      * an angle that is greater than 180º, the other will have one that is less.  You can distinguish between the two
      * by using the cross product, and keep track of which one the user clicked on.
      */
-    public class PlayCircleCircleIntersection
+    static public class PlayCircleCircleIntersection
     {
-        public PlayCircleCircleIntersection(Circle c1, Circle c2, int whichintersection)
+        static public Vector2 Intersect(Circle c0, Circle c1, int whichintersection)
         {
-            circles = new Circle[2];
-            circles[0] = c1;
-            circles[1] = c2;
-            this.whichintersection = whichintersection;
-        }
-        protected Circle[] circles;
-        protected int whichintersection = 0;
-        public Vector2[] getPoints()
-        {
-            //PlayCircle[] circles = getCircles();
-            Vector2 c0 = circles[0].getCenter();
-            Vector2 c1 = circles[1].getCenter();
-            float d = (float)Math.Sqrt(UsefulFunctions.distancesq(c0, c1));
-            float r0 = circles[0].Radius;
-            float r1 = circles[1].Radius;
-            if (d > r0 + r1 || d < Math.Abs(r1 - r0))
-            {
-                throw new NoIntersectionException("No intersection!");
-                //throw new ApplicationException("Circles " + circles[0].getName() + " and " + circles[1].getName() + " have no intersection");
-            }
-            float a = (r0 * r0 - r1 * r1 + d * d) / (2 * d);
+            Vector2[] bothpoints = GetPoints(c0, c1);
 
-            Vector2[] rtnpoints = new Vector2[2];
-            float newx = c0.X + (c1.X - c0.X) * a / d;
-            float newy = c0.Y + (c1.Y - c0.Y) * a / d;
-            float h = (float)Math.Sqrt(r0 * r0 - a * a);
-            float dx = h * (c1.Y - c0.Y) / d;
-            float dy = h * (c0.X - c1.X) / d;
-            rtnpoints[0] = new Vector2(newx + dx, newy + dy);
-            rtnpoints[1] = new Vector2(newx - dx, newy - dy);
-            return rtnpoints;
-        }
-        /// <summary>
-        /// Returns the sign of the sine of the angle P1P2P3, where counter-clockwise is positive
-        /// </summary>
-        public static int anglesign(Vector2 p1, Vector2 p2, Vector2 p3)
-        {
-            float crossp = UsefulFunctions.crossproduct(p1, p2, p3);//(p1.X - p2.X) * (p3.Y - p2.Y) - (p3.X - p2.X) * (p1.Y - p2.Y);
-            return Math.Sign(crossp);
-        }
-        public Vector2 getPoint()
-        {
+            Vector2 p0 = c0.getCenter();
+            Vector2 p1 = c1.getCenter();
+
             if (whichintersection == 0)
                 throw new ApplicationException("CircleCircleIntersection.getPoint() called, but the direction to find the point is not defined");
 
-            //PlayCircle[] circles = getCircles();
-            Vector2 c0 = circles[0].getCenter();
-            Vector2 c1 = circles[1].getCenter();
-            Vector2[] points = getPoints();
-            int angle = anglesign(c1, c0, points[0]);
+            int angle = anglesign(p1, p0, bothpoints[0]);
             if (angle == whichintersection)
-                return points[0];
+                return bothpoints[0];
             else if (angle == -whichintersection)
-                return points[1];
+                return bothpoints[1];
             throw new ApplicationException("Unhandled case in CircleCircleIntersection.getPoint()");
+        }
+        /// <summary>
+        /// Given two circles and a point of intersection, returns which intersection number it is closer to.
+        /// </summary>
+        static public int WhichIntersection(Circle c0, Circle c1, Vector2 p)
+        {
+            return anglesign(c1.getCenter(), c0.getCenter(), p);
+        }
+        static private Vector2[] GetPoints(Circle c0, Circle c1)
+        {
+            Vector2 p0 = c0.getCenter();
+            Vector2 p1 = c1.getCenter();
+            float d = (float)Math.Sqrt(p0.distanceSq(p1));
+            float r0 = c0.Radius;
+            float r1 = c1.Radius;
+            if (d > r0 + r1 || d < Math.Abs(r1 - r0))
+            {
+                throw new NoIntersectionException("No intersection!");
+            }
+            float a = (r0 * r0 - r1 * r1 + d * d) / (2 * d);
+
+            Vector2[] bothpoints = new Vector2[2];
+            float newx = p0.X + (p1.X - p0.X) * a / d;
+            float newy = p0.Y + (p1.Y - p0.Y) * a / d;
+            float h = (float)Math.Sqrt(r0 * r0 - a * a);
+            float dx = h * (p1.Y - p0.Y) / d;
+            float dy = h * (p0.X - p1.X) / d;
+            bothpoints[0] = new Vector2(newx + dx, newy + dy);
+            bothpoints[1] = new Vector2(newx - dx, newy - dy);
+            return bothpoints;
+        }
+        private static int anglesign(Vector2 p1, Vector2 p2, Vector2 p3)
+        {
+            float crossp = UsefulFunctions.crossproduct(p1, p2, p3);//(p1.X - p2.X) * (p3.Y - p2.Y) - (p3.X - p2.X) * (p1.Y - p2.Y);
+            return Math.Sign(crossp);
         }
     }
 
@@ -105,18 +116,44 @@ namespace Robocup.Infrastructure
      * this psuedo number-line, with one bigger than the other.  You keep track of whether the user clicked on the 
      * more positive one or more negative one.
      */
-    public class LineCircleIntersection
+    static public class LineCircleIntersection
     {
-        public LineCircleIntersection(Line line, Circle circle, int whichintersection)
+        static public Vector2 Intersect(Line line, Circle circle, int whichintersection)
         {
-            this.line = line;
-            this.circle = circle;
-            this.whichintersection = whichintersection;
+            Vector2[] linepoints = line.getPoints();
+            if (whichintersection == 1)
+            {
+                Vector2 temp = linepoints[0];
+                linepoints[0] = linepoints[1];
+                linepoints[1] = temp;
+            }
+
+            double[] dists = new double[2];
+            Vector2[] points = getPoints(line, circle);
+            dists[0] = distalongline(points[0], linepoints);
+            dists[1] = distalongline(points[1], linepoints);
+
+            if (dists[0] > dists[1])
+                return points[0];
+            else
+                return points[1];
         }
-        protected Line line;
-        protected Circle circle;
-        protected int whichintersection = -1;
-        public static double distalongline(Vector2 p, Vector2[] linepoints)
+        static public int WhichIntersection(Line line, Circle circle, Vector2 p)
+        {
+            Vector2[] points = getPoints(line, circle);
+            double dist = distalongline(p, line.getPoints());
+            float d0 = UsefulFunctions.distancesq(points[0], p);
+            float d1 = UsefulFunctions.distancesq(points[1], p);
+            Vector2 otherpoint = points[0];
+            if (d1 > d0)
+                otherpoint = points[1];
+            double dist2 = LineCircleIntersection.distalongline(otherpoint, line.getPoints());
+            if (dist > dist2)
+                return 0;
+            else
+                return 1;
+        }
+        private static double distalongline(Vector2 p, Vector2[] linepoints)
         {
             double d0 = Math.Sqrt(UsefulFunctions.distancesq(p, linepoints[0]));
             double d1 = Math.Sqrt(UsefulFunctions.distancesq(p, linepoints[1]));
@@ -126,19 +163,12 @@ namespace Robocup.Infrastructure
             else
                 return -d0;
         }
-        public Vector2[] getPoints()
+        static private Vector2[] getPoints(Line line, Circle circle)
         {
-            //Line line = getLine();
-            //PlayCircle circle = getCircle();
-
             Vector2[] points = (Vector2[])line.getPoints().Clone();
             Vector2 center = circle.getCenter();
             points[0] -= center;
-            //points[0].X -= center.X;
-            //points[0].Y -= center.Y;
             points[1] -= center;
-            //points[1].X -= center.X;
-            //points[1].Y -= center.Y;
 
             float dx = points[1].X - points[0].X;
             float dy = points[1].Y - points[0].Y;
@@ -165,58 +195,27 @@ namespace Robocup.Infrastructure
 
             rtnpoints[0] += center;
             rtnpoints[1] += center;
-            //rtnpoints[0].X += center.X;
-            //rtnpoints[0].Y += center.Y;
-            //rtnpoints[1].X += center.X;
-            //rtnpoints[1].Y += center.Y;
 
             return rtnpoints;
         }
-        private int sign(float f)
+        static private int sign(float f)
         {
             if (f < 0)
                 return -1;
             return 1;
         }
-        public Vector2 getPoint()
-        {
-            Vector2[] linepoints = line.getPoints();
-            if (whichintersection == 1)
-            {
-                Vector2 temp = linepoints[0];
-                linepoints[0] = linepoints[1];
-                linepoints[1] = temp;
-            }
-
-            double[] dists = new double[2];
-            Vector2[] points = getPoints();
-            dists[0] = distalongline(points[0], linepoints);
-            dists[1] = distalongline(points[1], linepoints);
-
-            if (dists[0] > dists[1])
-                return points[0];
-            else
-                return points[1];
-        }
     }
-    public class LineLineIntersection 
+    static public class LineLineIntersection
     {
-        protected Line[] lines;
-        public LineLineIntersection(Line line1, Line line2)
+        static public Vector2 Intersect(Line line0, Line line1)
         {
-            lines = new Line[2];
-            lines[0] = line1;
-            lines[1] = line2;
-        }
-        public Vector2 getPoint()
-        {
-            //Line[] lines = getLines();
-            Vector2[] l1 = lines[0].getPoints();
-            Vector2[] l2 = lines[1].getPoints();
+            Vector2[] l1 = line0.getPoints();
+            Vector2[] l2 = line1.getPoints();
             float denom = (l2[1].Y - l2[0].Y) * (l1[1].X - l1[0].X) - (l2[1].X - l2[0].X) * (l1[1].Y - l1[0].Y);
             if (denom == 0) //the lines are parallel
-                return null;
-                //return null;
+            {
+                throw new NoIntersectionException("no intersection!");
+            }
             float numerator = (l2[1].X - l2[0].X) * (l1[0].Y - l2[0].Y) - (l2[1].Y - l2[0].Y) * (l1[0].X - l2[0].X);
             float x = l1[0].X + numerator * (l1[1].X - l1[0].X) / denom;
             float y = l1[0].Y + numerator * (l1[1].Y - l1[0].Y) / denom;
