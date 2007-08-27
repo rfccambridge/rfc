@@ -303,7 +303,9 @@ namespace RobocupPlays
                 state_MovingObjects s = (state_MovingObjects)state;
                 s.robot = getClickedOn(clickPoint, typeof(DesignerRobot));
                 DesignerExpression point = getClickedOn(clickPoint, typeof(Vector2));
-                if (point == null || point.theFunction.Name != "point")
+                if (point == null || !point.IsFunction ||
+                    (point.theFunction.Name == "point" &&
+                      (point.getArgument(0).IsFunction || point.getArgument(1).IsFunction)))
                     point = null;
                 s.point = point;
                 if (play.Ball != null && play.Ball.willClick(clickPoint))
@@ -969,7 +971,7 @@ namespace RobocupPlays
 
             try
             {
-                    writer.WriteLine(saved);
+                writer.WriteLine(saved);
             }
             catch (Exception ex)
             {
@@ -1063,15 +1065,33 @@ namespace RobocupPlays
         /// This also adds the argument, exp, if it is named.
         /// </summary>
         /// <param name="exp"></param>
-        private void addExpressionsIntermediates(DesignerExpression exp)
+        private bool addExpressionsIntermediates(DesignerExpression exp)
         {
+            if (exp.Name == null)
+            {
+                MessageBox.Show("Please enter a name");
+                return false;
+            }
             if (exp.Name != null && !play.definitionDictionary.ContainsValue(exp))
-                play.definitionDictionary.Add(exp.Name,exp);
+                play.definitionDictionary.Add(exp.Name, exp);
             if (exp.IsFunction)
             {
                 for (int i = 0; i < exp.theFunction.NumArguments; i++)
                 {
-                    addExpressionsIntermediates(exp.getArgument(i));
+                    internalAddExpressionsIntermediates(exp.getArgument(i));
+                }
+            }
+            return true;
+        }
+        private void internalAddExpressionsIntermediates(DesignerExpression exp)
+        {
+            if (exp.Name != null && !play.definitionDictionary.ContainsValue(exp))
+                play.definitionDictionary.Add(exp.Name, exp);
+            if (exp.IsFunction)
+            {
+                for (int i = 0; i < exp.theFunction.NumArguments; i++)
+                {
+                    internalAddExpressionsIntermediates(exp.getArgument(i));
                 }
             }
         }
@@ -1079,7 +1099,7 @@ namespace RobocupPlays
         ///This is a function so that other objects can add Conditions to the play.
         /// </summary>
         /// <param name="o"></param>
-        public void addCondition(DesignerExpression exp)
+        public bool addCondition(DesignerExpression exp)
         {
             play.Conditions.Add(exp);
             addExpressionsIntermediates(exp);
@@ -1090,6 +1110,7 @@ namespace RobocupPlays
                 throw new ApplicationException("The selection form reference has been set to null");
 #endif
             showForm.update();   //updates the show form with any new conditions/actions
+            return true;
         }
         //This happens when the form to edit conditions/actions is closed, whether the "done" button was clicked,
         //or the user clicked the x in the top-right corner.  It cleans it up and nulls out the reference.
@@ -1105,7 +1126,7 @@ namespace RobocupPlays
             this.Focus();
         }
         //public void addAction(Action a)
-        public void addAction(DesignerExpression exp)
+        public bool addAction(DesignerExpression exp)
         {
             play.Actions.Add(exp);
             if (exp.Name != null)
@@ -1120,6 +1141,7 @@ namespace RobocupPlays
             showForm.update();   //updates the show form with any new conditions/actions
 
             //editFormClosed();
+            return true;
         }
         /// <summary>
         /// This is called when the ShowCommandForm tells the main form that the user wants to edit this command.
@@ -1152,6 +1174,7 @@ namespace RobocupPlays
                     play.Actions.Insert(index, expr);
                 }
                 showForm.update();
+                return true;
             }, this, exp, play.NonDisplayables);
             ((state_SelectingObject)state).editForm.FormClosed += delegate(object obj, FormClosedEventArgs ee)
             {

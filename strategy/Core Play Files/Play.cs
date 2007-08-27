@@ -66,12 +66,7 @@ namespace RobocupPlays
         }
         public List<T> getAllObjects()
         {
-            List<T> rtn = new List<T>();
-            foreach (KeyValuePair<string, T> pair in definedObjects)
-            {
-                rtn.Add(pair.Value);
-            }
-            return rtn;
+            return new List<T>(definedObjects.Values);
         }
     }
 }

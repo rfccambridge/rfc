@@ -34,7 +34,8 @@ namespace RobocupPlays
         /// <summary>
         /// This will return either a value, or a function to compute a value.
         /// </summary>
-        public delegate void ReturnAValueDelegate(DesignerExpression rtn);
+        /// <returns>Should return whether or not the value is acceptable.</returns>
+        public delegate bool ReturnAValueDelegate(DesignerExpression rtn);
         private readonly int[] magicNumbers = new int[8];
         public ValueForm(Type wantedType, ReturnAValueDelegate returnDelegate, MainForm mainform, DesignerExpression startingExpression, IList<DesignerExpression> previous)
         {
@@ -61,20 +62,8 @@ namespace RobocupPlays
 
             allFunctions = Function.getFunctions(wantedType);
 
-            if (wantedType.GetMethod("Parse", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public, null, new Type[] { typeof(String) }, null) != null)
-            //if (wantedType.GetMethod("Parse", System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.InvokeMethod|System.Reflection.BindingFlags.Public) != null)
-            {
-                label2.Visible = true;
-                UseValueButton.Visible = true;
-                enterValueBox.Visible = true;
-                //object obj = Activator.CreateInstance(wantedType);
-                if (expression != null && !expression.IsFunction)
-                    //enterValueBox.Text = expression.getValue(0).ToString();
-                    enterValueBox.Text = expression.StoredValue.ToString();
-                else
-                    enterValueBox.Text = ((object)Activator.CreateInstance(wantedType)).ToString();
-            }
-            else if (canFindOnField(wantedType))
+
+            if (canFindOnField(wantedType))
             {
                 SelectObjectButton.Visible = true;
                 if (allFunctions.Length == 0)
@@ -93,6 +82,21 @@ namespace RobocupPlays
                     //this.SendToBack();
                     return;
                 }
+            }
+            // This assumes that if there is a parse method, there is also a
+            // parameter-less constructor:
+            else if (wantedType.GetMethod("Parse", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public, null, new Type[] { typeof(String) }, null) != null)
+            //if (wantedType.GetMethod("Parse", System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.InvokeMethod|System.Reflection.BindingFlags.Public) != null)
+            {
+                label2.Visible = true;
+                UseValueButton.Visible = true;
+                enterValueBox.Visible = true;
+                //object obj = Activator.CreateInstance(wantedType);
+                if (expression != null && !expression.IsFunction)
+                    //enterValueBox.Text = expression.getValue(0).ToString();
+                    enterValueBox.Text = expression.StoredValue.ToString();
+                else
+                    enterValueBox.Text = ((object)Activator.CreateInstance(wantedType)).ToString();
             }
             functionSelector.Items.Clear();
             foreach (Function f in allFunctions)
@@ -239,10 +243,11 @@ namespace RobocupPlays
 
         //ValueInputForm vif;
 
-        private void returnValueHere(DesignerExpression o)
+        private bool returnValueHere(DesignerExpression o)
         {
             setObject(o);
             this.Focus();
+            return true;
         }
         public delegate void ReturnDesignerExpression(DesignerExpression c);
 
@@ -315,8 +320,9 @@ namespace RobocupPlays
                 {
                     expression.Name = nameInputBox.Text;
                 }
-                returnDelegate(expression);
-                this.Close();
+                bool acceptable = returnDelegate(expression);
+                if (acceptable)
+                    this.Close();
             }
             else if (sender == UseValueButton)
             {
@@ -324,8 +330,9 @@ namespace RobocupPlays
                 {
                     //use reflection to call the Class.Parse() method on the string entered
                     object o = wantedType.InvokeMember("Parse", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static, null, null, new object[] { enterValueBox.Text });
-                    returnDelegate(new DesignerExpression(o));
-                    this.Close();
+                    bool acceptable = returnDelegate(new DesignerExpression(o));
+                    if (acceptable)
+                        this.Close();
                 }
                 catch (System.Reflection.TargetInvocationException) { }
             }
@@ -359,7 +366,7 @@ namespace RobocupPlays
                 MessageBox.Show("there are no saved objects of that type");
                 return;
             }
-                
+
 
 
             this.Enabled = false;

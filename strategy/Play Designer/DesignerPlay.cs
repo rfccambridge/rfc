@@ -45,7 +45,22 @@ namespace RobocupPlays
         /// </summary>
         public IList<DesignerExpression> NonDisplayables
         {
-            get { return null; }
+            get {
+                List<DesignerExpression> rtn = new List<DesignerExpression>();
+                foreach (DesignerExpression exp in getAllObjects())
+                {
+                    Type t = exp.ReturnType;
+                    if (typeof(Line).IsAssignableFrom(t) ||
+                        typeof(Circle).IsAssignableFrom(t) ||
+                        typeof(Vector2).IsAssignableFrom(t) ||
+                        typeof(Robot).IsAssignableFrom(t))
+                    {
+                        continue;
+                    }
+                    rtn.Add(exp);
+                }
+                return rtn;
+            }
         }
         /*/// <summary>
         /// Adds this expression to the intermediates that need to be saved;
@@ -176,10 +191,18 @@ namespace RobocupPlays
             }
             definitionDictionary.Add(name, new_exp);
         }
+
+        // The loader loads some rather bogus functions into the robots and balls, as placeholders.
+        // At the end, it calls this function with the set of designer data, and it's this function's job
+        // to go back and replace the placeholders with real data.
         public override void SetDesignerData(List<string> data)
         {
+            // We need to keep track of which robots don't have actual data for them,
+            // so we can add some (random) data for them later.
             List<DesignerExpression> oldRobots = new List<DesignerExpression>(robots);
+            // All the robots in here are placeholders
             robots.Clear();
+            // Whether or not there's a position for the ball
             bool foundball = false;
             foreach (string s in data)
             {
@@ -187,9 +210,9 @@ namespace RobocupPlays
                 string name = s.Substring(0, s.IndexOf(' '));
                 if (name == "ball")
                 {
+                    //If there is info, we can assume that there is also a point for the ball
                     foundball = true;
                     b = new DesignerBall(position);
-                    //AddPlayObject(new DesignerExpression(Function.getFunction("pointof"), b));
                 }
                 else
                 {
@@ -198,35 +221,44 @@ namespace RobocupPlays
                     CreateNewRobot(name, position, loaded);
                 }
             }
+            // For each of the robots we didn't find, give it a random position:
             Random r = new Random();
             foreach (DesignerExpression exp in oldRobots)
             {
                 CreateNewRobot(exp.Name, new Vector2((float)r.NextDouble() * 5f - 2.5f,
                     (float)r.NextDouble() * 4f - 2f), exp);
             }
+            // If we didnt find the ball, let's temporarily create one (in case we need it)
             if (!foundball)
+            {
                 b = new DesignerBall(new Vector2((float)r.NextDouble() * 2 - 1, (float)r.NextDouble() * 2 - 1));
-            bool needball = false;
-            foreach (DesignerExpression exp in definitionDictionary.Values)
-            {
-                needball |= replaceArg(exp, fake_ball, new DesignerExpression(b));
-            }
-            if (!foundball && !needball)
-                b = null;
-            else if (!foundball && needball)
-            {
-                bool needballpoint = true;
+                // Lets see if anything needs it:
+                bool needball = false;
                 foreach (DesignerExpression exp in definitionDictionary.Values)
                 {
-                    if (exp.IsFunction && exp.theFunction.Name == "pointof"
-                        && !exp.getArgument(0).IsFunction && exp.getArgument(0).StoredValue==b)
-                    {
-                        needballpoint = false;
-                        break;
-                    }
+                    needball |= replaceArg(exp, fake_ball, new DesignerExpression(b));
                 }
-                if (needballpoint)
-                    AddPlayObject(new DesignerExpression(Function.getFunction("pointof"), b));
+                // If nothing needed it, go ahead and remove it
+                if (!needball)
+                {
+                    b = null;
+                }
+                // else, let's see if we need to add the (pointof ball) point:
+                else
+                {
+                    bool needballpoint = true;
+                    foreach (DesignerExpression exp in definitionDictionary.Values)
+                    {
+                        if (exp.IsFunction && exp.theFunction.Name == "pointof"
+                            && !exp.getArgument(0).IsFunction && exp.getArgument(0).StoredValue == b)
+                        {
+                            needballpoint = false;
+                            break;
+                        }
+                    }
+                    if (needballpoint)
+                        AddPlayObject(new DesignerExpression(Function.getFunction("pointof"), b));
+                }
             }
             fake_ball = null;
         }

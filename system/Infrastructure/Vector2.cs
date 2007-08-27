@@ -29,6 +29,10 @@ namespace Robocup.Infrastructure
             get { return y; }
         }
         /// <summary>
+        /// Creates a zero Vector2
+        /// </summary>
+        public Vector2() : this(0, 0) { }
+        /// <summary>
         /// Creates a new Vector2
         /// </summary>
         /// <param name="x">the x-coordinate</param>
