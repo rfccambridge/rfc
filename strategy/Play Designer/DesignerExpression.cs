@@ -62,7 +62,7 @@ namespace RobocupPlays
         public DesignerExpression(object o) : base(o) { }
         public void setArgument(int argNumber, object newArgument)
         {
-            if (Arguments[argNumber].GetType() == typeof(DesignerExpression) &&
+            if (Arguments.GetType() == typeof(DesignerExpression).MakeArrayType() &&
                 newArgument.GetType() != typeof(DesignerExpression))
                 newArgument = new DesignerExpression(newArgument);
             Arguments[argNumber] = newArgument;

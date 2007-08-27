@@ -1072,6 +1072,11 @@ namespace RobocupPlays
                 MessageBox.Show("Please enter a name");
                 return false;
             }
+            else if (play.definitionDictionary.ContainsKey(exp.Name))
+            {
+                MessageBox.Show("Sorry, that name is already in use");
+                return false;
+            }
             if (exp.Name != null && !play.definitionDictionary.ContainsValue(exp))
                 play.definitionDictionary.Add(exp.Name, exp);
             if (exp.IsFunction)

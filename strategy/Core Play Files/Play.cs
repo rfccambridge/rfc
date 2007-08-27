@@ -58,8 +58,12 @@ namespace RobocupPlays
         public abstract void addRobot(T exp);
         public abstract void SetDesignerData(List<string> data);
 
-
         private Dictionary<string, T> definedObjects = new Dictionary<string, T>();
+        /// <summary>
+        /// This holds all of the "objects" -- the things that actually determine the geometry of the play.
+        /// (operational definition: everything but actions and conditions)
+        /// Includes both geometry, like lines and segments, but also values, like bools and ints.
+        /// </summary>
         public Dictionary<string, T> definitionDictionary
         {
             get { return definedObjects; }
