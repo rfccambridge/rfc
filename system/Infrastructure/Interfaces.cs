@@ -42,8 +42,9 @@ namespace Robocup.Infrastructure {
 
     /// <summary>
     /// An interface for things that will take and handle info about the current state,
-    /// usually to later give it back out.  More specifically, for when there are two
-    /// things that will be giving information (ie: two cameras).
+    /// usually to later give it back out.  
+    /// 
+    /// Implementations: FieldState, ISplitInfoAcceptor
     /// </summary>
     public interface IInfoAcceptor
     {
@@ -55,6 +56,8 @@ namespace Robocup.Infrastructure {
     /// An interface for things that will take and handle info about the current state,
     /// usually to later give it back out.  More specifically, for when there are two
     /// things that will be giving information (ie: two cameras).
+    /// 
+    /// Implementations: BasicPredictor
     /// </summary>
     public interface ISplitInfoAcceptor : IInfoAcceptor
     {
@@ -116,6 +119,19 @@ namespace Robocup.Infrastructure {
         WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, Vector2 destination, float desiredOrientation);
     }
 
+    /// <summary>
+    /// An interface representing a Referee. This could be a listener for the official SSL refbox, 
+    /// or it could be an automated referee class for simulation
+    /// 
+    /// Implementations: RefBoxListener, SimReferee
+    /// </summary>
+    public interface IReferee
+    {
+        void start();
+        void stop();
+        int getCmdCounter();
+        char getLastCommand();
+    }
     /// <summary>
     /// An interface for things that convert between field coordinates
     /// (ie (0,0) is the center of the field, (1,1) is up and to the right, and units are meters)

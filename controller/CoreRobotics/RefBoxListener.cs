@@ -5,10 +5,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
+using Robocup.Infrastructure;
 
 namespace Robocup.CoreRobotics
 {
-    public class RefBoxListener
+    public class RefBoxListener : IReferee
     {
         public const char HALT = 'H';
         public const char STOP = 'S';
@@ -104,7 +105,29 @@ namespace Robocup.CoreRobotics
             running = false;
         }
 
+        void ReceiveRefboxPacket(IAsyncResult result)
+        {
+            StateObject so = (StateObject)result.AsyncState;
+            packet = new RefboxPacket();
+            if (so.sock.EndReceive(result) == packet.getSize())
+            {
+                
 
+                packet.setVals(so.buffer);
+                /*Console.WriteLine("command: " + packet.cmd + " counter: " + packet.cmd_counter
+                    + " blue: " + packet.goals_blue + " yellow: " + packet.goals_yellow+
+                    " time left: " + packet.time_remaining);*/
+                
+            }
+
+            if (running)
+            {
+                so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref so.ep, new AsyncCallback(ReceiveRefboxPacket), so);
+            }
+        }
+
+
+        # region IReferee members
         public void start()
         {
             running = true;
@@ -126,26 +149,7 @@ namespace Robocup.CoreRobotics
             return packet.cmd;
         }
 
-        void ReceiveRefboxPacket(IAsyncResult result)
-        {
-            StateObject so = (StateObject)result.AsyncState;
-            packet = new RefboxPacket();
-            if (so.sock.EndReceive(result) == packet.getSize())
-            {
-                
-
-                packet.setVals(so.buffer);
-                /*Console.WriteLine("command: " + packet.cmd + " counter: " + packet.cmd_counter
-                    + " blue: " + packet.goals_blue + " yellow: " + packet.goals_yellow+
-                    " time left: " + packet.time_remaining);*/
-                
-            }
-
-            if (running)
-            {
-                so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref so.ep, new AsyncCallback(ReceiveRefboxPacket), so);
-            }
-        }
+        # endregion
 
     }
 }

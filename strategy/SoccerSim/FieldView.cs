@@ -10,6 +10,24 @@ namespace SoccerSim
 {
     public class FieldView
     {
+        // drawing constants
+        const int ROBOT_SIZE = 20;
+        const int BALL_SIZE = 6;
+        const int GOAL_DOT_SIZE = 10;
+        // kicker drawing
+        const float outerangle = .6f;
+        const float innerangle = 1.0f;
+        const float innerradius = 7f;
+        const float outerradius = 11f;
+        // field drawing
+        const float FIELD_XMIN = -2.45f;
+        const float FIELD_XMAX = 2.45f;
+        const float FIELD_YMIN = 1.7f;
+        const float FIELD_YMAX = -1.7f; // note the reversed coord system
+        const float GOAL_WIDTH = 0.18f;
+        const float GOAL_HEIGHT = 0.7f;
+        
+
         FieldState _state;
         public FieldView(FieldState state)
         {
@@ -19,15 +37,14 @@ namespace SoccerSim
         #region Drawing Commands
         private void drawRobot(RobotInfo r, Graphics g, Color c)
         {
+            // draw robot
             Brush b = new SolidBrush(c);
             Vector2 center = fieldtopixelPoint(r.Position);
-            g.FillEllipse(b, center.X - 10, center.Y - 10, 20, 20);
+            g.FillEllipse(b, center.X - ROBOT_SIZE / 2, center.Y - ROBOT_SIZE / 2, ROBOT_SIZE, ROBOT_SIZE);
+
+            // draw kicker
             PointF[] corners = new PointF[4];
             float angle = -r.Orientation;
-            float outerangle = .6f;
-            float innerangle = 1.0f;
-            float innerradius = 7f;
-            float outerradius = 11f;
             corners[0] = (PointF)(center + (new Vector2((float)(innerradius * Math.Cos(angle + innerangle)), (float)(innerradius * Math.Sin(angle + innerangle)))));
             corners[1] = (PointF)(center + (new Vector2((float)(innerradius * Math.Cos(angle - innerangle)), (float)(innerradius * Math.Sin(angle - innerangle)))));
             corners[2] = (PointF)(center + (new Vector2((float)(outerradius * Math.Cos(angle - outerangle)), (float)(outerradius * Math.Sin(angle - outerangle)))));
@@ -40,27 +57,48 @@ namespace SoccerSim
         
         public void paintField(Graphics g)
         {
+            // goal dots
             Brush b0 = new SolidBrush(Color.YellowGreen);
-            g.FillEllipse(b0, fieldtopixelX(-2.53) - 5, fieldtopixelY(0) - 5, 10, 10);
-            g.FillEllipse(b0, fieldtopixelX(+2.53) - 5, fieldtopixelY(0) - 5, 10, 10);
+            g.FillEllipse(b0, fieldtopixelX(-2.53) - GOAL_DOT_SIZE / 2, fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
+            g.FillEllipse(b0, fieldtopixelX(+2.53) - GOAL_DOT_SIZE / 2, fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
             b0.Dispose();
+            
             Pen p = new Pen(Color.Black, 3);
-            g.DrawRectangle(p, fieldtopixelX(2.45), fieldtopixelY(.35), fieldtopixelX(2.63) - fieldtopixelX(2.45), fieldtopixelY(-.35) - fieldtopixelY(.35));
-            g.DrawRectangle(p, fieldtopixelX(-2.63), fieldtopixelY(.35), fieldtopixelX(-2.45) - fieldtopixelX(-2.63), fieldtopixelY(-.35) - fieldtopixelY(.35));
-            g.DrawRectangle(p, fieldtopixelX(-2.45), fieldtopixelY(1.7), fieldtopixelX(2.45) - fieldtopixelX(-2.45), fieldtopixelY(-1.7) - fieldtopixelY(1.7));
+            // right goal box 
+            g.DrawRectangle(
+                p, 
+                fieldtopixelX(FIELD_XMAX), 
+                fieldtopixelY(GOAL_HEIGHT/2),
+                fieldtopixelX(FIELD_XMAX + GOAL_WIDTH) - fieldtopixelX(FIELD_XMAX),
+                fieldtopixelY(-GOAL_HEIGHT / 2) - fieldtopixelY(GOAL_HEIGHT / 2)
+            );
+            // left goal box
+            g.DrawRectangle(
+                p, 
+                fieldtopixelX(FIELD_XMIN - GOAL_WIDTH), 
+                fieldtopixelY(GOAL_HEIGHT/2),
+                fieldtopixelX(FIELD_XMAX + GOAL_WIDTH) - fieldtopixelX(FIELD_XMAX),
+                fieldtopixelY(-GOAL_HEIGHT / 2) - fieldtopixelY(GOAL_HEIGHT / 2)
+            );
+            // field rectangle
+            g.DrawRectangle(
+                p, 
+                fieldtopixelX(FIELD_XMIN), 
+                fieldtopixelY(FIELD_YMIN), 
+                fieldtopixelX(FIELD_XMAX) - fieldtopixelX(FIELD_XMIN), 
+                fieldtopixelY(FIELD_YMAX) - fieldtopixelY(FIELD_YMIN)
+            );
             p.Dispose();
             Brush b = new SolidBrush(Color.Black);
             foreach (RobotInfo r in _state.getOurTeamInfo())
             {
                 drawRobot(r, g, Color.Black);
-                //g.FillEllipse(b, fieldtopixelX(r.Position.X) - 10, fieldtopixelY(r.Position.Y) - 10, 20, 20);
             }
             b.Dispose();
             b = new SolidBrush(Color.Red);
             foreach (RobotInfo r in _state.getTheirTeamInfo())
             {
                 drawRobot(r, g, Color.Red);
-                //g.FillEllipse(b, fieldtopixelX(r.Position.X) - 10, fieldtopixelY(r.Position.Y) - 10, 20, 20);
             }
             
 
@@ -69,10 +107,10 @@ namespace SoccerSim
             b = new SolidBrush(Color.Orange);
             g.FillEllipse(
                 b, 
-                fieldtopixelX(_state.getBallInfo().Position.X) - 3, 
-                fieldtopixelY(_state.getBallInfo().Position.Y) - 3, 
-                6, 
-                6
+                fieldtopixelX(_state.getBallInfo().Position.X) - BALL_SIZE/2, 
+                fieldtopixelY(_state.getBallInfo().Position.Y) - BALL_SIZE/2, 
+                BALL_SIZE, 
+                BALL_SIZE
             );
 
         }
@@ -107,13 +145,17 @@ namespace SoccerSim
 
         #endregion
         #region Coordinate Conversions
+
+        const float PIXELSPERMETER = 120.0f;
+        const float BORDER_X = 400.0f;
+        const float BORDER_Y = 300.0f;
         private int fieldtopixelX(double x)
         {
-            return (int)(300 + 100 * x);
+            return (int)(BORDER_X + PIXELSPERMETER * x);
         }
         private int fieldtopixelY(double y)
         {
-            return (int)(200 - 100 * y);
+            return (int)(BORDER_Y - PIXELSPERMETER * y);
         }
         public Vector2 fieldtopixelPoint(Vector2 p)
         {
@@ -121,11 +163,11 @@ namespace SoccerSim
         }
         private float pixeltofieldX(float x)
         {
-            return (float)((x - 300f) / 100f);
+            return (float)((x - BORDER_X) / PIXELSPERMETER);
         }
         private float pixeltofieldY(float y)
         {
-            return (float)((y - 200f) / -100f);
+            return (float)((y - BORDER_Y) / -PIXELSPERMETER);
         }
         private Vector2 pixeltofieldPoint(Vector2 p)
         {

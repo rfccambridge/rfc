@@ -40,6 +40,7 @@ namespace SoccerSim
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.SoccerSim_Paint);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SoccerSim_MouseClick);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SoccerSim_KeyPress);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SoccerSim_FormClosing);
             this.ResumeLayout(false);
 
         }

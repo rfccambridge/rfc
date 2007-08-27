@@ -64,7 +64,7 @@ namespace SoccerSim
 
         #region User Input
         bool berunning = false;
-        System.Threading.Timer t = null;
+        
         private void SoccerSim_KeyPress(object sender, KeyPressEventArgs e)
         {
             char c = char.ToLower(e.KeyChar);
@@ -104,9 +104,7 @@ namespace SoccerSim
             }
             else if (c == 'r')
             {
-                int atATime = 1;
-                if (char.IsUpper(e.KeyChar))
-                    atATime = 10;
+                
                 berunning = !berunning;
                 if (berunning)
                 {
@@ -164,6 +162,13 @@ namespace SoccerSim
             }*/
         }
         #endregion
+
+        private void SoccerSim_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _player1.stop();
+            _player2.stop();
+            _engine.stop();
+        }
 
         
 
