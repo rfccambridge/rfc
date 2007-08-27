@@ -10,7 +10,7 @@ namespace RobocupPlays
         private bool forceRest(int start)
         {
             for (int i=start;i<Robots.Count;i++){
-                InterpreterRobot robot = (InterpreterRobot)Robots[i].getValue(evaluatorstate.Tick, evaluatorstate);
+                InterpreterRobotDefinition robot = (InterpreterRobotDefinition)Robots[i].getValue(evaluatorstate.Tick, evaluatorstate);
                 robot.setEvaluatorState(evaluatorstate);
                 bool worked = robot.define();
                 if (!worked)
@@ -31,12 +31,12 @@ namespace RobocupPlays
             //are guaranteed to be in an order such that if i<j, Robots[i] does NOT depend on Robots[j]
             if (lastAssignments != null)
             {
-                InterpreterRobot r;
+                InterpreterRobotDefinition r;
                 bool failed = false;
                 int startat = -1;
                 for (int i = 0; i < lastAssignments.Length; i++)
                 {
-                    r=(InterpreterRobot)Robots[i].getValue(evaluatorstate.Tick, evaluatorstate);
+                    r = (InterpreterRobotDefinition)Robots[i].getValue(evaluatorstate.Tick, evaluatorstate);
                     r.setEvaluatorState(evaluatorstate);
                     if (!r.canForceDefine(lastAssignments[i]))
                     {

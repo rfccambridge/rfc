@@ -56,7 +56,6 @@
     <Compile Include="Interpreter.cs" />
     <Compile Include="InterpreterExpression.cs" />
     <Compile Include="InterpreterFunctions.cs" />
-    <Compile Include="InterpreterGetPointable.cs" />
     <Compile Include="InterpreterDefinitions.cs" />
     <Compile Include="InterpreterObjects.cs" />
     <Compile Include="PlayEvaluator.cs" />

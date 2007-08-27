@@ -7,7 +7,7 @@ using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
-    abstract class InterpreterRobotDefinition : PlayRobotDefinition, InterpreterGetPointable
+    abstract class InterpreterRobotDefinition : PlayRobotDefinition, GetPointable
     {
         //static public void addDefinitionFunctions(){
         //    Function.addFunction("closest","Point - Closest Robot",typeof(InterpreterRobot),new Type[]{typeof(TeamCondition),typeof(InterpreterPoint)

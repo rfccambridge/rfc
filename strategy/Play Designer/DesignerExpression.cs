@@ -6,7 +6,6 @@ using System.Drawing;
 
 namespace RobocupPlays
 {
-    [Serializable]
     class DesignerExpression : Expression
     {
         public bool argDefined(int numArg)

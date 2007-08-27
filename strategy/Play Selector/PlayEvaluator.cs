@@ -118,7 +118,7 @@ namespace RobocupPlays
             int i = 0;
             foreach (InterpreterExpression e in curplay.Robots)
             {
-                robotIDs[i] = ((PlayRobot)e.getValue(Tick, state)).getID();
+                robotIDs[i] = ((PlayRobotDefinition)e.getValue(Tick, state)).getID();
                 i++;
             }
             return new EvaluatorResults(curplay.Actions.ToArray(), robotIDs);

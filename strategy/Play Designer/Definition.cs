@@ -6,7 +6,7 @@ using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
-    [Serializable]
+    
     abstract class DesignerRobotDefinition:PlayRobotDefinition
     {
         public override int getID()
@@ -16,7 +16,6 @@ namespace RobocupPlays
         //abstract public bool isDefined();
         abstract public string getDefinition();
     }
-    [Serializable]
     class ClosestDefinition : DesignerRobotDefinition
     {
         private DesignerExpression point;
@@ -47,7 +46,7 @@ namespace RobocupPlays
         public void draw(Graphics g, int tick)
         {
             Vector2[] points = new Vector2[2];
-            points[0] = MainForm.FieldPointToPixelPoint(((PlayRobot)robot.getValue(tick, null)).getPoint());
+            points[0] = MainForm.FieldPointToPixelPoint(((DesignerRobot)robot.getValue(tick, null)).getPoint());
             points[1] = MainForm.FieldPointToPixelPoint((Vector2)point.getValue(tick, null));
             float ddx = points[1].X - points[0].X;
             float ddy = points[1].Y - points[0].Y;

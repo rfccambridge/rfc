@@ -116,7 +116,7 @@ namespace RobocupPlays
     }
 
     public delegate object FunctionRunDelegate(EvaluatorState state, params object[] objects);
-    [Serializable]
+
     public partial class Function
     {
         /*static public explicit operator ValueObject(Function f){

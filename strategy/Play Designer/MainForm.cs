@@ -98,9 +98,9 @@ namespace RobocupPlays
                 //return dp.willClick(p);
                 return UsefulFunctions.distance((Vector2)o, p) <= PixelDistanceToFieldDistance(6);
             }
-            else if (o is PlayRobot)
+            else if (o is DesignerRobot)
             {
-                return UsefulFunctions.distance(((PlayRobot)o).getPoint(), p) <= PixelDistanceToFieldDistance(10);
+                return UsefulFunctions.distance(((DesignerRobot)o).getPoint(), p) <= PixelDistanceToFieldDistance(10);
             }
             else if (o is Line)
             {
@@ -264,7 +264,7 @@ namespace RobocupPlays
                 DesignerExpression exp = getClickedOn(play.getClickables(), clickPoint);
                 if (e.Button == MouseButtons.Left)
                 {
-                    if (exp != null && !(typeof(PlayRobot).IsAssignableFrom(exp.ReturnType)))
+                    if (exp != null && !(typeof(PlayRobotDefinition).IsAssignableFrom(exp.ReturnType)))
                     {
                         editExpression(exp);
                     }

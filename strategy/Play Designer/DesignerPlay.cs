@@ -6,7 +6,6 @@ using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
-    [Serializable]
     internal class DesignerPlay : Play<DesignerExpression>
     {
         #region Lists of Expressions
@@ -81,7 +80,7 @@ namespace RobocupPlays
             {
                 points.Add(exp);
             }
-            else if (typeof(PlayRobot).IsAssignableFrom(exp.ReturnType))
+            else if (typeof(DesignerRobot).IsAssignableFrom(exp.ReturnType))
             {
                 //keep the robot name for itself and the expression name the same:
                 ((DesignerRobot)exp.StoredValue).rename(name);
@@ -107,7 +106,7 @@ namespace RobocupPlays
             {
                 name = "point" + numobjects++;
             }
-            else if (typeof(PlayRobot).IsAssignableFrom(exp.ReturnType))
+            else if (typeof(DesignerRobot).IsAssignableFrom(exp.ReturnType))
             {
                 name = "robot" + numobjects++;
             }

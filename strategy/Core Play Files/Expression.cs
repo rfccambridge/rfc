@@ -4,7 +4,6 @@ using System.Text;
 
 namespace RobocupPlays
 {
-    [Serializable]
     public class Expression
     {
         private string name;

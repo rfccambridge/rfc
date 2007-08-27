@@ -6,20 +6,20 @@ using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
-    [Serializable]
-    class DesignerRobot : PlayRobot, GetPointable, Clickable
+    class DesignerRobot : GetPointable, Clickable
     {
         private const float radius = 9;
+        private DesignerRobotDefinition definition;
         /// <summary>
         /// Whether or not this robot is ours, or theirs.
         /// </summary>
         private bool ours = true;
-        public override bool Ours
+        public bool Ours
         {
             get { return ours; }
         }
         private Vector2 center;
-        public DesignerRobot(Vector2 p, bool ours) : base((PlayRobotDefinition)null)
+        public DesignerRobot(Vector2 p, bool ours)
         {
             this.ours = ours;
             center = p;
@@ -38,10 +38,6 @@ namespace RobocupPlays
             numrobots++;
             return "robot" + numrobots;
         }
-        /*public bool isDefined()
-        {
-            return (definition!=null && ((DesignerRobotDefinition)definition).isDefined());
-        }*/
         public string getRobotDefinition()
         {
             if (definition != null)
@@ -117,7 +113,7 @@ namespace RobocupPlays
         {
             translate(p.X, p.Y);
         }
-        public override Vector2 getPoint()
+        public Vector2 getPoint()
         {
             return center;
         }

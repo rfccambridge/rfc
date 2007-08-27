@@ -63,7 +63,7 @@ namespace InterpreterTester
         private void loadPlays()
         {
             PlayLoader loader = new PlayLoader();
-            string[] files = System.IO.Directory.GetFiles("C:/Microsoft Robotics Studio (1.0)/Samples/Simulator/Plays/Temp");
+            string[] files = System.IO.Directory.GetFiles("../../Plays");
             List<InterpreterPlay> plays = new List<InterpreterPlay>();
             filenames = new Dictionary<InterpreterPlay, string>();
             foreach (string fname in files)

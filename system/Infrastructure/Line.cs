@@ -3,15 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Robocup.Infrastructure {
-
-    [Serializable]
     public class Line {
         private Vector2[] points;
-        /*protected PlayLine(PlayLine l)
-        {
-            this.points = l.points;
-        }*/
-        //public PlayLine(Vector2 p1, Vector2 p2)
+
         public Line(Vector2 p1, Vector2 p2) {
             points = new Vector2[] { p1, p2 };
         }

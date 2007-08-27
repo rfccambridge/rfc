@@ -4,8 +4,6 @@ using System.Text;
 
 namespace Robocup.Infrastructure
 {
-
-    [Serializable]
     public class Circle
     {
         private float radius;

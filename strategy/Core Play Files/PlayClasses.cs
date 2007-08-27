@@ -145,7 +145,6 @@ namespace RobocupPlays
 
     }
 
-    [Serializable]
     abstract public class PlayRobotDefinition
     {
         /*protected PlayRobot robot;
@@ -159,33 +158,6 @@ namespace RobocupPlays
         public abstract int getID();
     }
 
-
-    [Serializable]
-    public class PlayRobot : GetPointable
-    {
-        protected PlayRobotDefinition definition;
-        public virtual bool Ours { get { return definition.Ours; } }
-        public virtual Vector2 getPoint()
-        {
-            return definition.getPoint();
-        }
-        public PlayRobot(PlayRobotDefinition definition)
-        {
-            this.definition = definition;
-        }
-
-        /*protected PlayRobot(PlayRobot robot)
-        {
-            this.definition = robot.definition;
-        }*/
-        public int getID()
-        {
-            return definition.getID();
-        }
-    }
-
-
-    [Serializable]
     abstract public class PlayBall : GetPointable
     {
         public abstract Vector2 getPoint();

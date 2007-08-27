@@ -104,7 +104,7 @@ namespace RobocupPlays
         {
             obj.Name = name;
             play.definitionDictionary.Add(name, obj);
-            if (obj.ReturnType == typeof(InterpreterRobot))
+            if (obj.ReturnType == typeof(InterpreterRobotDefinition))
                 play.addRobot(obj);
         }
 

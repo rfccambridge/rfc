@@ -4,7 +4,6 @@ using System.Text;
 
 namespace RobocupPlays
 {
-    [Serializable]
     abstract public class Play<T> where T : Expression
     {
         List<T> conditions = new List<T>();

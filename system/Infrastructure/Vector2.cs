@@ -7,7 +7,6 @@ namespace Robocup.Infrastructure {
     /// <summary>
     /// An immutable class that represents a point in 2D space, or a vector in 2D space.
     /// </summary>
-    [Serializable]
     public class Vector2 {
         private readonly float x;
 

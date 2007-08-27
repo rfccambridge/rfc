@@ -9,7 +9,7 @@ namespace RobocupPlays
 
         public bool IsRobotOnOurTeam()
         {
-            if (ReturnType!= typeof(InterpreterRobot))
+            if (ReturnType != typeof(InterpreterRobotDefinition))
                 throw new ApplicationException("You can't get the team of a robot, from an expression that's not a robot!");
             return ((TeamCondition)((InterpreterExpression)Arguments[0]).getValue(-1, null)).maybeOurs();
             //return ((InterpreterRobot)e.getValue(-1)).Ours;

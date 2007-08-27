@@ -23,17 +23,16 @@ namespace RobocupPlays
             {
                 return new InterpreterPoint(new InterpreterBall());
             });*/
-            Function.addFunction("closest", "closest", typeof(InterpreterRobot), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType) }, "the robot on ~ closest to ~", delegate(EvaluatorState state, object[] objects)
+            Function.addFunction("closest", "closest", typeof(InterpreterRobotDefinition), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType) }, "the robot on ~ closest to ~", delegate(EvaluatorState state, object[] objects)
             {
-                return new InterpreterRobot(new InterpreterClosestDefinition(((TeamCondition)objects[0]).maybeOurs(), (Vector2)objects[1], (RobotAssignmentType)objects[2]));
+                return new InterpreterClosestDefinition(((TeamCondition)objects[0]).maybeOurs(), (Vector2)objects[1], (RobotAssignmentType)objects[2]);
             });
-            Function.addFunction("closest-with-tags", "closest-with-tags", typeof(InterpreterRobot), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType), typeof(string) }, "the robot on ~ closest to ~, with comma-separated tags ~", delegate(EvaluatorState state, object[] objects)
+            Function.addFunction("closest-with-tags", "closest-with-tags", typeof(InterpreterRobotDefinition), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType), typeof(string) }, "the robot on ~ closest to ~, with comma-separated tags ~", delegate(EvaluatorState state, object[] objects)
             {
                 List<string> tags_list = new List<string>();
                 tags_list.AddRange(((string)objects[3]).Split(','));
-                return new InterpreterRobot(
-                    new InterpreterClosestDefinition(
-                    ((TeamCondition)objects[0]).maybeOurs(), (Vector2)objects[1], (RobotAssignmentType)objects[2], tags_list));
+                return new InterpreterClosestDefinition(
+                    ((TeamCondition)objects[0]).maybeOurs(), (Vector2)objects[1], (RobotAssignmentType)objects[2], tags_list);
             });
             //Function.addFunction("orderforcer","orderforcer",typeof(orderForcer
         }
