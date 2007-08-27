@@ -7,12 +7,14 @@ using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
-    public class PlayLoader
+    public class PlayLoader<P, E> where P:Play<E>, new() where E:Expression
     {
-        InterpreterPlay play;
-        public PlayLoader()
+        P play;
+        Expression.Factory<E> factory;
+        public PlayLoader(Expression.Factory<E> factory)
         {
-            InterpreterFunctions.addFunctions();
+            //InterpreterFunctions.addFunctions();
+            this.factory = factory;
         }
         /// <summary>
         /// Returns a new play, loaded from the string that is the play (not the filename).
@@ -22,9 +24,11 @@ namespace RobocupPlays
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public InterpreterPlay load(string s)
+        public P load(string s)
         {
-            play = new InterpreterPlay();
+            Function.AddFunctions(factory.Functions());
+
+            play = new P();
 
             s = s.Replace("#ml", "");
 
@@ -34,14 +38,15 @@ namespace RobocupPlays
 
             System.Collections.Specialized.ListDictionary definitionLists = new System.Collections.Specialized.ListDictionary();
 
-            definitionLists.Add("objects", new ArrayList());
+            definitionLists.Add("objects", new List<string>());
 
-            definitionLists.Add("metadata", new ArrayList());
+            definitionLists.Add("metadata", new List<string>());
 
-            definitionLists.Add("conditions", new ArrayList());
-            definitionLists.Add("actions", new ArrayList());
+            definitionLists.Add("conditions", new List<string>());
+            definitionLists.Add("actions", new List<string>());
+            definitionLists.Add("designerdata", new List<string>());
 
-            ArrayList curList = null;
+            List<string> curList = null;
             for (int stringnum = 0; stringnum < lines.Length; stringnum++)
             {
                 string line = lines[stringnum].Trim();
@@ -53,14 +58,14 @@ namespace RobocupPlays
                     //bool found = definitionLists.TryGetValue(line.Trim(':').ToLower(), out curList);
                     if (!definitionLists.Contains(label))
                         throw new ApplicationException("Could not recognize label \"" + line.Trim(':').ToLower() + "\"");
-                    curList = (ArrayList)definitionLists[label];
+                    curList = (List<string>)definitionLists[label];
                 }
                 else
                     curList.Add(line);
             }
 
             remainingDefinitions = new Dictionary<string, string>();
-            foreach (string def in (ArrayList)definitionLists["objects"])
+            foreach (string def in (List<string>)definitionLists["objects"])
             {
 #if DEBUG
                 if (def == "<undefined>")
@@ -70,9 +75,7 @@ namespace RobocupPlays
                 string definition = def.Substring(def.IndexOf(' ')).Trim();
                 remainingDefinitions.Add(name, definition);
             }
-            InterpreterBall ball = new InterpreterBall();
-            play.Ball = ball;
-            play.definitionDictionary.Add("ball", new InterpreterExpression(ball));
+
             while (remainingDefinitions.Count != 0)
             {
                 //this is so dirty....
@@ -85,26 +88,28 @@ namespace RobocupPlays
 
                 addToPlay(nextname, getObject(definition, typeof(object)));
             }
-            foreach (string action in (ArrayList)definitionLists["actions"])
+            foreach (string action in (List<string>)definitionLists["actions"])
             {
                 play.Actions.Add(getObject(action, typeof(ActionDefinition)));
             }
-            foreach (string condition in (ArrayList)definitionLists["conditions"])
+            foreach (string condition in (List<string>)definitionLists["conditions"])
             {
                 play.Conditions.Add(getObject(condition, typeof(bool)));
             }
-            foreach (string header in (ArrayList)definitionLists["metadata"])
+            foreach (string header in (List<string>)definitionLists["metadata"])
             {
                 processMetadata(header);
             }
+            play.SetDesignerData((List<string>)definitionLists["designerdata"]);
+
+            Function.RemoveFunctions(factory.Functions());
 
             return play;
         }
-        private void addToPlay(string name, InterpreterExpression obj)
+        private void addToPlay(string name, E obj)
         {
             obj.Name = name;
             play.definitionDictionary.Add(name, obj);
-            if (obj.ReturnType == typeof(InterpreterRobotDefinition))
                 play.addRobot(obj);
         }
 
@@ -132,24 +137,23 @@ namespace RobocupPlays
                 case "score":
                     play.Score = float.Parse(strings[1]);
                     break;
-                case "learning":
-                    play.Learning[strings[1]] = int.Parse(strings[2]);
-                    break;
                 default:
                     throw new ApplicationException("Unrecognized type of metadata: \"" + strings[0] + '"');
             }
         }
 
-        private InterpreterExpression getObject(string definition, Type wantedType)
+        private E getObject(string definition, Type wantedType)
         {
             if (definition[0] == '(')
                 return treatAsFunction(definition, wantedType);
             if (wantedType == typeof(string))
                 //just create the new expression directly from the input (ie, don't remove quotes)
-                return new InterpreterExpression(definition);
+                return factory.Create(definition);
+            if (definition == "ball")
+                return play.TheBall;
 
             //else, it's a name:
-            InterpreterExpression rtn;
+            E rtn;
             if (play.definitionDictionary.TryGetValue(definition, out rtn))
             {
                 if (!wantedType.IsAssignableFrom(rtn.ReturnType))
@@ -162,7 +166,7 @@ namespace RobocupPlays
             if (remainingDefinitions.TryGetValue(name, out newdefinition))
             {
                 remainingDefinitions.Remove(name);
-                InterpreterExpression obj = getObject(newdefinition, typeof(object));
+                E obj = getObject(newdefinition, typeof(object));
                 if (!wantedType.IsAssignableFrom(obj.ReturnType))
                     throw new ApplicationException("Received an object of an unexpected type: expected " + wantedType.Name + ", but got " + obj.ReturnType.Name);
 
@@ -173,7 +177,8 @@ namespace RobocupPlays
             //if it's not a name, then try to parse it as the type that we're expecting:
             try
             {
-                return new InterpreterExpression(wantedType.InvokeMember("Parse", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static, null, null, new object[] { name }));
+                return factory.Create(wantedType.InvokeMember("Parse",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static, null, null, new object[] { name }));
             }
             catch (MissingMethodException)
             {
@@ -183,7 +188,7 @@ namespace RobocupPlays
             throw new ApplicationException("there are no remaining definitions for this object.  most likely cause: circular definition");
         }
 
-        private InterpreterExpression treatAsFunction(string definition, Type wantedType)
+        private E treatAsFunction(string definition, Type wantedType)
         {
             string[] strings = UsefulFunctions.parse(definition);
             Function f = Function.getFunction(strings[0]);
@@ -193,12 +198,12 @@ namespace RobocupPlays
                 throw new ApplicationException("Received an function of an unexpected return type: expected " + wantedType.Name + ", but got " + f.ReturnType.Name);
             if (strings.Length - 1 != f.NumArguments)
                 throw new ApplicationException("The function \"" + f.Name + "\" expects " + f.NumArguments + " arguments, but received " + (strings.Length - 1));
-            InterpreterExpression[] objects = new InterpreterExpression[f.NumArguments];
+            E[] objects = new E[f.NumArguments];
             for (int i = 0; i < f.NumArguments; i++)
             {
                 objects[i] = getObject(strings[i + 1], f.ArgTypes[i]);
             }
-            return new InterpreterExpression(f, objects);
+            return factory.Create(f, objects);
         }
     }
 }

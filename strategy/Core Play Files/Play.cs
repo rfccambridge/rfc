@@ -43,39 +43,35 @@ namespace RobocupPlays
             get { return id; }
             set { id = value; }
         }
+
+        /// <summary>
+        /// This is for loading the play
+        /// </summary>
+        public abstract T TheBall { get;}
         public abstract IList<T> Robots { get;}
+        /// <summary>
+        /// Tries to add a robot.  Note to subclasses: you are guaranteed that all robots that are added
+        /// are added through here, but not that all things put through here are robots (others should
+        /// be rejected).
+        /// </summary>
+        /// <param name="exp"></param>
+        public abstract void addRobot(T exp);
+        public abstract void SetDesignerData(List<string> data);
 
 
-        protected abstract List<T> getAllObjects();
-
-        public string Save()
+        private Dictionary<string, T> definedObjects = new Dictionary<string, T>();
+        public Dictionary<string, T> definitionDictionary
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Metadata:");
-            sb.AppendLine("type " + PlayType.ToString());
-            //sb.AppendLine("ID " + new Random().Next());
-            if (Name!=null)
-                sb.AppendLine("name "+Name);
-            sb.AppendLine("score " + Score);
-            sb.AppendLine("Objects:");
-            foreach (T exp in getAllObjects())
+            get { return definedObjects; }
+        }
+        public List<T> getAllObjects()
+        {
+            List<T> rtn = new List<T>();
+            foreach (KeyValuePair<string, T> pair in definedObjects)
             {
-                if (typeof(PlayBall).IsAssignableFrom(exp.ReturnType))
-                    continue;
-                sb.AppendLine(exp.Name + ' ' + exp.getDefinition());
+                rtn.Add(pair.Value);
             }
-            sb.AppendLine("Conditions:");
-            foreach (T exp in Conditions)
-            {
-                sb.AppendLine(exp.ToString());
-            }
-            sb.AppendLine("Actions:");
-            foreach (T exp in Actions)
-            {
-                sb.AppendLine(exp.ToString());
-            }
-            //sb.Insert(0, (sb.ToString().GetHashCode()+"\n"));
-            return sb.ToString();
+            return rtn;
         }
     }
 }

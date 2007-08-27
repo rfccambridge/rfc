@@ -144,8 +144,13 @@ namespace RobocupPlays
         }
 
     }
-
-    abstract public class PlayRobotDefinition
+    public interface Robot
+    {
+        bool Ours { get; }
+        Vector2 getPoint();
+        int getID();
+    }
+    abstract public class PlayRobotDefinition : Robot
     {
         /*protected PlayRobot robot;
         abstract public string getDefinition();

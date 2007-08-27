@@ -66,7 +66,7 @@ namespace RobocupPlays
         {
             this.evaluatorstate = state;
             if (Ball != null)
-                Ball.setEvaluatorState(state);
+                ((InterpreterBall)Ball).setEvaluatorState(state);
             /*foreach (Expression s in Robots)
             {
             }*/
@@ -78,29 +78,20 @@ namespace RobocupPlays
             return this.Name;
         }
 
+        public override void SetDesignerData(List<string> data)
+        {
+            
+        }
+	
+
         #region objects
-        private Dictionary<string, InterpreterExpression> definedObjects = new Dictionary<string, InterpreterExpression>();
-        internal Dictionary<string, InterpreterExpression> definitionDictionary
-        {
-            get { return definedObjects; }
-        }
 
-        protected override List<InterpreterExpression> getAllObjects()
-        {
-            List<InterpreterExpression> rtn = new List<InterpreterExpression>();
-            foreach (KeyValuePair<string, InterpreterExpression> pair in definedObjects)
-            {
-                rtn.Add(pair.Value);
-            }
-            return rtn;
-        }
-
-        private InterpreterBall ball;
+        private InterpreterBall ball = new InterpreterBall();
         internal InterpreterBall Ball
         {
             get { return ball; }
-            set { ball = value; }
         }
+        public override InterpreterExpression TheBall { get { return new InterpreterExpression(ball); } }
         private EvaluatorState evaluatorstate = null;
         internal object getObject(string name) {
             InterpreterExpression rtn;
@@ -136,8 +127,10 @@ namespace RobocupPlays
             get { return numtheirrobots; }
         }
 
-        internal void addRobot(InterpreterExpression obj)
+        public override void addRobot(InterpreterExpression obj)
         {
+            if (obj.ReturnType != typeof(InterpreterRobotDefinition))
+                return;
             Robots.Add(obj);
             //if (InterpreterFunctions.IsRobotOnOurTeam(obj))
             if (obj.IsRobotOnOurTeam())
@@ -146,7 +139,7 @@ namespace RobocupPlays
                 numtheirrobots++;
         }
         #endregion
-        #region learning information
+        /*#region learning information
         public class LearningData
         { 
             Dictionary<string, int> learningData = new Dictionary<string, int>();
@@ -171,6 +164,6 @@ namespace RobocupPlays
         {
             get { return learningdata; }
         }
-        #endregion
+        #endregion*/
     }
 }

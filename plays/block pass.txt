@@ -1,7 +1,7 @@
 Metadata:
 type NormalPlay
 name BlockPass
-score #ml0.202465632420801#ml
+score 0.2024656
 Objects:
 ourgoal (point -2.53 0)
 robot0 (closest enemy ourgoal loose)
@@ -22,4 +22,9 @@ point10 (linecircleintersection line9 circle7 0)
 Conditions:
 Actions:
 (robotpointmove robot2 point10)
+DesignerData:
+ball <-0.77,1.03>
+robot0 <-1.827,-0.7851>
+robot2 <-0.6052,-0.5227>
+robot4 <-0.2404,0.7946>
 

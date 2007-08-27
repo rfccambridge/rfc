@@ -53,6 +53,7 @@
     <Compile Include="InfoClasses.cs" />
     <Compile Include="Play.cs" />
     <Compile Include="PlayClasses.cs" />
+    <Compile Include="PlayLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

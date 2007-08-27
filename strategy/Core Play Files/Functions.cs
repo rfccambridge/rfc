@@ -45,6 +45,20 @@ namespace RobocupPlays
             Functions.Remove(f);
             Functions.Add(f);
         }*/
+        internal static void AddFunctions(List<Function> functions)
+        {
+            foreach (Function f in functions)
+            {
+                addFunction(f);
+            }
+        }
+        internal static void RemoveFunctions(List<Function> functions)
+        {
+            foreach (Function f in functions)
+            {
+                Functions.Remove(f);
+            }
+        }
 
         #region Generic Functions
         private static string cleanUpName(string s)
@@ -63,7 +77,7 @@ namespace RobocupPlays
                 return "<line>";
             else if (t == typeof(TeamCondition))
                 return "our_team";
-            else if (t.IsAssignableFrom(typeof(PlayRobotDefinition)))
+            else if (t.IsAssignableFrom(typeof(Robot)))
                 return "<robot>";
             else if (t.IsAssignableFrom(typeof(Circle)))
                 return "<circle>";
@@ -120,11 +134,11 @@ namespace RobocupPlays
         /// <summary>
         /// Clears the stored functions, freeing up the unused ones to be garbage collected
         /// </summary>
-        public static void clearFunctions()
+        /*public static void clearFunctions()
         {
             Functions.Clear();
             Functions.TrimExcess();
-        }
+        }*/
         public static void loadFunctions()
         {
             addGenerics();
@@ -298,13 +312,13 @@ namespace RobocupPlays
             #endregion
 
             #region actions
-            addFunction("robotpointmove", "Robot, Point - Move", typeof(ActionDefinition), new Type[] { typeof(PlayRobotDefinition), typeof(Vector2) }, "Have robot ~ move to ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointmove", "Robot, Point - Move", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2) }, "Have robot ~ move to ~", delegate(EvaluatorState state, object[] objects)
             {
                 /*return delegate(Commander c){
                     Vector2 p=((Vector2)objects[1]).getPoint();
                     c.move(((PlayRobot)objects[0]).getID(), p.X, p.Y);
                 };*/
-                PlayRobotDefinition robot = (PlayRobotDefinition)objects[0];
+                Robot robot = (Robot)objects[0];
                 return new ActionDefinition(delegate(IActionInterpreter a)
                 {
                     Vector2 p = (Vector2)objects[1];
@@ -313,27 +327,27 @@ namespace RobocupPlays
                 }, robot.getID());
                 //return a;
             });
-            addFunction("robotpointkick", "Robot, Point - Kick", typeof(ActionDefinition), new Type[] { typeof(PlayRobotDefinition), typeof(Vector2) }, "Have robot ~ kick the ball to ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointkick", "Robot, Point - Kick", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2) }, "Have robot ~ kick the ball to ~", delegate(EvaluatorState state, object[] objects)
             {
-                PlayRobotDefinition robot = (PlayRobotDefinition)objects[0];
+                Robot robot = (Robot)objects[0];
                 Vector2 p = (Vector2)objects[1];
                 return new ActionDefinition(delegate(IActionInterpreter a)
                 {
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
-            addFunction("robotpointdribble", "Robot, Point - Dribble", typeof(ActionDefinition), new Type[] { typeof(PlayRobotDefinition), typeof(Vector2) }, "Have robot ~ dribble the ball to ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointdribble", "Robot, Point - Dribble", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2) }, "Have robot ~ dribble the ball to ~", delegate(EvaluatorState state, object[] objects)
             {
-                PlayRobotDefinition robot = (PlayRobotDefinition)objects[0];
+                Robot robot = (Robot)objects[0];
                 Vector2 p = (Vector2)objects[1];
                 return new ActionDefinition(delegate(IActionInterpreter a)
                 {
                     a.Dribble(robot.getID(), p);
                 }, robot.getID());
             });
-            addFunction("robotpointpointmove", "Robot, Point, Point - Move", typeof(ActionDefinition), new Type[] { typeof(PlayRobotDefinition), typeof(Vector2), typeof(Vector2) }, "Have robot ~ move to ~, and face ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointpointmove", "Robot, Point, Point - Move", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Vector2) }, "Have robot ~ move to ~, and face ~", delegate(EvaluatorState state, object[] objects)
             {
-                PlayRobotDefinition robot = (PlayRobotDefinition)objects[0];
+                Robot robot = (Robot)objects[0];
                 return new ActionDefinition(delegate(IActionInterpreter a)
                 {
                     Vector2 target = (Vector2)objects[1];
@@ -341,9 +355,9 @@ namespace RobocupPlays
                     a.Move(robot.getID(), target, facing);
                 }, robot.getID());
             });
-            addFunction("donothing", "Robot - Do Nothing", typeof(ActionDefinition), new Type[] { typeof(PlayRobotDefinition) }, "Have robot ~ stop and do nothing", delegate(EvaluatorState state, object[] objects)
+            addFunction("donothing", "Robot - Do Nothing", typeof(ActionDefinition), new Type[] { typeof(Robot) }, "Have robot ~ stop and do nothing", delegate(EvaluatorState state, object[] objects)
             {
-                PlayRobotDefinition robot = (PlayRobotDefinition)objects[0];
+                Robot robot = (Robot)objects[0];
                 return new ActionDefinition(delegate(IActionInterpreter a)
                 {
                     a.Stop(robot.getID());

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
+using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
@@ -112,6 +113,32 @@ namespace RobocupPlays
             }
             return base.getDefinition();
         }
-	
+
+        internal class Factory : Expression.Factory<DesignerExpression>
+        {
+            public DesignerExpression Create(object value)
+            {
+                return new DesignerExpression(value);
+            }
+
+            public DesignerExpression Create(Function f, object[] args)
+            {
+                return new DesignerExpression(f, args);
+            }
+
+            public List<Function> Functions()
+            {
+                List<Function> rtn = new List<Function>();
+                rtn.Add(new Function("closest", "closest", typeof(DesignerRobot), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType) }, "the robot on ~ closest to ~", delegate(EvaluatorState state, object[] objects)
+                {
+                    return 0;
+                }));
+                rtn.Add(new Function("closest-with-tags", "closest-with-tags", typeof(DesignerRobot), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType), typeof(string) }, "the robot on ~ closest to ~, with comma-separated tags ~", delegate(EvaluatorState state, object[] objects)
+                {
+                    return 0;
+                }));
+                return rtn;
+            }
+        }
     }
 }

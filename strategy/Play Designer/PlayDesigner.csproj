@@ -66,8 +66,6 @@
     </Compile>
     <Compile Include="DesignerExpression.cs">
     </Compile>
-    <Compile Include="DesignerFunction.cs">
-    </Compile>
     <Compile Include="DesignerObject.cs" />
     <Compile Include="Definition.cs" />
     <Compile Include="Link.cs">

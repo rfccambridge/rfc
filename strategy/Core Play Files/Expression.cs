@@ -53,6 +53,9 @@ namespace RobocupPlays
             }
         }
 
+        /// <summary>
+        /// Gets the value, but does no caching.
+        /// </summary>
         private object calcValue(EvaluatorState state,int tick)
         {
             if (IsFunction)
@@ -75,6 +78,9 @@ namespace RobocupPlays
         int lasttick = int.MinValue;
         int lasthash = -1;
         object savedVal;
+        /// <summary>
+        /// Gets the value, using caching.
+        /// </summary>
         public object getValue(int tick, EvaluatorState state)
         {
             if (!IsFunction)
@@ -88,25 +94,13 @@ namespace RobocupPlays
             return savedVal;
         }
 
+        /// <param name="args">Each object in args is interpreted as a raw value if it is not of type Expression,
+        /// otherwise it is treated like an Expression</param>
         public Expression(Function f, params object[] args)
         {
             this.function = f;
             this.arguments = args;
-            /*for (int i = 0; i < this.arguments.Length; i++)
-            {
-                if (! (this.arguments[i] is Expression))
-                    this.arguments[i] = new Expression(this.arguments[i]);
-            }*/
         }
-        /*public Expression(Function f, int numArgs)
-        {
-            this.function = f;
-            this.arguments = new object[numArgs];
-        }*/
-        /*public void setArgument(int argNumber, object newArgument)
-        {
-            this.arguments[argNumber] = newArgument;
-        }*/
         public Expression(object value)
         {
             this.value = value;
@@ -140,6 +134,12 @@ namespace RobocupPlays
                     return "ball";
                 return value.ToString();
             }
+        }
+
+        public interface Factory<T> where T:Expression {
+            T Create(object value);
+            T Create(Function f, object[] args);
+            List<Function> Functions();
         }
     }
 }

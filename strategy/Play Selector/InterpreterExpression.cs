@@ -18,6 +18,24 @@ namespace RobocupPlays
         public InterpreterExpression(object value) : base(value) { }
         public InterpreterExpression(Function f, params object[] args) : base(f, args) { }
 
+        public class Factory : Expression.Factory<InterpreterExpression>
+        {
+            public InterpreterExpression Create(object value)
+            {
+                return new InterpreterExpression(value);
+            }
+
+            public InterpreterExpression Create(Function f, object[] args)
+            {
+                return new InterpreterExpression(f, args);
+            }
+
+            public List<Function> Functions()
+            {
+                return InterpreterFunctions.Functions();
+            }
+        }
+
         //private InterpreterExpression savedExpression = null;
         /*internal void clearSaved()
         {

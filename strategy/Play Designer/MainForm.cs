@@ -71,6 +71,10 @@ namespace RobocupPlays
         }
 
         #region GetClickedOn methods
+        private DesignerExpression getClickedOn(Vector2 p)
+        {
+            return getClickedOn(p, typeof(Vector2), typeof(DesignerRobot), typeof(Line), typeof(Circle));
+        }
         /// <summary>
         /// Takes a list of clickable objects and a point, and returns the first one such that the point is on that object
         /// (as defined by that objects willClick() method)
@@ -78,10 +82,22 @@ namespace RobocupPlays
         /// <param name="al">The ArrayList holding the objects</param>
         /// <param name="p">The point p that was clicked</param>
         /// <returns>Returns the object that was clicked on, or null if none of them were.</returns>
-        private DesignerExpression getClickedOn(IList<DesignerExpression> list, Vector2 p)
+        /// <param name="types">The types that will be checked for being clicked on</param>
+        private DesignerExpression getClickedOn(Vector2 p, params Type[] types)
         {
-            foreach (DesignerExpression exp in list)
+            foreach (DesignerExpression exp in play.getAllObjects())
             {
+                bool ok = false;
+                foreach (Type t in types)
+                {
+                    if (t.IsAssignableFrom(exp.ReturnType))
+                    {
+                        ok = true;
+                        break;
+                    }
+                }
+                if (!ok)
+                    continue;
                 object c = exp.getValue(tick, null);
                 //if (c.willClick(p))
                 if (willClick(c, p))
@@ -119,8 +135,6 @@ namespace RobocupPlays
         public MainForm()
         {
             InitializeComponent();
-
-            intermediates = play.Intermediates;
 
             //I don't know why, but if you set a combo box to be uneditable (the user can't add
             //their own values), then you can't specify at compile time what the initial selection is.
@@ -254,14 +268,15 @@ namespace RobocupPlays
                 //play.Robots.Add(new DesignerExpression(Function.getFunction("robot"), 1));
                 DesignerRobot r = new DesignerRobot(clickPoint, ours);
                 DesignerExpression exp = new DesignerExpression(r);
-                play.AddPlayObject(exp);
+                play.AddPlayObject(exp, r.getName());
+                play.addRobot(exp);
                 play.AddPlayObject(new DesignerExpression(Function.getFunction("pointof"), exp));
                 //}
                 repaint();
             }
             else if (state is state_EditingObject)
             {
-                DesignerExpression exp = getClickedOn(play.getClickables(), clickPoint);
+                DesignerExpression exp = getClickedOn(clickPoint);
                 if (e.Button == MouseButtons.Left)
                 {
                     if (exp != null && !(typeof(PlayRobotDefinition).IsAssignableFrom(exp.ReturnType)))
@@ -286,16 +301,10 @@ namespace RobocupPlays
             else if (state is state_MovingObjects)
             {
                 state_MovingObjects s = (state_MovingObjects)state;
-                //s.robot = (DesignerRobot)getClickedOn(play.Robots, clickPoint);
-                s.robot = getClickedOn(play.Robots, clickPoint);
-                //DesignerPoint p = (DesignerPoint)getClickedOn(play.Points, clickPoint);
-                //Vector2 p = (Vector2)getClickedOn(play.Points, clickPoint).getValue(tick);
-                DesignerExpression point = getClickedOn(play.Points, clickPoint);
+                s.robot = getClickedOn(clickPoint, typeof(DesignerRobot));
+                DesignerExpression point = getClickedOn(clickPoint, typeof(Vector2));
                 if (point == null || point.theFunction.Name != "point")
                     point = null;
-                /*if (!(p is DesignerPoint_const))
-                    p = null;*/
-                //s.point = (DesignerPoint_const)p;
                 s.point = point;
                 if (play.Ball != null && play.Ball.willClick(clickPoint))
                     s.ball = play.Ball;
@@ -319,9 +328,9 @@ namespace RobocupPlays
             else if (state is state_DrawingLine)
             {
                 state_DrawingLine s = (state_DrawingLine)state;
-                //s.firstpoint = (DesignerPoint)getClickedOn(play.Points, clickPoint);
-                //s.firstpoint = (DesignerPoint)getClickedOn(play.Points, clickPoint).getValue(tick);
-                s.firstpoint = getClickedOn(play.Points, clickPoint);
+                //s.firstpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
+                //s.firstpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2)).getValue(tick);
+                s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
                 if (s.firstpoint != null)
                 {
                     s.line = new DesignerExpression(Function.getFunction("line"), s.firstpoint, s.firstpoint);
@@ -331,12 +340,12 @@ namespace RobocupPlays
             else if (state is state_AddingClosestCondition)
             {
                 state_AddingClosestCondition s = (state_AddingClosestCondition)state;
-                //s.firstpoint = (DesignerPoint)getClickedOn(play.Points, clickPoint);
-                //s.firstrobot = (DesignerRobot)getClickedOn(play.Robots, clickPoint);
-                //s.firstpoint = (DesignerPoint)getClickedOn(play.Points, clickPoint).getValue(tick);
-                //s.firstrobot = (DesignerRobot)getClickedOn(play.Robots, clickPoint).getValue(tick);
-                s.firstpoint = getClickedOn(play.Points, clickPoint);
-                s.firstrobot = getClickedOn(play.Robots, clickPoint);
+                //s.firstpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
+                //s.firstrobot = (DesignerRobot)getClickedOn(clickPoint, typeof(DesignerRobot));
+                //s.firstpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2)).getValue(tick);
+                //s.firstrobot = (DesignerRobot)getClickedOn(clickPoint, typeof(DesignerRobot)).getValue(tick);
+                s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
+                s.firstrobot = getClickedOn(clickPoint, typeof(DesignerRobot));
                 /*if (s.firstpoint != null)// && !s.firstpoint.isDefined())
                 {
                     s.firstpoint = null;
@@ -383,25 +392,25 @@ namespace RobocupPlays
                     }
                     //s.editForm.setObject(null);
                 }
-                DesignerExpression exp = null;
-                if (s.t.IsAssignableFrom(typeof(Vector2)))
+                DesignerExpression exp = getClickedOn(clickPoint, s.t);
+                /*if (s.t.IsAssignableFrom(typeof(Vector2)))
                 {
-                    exp = getClickedOn(play.Points, clickPoint);
+                    exp = getClickedOn(clickPoint, typeof(Vector2));
                 }
                 else if (s.t.IsAssignableFrom(typeof(DesignerRobot)))
                 {
-                    exp = getClickedOn(play.Robots, clickPoint);
+                    exp = getClickedOn(clickPoint, typeof(DesignerRobot));
                 }
                 else if (s.t.IsAssignableFrom(typeof(Circle)))
                 {
-                    exp = getClickedOn(play.Circles, clickPoint);
+                    exp = getClickedOn(clickPoint, typeof(Circle));
                 }
                 else if (s.t.IsAssignableFrom(typeof(Line)))
                 {
-                    exp = getClickedOn(play.Lines, clickPoint);
+                    exp = getClickedOn(clickPoint, typeof(Line));
                 }
                 else
-                    throw new ApplicationException("Unable to find something of type " + s.t.Name);
+                    throw new ApplicationException("Unable to find something of type " + s.t.Name);*/
                 //DesignerExpression exp = getClickedOn(play.getClickables(), clickPoint);
                 if (exp != null)
                 {
@@ -430,9 +439,9 @@ namespace RobocupPlays
             else if (state is state_AddingCircle)
             {
                 state_AddingCircle s = (state_AddingCircle)state;
-                //DesignerPoint dp = (DesignerPoint)getClickedOn(play.Points, clickPoint);
+                //DesignerPoint dp = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
                 //DesignerExpression firstpoint =
-                s.firstpoint = getClickedOn(play.Points, clickPoint);
+                s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
                 if (s.firstpoint != null)
                 {
                     s.circle = new DesignerExpression(Function.getFunction("circle"), s.firstpoint, 0);
@@ -449,8 +458,10 @@ namespace RobocupPlays
             {
                 DesignerExpression[] clickedLines = new DesignerExpression[2];
                 int numlinesclicked = 0;
-                foreach (DesignerExpression exp in play.Lines)
+                foreach (DesignerExpression exp in play.getAllObjects())
                 {
+                    if (exp.ReturnType != typeof(Line))
+                        continue;
                     Line l = (Line)exp.getValue(tick, null);
                     //if (l.willClick(clickPoint))
                     if (willClick(l, clickPoint))
@@ -462,8 +473,10 @@ namespace RobocupPlays
                 }
                 DesignerExpression[] clickedCircles = new DesignerExpression[2];
                 int numcirclesclicked = 0;
-                foreach (DesignerExpression exp in play.Circles)
+                foreach (DesignerExpression exp in play.getAllObjects())
                 {
+                    if (exp.ReturnType != typeof(Circle))
+                        continue;
                     Circle c = (Circle)exp.getValue(tick, null);
                     //if (c.willClick(clickPoint))
                     if (willClick(c, clickPoint))
@@ -490,7 +503,7 @@ namespace RobocupPlays
                         //play.Points.Add(new DesignerPoint(new DesignerCircleCircleIntersection(clickedCircles[0], clickedCircles[1], clickPoint)));
                         Circle c1 = (Circle)clickedCircles[0].getValue(tick, null);
                         Circle c2 = (Circle)clickedCircles[1].getValue(tick, null);
-                        play.AddPlayObject(new DesignerExpression(Function.getFunction("circlecircleintersection"), 
+                        play.AddPlayObject(new DesignerExpression(Function.getFunction("circlecircleintersection"),
                             clickedCircles[0], clickedCircles[1],
                             PlayCircleCircleIntersection.WhichIntersection(c1, c2, clickPoint)));
                     }
@@ -542,13 +555,17 @@ namespace RobocupPlays
             }
             else if (state is state_PlacingIntersection)
             {
-                foreach (DesignerExpression exp in play.Lines)
+                foreach (DesignerExpression exp in play.getAllObjects())
                 {
+                    if (exp.ReturnType != typeof(Line))
+                        continue;
                     Line l = (Line)exp.getValue(tick, null);
                     exp.Highlighted = willClick(l, clickPoint);
                 }
-                foreach (DesignerExpression exp in play.Circles)
+                foreach (DesignerExpression exp in play.getAllObjects())
                 {
+                    if (exp.ReturnType != typeof(Circle))
+                        continue;
                     Circle c = (Circle)exp.getValue(tick, null);
                     exp.Highlighted = willClick(c, clickPoint);
                 }
@@ -559,7 +576,7 @@ namespace RobocupPlays
                 state_SelectingObject s = (state_SelectingObject)state;
                 if (s.t != null)
                 {
-                    List<DesignerExpression> clickables = play.getClickables();
+                    List<DesignerExpression> clickables = play.getAllObjects();
                     foreach (DesignerExpression exp in clickables)
                     {
                         object c = exp.getValue(tick, null);
@@ -600,15 +617,15 @@ namespace RobocupPlays
                 if (state.mousedown && ((state_AddingCircle)state).circle != null)
                 {
                     state_AddingCircle s = (state_AddingCircle)state;
-                    //DesignerPoint dp = (DesignerPoint)getClickedOn(play.Points, clickPoint);
-                    //DesignerPoint dp = (DesignerPoint)getClickedOn(play.Points, clickPoint).getValue(tick);
+                    //DesignerPoint dp = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
+                    //DesignerPoint dp = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2)).getValue(tick);
 
                     /*if (dp == null)
                         s.circle.setRadius(clickPoint);
                     else
                         s.circle.setRadius(dp);*/
                     //s.circle.set
-                    DesignerExpression point2 = getClickedOn(play.Points, clickPoint);
+                    DesignerExpression point2 = getClickedOn(clickPoint, typeof(Vector2));
                     if (point2 != null)
                     {
                         s.circle.setArgument(1, new DesignerExpression(Function.getFunction("pointpointdistance"), s.firstpoint, point2));
@@ -627,7 +644,7 @@ namespace RobocupPlays
                 if (state.mousedown && ((state_DrawingLine)state).line != null)
                 {
                     state_DrawingLine s = (state_DrawingLine)state;
-                    DesignerExpression point2 = getClickedOn(play.Points, clickPoint);
+                    DesignerExpression point2 = getClickedOn(clickPoint, typeof(Vector2));
                     if (point2 != null)
                     {
                         s.line.setArgument(1, point2);
@@ -654,8 +671,8 @@ namespace RobocupPlays
             /*else if (state is state_DrawingLine)
             {
                 state_DrawingLine s = (state_DrawingLine)state;
-                //DesignerPoint secondpoint = (DesignerPoint)getClickedOn(play.Points, clickPoint);
-                DesignerExpression secondpoint = getClickedOn(play.Points, clickPoint);
+                //DesignerPoint secondpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
+                DesignerExpression secondpoint = getClickedOn(clickPoint, typeof(Vector2));
                 if (s.firstpoint != null && secondpoint != null)
                 {
                     //play.Lines.Add(new DesignerLine(s.firstpoint, secondpoint));
@@ -666,10 +683,10 @@ namespace RobocupPlays
             else if (state is state_AddingClosestCondition)
             {
                 state_AddingClosestCondition s = (state_AddingClosestCondition)state;
-                //DesignerPoint secondpoint = (DesignerPoint)getClickedOn(play.Points, clickPoint);
-                //DesignerRobot secondrobot = (DesignerRobot)getClickedOn(play.Robots, clickPoint);
-                DesignerExpression secondpoint = getClickedOn(play.Points, clickPoint);
-                DesignerExpression secondrobot = getClickedOn(play.Robots, clickPoint);
+                //DesignerPoint secondpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
+                //DesignerRobot secondrobot = (DesignerRobot)getClickedOn(clickPoint, typeof(DesignerRobot));
+                DesignerExpression secondpoint = getClickedOn(clickPoint, typeof(Vector2));
+                DesignerExpression secondrobot = getClickedOn(clickPoint, typeof(DesignerRobot));
                 if (s.firstrobot != null && secondpoint != null)
                 {
                     /*if (!secondpoint.isDefined())
@@ -677,7 +694,7 @@ namespace RobocupPlays
                     else
                     {*/
                     DesignerRobotDefinition df = new ClosestDefinition(s.firstrobot, secondpoint);
-                    play.Definitions.Add(df);
+                    //play.Definitions.Add(df);
                     ((DesignerRobot)s.firstrobot.getValue(tick, null)).setDefinition(df);
                     definitionForm.updateList();
                     //}
@@ -689,7 +706,7 @@ namespace RobocupPlays
                     else
                     {*/
                     DesignerRobotDefinition df = new ClosestDefinition(secondrobot, s.firstpoint);
-                    play.Definitions.Add(df);
+                    //play.Definitions.Add(df);
                     ((DesignerRobot)secondrobot.getValue(tick, null)).setDefinition(df);
                     definitionForm.updateList();
                     //}
@@ -761,6 +778,17 @@ namespace RobocupPlays
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
+            foreach (DesignerExpression exp in play.getAllObjects())
+            {
+                if (exp.ReturnType != typeof(DesignerRobot))
+                    continue;
+                //l.draw(g);
+                try
+                {
+                    ((DesignerRobot)exp.getValue(tick, null)).draw(g);
+                }
+                catch (NoIntersectionException) { }
+            }
             foreach (DesignerExpression r in play.Robots)
             {
                 try
@@ -783,8 +811,10 @@ namespace RobocupPlays
             }
             if (drawLinesButton.Checked)
             {
-                foreach (DesignerExpression exp in play.Lines)
+                foreach (DesignerExpression exp in play.getAllObjects())
                 {
+                    if (exp.ReturnType != typeof(Line))
+                        continue;
                     //l.draw(g);
                     try
                     {
@@ -795,8 +825,10 @@ namespace RobocupPlays
             }
             if (drawCirclesButton.Checked)
             {
-                foreach (DesignerExpression exp in play.Circles)
+                foreach (DesignerExpression exp in play.getAllObjects())
                 {
+                    if (exp.ReturnType != typeof(Circle))
+                        continue;
                     try
                     {
                         Circle c = (Circle)exp.getValue(tick, null);
@@ -816,8 +848,10 @@ namespace RobocupPlays
             }
             if (drawPointsButton.Checked)
             {
-                foreach (DesignerExpression exp in play.Points)
+                foreach (DesignerExpression exp in play.getAllObjects())
                 {
+                    if (exp.ReturnType != typeof(Vector2))
+                        continue;
                     try
                     {
                         draw((Vector2)exp.getValue(tick, null), g, exp.Highlighted);
@@ -923,22 +957,19 @@ namespace RobocupPlays
         //...and when the user says ok on that dialog...
         private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
         {
+            string saved = play.Save();
+            if (saved == null)
+                return;
+
             string fname = saveFileDialog.FileName;
-            string extension = fname.Substring(fname.LastIndexOf('.') + 1);
 
             //...save the play to that location.
             Stream stream = saveFileDialog.OpenFile();
             StreamWriter writer = new StreamWriter(stream);
 
-            System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-            //Stream bStream = new FileStream(fname.Substring(0, fname.LastIndexOf('.')) + ".play", FileMode.Create, FileAccess.Write, FileShare.None);
-
             try
             {
-                if (extension == "txt")
-                    writer.WriteLine(play.Save());
-                else if (extension == "play")
-                    f.Serialize(stream, play);
+                    writer.WriteLine(saved);
             }
             catch (Exception ex)
             {
@@ -957,9 +988,13 @@ namespace RobocupPlays
 
         private void openFileDialog_FileOk(object sender, CancelEventArgs e)
         {
-
             Stream stream = openFileDialog.OpenFile();
-            System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            StreamReader sr = new StreamReader(stream);
+            string s = sr.ReadToEnd();
+            PlayLoader<DesignerPlay, DesignerExpression> loader =
+                new PlayLoader<DesignerPlay, DesignerExpression>(new DesignerExpression.Factory());
+            play = loader.load(s);
+            /*System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
             try
             {
@@ -975,7 +1010,7 @@ namespace RobocupPlays
             catch (System.Runtime.Serialization.SerializationException e3)
             {
                 MessageBox.Show("There was an error parsing the input file.  The message was:\n" + e3.Message);
-            }
+            }*/
             stream.Close();
             this.Invalidate();
         }
@@ -1012,7 +1047,7 @@ namespace RobocupPlays
                 returnDelegate = this.addAction;
             else
                 returnDelegate = this.addExpressionsIntermediates;
-            s.editForm = new ValueForm(wantedType, returnDelegate, this, intermediates);
+            s.editForm = new ValueForm(wantedType, returnDelegate, this, play.NonDisplayables);
             s.editForm.FormClosed += delegate(object obj, FormClosedEventArgs ee) { editFormClosed(); };
             s.editForm.Show();
         }
@@ -1030,8 +1065,8 @@ namespace RobocupPlays
         /// <param name="exp"></param>
         private void addExpressionsIntermediates(DesignerExpression exp)
         {
-            if (exp.Name != null)
-                play.addIntermediate(exp);
+            if (exp.Name != null && !play.definitionDictionary.ContainsValue(exp))
+                play.definitionDictionary.Add(exp.Name,exp);
             if (exp.IsFunction)
             {
                 for (int i = 0; i < exp.theFunction.NumArguments; i++)
@@ -1074,7 +1109,7 @@ namespace RobocupPlays
         {
             play.Actions.Add(exp);
             if (exp.Name != null)
-                play.addIntermediate(exp);
+                play.definitionDictionary.Add(exp.Name, exp);
 #if DEBUG
             if (!(state is state_SelectingObject))
                 throw new ApplicationException("The state was somehow changed from state_SelectingObject !");
@@ -1086,7 +1121,6 @@ namespace RobocupPlays
 
             //editFormClosed();
         }
-        private IList<DesignerExpression> intermediates;
         /// <summary>
         /// This is called when the ShowCommandForm tells the main form that the user wants to edit this command.
         /// </summary>
@@ -1118,7 +1152,7 @@ namespace RobocupPlays
                     play.Actions.Insert(index, expr);
                 }
                 showForm.update();
-            }, this, exp, intermediates);
+            }, this, exp, play.NonDisplayables);
             ((state_SelectingObject)state).editForm.FormClosed += delegate(object obj, FormClosedEventArgs ee)
             {
                 editFormClosed();

@@ -221,7 +221,7 @@ namespace RobocupPlays
             this.drawLinesButton.CheckOnClick = true;
             this.drawLinesButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.drawLinesButton.Name = "drawLinesButton";
-            this.drawLinesButton.Size = new System.Drawing.Size(135, 22);
+            this.drawLinesButton.Size = new System.Drawing.Size(124, 22);
             this.drawLinesButton.Text = "Lines";
             this.drawLinesButton.Click += new System.EventHandler(this.selectdraw_click);
             // 
@@ -231,7 +231,7 @@ namespace RobocupPlays
             this.drawCirclesButton.CheckOnClick = true;
             this.drawCirclesButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.drawCirclesButton.Name = "drawCirclesButton";
-            this.drawCirclesButton.Size = new System.Drawing.Size(135, 22);
+            this.drawCirclesButton.Size = new System.Drawing.Size(124, 22);
             this.drawCirclesButton.Text = "Circles";
             this.drawCirclesButton.Click += new System.EventHandler(this.selectdraw_click);
             // 
@@ -241,7 +241,7 @@ namespace RobocupPlays
             this.drawPointsButton.CheckOnClick = true;
             this.drawPointsButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.drawPointsButton.Name = "drawPointsButton";
-            this.drawPointsButton.Size = new System.Drawing.Size(135, 22);
+            this.drawPointsButton.Size = new System.Drawing.Size(124, 22);
             this.drawPointsButton.Text = "Points";
             this.drawPointsButton.Click += new System.EventHandler(this.selectdraw_click);
             // 
@@ -251,7 +251,7 @@ namespace RobocupPlays
             this.drawDefinitionsButton.CheckOnClick = true;
             this.drawDefinitionsButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.drawDefinitionsButton.Name = "drawDefinitionsButton";
-            this.drawDefinitionsButton.Size = new System.Drawing.Size(135, 22);
+            this.drawDefinitionsButton.Size = new System.Drawing.Size(124, 22);
             this.drawDefinitionsButton.Text = "Definitions";
             this.drawDefinitionsButton.Click += new System.EventHandler(this.selectdraw_click);
             // 
@@ -261,14 +261,14 @@ namespace RobocupPlays
             this.drawActionsButton.CheckOnClick = true;
             this.drawActionsButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.drawActionsButton.Name = "drawActionsButton";
-            this.drawActionsButton.Size = new System.Drawing.Size(135, 22);
+            this.drawActionsButton.Size = new System.Drawing.Size(124, 22);
             this.drawActionsButton.Text = "Actions";
             this.drawActionsButton.Click += new System.EventHandler(this.selectdraw_click);
             // 
             // drawConditionsButton
             // 
             this.drawConditionsButton.Name = "drawConditionsButton";
-            this.drawConditionsButton.Size = new System.Drawing.Size(135, 22);
+            this.drawConditionsButton.Size = new System.Drawing.Size(124, 22);
             this.drawConditionsButton.Text = "Conditions";
             // 
             // toolstripPlayType
@@ -322,7 +322,7 @@ namespace RobocupPlays
             // saveFileDialog
             // 
             this.saveFileDialog.DefaultExt = "txt";
-            this.saveFileDialog.Filter = "Outputted Files (*.txt) | *.txt |Loadable Plays (*.play)|*.play|All Files | *.*";
+            this.saveFileDialog.Filter = "Outputted Files (*.txt) | *.txt|All Files | *.*";
             this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
             // 
             // toolStripContainer2
@@ -347,8 +347,8 @@ namespace RobocupPlays
             // 
             // openFileDialog
             // 
-            this.openFileDialog.DefaultExt = "play";
-            this.openFileDialog.Filter = "Plays (*.play) |*.play|All Files | *.*";
+            this.openFileDialog.DefaultExt = "txt";
+            this.openFileDialog.Filter = "Plays (*.txt) |*.txt|All Files | *.*";
             this.openFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog_FileOk);
             // 
             // MainForm

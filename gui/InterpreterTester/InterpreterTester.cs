@@ -41,7 +41,7 @@ namespace InterpreterTester
 
         private Dictionary<InterpreterPlay, string> filenames;
 
-        private void savePlays()
+        /*private void savePlays()
         {
             try
             {
@@ -58,11 +58,12 @@ namespace InterpreterTester
             {
                 MessageBox.Show("Error saving the files --\n too bad, you've probably lost whichever one was being saved");
             }
-        }
+        }*/
 
         private void loadPlays()
         {
-            PlayLoader loader = new PlayLoader();
+            PlayLoader<InterpreterPlay, InterpreterExpression> loader =
+                new PlayLoader<InterpreterPlay, InterpreterExpression>(new InterpreterExpression.Factory());
             string[] files = System.IO.Directory.GetFiles("../../Plays");
             List<InterpreterPlay> plays = new List<InterpreterPlay>();
             filenames = new Dictionary<InterpreterPlay, string>();
@@ -105,8 +106,7 @@ namespace InterpreterTester
 
 
 #if DIFFERENTPLAYS
-            //files = System.IO.Directory.GetFiles("C:/Microsoft Robotics Studio (1.0)/Samples/Simulator/Plays");
-            files = System.IO.Directory.GetFiles("C:/Microsoft Robotics Studio (1.0)/Samples/Simulator/Defensive Plays");
+            files = System.IO.Directory.GetFiles("../../Plays/Opponent Plays");
             List<InterpreterPlay> defensiveplays = new List<InterpreterPlay>();
             foreach (string fname in files)
             {
@@ -553,12 +553,12 @@ namespace InterpreterTester
                 //sb.AppendLine("o  \t shows current results");
                 MessageBox.Show(sb.ToString());
             }
-            else if (c == 's')
+            /*else if (c == 's')
             {
                 savePlays();
                 //KeyCollection.Enumerator e = filenames.Keys.GetEnumerator();
                 //MessageBox.Show(filenames.Keys.GetEnumerator()..Current.Save());
-            }
+            }*/
             else if (c == 'a')
             {
                 drawArrows = !drawArrows;

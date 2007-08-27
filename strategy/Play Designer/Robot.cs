@@ -6,7 +6,7 @@ using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
-    class DesignerRobot : GetPointable, Clickable
+    class DesignerRobot : GetPointable, Clickable, Robot
     {
         private const float radius = 9;
         private DesignerRobotDefinition definition;
@@ -19,12 +19,26 @@ namespace RobocupPlays
             get { return ours; }
         }
         private Vector2 center;
+        public DesignerRobot(Vector2 p, bool ours, string name)
+        {
+            this.ours = ours;
+            center = p;
+            this.name = name;
+            if (name.StartsWith("robot"))
+            {
+                numrobots = int.Parse(name.Substring(5)) + 1;
+            }
+        }
+        public int getID()
+        {
+            return -1;
+        }
         public DesignerRobot(Vector2 p, bool ours)
         {
             this.ours = ours;
             center = p;
 
-            rename(this.generateName());
+            this.name=this.generateName();
         }
         private string name;
         //DesignerRobotDefinition definition = null;
@@ -46,13 +60,9 @@ namespace RobocupPlays
             }
             return "<undefined>";
         }
-        public string getDefinition()
+        public DesignerRobotDefinition getDefinition()
         {
-            return "(robotpoint " + name + ")";
-        }
-        public void rename(string name)
-        {
-            this.name = name;
+            return definition;
         }
         //end of ConditionObject methods and fields
         public void setDefinition(DesignerRobotDefinition def)
