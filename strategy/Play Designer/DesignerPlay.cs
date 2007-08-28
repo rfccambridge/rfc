@@ -249,8 +249,7 @@ namespace RobocupPlays
                     bool needballpoint = true;
                     foreach (DesignerExpression exp in PlayObjects.Values)
                     {
-                        if (exp.IsFunction && exp.theFunction.Name == "pointof"
-                            && !exp.getArgument(0).IsFunction && exp.getArgument(0).StoredValue == b)
+                        if (exp.UsesFunction("pointof") && !exp.getArgument(0).IsFunction && exp.getArgument(0).StoredValue == b)
                         {
                             needballpoint = false;
                             break;

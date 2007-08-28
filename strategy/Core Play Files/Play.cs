@@ -70,11 +70,11 @@ namespace RobocupPlays
         {
             get { return playObjects; }
         }
-        private Dictionary<string, Vector2> designerPositions = new Dictionary<string,Vector2>();
+        /*private Dictionary<string, Vector2> designerPositions = new Dictionary<string,Vector2>();
         public Dictionary<string, Vector2> DesignerPositions
         {
             get { return designerPositions; }
-        }
+        }*/
         public List<T> getAllObjects()
         {
             return new List<T>(playObjects.Values);
