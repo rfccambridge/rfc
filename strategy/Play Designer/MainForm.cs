@@ -1072,13 +1072,13 @@ namespace RobocupPlays
                 MessageBox.Show("Please enter a name");
                 return false;
             }
-            else if (play.definitionDictionary.ContainsKey(exp.Name))
+            else if (play.PlayObjects.ContainsKey(exp.Name))
             {
                 MessageBox.Show("Sorry, that name is already in use");
                 return false;
             }
-            if (exp.Name != null && !play.definitionDictionary.ContainsValue(exp))
-                play.definitionDictionary.Add(exp.Name, exp);
+            if (exp.Name != null && !play.PlayObjects.ContainsValue(exp))
+                play.PlayObjects.Add(exp.Name, exp);
             if (exp.IsFunction)
             {
                 for (int i = 0; i < exp.theFunction.NumArguments; i++)
@@ -1090,8 +1090,8 @@ namespace RobocupPlays
         }
         private void internalAddExpressionsIntermediates(DesignerExpression exp)
         {
-            if (exp.Name != null && !play.definitionDictionary.ContainsValue(exp))
-                play.definitionDictionary.Add(exp.Name, exp);
+            if (exp.Name != null && !play.PlayObjects.ContainsValue(exp))
+                play.PlayObjects.Add(exp.Name, exp);
             if (exp.IsFunction)
             {
                 for (int i = 0; i < exp.theFunction.NumArguments; i++)
@@ -1135,7 +1135,7 @@ namespace RobocupPlays
         {
             play.Actions.Add(exp);
             if (exp.Name != null)
-                play.definitionDictionary.Add(exp.Name, exp);
+                play.PlayObjects.Add(exp.Name, exp);
 #if DEBUG
             if (!(state is state_SelectingObject))
                 throw new ApplicationException("The state was somehow changed from state_SelectingObject !");

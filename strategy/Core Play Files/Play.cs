@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
@@ -58,19 +59,25 @@ namespace RobocupPlays
         public abstract void addRobot(T exp);
         public abstract void SetDesignerData(List<string> data);
 
-        private Dictionary<string, T> definedObjects = new Dictionary<string, T>();
+        private Dictionary<string, T> playObjects = new Dictionary<string, T>();
         /// <summary>
         /// This holds all of the "objects" -- the things that actually determine the geometry of the play.
         /// (operational definition: everything but actions and conditions)
         /// Includes both geometry, like lines and segments, but also values, like bools and ints.
+        /// The keys are the names of the items
         /// </summary>
-        public Dictionary<string, T> definitionDictionary
+        public Dictionary<string, T> PlayObjects
         {
-            get { return definedObjects; }
+            get { return playObjects; }
+        }
+        private Dictionary<string, Vector2> designerPositions = new Dictionary<string,Vector2>();
+        public Dictionary<string, Vector2> DesignerPositions
+        {
+            get { return designerPositions; }
         }
         public List<T> getAllObjects()
         {
-            return new List<T>(definedObjects.Values);
+            return new List<T>(playObjects.Values);
         }
     }
 }

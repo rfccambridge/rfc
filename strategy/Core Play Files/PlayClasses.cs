@@ -152,12 +152,6 @@ namespace RobocupPlays
     }
     abstract public class PlayRobotDefinition : Robot
     {
-        /*protected PlayRobot robot;
-        abstract public string getDefinition();
-        public PlayRobot getRobot()
-        {
-            return robot;
-        }*/
         public abstract bool Ours { get;}
         public abstract Vector2 getPoint();
         public abstract int getID();

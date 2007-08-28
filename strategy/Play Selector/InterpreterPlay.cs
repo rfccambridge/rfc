@@ -95,7 +95,7 @@ namespace RobocupPlays
         private EvaluatorState evaluatorstate = null;
         internal object getObject(string name) {
             InterpreterExpression rtn;
-            if (!definitionDictionary.TryGetValue(name, out rtn))
+            if (!PlayObjects.TryGetValue(name, out rtn))
                 throw new ApplicationException("Could not find the name " + name + " in this play");
             return rtn;
         }

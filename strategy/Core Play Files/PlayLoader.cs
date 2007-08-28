@@ -109,7 +109,7 @@ namespace RobocupPlays
         private void addToPlay(string name, E obj)
         {
             obj.Name = name;
-            play.definitionDictionary.Add(name, obj);
+            play.PlayObjects.Add(name, obj);
                 play.addRobot(obj);
         }
 
@@ -154,7 +154,7 @@ namespace RobocupPlays
 
             //else, it's a name:
             E rtn;
-            if (play.definitionDictionary.TryGetValue(definition, out rtn))
+            if (play.PlayObjects.TryGetValue(definition, out rtn))
             {
                 if (!wantedType.IsAssignableFrom(rtn.ReturnType))
                     throw new ApplicationException("Received an object of an unexpected type: expected " + wantedType.Name + ", but got " + rtn.ReturnType.Name);

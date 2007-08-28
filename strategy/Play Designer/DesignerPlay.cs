@@ -104,7 +104,7 @@ namespace RobocupPlays
             //    throw new ApplicationException("You can only add PlayObjects to a play!");
 
             exp.Name = name;
-            definitionDictionary.Add(name, exp);
+            PlayObjects.Add(name, exp);
         }
 
         int numobjects = 0;
@@ -129,7 +129,7 @@ namespace RobocupPlays
             }
             else
                 throw new ApplicationException("Unrecognized type in Play.AddPlayObject(): " + exp.ReturnType.Name);
-            if (definitionDictionary.ContainsKey(name))
+            if (PlayObjects.ContainsKey(name))
                 //this means someone has added an object, not through this function,
                 //and there's not much we can do but try to find another name
                 AddPlayObject(exp);
@@ -139,7 +139,7 @@ namespace RobocupPlays
         public void delete(DesignerExpression exp)
         {
             exp.Delete();
-            definitionDictionary.Remove(exp.Name);
+            PlayObjects.Remove(exp.Name);
             robots.Remove(exp);
             Conditions.Remove(exp);
             Actions.Remove(exp);
@@ -182,14 +182,14 @@ namespace RobocupPlays
             new_exp.Name = name;
             robot.setDefinition(new ClosestDefinition(new_exp, oldRobot.getArgument(1)));
             addRobot(new_exp);
-            definitionDictionary.Remove(name);
+            PlayObjects.Remove(name);
             // The other loaded items will have been built with the fake value;
             // go back and replace them now.
-            foreach (DesignerExpression exp in definitionDictionary.Values)
+            foreach (DesignerExpression exp in PlayObjects.Values)
             {
                 replaceArg(exp, oldRobot, new_exp);
             }
-            definitionDictionary.Add(name, new_exp);
+            PlayObjects.Add(name, new_exp);
         }
 
         // The loader loads some rather bogus functions into the robots and balls, as placeholders.
@@ -216,7 +216,7 @@ namespace RobocupPlays
                 }
                 else
                 {
-                    DesignerExpression loaded = definitionDictionary[name];
+                    DesignerExpression loaded = PlayObjects[name];
                     oldRobots.Remove(loaded);
                     CreateNewRobot(name, position, loaded);
                 }
@@ -234,7 +234,7 @@ namespace RobocupPlays
                 b = new DesignerBall(new Vector2((float)r.NextDouble() * 2 - 1, (float)r.NextDouble() * 2 - 1));
                 // Lets see if anything needs it:
                 bool needball = false;
-                foreach (DesignerExpression exp in definitionDictionary.Values)
+                foreach (DesignerExpression exp in PlayObjects.Values)
                 {
                     needball |= replaceArg(exp, fake_ball, new DesignerExpression(b));
                 }
@@ -247,7 +247,7 @@ namespace RobocupPlays
                 else
                 {
                     bool needballpoint = true;
-                    foreach (DesignerExpression exp in definitionDictionary.Values)
+                    foreach (DesignerExpression exp in PlayObjects.Values)
                     {
                         if (exp.IsFunction && exp.theFunction.Name == "pointof"
                             && !exp.getArgument(0).IsFunction && exp.getArgument(0).StoredValue == b)
