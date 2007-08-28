@@ -50,6 +50,10 @@ namespace RobocupPlays
         /// a group of similar plays) this will be nice.
         /// </summary>
         DesignerPlay play = new DesignerPlay();
+        public DesignerPlay Play
+        {
+            get { return play; }
+        }
 
         //Ball ball;
 
@@ -143,9 +147,9 @@ namespace RobocupPlays
             toolstripPlayType.Items.AddRange(Enum.GetNames(typeof(PlayTypes)));
             toolstripPlayType.SelectedIndex = 0;
 
-            showForm = new ShowExpressionsForm(play.Conditions, play.Actions, this);
+            showForm = new ShowExpressionsForm(this);
             showForm.Show();
-            definitionForm = new DefinitionForm(play, this);
+            definitionForm = new DefinitionForm(this);
             definitionForm.Show();
 
             //for some reason, this toolstrip keeps on changing its position.  so I set it here to make sure it stays where I want it
@@ -251,7 +255,9 @@ namespace RobocupPlays
         #region state_EditingObject
         private void state_EditingObject_MouseDown(Vector2 clickPoint, MouseEventArgs e)
         {
-            DesignerExpression exp = getClickedOn(clickPoint);
+            DesignerExpression exp = getClickedOn(clickPoint, typeof(Vector2));
+            if (exp == null)
+                exp = getClickedOn(clickPoint);
             if (e.Button == MouseButtons.Left)
             {
                 if (exp != null && !(typeof(PlayRobotDefinition).IsAssignableFrom(exp.ReturnType)))
@@ -756,6 +762,8 @@ namespace RobocupPlays
         internal void repaint()
         {
             this.Invalidate();
+            showForm.update();
+            definitionForm.Invalidate();
         }
 
         /* The painting handler.  I chose to custom-paint everything insted of using custom controls,
@@ -998,7 +1006,7 @@ namespace RobocupPlays
                 MessageBox.Show("There was an error parsing the input file.  The message was:\n" + e3.Message);
             }*/
             stream.Close();
-            this.Invalidate();
+            repaint();
         }
         #endregion
 

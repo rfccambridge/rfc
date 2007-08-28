@@ -11,31 +11,37 @@ namespace RobocupPlays
 {
     partial class ShowExpressionsForm : Form
     {
-        List<DesignerExpression> conditions, actions;
+        private List<DesignerExpression> Conditions
+        {
+            get { return mainform.Play.Conditions; }
+        }
+        private List<DesignerExpression> Actions
+        {
+            get { return mainform.Play.Actions; }
+        }
+
         MainForm mainform;
         DesignerExpression prevexpression = null;
-        public ShowExpressionsForm(List<DesignerExpression> conditions, List<DesignerExpression> actions, MainForm mainform)
+        public ShowExpressionsForm(MainForm mainform)
         {
             InitializeComponent();
 
             this.mainform = mainform;
-            this.conditions = conditions;
-            this.actions = actions;
         }
         public void update()
         {
-            string[] conditionstrings = new string[conditions.Count];
-            for (int i = 0; i < conditions.Count; i++)
+            string[] conditionstrings = new string[Conditions.Count];
+            for (int i = 0; i < Conditions.Count; i++)
             {
-                conditionstrings[i] = conditions[i].ToString();
+                conditionstrings[i] = Conditions[i].ToString();
             }
             conditionBox.Items.Clear();
             conditionBox.Items.AddRange(conditionstrings);
 
-            string[] actionstrings = new string[actions.Count];
-            for (int i = 0; i < actions.Count; i++)
+            string[] actionstrings = new string[Actions.Count];
+            for (int i = 0; i < Actions.Count; i++)
             {
-                actionstrings[i] = actions[i].ToString();
+                actionstrings[i] = Actions[i].ToString();
             }
             actionBox.Items.Clear();
             actionBox.Items.AddRange(actionstrings);
@@ -51,9 +57,9 @@ namespace RobocupPlays
                 return;
 
             if (lb == conditionBox)
-                exp = conditions[index];
+                exp = Conditions[index];
             else if (lb == actionBox)
-                exp = actions[index];
+                exp = Actions[index];
 
             if (exp == null)
                 throw new ApplicationException("You're trying to edit a command, but it is somehow set to null");
@@ -71,13 +77,13 @@ namespace RobocupPlays
 
             if (lb == conditionBox)
             {
-                exp = conditions[index];
+                exp = Conditions[index];
                 actionBox.ClearSelected();
                         
             }
             else if (lb == actionBox)
             {
-                exp = actions[index];
+                exp = Actions[index];
                 conditionBox.ClearSelected();
 
                 /*mainform.clearArrows();

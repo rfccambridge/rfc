@@ -138,9 +138,9 @@ namespace RobocupPlays
 
         private void conditionSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //function = new DesignerFunction(allFunctions[((ComboBox)sender).SelectedIndex]);
             Function f = allFunctions[((ComboBox)sender).SelectedIndex];
-            expression = new DesignerExpression(f, f.NumArguments);
+            // the arguments will be filled in as we go
+            expression = new DesignerExpression(f, new object[f.NumArguments]);
             useFunctionButton.Enabled = expression.fullyDefined();
             reset();
         }
@@ -149,7 +149,7 @@ namespace RobocupPlays
             contentPanel.Controls.Clear();
             if (expression != null && expression.IsFunction)
             {
-                labels = expression.getLabels();
+                labels = ExpressionUtils.getLabels(expression);
                 foreach (Label l in labels)
                 {
                     if (l is Link)

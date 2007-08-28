@@ -18,6 +18,16 @@ namespace RobocupPlays
         {
             get { return function; }
         }
+        public bool IsFunction
+        {
+            get { return function != null; }
+        }
+        public bool UsesFunction(string functionName)
+        {
+            if (!IsFunction)
+                return false;
+            return theFunction.Name == functionName;
+        }
         object[] arguments=null;
         protected object[] Arguments
         {
@@ -35,11 +45,6 @@ namespace RobocupPlays
 #endif
                 return value;
             }
-        }
-
-        public bool IsFunction
-        {
-            get { return function != null; }
         }
 
         public Type ReturnType

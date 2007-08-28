@@ -7,6 +7,39 @@ using Robocup.Infrastructure;
 
 namespace RobocupPlays
 {
+    static class ExpressionUtils
+    {
+        static public Label[] getLabels(DesignerExpression exp)
+        {
+            if (!exp.IsFunction)
+                throw new ApplicationException("uhh...what to do here, in getLabels()?");
+            string[] Description = exp.theFunction.Description;
+            Type[] ArgTypes = exp.theFunction.ArgTypes;
+
+            Label[] rtn = new Label[ArgTypes.Length + Description.Length];
+            for (int i = 0; i < Description.Length; i++)
+            {
+                rtn[i * 2] = new Label();
+                rtn[i * 2].Text = Description[i];
+                rtn[i * 2].Size = rtn[i * 2].GetPreferredSize(new Size());
+            }
+            for (int i = 0; i < ArgTypes.Length; i++)
+            {
+                rtn[i * 2 + 1] = new Link(i, ArgTypes[i]);
+                if (exp.getArgument(i) == null)
+                {
+                    rtn[i * 2 + 1].Text = Function.getStringFromType(ArgTypes[i]);
+                }
+                else
+                {
+                    rtn[i * 2 + 1].Text = exp.getArgument(i).ToString();
+                }
+                rtn[i * 2 + 1].Size = rtn[i * 2 + 1].GetPreferredSize(new Size());
+
+            }
+            return rtn;
+        }
+    }
     class DesignerExpression : Expression
     {
         public bool argDefined(int numArg)
@@ -22,48 +55,7 @@ namespace RobocupPlays
             }
             return true;
         }
-        public bool UsesFunction(string functionName)
-        {
-            if (!IsFunction)
-                return false;
-            return theFunction.Name == functionName;
-        }
-        public Label[] getLabels()
-        {
-            if (!IsFunction)
-                throw new ApplicationException("uhh...what to do here, in getLabels()?");
-            string[] Description=theFunction.Description;
-            Type[] ArgTypes = theFunction.ArgTypes;
 
-            Label[] rtn = new Label[ArgTypes.Length + Description.Length];
-            for (int i = 0; i < Description.Length; i++)
-            {
-                rtn[i * 2] = new Label();
-                rtn[i * 2].Text = Description[i];
-                rtn[i * 2].Size = rtn[i * 2].GetPreferredSize(new Size());
-            }
-            for (int i = 0; i < ArgTypes.Length; i++)
-            {
-                rtn[i * 2 + 1] = new Link(i, ArgTypes[i]);
-                if (Arguments[i] == null)
-                {
-                    rtn[i * 2 + 1].Text = Function.getStringFromType(ArgTypes[i]);
-                }
-                else
-                {
-                    rtn[i * 2 + 1].Text = Arguments[i].ToString();
-                }
-                rtn[i * 2 + 1].Size = rtn[i * 2 + 1].GetPreferredSize(new Size());
-
-            }
-            return rtn;
-        }
-
-        public DesignerExpression(Function f, int numArgs) : base(f,new object[numArgs])
-        {
-            /*this.function = f;
-            this.arguments = new object[numArgs];*/
-        }
         public DesignerExpression(Function f, params object[] args) : base(f, args) { }
         public DesignerExpression(object o) : base(o) { }
         public void setArgument(int argNumber, object newArgument)
@@ -92,26 +84,6 @@ namespace RobocupPlays
             set { highlighted = value; }
         }
 
-        private bool deleted;
-        public bool Deleted
-        {
-            get { return deleted; }
-        }
-        public void Delete()
-        {
-            this.deleted = true;
-        }
-        public bool shouldDelete()
-        {
-            if (!IsFunction)
-                return Deleted;
-            foreach (object exp in Arguments)
-            {
-                if (exp is DesignerExpression && ((DesignerExpression)exp).Deleted)
-                    return true;
-            }
-            return false;
-        }
         public override string getDefinition()
         {
             if (ReturnType == typeof(DesignerRobot))

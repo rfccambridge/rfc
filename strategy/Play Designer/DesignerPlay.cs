@@ -136,19 +136,70 @@ namespace RobocupPlays
             else
                 AddPlayObject(exp, name);
         }
+        private bool shouldDelete(DesignerExpression exp, Dictionary<DesignerExpression, bool> todelete)
+        {
+            if (todelete.ContainsKey(exp))
+                return todelete[exp];
+            if (!exp.IsFunction)
+                return false;
+            bool shouldDeleteThis = false;
+            for (int i = 0; i < exp.theFunction.NumArguments; i++)
+            {
+                shouldDeleteThis |= shouldDelete(exp.getArgument(i), todelete);
+            }
+            todelete.Add(exp, shouldDeleteThis);
+            return shouldDeleteThis;
+        }
         public void delete(DesignerExpression exp)
         {
-            exp.Delete();
+            Dictionary<DesignerExpression, bool> todelete = new Dictionary<DesignerExpression, bool>();
+            todelete.Add(exp, true);
+            foreach (DesignerExpression expr in getAllObjects())
+            {
+                if (shouldDelete(expr, todelete))
+                {
+                    PlayObjects.Remove(expr.Name);
+                    robots.Remove(expr);
+                }
+            }
+            List<DesignerExpression> conditionsToRemove = new List<DesignerExpression>();
+            foreach (DesignerExpression expr in Conditions)
+            {
+                if (shouldDelete(expr, todelete))
+                    conditionsToRemove.Add(expr);
+            }
+            foreach (DesignerExpression expr in conditionsToRemove)
+            {
+                Conditions.Remove(expr);
+            }
+            List<DesignerExpression> actionsToRemove = new List<DesignerExpression>();
+            foreach (DesignerExpression expr in Actions)
+            {
+                if (shouldDelete(expr, todelete))
+                    actionsToRemove.Add(expr);
+            }
+            foreach (DesignerExpression expr in actionsToRemove)
+            {
+                Actions.Remove(expr);
+            }
+            /*exp.Delete();
             PlayObjects.Remove(exp.Name);
             robots.Remove(exp);
             Conditions.Remove(exp);
             Actions.Remove(exp);
             List<DesignerExpression> allExpressions = getAllObjects();
+            allExpressions.AddRange(Conditions);
+            allExpressions.AddRange(Actions);
             foreach (DesignerExpression expr in allExpressions)
             {
                 if (expr.shouldDelete())
-                    delete(expr);
-            }
+                {
+                    PlayObjects.Remove(exp.Name);
+                    robots.Remove(exp);
+                    Conditions.Remove(exp);
+                    Actions.Remove(exp);
+                }
+            }*/
         }
         /// <summary>
         /// Replaces all occurrences of toReplace with replaceWith that occur anywhere in the

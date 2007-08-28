@@ -10,19 +10,21 @@ namespace RobocupPlays
 {
     internal partial class DefinitionForm : Form
     {
-        DesignerPlay play;
         MainForm mainform;
-        internal DefinitionForm(DesignerPlay play, MainForm mainform)
+        public DesignerPlay Play
+        {
+            get { return mainform.Play; }
+        }
+        internal DefinitionForm(MainForm mainform)
         {
             InitializeComponent();
 
-            this.play = play;
             this.mainform = mainform;
         }
 
         private void DefinitionForm_Paint(object sender, PaintEventArgs e)
         {
-            if (definitionListBox.Items.Count != play.Robots.Count)
+            if (definitionListBox.Items.Count != Play.Robots.Count)
             {
                 updateList();
             }
@@ -31,11 +33,11 @@ namespace RobocupPlays
         internal void updateList()
         {
             definitionListBox.Items.Clear();
-            for (int i = 0; i < play.Robots.Count; i++)
+            for (int i = 0; i < Play.Robots.Count; i++)
             {
-                //DesignerRobot robot = (DesignerRobot)((DesignerExpression)play.Robots[i]).getValue(-1);
-                DesignerRobot robot = (DesignerRobot)(play.Robots[i]).StoredValue;
-                //definitionListBox.Items.Add(((DesignerRobot)play.Robots[i]).getName());
+                //DesignerRobot robot = (DesignerRobot)((DesignerExpression)Play.Robots[i]).getValue(-1);
+                DesignerRobot robot = (DesignerRobot)(Play.Robots[i]).StoredValue;
+                //definitionListBox.Items.Add(((DesignerRobot)Play.Robots[i]).getName());
                 definitionListBox.Items.Add(robot.getName());
             }
             this.Invalidate();
@@ -62,9 +64,9 @@ namespace RobocupPlays
                 if (switchwith < 0)
                     return;
             }
-            DesignerExpression temp = play.Robots[x];
-            play.Robots[x] = play.Robots[switchwith];
-            play.Robots[switchwith] = temp;
+            DesignerExpression temp = Play.Robots[x];
+            Play.Robots[x] = Play.Robots[switchwith];
+            Play.Robots[switchwith] = temp;
             updateList();
             definitionListBox.SelectedIndex = switchwith;
         }
@@ -73,12 +75,12 @@ namespace RobocupPlays
         {
             if (definitionListBox.SelectedIndex >= 0)
             {
-                foreach (DesignerExpression exp in play.Robots)
+                foreach (DesignerExpression exp in Play.Robots)
                 {
                     //DesignerRobot robot = ((DesignerRobot)exp.getValue(-1));
                     DesignerRobot robot = ((DesignerRobot)exp.StoredValue);
                     robot.unhighlight();
-                    //if (robot.getName() == ((DesignerRobot)play.Robots[definitionListBox.SelectedIndex]).getName())
+                    //if (robot.getName() == ((DesignerRobot)Play.Robots[definitionListBox.SelectedIndex]).getName())
                     if (robot.getName()==(string)definitionListBox.SelectedItem)
                         robot.highlight();
                 }
@@ -90,7 +92,7 @@ namespace RobocupPlays
         private void DefinitionForm_Deactivate(object sender, EventArgs e)
         {
             definitionListBox.ClearSelected();
-            foreach (DesignerExpression exp in play.Robots)
+            foreach (DesignerExpression exp in Play.Robots)
             {
                 //DesignerRobot robot = (DesignerRobot)exp.getValue(-1);
                 DesignerRobot robot = (DesignerRobot)exp.StoredValue;
