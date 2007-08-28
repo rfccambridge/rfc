@@ -22,6 +22,12 @@ namespace RobocupPlays
             }
             return true;
         }
+        public bool UsesFunction(string functionName)
+        {
+            if (!IsFunction)
+                return false;
+            return theFunction.Name == functionName;
+        }
         public Label[] getLabels()
         {
             if (!IsFunction)

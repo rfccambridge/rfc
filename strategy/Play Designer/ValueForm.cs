@@ -123,7 +123,7 @@ namespace RobocupPlays
         private bool canFindOnField(Type t)
         {
             List<Type> types = new List<Type>();
-            types.Add(typeof(PlayRobotDefinition));
+            types.Add(typeof(Robot));
             types.Add(typeof(Circle));
             types.Add(typeof(GetPointable));
             types.Add(typeof(Line));

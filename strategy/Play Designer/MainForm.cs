@@ -166,20 +166,12 @@ namespace RobocupPlays
             float minx = PixelXToFieldX(30), maxx = PixelXToFieldX(520);
             float miny = PixelYToFieldY(56), maxy = PixelYToFieldY(396);
             float goalback = PixelDistanceToFieldDistance(8);// 12;
-            /*play.Points.Add(new DesignerPoint_const(new Vector2(minx, miny)));
-            play.Points.Add(new DesignerPoint_const(new Vector2(minx, maxy)));
-            play.Points.Add(new DesignerPoint_const(new Vector2(maxx, maxy)));
-            play.Points.Add(new DesignerPoint_const(new Vector2(maxx, miny)));
-            play.Points.Add(new DesignerPoint_const(new Vector2(minx - goalback, (miny + maxy) / 2)));
-            play.Points.Add(new DesignerPoint_const(new Vector2(maxx + goalback, (miny + maxy) / 2)));*/
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx, miny), "topLeftCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx, maxy), "bottomLeftCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), maxx, maxy), "bottomRightCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), maxx, miny), "topRightCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx - goalback, (miny + maxy) / 2), "ourgoal");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), maxx + goalback, (miny + maxy) / 2), "theirgoal");
-
-            //toolStripComboBox1.Text = "asdf";
 
             Version v = System.Reflection.Assembly.GetAssembly(this.GetType()).GetName(false).Version;
             showDebugLine("This is Play Designer version " + v.Major + "." + v.Minor + ", build " + v.Build);
@@ -209,15 +201,8 @@ namespace RobocupPlays
         {
             if (state is state_SelectingObject && ((state_SelectingObject)state).editForm != null)
             {
-                //if (((state_SelectingObject)state).editForm.CanFocus)
-                //{
                 showDebugLine("You can't switch out of selecting an object!");
                 return;
-                /*}
-                else
-                {
-                    editFormClosed();
-                }*/
             }
 
             ToolStripButton b = (ToolStripButton)sender;
@@ -246,292 +231,94 @@ namespace RobocupPlays
         #endregion
 
         #region MouseHandlers
-        #region MouseDown
-        //The great big handler for when the mouse is pressed anywhere on the field.
-        private void MainForm_MouseDown(object sender, MouseEventArgs e)
+        #region state_AddingRobot
+        private void state_AddingRobot_MouseDown(Vector2 clickPoint, MouseEventArgs e)
         {
-            Vector2 clickPoint = PixelPointToFieldPoint((Vector2)e.Location);
-            state.mousedown = true;
-
-            if (state is state_AddingRobot)
+            state_AddingRobot s = (state_AddingRobot)state;
+            bool ours = true;
+            if (e.Button == MouseButtons.Right)
+                ours = false;
+            DesignerRobot r = new DesignerRobot(clickPoint, ours);
+            DesignerExpression exp = new DesignerExpression(r);
+            play.AddPlayObject(exp, r.getName());
+            play.addRobot(exp);
+            play.AddPlayObject(new DesignerExpression(Function.getFunction("pointof"), exp));
+            repaint();
+        }
+        private void state_AddingRobot_MouseMove(Vector2 clickPoint, MouseEventArgs e) { }
+        private void state_AddingRobot_MouseUp(Vector2 clickPoint, MouseEventArgs e) { }
+        #endregion
+        #region state_EditingObject
+        private void state_EditingObject_MouseDown(Vector2 clickPoint, MouseEventArgs e)
+        {
+            DesignerExpression exp = getClickedOn(clickPoint);
+            if (e.Button == MouseButtons.Left)
             {
-                state_AddingRobot s = (state_AddingRobot)state;
-                bool ours = true;
-                if (e.Button == MouseButtons.Right)
-                    ours = false;
-                //if (play.Robots.Count < 5)
-                //{
-                /*DesignerRobot r = new DesignerRobot(clickPoint, ours);
-                play.Robots.Add(r);
-                play.Points.Add(new DesignerPoint(r));
-                repaint();*/
-                //play.Robots.Add(new DesignerExpression(Function.getFunction("robot"), 1));
-                DesignerRobot r = new DesignerRobot(clickPoint, ours);
-                DesignerExpression exp = new DesignerExpression(r);
-                play.AddPlayObject(exp, r.getName());
-                play.addRobot(exp);
-                play.AddPlayObject(new DesignerExpression(Function.getFunction("pointof"), exp));
-                //}
-                repaint();
-            }
-            else if (state is state_EditingObject)
-            {
-                DesignerExpression exp = getClickedOn(clickPoint);
-                if (e.Button == MouseButtons.Left)
+                if (exp != null && !(typeof(PlayRobotDefinition).IsAssignableFrom(exp.ReturnType)))
                 {
-                    if (exp != null && !(typeof(PlayRobotDefinition).IsAssignableFrom(exp.ReturnType)))
-                    {
-                        editExpression(exp);
-                    }
-                }
-                else if (e.Button == MouseButtons.Right)
-                {
-                    if (exp != null)
-                    {
-                        play.delete(exp);
-                        repaint();
-                    }
-                }
-                else if (e.Button == MouseButtons.Middle)
-                {
-                    createExpression(typeof(object));
-                }
-
-            }
-            else if (state is state_MovingObjects)
-            {
-                state_MovingObjects s = (state_MovingObjects)state;
-                s.robot = getClickedOn(clickPoint, typeof(DesignerRobot));
-                DesignerExpression point = getClickedOn(clickPoint, typeof(Vector2));
-                if (point == null || !point.IsFunction ||
-                    (point.theFunction.Name == "point" &&
-                      (point.getArgument(0).IsFunction || point.getArgument(1).IsFunction)))
-                    point = null;
-                s.point = point;
-                if (play.Ball != null && play.Ball.willClick(clickPoint))
-                    s.ball = play.Ball;
-                int numclickedon = 0;
-                if (s.robot != null)
-                    numclickedon++;
-                if (s.point != null)
-                    numclickedon++;
-                if (s.ball != null)
-                    numclickedon++;
-                if (numclickedon > 1)
-                {
-                    //showDebugLine("You clicked on both a robot and a point, which is not allowed (yet).");
-                    showDebugLine("You clicked on " + numclickedon + " movable objects.");
-                    s.robot = null;
-                    s.point = null;
-                    s.ball = null;
-                }
-                s.setMouse(clickPoint);
-            }
-            else if (state is state_DrawingLine)
-            {
-                state_DrawingLine s = (state_DrawingLine)state;
-                //s.firstpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
-                //s.firstpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2)).getValue(tick);
-                s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
-                if (s.firstpoint != null)
-                {
-                    s.line = new DesignerExpression(Function.getFunction("line"), s.firstpoint, s.firstpoint);
-                    play.AddPlayObject(s.line);
+                    editExpression(exp);
                 }
             }
-            else if (state is state_AddingClosestCondition)
+            else if (e.Button == MouseButtons.Right)
             {
-                state_AddingClosestCondition s = (state_AddingClosestCondition)state;
-                //s.firstpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
-                //s.firstrobot = (DesignerRobot)getClickedOn(clickPoint, typeof(DesignerRobot));
-                //s.firstpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2)).getValue(tick);
-                //s.firstrobot = (DesignerRobot)getClickedOn(clickPoint, typeof(DesignerRobot)).getValue(tick);
-                s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
-                s.firstrobot = getClickedOn(clickPoint, typeof(DesignerRobot));
-                /*if (s.firstpoint != null)// && !s.firstpoint.isDefined())
-                {
-                    s.firstpoint = null;
-                    if (s.firstrobot == null)
-                        showDebugLine("You can't define a robot by attaching it to an undefined point!");
-                }
-                if (s.firstrobot != null)// && s.firstrobot.isDefined())
-                {
-                    s.firstrobot = null;
-                    showDebugLine("You can't multiply-define something!");
-                }*/
-                if (s.firstpoint != null && s.firstrobot != null)
-                {
-                    s.firstpoint = null;
-                    s.firstrobot = null;
-                    showDebugLine("You clicked on both a point and a robot, which is not allowed.");
-                }
-            }
-            else if (state is state_AddingBall)
-            {
-                if (play.Ball == null)
-                {
-                    play.Ball = new DesignerBall(clickPoint);
-                    //play.Points.Add(new DesignerPoint(play.Ball));
-                    play.AddPlayObject(new DesignerExpression(Function.getFunction("pointof"), play.Ball));
-                }
-                else
-                    play.Ball.setPosition(clickPoint);
-                repaint();
-            }
-            else if (state is state_SelectingObject)
-            {
-                state_SelectingObject s = (state_SelectingObject)state;
-                if (s.editForm == null || s.t == null)
-                    return;
-                if (e.Button == MouseButtons.Right)
-                {
-                    //just in case you click the right mouse button when you're not selecting anything:
-                    if (s.returnDelegate != null)
-                    {
-                        s.returnDelegate(null);
-                        s.t = null;
-                        return;
-                    }
-                    //s.editForm.setObject(null);
-                }
-                DesignerExpression exp = getClickedOn(clickPoint, s.t);
-                /*if (s.t.IsAssignableFrom(typeof(Vector2)))
-                {
-                    exp = getClickedOn(clickPoint, typeof(Vector2));
-                }
-                else if (s.t.IsAssignableFrom(typeof(DesignerRobot)))
-                {
-                    exp = getClickedOn(clickPoint, typeof(DesignerRobot));
-                }
-                else if (s.t.IsAssignableFrom(typeof(Circle)))
-                {
-                    exp = getClickedOn(clickPoint, typeof(Circle));
-                }
-                else if (s.t.IsAssignableFrom(typeof(Line)))
-                {
-                    exp = getClickedOn(clickPoint, typeof(Line));
-                }
-                else
-                    throw new ApplicationException("Unable to find something of type " + s.t.Name);*/
-                //DesignerExpression exp = getClickedOn(play.getClickables(), clickPoint);
                 if (exp != null)
                 {
-                    s.t = null;
-                    exp.Highlighted = false;
-                    if (exp.ReturnType.IsAssignableFrom(typeof(DesignerRobot)))
-                    {
-                        ((DesignerRobot)exp.getValue(tick, null)).unhighlight();
-                    }
-                    s.returnDelegate(exp);
-                }
-                //repaint();
-                //}
-            }
-            else if (state is state_AddingPoint)
-            {
-                state_AddingPoint s = (state_AddingPoint)state;
-                //s.point = new DesignerPoint_const(clickPoint);
-                //play.Points.Add(s.point);
-                //play.AddPlayObject(new DesignerExpression(s.point));
-                s.point = new DesignerExpression(Function.getFunction("point"), (float)clickPoint.X, (float)clickPoint.Y);
-                play.AddPlayObject(s.point);
-                //s.setMouse(clickPoint);
-                repaint();
-            }
-            else if (state is state_AddingCircle)
-            {
-                state_AddingCircle s = (state_AddingCircle)state;
-                //DesignerPoint dp = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
-                //DesignerExpression firstpoint =
-                s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
-                if (s.firstpoint != null)
-                {
-                    s.circle = new DesignerExpression(Function.getFunction("circle"), s.firstpoint, 0);
-                    play.AddPlayObject(s.circle);
-                }
-                /*if (exp != null)
-                {
-                    s.circle = new DesignerCircle(dp);
-                    //play.Circles.Add(s.circle);
-                    play.Circles.Add(new DesignerExpression(s.circle));
-                }*/
-            }
-            else if (state is state_PlacingIntersection)
-            {
-                DesignerExpression[] clickedLines = new DesignerExpression[2];
-                int numlinesclicked = 0;
-                foreach (DesignerExpression exp in play.getAllObjects())
-                {
-                    if (exp.ReturnType != typeof(Line))
-                        continue;
-                    Line l = (Line)exp.getValue(tick, null);
-                    //if (l.willClick(clickPoint))
-                    if (willClick(l, clickPoint))
-                    {
-                        if (numlinesclicked < 2)
-                            clickedLines[numlinesclicked] = exp;
-                        numlinesclicked++;
-                    }
-                }
-                DesignerExpression[] clickedCircles = new DesignerExpression[2];
-                int numcirclesclicked = 0;
-                foreach (DesignerExpression exp in play.getAllObjects())
-                {
-                    if (exp.ReturnType != typeof(Circle))
-                        continue;
-                    Circle c = (Circle)exp.getValue(tick, null);
-                    //if (c.willClick(clickPoint))
-                    if (willClick(c, clickPoint))
-                    {
-                        if (numcirclesclicked < 2)
-                            clickedCircles[numcirclesclicked] = exp;
-                        numcirclesclicked++;
-                    }
-                }
-
-                if (numcirclesclicked + numlinesclicked != 2)
-                {
-                    showDebugLine("You clicked " + numlinesclicked + " lines and " + numcirclesclicked + " circles");
-                }
-                else
-                {
-                    if (numlinesclicked == 2)
-                    {
-                        //play.Points.Add(new DesignerPoint(new DesignerLineLineIntersection(clickedLines[0], clickedLines[1])));
-                        play.AddPlayObject(new DesignerExpression(Function.getFunction("linelineintersection"), clickedLines));
-                    }
-                    else if (numcirclesclicked == 2)
-                    {
-                        //play.Points.Add(new DesignerPoint(new DesignerCircleCircleIntersection(clickedCircles[0], clickedCircles[1], clickPoint)));
-                        Circle c1 = (Circle)clickedCircles[0].getValue(tick, null);
-                        Circle c2 = (Circle)clickedCircles[1].getValue(tick, null);
-                        play.AddPlayObject(new DesignerExpression(Function.getFunction("circlecircleintersection"),
-                            clickedCircles[0], clickedCircles[1],
-                            PlayCircleCircleIntersection.WhichIntersection(c1, c2, clickPoint)));
-                    }
-                    else if (numcirclesclicked == 1 && numlinesclicked == 1)
-                    {
-
-                        Line line = (Line)clickedLines[0].getValue(tick, null);
-                        Circle circle = (Circle)clickedCircles[0].getValue(tick, null);
-
-                        play.AddPlayObject(new DesignerExpression(Function.getFunction("linecircleintersection"),
-                            clickedLines[0], clickedCircles[0],
-                            LineCircleIntersection.WhichIntersection(line, circle, clickPoint)));
-                    }
+                    play.delete(exp);
                     repaint();
                 }
             }
-        }
-        #endregion
-        #region MouseMove
-        //The handler for when the mouse is moved
-        private void MainForm_MouseMove(object sender, MouseEventArgs e)
-        {
-            Vector2 clickPoint = PixelPointToFieldPoint((Vector2)e.Location);
-            if (state is state_MovingObjects)
+            else if (e.Button == MouseButtons.Middle)
             {
-                state_MovingObjects s = (state_MovingObjects)state;
+                createExpression(typeof(object));
+            }
+        }
+        private void state_EditingObject_MouseMove(Vector2 clickPoint, MouseEventArgs e) { }
+        private void state_EditingObject_MouseUp(Vector2 clickPoint, MouseEventArgs e) { }
+        #endregion
+        #region state_MovingObjects
+        private int findHover(state_MovingObjects s, Vector2 clickPoint)
+        {
+            s.robot = getClickedOn(clickPoint, typeof(DesignerRobot));
+            DesignerExpression point = getClickedOn(clickPoint, typeof(Vector2));
+            if (point == null || !point.IsFunction ||
+                (point.theFunction.Name == "point" &&
+                  (point.getArgument(0).IsFunction || point.getArgument(1).IsFunction)))
+                point = null;
+            s.point = point;
+            if (play.Ball != null && play.Ball.willClick(clickPoint))
+                s.ball = play.Ball;
+            int numclickedon = 0;
+            if (s.robot != null)
+                numclickedon++;
+            if (s.point != null)
+                numclickedon++;
+            if (s.ball != null)
+                numclickedon++;
+            if (numclickedon == 2 && s.point != null && s.point.UsesFunction("pointof"))
+            {
+                numclickedon--;
+                s.point = null;
+            }
+            return numclickedon;
+        }
+        private void state_MovingObjects_MouseDown(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_MovingObjects s = (state_MovingObjects)state;
+            int numclickedon = findHover(s, clickPoint);
+            if (numclickedon != 1)
+            {
+                showDebugLine("You clicked on " + numclickedon + " movable objects.");
+                s.robot = null;
+                s.point = null;
+                s.ball = null;
+            }
+            s.setMouse(clickPoint);
+        }
+        private void state_MovingObjects_MouseMove(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_MovingObjects s = (state_MovingObjects)state;
+            if (s.mousedown)
+            {
                 bool needtorepaint = false;
                 if (s.robot != null)
                 {
@@ -548,174 +335,371 @@ namespace RobocupPlays
                 }
                 else if (s.ball != null)
                 {
-                    s.ball.translate(s.diff(clickPoint));
+                    s.ball.setPosition(s.ball.getPoint() + s.diff(clickPoint));
                     needtorepaint = true;
                 }
                 s.setMouse(clickPoint);
                 if (needtorepaint)
                     repaint();
             }
-            else if (state is state_PlacingIntersection)
+            else
             {
-                foreach (DesignerExpression exp in play.getAllObjects())
+                if (s.robot != null)
+                    ((DesignerRobot)s.robot.getValue(0, null)).unhighlight();
+                if (s.point != null)
+                    s.point.Highlighted = false;
+                findHover(s, clickPoint);
+                if (s.robot != null && s.point != null)
                 {
-                    if (exp.ReturnType != typeof(Line))
-                        continue;
-                    Line l = (Line)exp.getValue(tick, null);
-                    exp.Highlighted = willClick(l, clickPoint);
+                    s.point = null;
+                    s.robot = null;
                 }
-                foreach (DesignerExpression exp in play.getAllObjects())
-                {
-                    if (exp.ReturnType != typeof(Circle))
-                        continue;
-                    Circle c = (Circle)exp.getValue(tick, null);
-                    exp.Highlighted = willClick(c, clickPoint);
-                }
+                if (s.point != null)
+                    s.point.Highlighted = true;
+                if (s.robot != null)
+                    ((DesignerRobot)s.robot.getValue(0, null)).highlight();
                 repaint();
             }
-            else if (state is state_SelectingObject)
+        }
+        private void state_MovingObjects_MouseUp(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_MovingObjects s = (state_MovingObjects)state;
+            if (s.robot != null)
+                s.robot.Highlighted = false;
+            if (s.point != null)
+                s.point.Highlighted = false;
+            state = new state_MovingObjects();
+        }
+        #endregion
+        #region state_DrawingLine
+        private void state_DrawingLine_MouseDown(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_DrawingLine s = (state_DrawingLine)state;
+            s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
+            if (s.firstpoint != null)
             {
-                state_SelectingObject s = (state_SelectingObject)state;
-                if (s.t != null)
-                {
-                    List<DesignerExpression> clickables = play.getAllObjects();
-                    foreach (DesignerExpression exp in clickables)
-                    {
-                        object c = exp.getValue(tick, null);
-                        if (!s.t.IsAssignableFrom(c.GetType()))
-                            continue;
-
-                        if (c is DesignerRobot)
-                        {
-                            if (willClick(c, clickPoint))
-                                ((DesignerRobot)c).highlight();
-                            else
-
-                                ((DesignerRobot)c).unhighlight();
-                        }
-                        else
-                        {
-                            exp.Highlighted = willClick(c, clickPoint);
-                            //Console.WriteLine(exp.Highlighted);
-                        }
-                    }
-                    repaint();
-                }
+                s.line = new DesignerExpression(Function.getFunction("line"), s.firstpoint, s.firstpoint);
+                play.AddPlayObject(s.line);
             }
-            else if (state is state_AddingPoint)
+        }
+        private void state_DrawingLine_MouseMove(Vector2 clickPoint, MouseEventArgs e)
+        {
+            if (state.mousedown && ((state_DrawingLine)state).line != null)
             {
-                state_AddingPoint s = (state_AddingPoint)state;
-                if (s.mousedown)
+                state_DrawingLine s = (state_DrawingLine)state;
+                DesignerExpression point2 = getClickedOn(clickPoint, typeof(Vector2));
+                if (point2 == null)
                 {
-                    //s.point.translate(s.diff(clickPoint));
-                    s.point.setArgument(0, clickPoint.X);
-                    s.point.setArgument(1, clickPoint.Y);
-                    //s.setMouse(clickPoint);
-                    repaint();
+                    point2 = new DesignerExpression(clickPoint);
                 }
+                s.line.setArgument(1, point2);
+                repaint();
             }
-            else if (state is state_AddingCircle)
+        }
+        private void state_DrawingLine_MouseUp(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_DrawingLine s = (state_DrawingLine)state;
+            if (s.line != null)
             {
-                if (state.mousedown && ((state_AddingCircle)state).circle != null)
+                DesignerExpression point2 = getClickedOn(clickPoint, typeof(Vector2));
+                if (point2 == null)
                 {
-                    state_AddingCircle s = (state_AddingCircle)state;
-                    //DesignerPoint dp = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
-                    //DesignerPoint dp = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2)).getValue(tick);
-
-                    /*if (dp == null)
-                        s.circle.setRadius(clickPoint);
-                    else
-                        s.circle.setRadius(dp);*/
-                    //s.circle.set
-                    DesignerExpression point2 = getClickedOn(clickPoint, typeof(Vector2));
-                    if (point2 != null)
-                    {
-                        s.circle.setArgument(1, new DesignerExpression(Function.getFunction("pointpointdistance"), s.firstpoint, point2));
-                    }
-                    else
-                    {
-                        //point2 = new DesignerExpression(new Vector2(clickPoint));
-                        s.circle.setArgument(1, UsefulFunctions.distance((Vector2)s.firstpoint.getValue(tick, null), clickPoint));
-                    }
-                    //s.circle.setArgument(1, new DesignerExpression(Function.getFunction("pointpointdistance"),s.firstpoint,clickPoint));
-                    repaint();
+                    point2 = new DesignerExpression(Function.getFunction("point"), clickPoint.X, clickPoint.Y);
+                    play.AddPlayObject(point2);
                 }
-            }
-            else if (state is state_DrawingLine)
-            {
-                if (state.mousedown && ((state_DrawingLine)state).line != null)
-                {
-                    state_DrawingLine s = (state_DrawingLine)state;
-                    DesignerExpression point2 = getClickedOn(clickPoint, typeof(Vector2));
-                    if (point2 != null)
-                    {
-                        s.line.setArgument(1, point2);
-                    }
-                    else
-                        s.line.setArgument(1, clickPoint);
-                    //s.line.setArgument(1, new DesignerExpression(Function.getFunction("pointpointdistance"), s.firstpoint, point2));
-                    //s.circle.setArgument(1, new DesignerExpression(Function.getFunction("pointpointdistance"),s.firstpoint,clickPoint));
-                    repaint();
-                }
+                s.line.setArgument(1, point2);
+                s.line = null;
+                repaint();
             }
         }
         #endregion
-        #region MouseUp
-        //And the handler for when the mouse is released.
+        #region state_AddingClosestCondition
+        private void findHover(state_AddingClosestCondition s, Vector2 clickPoint)
+        {
+            s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
+            s.firstrobot = getClickedOn(clickPoint, typeof(DesignerRobot));
+            if (s.firstpoint != null && s.firstrobot != null)
+            {
+                if (s.firstpoint.UsesFunction("pointof"))
+                    s.firstpoint = null;
+            }
+            if (s.firstpoint != null && s.firstrobot != null)
+            {
+                s.firstpoint = null;
+                s.firstrobot = null;
+            }
+        }
+        private void state_AddingClosestCondition_MouseDown(Vector2 clickPoint, MouseEventArgs e) { }
+        private void state_AddingClosestCondition_MouseMove(Vector2 clickPoint, MouseEventArgs e)
+        {
+            if (!state.mousedown)
+            {
+                state_AddingClosestCondition s = (state_AddingClosestCondition)state;
+                if (s.firstrobot != null)
+                    ((DesignerRobot)s.firstrobot.getValue(0, null)).unhighlight();
+                if (s.firstpoint != null)
+                    s.firstpoint.Highlighted = false;
+                findHover(s, clickPoint);
+                if (s.firstpoint != null)
+                    s.firstpoint.Highlighted = true;
+                if (s.firstrobot != null)
+                    ((DesignerRobot)s.firstrobot.getValue(0, null)).highlight();
+                repaint();
+            }
+        }
+        private void state_AddingClosestCondition_MouseUp(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_AddingClosestCondition s = (state_AddingClosestCondition)state;
+            DesignerExpression secondpoint = getClickedOn(clickPoint, typeof(Vector2));
+            DesignerExpression secondrobot = getClickedOn(clickPoint, typeof(DesignerRobot));
+            if (s.firstrobot != null && secondpoint != null)
+            {
+                DesignerRobotDefinition df = new ClosestDefinition(s.firstrobot, secondpoint);
+                ((DesignerRobot)s.firstrobot.getValue(tick, null)).setDefinition(df);
+                definitionForm.updateList();
+            }
+            else if (s.firstpoint != null && secondrobot != null)
+            {
+                DesignerRobotDefinition df = new ClosestDefinition(secondrobot, s.firstpoint);
+                ((DesignerRobot)secondrobot.getValue(tick, null)).setDefinition(df);
+                definitionForm.updateList();
+            }
+            repaint();
+        }
+        #endregion
+        #region state_AddingBall
+        private void state_AddingBall_MouseDown(Vector2 clickPoint, MouseEventArgs e)
+        {
+            if (play.Ball == null)
+            {
+                play.Ball = new DesignerBall(clickPoint);
+                //play.Points.Add(new DesignerPoint(play.Ball));
+                play.AddPlayObject(new DesignerExpression(Function.getFunction("pointof"), play.Ball));
+            }
+            else
+                play.Ball.setPosition(clickPoint);
+            repaint();
+        }
+        private void state_AddingBall_MouseMove(Vector2 clickPoint, MouseEventArgs e) { }
+        private void state_AddingBall_MouseUp(Vector2 clickPoint, MouseEventArgs e) { }
+        #endregion
+        #region state_SelectingObject
+        private void state_SelectingObject_MouseDown(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_SelectingObject s = (state_SelectingObject)state;
+            if (s.editForm == null || s.t == null)
+                return;
+            if (e.Button == MouseButtons.Right)
+            {
+                //just in case you click the right mouse button when you're not selecting anything:
+                if (s.returnDelegate != null)
+                {
+                    s.returnDelegate(null);
+                    s.t = null;
+                    return;
+                }
+            }
+            DesignerExpression exp = getClickedOn(clickPoint, s.t);
+            if (exp != null)
+            {
+                s.t = null;
+                exp.Highlighted = false;
+                if (exp.ReturnType.IsAssignableFrom(typeof(DesignerRobot)))
+                {
+                    ((DesignerRobot)exp.getValue(tick, null)).unhighlight();
+                }
+                s.returnDelegate(exp);
+            }
+        }
+        private void state_SelectingObject_MouseMove(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_SelectingObject s = (state_SelectingObject)state;
+            if (s.t != null)
+            {
+                List<DesignerExpression> clickables = play.getAllObjects();
+                foreach (DesignerExpression exp in clickables)
+                {
+                    object c = exp.getValue(tick, null);
+                    if (!s.t.IsAssignableFrom(c.GetType()))
+                        continue;
+
+                    if (c is DesignerRobot)
+                    {
+                        if (willClick(c, clickPoint))
+                            ((DesignerRobot)c).highlight();
+                        else
+
+                            ((DesignerRobot)c).unhighlight();
+                    }
+                    else
+                    {
+                        exp.Highlighted = willClick(c, clickPoint);
+                    }
+                }
+                repaint();
+            }
+        }
+        private void state_SelectingObject_MouseUp(Vector2 clickPoint, MouseEventArgs e) { }
+        #endregion
+        #region state_AddingPoint
+        private void state_AddingPoint_MouseDown(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_AddingPoint s = (state_AddingPoint)state;
+            s.point = new DesignerExpression(Function.getFunction("point"), (float)clickPoint.X, (float)clickPoint.Y);
+            play.AddPlayObject(s.point);
+            repaint();
+        }
+        private void state_AddingPoint_MouseMove(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_AddingPoint s = (state_AddingPoint)state;
+            if (s.mousedown)
+            {
+                s.point.setArgument(0, clickPoint.X);
+                s.point.setArgument(1, clickPoint.Y);
+                repaint();
+            }
+        }
+        private void state_AddingPoint_MouseUp(Vector2 clickPoint, MouseEventArgs e) { }
+        #endregion
+        #region state_AddingCircle
+        private void state_AddingCircle_MouseDown(Vector2 clickPoint, MouseEventArgs e)
+        {
+            state_AddingCircle s = (state_AddingCircle)state;
+            s.firstpoint = getClickedOn(clickPoint, typeof(Vector2));
+            if (s.firstpoint != null)
+            {
+                s.circle = new DesignerExpression(Function.getFunction("circle"), s.firstpoint, 0);
+                play.AddPlayObject(s.circle);
+            }
+        }
+        private void state_AddingCircle_MouseMove(Vector2 clickPoint, MouseEventArgs e)
+        {
+            if (state.mousedown && ((state_AddingCircle)state).circle != null)
+            {
+                state_AddingCircle s = (state_AddingCircle)state;
+
+                DesignerExpression point2 = getClickedOn(clickPoint, typeof(Vector2));
+                if (point2 != null)
+                {
+                    s.circle.setArgument(1, new DesignerExpression(Function.getFunction("pointpointdistance"), s.firstpoint, point2));
+                }
+                else
+                {
+                    s.circle.setArgument(1, UsefulFunctions.distance((Vector2)s.firstpoint.getValue(tick, null), clickPoint));
+                }
+                repaint();
+            }
+        }
+        private void state_AddingCircle_MouseUp(Vector2 clickPoint, MouseEventArgs e) { }
+        #endregion
+        #region state_PlacingIntersection
+        private void state_PlacingIntersection_MouseDown(Vector2 clickPoint, MouseEventArgs e)
+        {
+            DesignerExpression[] clickedLines = new DesignerExpression[2];
+            int numlinesclicked = 0;
+            foreach (DesignerExpression exp in play.getAllObjects())
+            {
+                if (exp.ReturnType != typeof(Line))
+                    continue;
+                Line l = (Line)exp.getValue(tick, null);
+                if (willClick(l, clickPoint))
+                {
+                    if (numlinesclicked < 2)
+                        clickedLines[numlinesclicked] = exp;
+                    numlinesclicked++;
+                }
+            }
+            DesignerExpression[] clickedCircles = new DesignerExpression[2];
+            int numcirclesclicked = 0;
+            foreach (DesignerExpression exp in play.getAllObjects())
+            {
+                if (exp.ReturnType != typeof(Circle))
+                    continue;
+                Circle c = (Circle)exp.getValue(tick, null);
+                if (willClick(c, clickPoint))
+                {
+                    if (numcirclesclicked < 2)
+                        clickedCircles[numcirclesclicked] = exp;
+                    numcirclesclicked++;
+                }
+            }
+
+            if (numcirclesclicked + numlinesclicked != 2)
+            {
+                showDebugLine("You clicked " + numlinesclicked + " lines and " + numcirclesclicked + " circles");
+            }
+            else
+            {
+                if (numlinesclicked == 2)
+                {
+                    play.AddPlayObject(new DesignerExpression(Function.getFunction("linelineintersection"), clickedLines));
+                }
+                else if (numcirclesclicked == 2)
+                {
+                    Circle c1 = (Circle)clickedCircles[0].getValue(tick, null);
+                    Circle c2 = (Circle)clickedCircles[1].getValue(tick, null);
+                    play.AddPlayObject(new DesignerExpression(Function.getFunction("circlecircleintersection"),
+                        clickedCircles[0], clickedCircles[1],
+                        PlayCircleCircleIntersection.WhichIntersection(c1, c2, clickPoint)));
+                }
+                else if (numcirclesclicked == 1 && numlinesclicked == 1)
+                {
+                    Line line = (Line)clickedLines[0].getValue(tick, null);
+                    Circle circle = (Circle)clickedCircles[0].getValue(tick, null);
+
+                    play.AddPlayObject(new DesignerExpression(Function.getFunction("linecircleintersection"),
+                        clickedLines[0], clickedCircles[0],
+                        LineCircleIntersection.WhichIntersection(line, circle, clickPoint)));
+                }
+                repaint();
+            }
+        }
+        private void state_PlacingIntersection_MouseMove(Vector2 clickPoint, MouseEventArgs e)
+        {
+            foreach (DesignerExpression exp in play.getAllObjects())
+            {
+                if (exp.ReturnType != typeof(Line))
+                    continue;
+                Line l = (Line)exp.getValue(tick, null);
+                exp.Highlighted = willClick(l, clickPoint);
+            }
+            foreach (DesignerExpression exp in play.getAllObjects())
+            {
+                if (exp.ReturnType != typeof(Circle))
+                    continue;
+                Circle c = (Circle)exp.getValue(tick, null);
+                exp.Highlighted = willClick(c, clickPoint);
+            }
+            repaint();
+        }
+        private void state_PlacingIntersection_MouseUp(Vector2 clickPoint, MouseEventArgs e) { }
+        #endregion
+        #region FormMouseHandlers
+        private void MainForm_MouseDown(object sender, MouseEventArgs e)
+        {
+            Vector2 clickPoint = PixelPointToFieldPoint((Vector2)e.Location);
+            state.mousedown = true;
+
+            this.GetType().InvokeMember(state.GetType().Name + "_MouseDown",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Instance,
+                null, this, new object[] { clickPoint, e });
+        }
+        private void MainForm_MouseMove(object sender, MouseEventArgs e)
+        {
+            Vector2 clickPoint = PixelPointToFieldPoint((Vector2)e.Location);
+
+            this.GetType().InvokeMember(state.GetType().Name + "_MouseMove",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Instance,
+                null, this, new object[] { clickPoint, e });
+        }
         private void MainForm_MouseUp(object sender, MouseEventArgs e)
         {
             Vector2 clickPoint = PixelPointToFieldPoint((Vector2)e.Location);
             state.mousedown = false;
-            if (state is state_MovingObjects)
-            {
-                state = new state_MovingObjects();//nulls them all out
-            }
-            /*else if (state is state_DrawingLine)
-            {
-                state_DrawingLine s = (state_DrawingLine)state;
-                //DesignerPoint secondpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
-                DesignerExpression secondpoint = getClickedOn(clickPoint, typeof(Vector2));
-                if (s.firstpoint != null && secondpoint != null)
-                {
-                    //play.Lines.Add(new DesignerLine(s.firstpoint, secondpoint));
-                    play.Lines.Add(new DesignerExpression(Function.getFunction("line"), s.firstpoint, secondpoint));
-                    repaint();
-                }
-            }*/
-            else if (state is state_AddingClosestCondition)
-            {
-                state_AddingClosestCondition s = (state_AddingClosestCondition)state;
-                //DesignerPoint secondpoint = (DesignerPoint)getClickedOn(clickPoint, typeof(Vector2));
-                //DesignerRobot secondrobot = (DesignerRobot)getClickedOn(clickPoint, typeof(DesignerRobot));
-                DesignerExpression secondpoint = getClickedOn(clickPoint, typeof(Vector2));
-                DesignerExpression secondrobot = getClickedOn(clickPoint, typeof(DesignerRobot));
-                if (s.firstrobot != null && secondpoint != null)
-                {
-                    /*if (!secondpoint.isDefined())
-                        showDebugLine("You can't define a robot by a point that's not defined!");
-                    else
-                    {*/
-                    DesignerRobotDefinition df = new ClosestDefinition(s.firstrobot, secondpoint);
-                    //play.Definitions.Add(df);
-                    ((DesignerRobot)s.firstrobot.getValue(tick, null)).setDefinition(df);
-                    definitionForm.updateList();
-                    //}
-                }
-                else if (s.firstpoint != null && secondrobot != null)
-                {
-                    /*if (secondrobot.isDefined())
-                        showDebugLine("You can't multiply-define something!");
-                    else
-                    {*/
-                    DesignerRobotDefinition df = new ClosestDefinition(secondrobot, s.firstpoint);
-                    //play.Definitions.Add(df);
-                    ((DesignerRobot)secondrobot.getValue(tick, null)).setDefinition(df);
-                    definitionForm.updateList();
-                    //}
-                }
-                repaint();
 
-            }
+            this.GetType().InvokeMember(state.GetType().Name + "_MouseUp",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Instance,
+                null, this, new object[] { clickPoint, e });
         }
         #endregion
         #endregion
