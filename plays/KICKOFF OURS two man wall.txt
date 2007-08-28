@@ -1,10 +1,10 @@
 Metadata:
-type NormalPlay
+type KickOff_Ours
 name Wall
-score #ml0.754306697190765#ml
+score 12
 Objects:
 ourgoal (point -2.53 0)
-circle1 (circle ourgoal 0.633877)
+circle1 (circle ourgoal 0.8)
 point0 (pointof ball)
 line2 (line ourgoal point0)
 point3 (linecircleintersection line2 circle1 1)

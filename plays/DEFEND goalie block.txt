@@ -1,0 +1,26 @@
+Metadata:
+type NormalPlay
+score 102
+Objects:
+ourgoal (point -2.53 0)
+robot0 (closest-with-tags friendly ourgoal loose goalie)
+robot2 (closest enemy ourgoal loose)
+point6 (pointof ball)
+robot4 (closest enemy point6 loose)
+topLeftCorner (point -2.45 1.7)
+bottomLeftCorner (point -2.45 -1.7)
+bottomRightCorner (point 2.45 -1.7)
+topRightCorner (point 2.45 1.7)
+theirgoal (point 2.53 0)
+point1 (pointof robot0)
+point3 (pointof robot2)
+point5 (pointof robot4)
+line7 (line point5 ourgoal)
+circle8 (circle ourgoal 0.6)
+point9 (linecircleintersection line7 circle8 0)
+line10 (line point3 ourgoal)
+point11 (linecircleintersection line10 circle8 0)
+Conditions:
+Actions:
+(if_Action (< (pointpointdistance ourgoal point6) 1) (robotpointpointmove robot0 point11 point3) (robotpointpointmove robot0 point9 point5))
+
