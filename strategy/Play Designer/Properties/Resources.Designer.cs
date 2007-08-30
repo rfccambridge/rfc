@@ -67,6 +67,13 @@ namespace RobocupPlays.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap check {
+            get {
+                object obj = ResourceManager.GetObject("check", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap circleicon {
             get {
                 object obj = ResourceManager.GetObject("circleicon", resourceCulture);

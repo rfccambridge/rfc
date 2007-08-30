@@ -135,6 +135,9 @@ namespace RobocupPlays
         }
         #endregion
 
+        public MainForm(DesignerPlay toEdit)
+        {
+        }
 
         public MainForm()
         {
@@ -1189,6 +1192,12 @@ namespace RobocupPlays
             toolstripPlayType.Visible = false;
             toolstripPlayType.Visible = true;
             play.PlayType = (PlayTypes)Enum.Parse(typeof(PlayTypes), ((ToolStripComboBox)sender).Text);
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            showForm.Close();
+            definitionForm.Close();
         }
 
     }

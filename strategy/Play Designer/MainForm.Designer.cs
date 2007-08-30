@@ -51,6 +51,7 @@ namespace RobocupPlays
             this.toolstripPlayType = new System.Windows.Forms.ToolStripComboBox();
             this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -80,10 +81,11 @@ namespace RobocupPlays
             this.toolStripDropDownButton1,
             this.toolstripPlayType,
             this.saveToolStripButton,
-            this.openToolStripButton});
+            this.openToolStripButton,
+            this.toolStripButton1});
             this.definitionsToolStrip.Location = new System.Drawing.Point(3, 0);
             this.definitionsToolStrip.Name = "definitionsToolStrip";
-            this.definitionsToolStrip.Size = new System.Drawing.Size(510, 25);
+            this.definitionsToolStrip.Size = new System.Drawing.Size(548, 25);
             this.definitionsToolStrip.TabIndex = 0;
             this.definitionsToolStrip.Text = "toolStrip1";
             // 
@@ -304,6 +306,15 @@ namespace RobocupPlays
             this.openToolStripButton.Text = "&Open";
             this.openToolStripButton.Click += new System.EventHandler(this.openToolStripButton_Click);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::RobocupPlays.Properties.Resources.check;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.White;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "toolStripButton1";
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -367,6 +378,7 @@ namespace RobocupPlays
             this.Text = "Play Designer";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.MainForm_Paint);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MainForm_MouseUp);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MainForm_MouseMove);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MainForm_MouseDown);
             this.definitionsToolStrip.ResumeLayout(false);
@@ -411,6 +423,7 @@ namespace RobocupPlays
         private System.Windows.Forms.ToolStripButton toolstripEditObject;
         private System.Windows.Forms.ToolStripButton openToolStripButton;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
 
