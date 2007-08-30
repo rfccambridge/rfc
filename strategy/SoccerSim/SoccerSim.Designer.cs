@@ -32,9 +32,10 @@ namespace SoccerSim
             // 
             // SoccerSim
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(859, 570);
+            this.ClientSize = new System.Drawing.Size(715, 506);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "SoccerSim";
             this.Text = "RFC Soccer Simulator";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.SoccerSim_Paint);

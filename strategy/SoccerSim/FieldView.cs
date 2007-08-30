@@ -8,7 +8,7 @@ using Robocup.Infrastructure;
 
 namespace SoccerSim
 {
-    public class FieldView
+    public class FieldView : ICoordinateConverter
     {
         // drawing constants
         const int ROBOT_SIZE = 20;
@@ -147,13 +147,13 @@ namespace SoccerSim
         #region Coordinate Conversions
 
         const float PIXELSPERMETER = 120.0f;
-        const float BORDER_X = 400.0f;
-        const float BORDER_Y = 300.0f;
-        private int fieldtopixelX(double x)
+        const float BORDER_X = 350.0f;
+        const float BORDER_Y = 250.0f;
+        public int fieldtopixelX(double x)
         {
             return (int)(BORDER_X + PIXELSPERMETER * x);
         }
-        private int fieldtopixelY(double y)
+        public int fieldtopixelY(double y)
         {
             return (int)(BORDER_Y - PIXELSPERMETER * y);
         }
@@ -161,17 +161,25 @@ namespace SoccerSim
         {
             return new Vector2(fieldtopixelX(p.X), fieldtopixelY(p.Y));
         }
-        private float pixeltofieldX(float x)
+        public float pixeltofieldX(float x)
         {
             return (float)((x - BORDER_X) / PIXELSPERMETER);
         }
-        private float pixeltofieldY(float y)
+        public float pixeltofieldY(float y)
         {
             return (float)((y - BORDER_Y) / -PIXELSPERMETER);
         }
-        private Vector2 pixeltofieldPoint(Vector2 p)
+        public Vector2 pixeltofieldPoint(Vector2 p)
         {
             return new Vector2(pixeltofieldX(p.X), pixeltofieldY(p.Y));
+        }
+        public float fieldtopixelDistance(float f)
+        {
+            return f * PIXELSPERMETER;
+        }
+        public float pixeltofieldDistance(float f)
+        {
+            return f / PIXELSPERMETER;
         }
         #endregion
     }

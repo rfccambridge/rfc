@@ -25,7 +25,7 @@ namespace SoccerSim
 
         FieldState _state;
 
-        bool running = false;
+        volatile bool running = false;
         int _sleepTime;
         Thread worker;
         int counter = 0;
