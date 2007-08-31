@@ -261,6 +261,14 @@ namespace RobocupPlays
                 GreaterLessThan glt = (GreaterLessThan)(objects[1]);
                 return FloatComparer.compare(f1, f2, glt);
             });
+            addFunction("or", "Bool, Bool - Or", typeof(bool), new Type[] { typeof(bool), typeof(bool) }, "~ or ~", delegate(EvaluatorState state, object[] objects)
+            {
+                return ((bool)objects[0]) || ((bool)objects[1]);
+            });
+            addFunction("and", "Bool, Bool - And", typeof(bool), new Type[] { typeof(bool), typeof(bool) }, "~ and ~", delegate(EvaluatorState state, object[] objects)
+            {
+                return ((bool)objects[0]) && ((bool)objects[1]);
+            });
             addFunction("+", "Float, Float - Add", typeof(float), new Type[] { typeof(float), typeof(float) }, "~ + ~", delegate(EvaluatorState state, object[] objects)
             {
                 return ((float)objects[0]) + ((float)objects[1]);
@@ -308,6 +316,17 @@ namespace RobocupPlays
             addFunction("intAbs", "Int - Absolute Value", typeof(int), new Type[] { typeof(int) }, "The absolute value of ~", delegate(EvaluatorState state, object[] objects)
             {
                 return Math.Abs((int)objects[0]);
+            });
+            #endregion
+
+            #region misc
+            addFunction("numourbots", " - # our robots", typeof(int), new Type[] { }, "The number of robots currently on our team", delegate(EvaluatorState state, object[] objects)
+            {
+                return state.OurTeamInfo.Length;
+            });
+            addFunction("numtheirbots", " - # their robots", typeof(int), new Type[] { }, "The number of robots currently on their team", delegate(EvaluatorState state, object[] objects)
+            {
+                return state.TheirTeamInfo.Length;
             });
             #endregion
 

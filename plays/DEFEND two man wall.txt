@@ -8,7 +8,7 @@ circle1 (circle ourgoal 0.8)
 point0 (pointof ball)
 line2 (line ourgoal point0)
 point3 (linecircleintersection line2 circle1 1)
-circle4 (circle point3 0.11)
+circle4 (circle point3 0.14)
 point9 (circlecircleintersection circle1 circle4 -1)
 robot5 (closest friendly point9 loose)
 point10 (circlecircleintersection circle1 circle4 1)
@@ -25,4 +25,8 @@ Conditions:
 Actions:
 (robotpointmove robot5 point9)
 secondMove
+DesignerData:
+ball <0.6713,0.1364>
+robot5 <0.6619,1.392>
+robot7 <-1.917,1.461>
 

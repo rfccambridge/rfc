@@ -76,7 +76,7 @@ namespace RobocupPlays
             this.actionBox.DoubleClick += new System.EventHandler(this.listboxDoubleClicked);
             this.actionBox.SelectedIndexChanged += new System.EventHandler(this.listboxSelectedIndexChanged);
             // 
-            // ShowCommandsForm
+            // ShowExpressionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

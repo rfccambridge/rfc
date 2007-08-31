@@ -264,6 +264,19 @@ namespace RobocupPlays
                     //If there is info, we can assume that there is also a point for the ball
                     foundball = true;
                     b = new DesignerBall(position);
+                    DesignerExpression new_ball = new DesignerExpression(b);
+                    foreach (DesignerExpression exp in PlayObjects.Values)
+                    {
+                        replaceArg(exp, fake_ball, new_ball);
+                    }
+                    foreach (DesignerExpression exp in Conditions)
+                    {
+                        replaceArg(exp, fake_ball, new_ball);
+                    }
+                    foreach (DesignerExpression exp in Actions)
+                    {
+                        replaceArg(exp, fake_ball, new_ball);
+                    }
                 }
                 else
                 {

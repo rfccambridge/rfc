@@ -18,8 +18,8 @@ using System.Collections;
 using Robocup.Infrastructure;
 
 //using Navigator = Navigation.Examples.LookAheadPotential;
-using Navigator = Navigation.Examples.DumbNavigator;
-//using Navigator = Navigation.Current.CurrentNavigator;
+//using Navigator = Navigation.Examples.DumbNavigator;
+using Navigator = Navigation.Current.CurrentNavigator;
 
 using RobotInfo = Robocup.Infrastructure.RobotInfo;
 
@@ -28,10 +28,13 @@ namespace InterpreterTester
     public partial class InterpreterTester : Form, IController, IPredictor
     {
         Interpreter interpreter, defensiveinterpreter;
-        const float ballspeed = .06f, balldecay = .98f;
+        const float ballspeed = .08f, balldecay = .98f;
         private const float ballbounce = .01f, collisionradius = .12f, speed = 0.02f;
 
         const int testIterations = 1000;
+
+        string play_directory = "../../Plays/Demo/Ours";
+        string their_play_directory = "../../Plays/Demo/Opponent";
 
         Random r = new Random();
 
@@ -39,34 +42,18 @@ namespace InterpreterTester
 
         //private List<InterpreterPlay> plays;
 
-        private Dictionary<InterpreterPlay, string> filenames;
-
-        /*private void savePlays()
-        {
-            try
-            {
-                foreach (KeyValuePair<InterpreterPlay, string> pair in filenames)
-                {
-                    string s = pair.Key.Save();
-                    StreamWriter writer = new StreamWriter(pair.Value);
-                    writer.WriteLine(s);
-                    writer.Close();
-                    writer.Dispose();
-                }
-            }
-            catch (IOException)
-            {
-                MessageBox.Show("Error saving the files --\n too bad, you've probably lost whichever one was being saved");
-            }
-        }*/
+        PlayManager play_manager;
 
         private void loadPlays()
         {
+            if (play_manager != null)
+                play_manager.Close();
+
             PlayLoader<InterpreterPlay, InterpreterExpression> loader =
                 new PlayLoader<InterpreterPlay, InterpreterExpression>(new InterpreterExpression.Factory());
-            string[] files = System.IO.Directory.GetFiles("../../Plays");
+            string[] files = System.IO.Directory.GetFiles(play_directory);
             List<InterpreterPlay> plays = new List<InterpreterPlay>();
-            filenames = new Dictionary<InterpreterPlay, string>();
+            List<PlayManager.PlayRecord> left_play_records = new List<PlayManager.PlayRecord>();
             foreach (string fname in files)
             {
                 string extension = fname.Substring(1 + fname.LastIndexOf('.'));
@@ -81,7 +68,7 @@ namespace InterpreterTester
                 {
                     InterpreterPlay p = loader.load(filecontents);
                     plays.Add(p);
-                    filenames.Add(p, fname);
+                    left_play_records.Add(new PlayManager.PlayRecord(fname, p));
                 }
                 catch (Exception ex)
                 {
@@ -106,8 +93,9 @@ namespace InterpreterTester
 
 
 #if DIFFERENTPLAYS
-            files = System.IO.Directory.GetFiles("../../Plays/Opponent Plays");
+            files = System.IO.Directory.GetFiles(their_play_directory);
             List<InterpreterPlay> defensiveplays = new List<InterpreterPlay>();
+            List<PlayManager.PlayRecord> right_play_records = new List<PlayManager.PlayRecord>();
             foreach (string fname in files)
             {
                 System.IO.StreamReader reader = new System.IO.StreamReader(fname);
@@ -117,7 +105,9 @@ namespace InterpreterTester
 
                 try
                 {
-                    defensiveplays.Add(loader.load(filecontents));
+                    InterpreterPlay p = loader.load(filecontents);
+                    defensiveplays.Add(p);
+                    right_play_records.Add(new PlayManager.PlayRecord(fname, p));
                 }
                 catch (Exception ex)
                 {
@@ -140,6 +130,9 @@ namespace InterpreterTester
 #endif
             defensiveinterpreter = new Interpreter(true, defensiveplays.ToArray(),
                 new TeamFlipperPredictor(this), this);
+
+            play_manager = new PlayManager(interpreter, defensiveinterpreter, left_play_records, right_play_records);
+            play_manager.Show();
         }
         private void InterpreterTester_Load(object sender, EventArgs e)
         {
@@ -172,7 +165,7 @@ namespace InterpreterTester
         {
             ourgoals = theirgoals = 0;
             ballImmobile = 0;
-            ourinfo = new RobotInfo[] {
+            /*ourinfo = new RobotInfo[] {
                 new RobotInfo(new Vector2(-1.0f, -1), 3, 0),
                 new RobotInfo(new Vector2(-1.0f, 0), 3, 1),
                 new RobotInfo(new Vector2(-1.0f, 1), 3, 2),
@@ -185,6 +178,14 @@ namespace InterpreterTester
                 new RobotInfo(new Vector2(1.0f, 1), 3, TEAMSIZE+2),
                 new RobotInfo(new Vector2(2f, -1), 3, TEAMSIZE+3),
                 new RobotInfo(new Vector2(2f, 1), 3, TEAMSIZE+4)
+            };*/
+            ourinfo = new RobotInfo[] {
+                new RobotInfo(new Vector2(-2f, 0), 1, 0),
+                new RobotInfo(new Vector2(-1f, 0), 1, 1)
+            };
+            theirinfo = new RobotInfo[] {
+                new RobotInfo(new Vector2(1f, 0), 3, TEAMSIZE+0),
+                new RobotInfo(new Vector2(2f, 0), 3, TEAMSIZE+1),
             };
             ballinfo = new BallInfo(new Vector2(0, 0), 0, 0);
             ballvx = ballvy = 0;
@@ -496,7 +497,7 @@ namespace InterpreterTester
             if (immobile)
             {
                 ballImmobile++;
-                if (ballImmobile > 200)
+                if (ballImmobile > 1000)
                 {
                     ballinfo = new BallInfo(new Vector2(0, 0), 0, 0);
                     ballvx = ballvy = 0;
@@ -721,9 +722,11 @@ namespace InterpreterTester
             {
                 addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(result), Color.Green, 3.0f));
                 addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(destination), Color.Red, 3.0f));
+                //float neworientation = prev.Orientation * .85f + orientation * .15f;
+                float neworientation = orientation;
                 if (prev.Position != result)
                 {
-                    infos[robotID] = new RobotInfo(prev.Position + speed * (result - prev.Position).normalize(), (prev.Orientation * .85f + orientation * .15f), prev.ID);
+                    infos[robotID] = new RobotInfo(prev.Position + speed * (result - prev.Position).normalize(), neworientation, prev.ID);
                 }
             }
             //Console.WriteLine("going from " + prev.Position + " to " + result);
@@ -739,7 +742,7 @@ namespace InterpreterTester
                 infos = theirinfo;
                 robotID -= TEAMSIZE;
             }
-            const float randomComponent = ballspeed / 3;
+            const float randomComponent = ballspeed / 6;
             ballvx = (float)(ballspeed * Math.Cos(infos[robotID].Orientation));
             ballvy = (float)(ballspeed * Math.Sin(infos[robotID].Orientation));
             ballvx += (float)(r.NextDouble() * 2 - 1) * randomComponent;

@@ -51,7 +51,7 @@ namespace RobocupPlays
             this.toolstripPlayType = new System.Windows.Forms.ToolStripComboBox();
             this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolstripExitReturn = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -82,7 +82,7 @@ namespace RobocupPlays
             this.toolstripPlayType,
             this.saveToolStripButton,
             this.openToolStripButton,
-            this.toolStripButton1});
+            this.toolstripExitReturn});
             this.definitionsToolStrip.Location = new System.Drawing.Point(3, 0);
             this.definitionsToolStrip.Name = "definitionsToolStrip";
             this.definitionsToolStrip.Size = new System.Drawing.Size(548, 25);
@@ -306,14 +306,15 @@ namespace RobocupPlays
             this.openToolStripButton.Text = "&Open";
             this.openToolStripButton.Click += new System.EventHandler(this.openToolStripButton_Click);
             // 
-            // toolStripButton1
+            // toolstripExitReturn
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::RobocupPlays.Properties.Resources.check;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.White;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton1.Text = "toolStripButton1";
+            this.toolstripExitReturn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolstripExitReturn.Image = ((System.Drawing.Image)(resources.GetObject("toolstripExitReturn.Image")));
+            this.toolstripExitReturn.ImageTransparentColor = System.Drawing.Color.White;
+            this.toolstripExitReturn.Name = "toolstripExitReturn";
+            this.toolstripExitReturn.Size = new System.Drawing.Size(23, 22);
+            this.toolstripExitReturn.Text = "Exit and return";
+            this.toolstripExitReturn.Click += new System.EventHandler(this.toolstripExitReturn_Click);
             // 
             // statusStrip1
             // 
@@ -423,7 +424,7 @@ namespace RobocupPlays
         private System.Windows.Forms.ToolStripButton toolstripEditObject;
         private System.Windows.Forms.ToolStripButton openToolStripButton;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton toolstripExitReturn;
     }
 }
 

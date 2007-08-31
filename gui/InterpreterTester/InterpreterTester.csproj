@@ -52,12 +52,22 @@
     <Compile Include="InterpreterTester.Designer.cs">
       <DependentUpon>InterpreterTester.cs</DependentUpon>
     </Compile>
+    <Compile Include="PlayManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlayManager.Designer.cs">
+      <DependentUpon>PlayManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="PlayScorer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="InterpreterTester.resx">
       <SubType>Designer</SubType>
       <DependentUpon>InterpreterTester.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlayManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PlayManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -86,6 +96,10 @@
     <ProjectReference Include="..\..\strategy\Navigation\Navigation.csproj">
       <Project>{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}</Project>
       <Name>Navigation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\strategy\Play Designer\PlayDesigner.csproj">
+      <Project>{C57C048E-0954-44CD-8FF6-BD7269962214}</Project>
+      <Name>PlayDesigner</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\strategy\Play Selector\PlaySelector.csproj">
       <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>

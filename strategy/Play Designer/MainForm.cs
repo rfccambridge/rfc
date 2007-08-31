@@ -135,12 +135,33 @@ namespace RobocupPlays
         }
         #endregion
 
-        public MainForm(DesignerPlay toEdit)
+        /// <summary>
+        /// Creates a new form to edit the given play (in text format).  If the play is null, creates 
+        /// a new one.
+        /// </summary>
+        /// <param name="toEdit"></param>
+        public MainForm(string toEdit)
         {
+            init();
+            if (toEdit != null)
+            {
+                PlayLoader<DesignerPlay, DesignerExpression> loader =
+                    new PlayLoader<DesignerPlay, DesignerExpression>(new DesignerExpression.Factory());
+                play = loader.load(toEdit);
+            }
+
+            repaint();
         }
 
         public MainForm()
         {
+            init();
+            toolstripExitReturn.Visible = false;
+
+            repaint();
+        }
+
+        private void init() {
             InitializeComponent();
 
             //I don't know why, but if you set a combo box to be uneditable (the user can't add
@@ -182,8 +203,6 @@ namespace RobocupPlays
 
             Version v = System.Reflection.Assembly.GetAssembly(this.GetType()).GetName(false).Version;
             showDebugLine("This is Play Designer version " + v.Major + "." + v.Minor + ", build " + v.Build);
-
-            repaint();
         }
 
         #region "Action Button" stuff
@@ -766,7 +785,7 @@ namespace RobocupPlays
         {
             this.Invalidate();
             showForm.update();
-            definitionForm.Invalidate();
+            definitionForm.updateList();
         }
 
         /* The painting handler.  I chose to custom-paint everything insted of using custom controls,
@@ -1102,7 +1121,7 @@ namespace RobocupPlays
         public bool addCondition(DesignerExpression exp)
         {
             play.Conditions.Add(exp);
-            addExpressionsIntermediates(exp);
+            internalAddExpressionsIntermediates(exp);
 #if DEBUG
             if (!(state is state_SelectingObject))
                 throw new ApplicationException("The state was somehow changed from state_SelectingObject !");
@@ -1129,6 +1148,7 @@ namespace RobocupPlays
         public bool addAction(DesignerExpression exp)
         {
             play.Actions.Add(exp);
+            internalAddExpressionsIntermediates(exp);
             if (exp.Name != null)
                 play.PlayObjects.Add(exp.Name, exp);
 #if DEBUG
@@ -1198,6 +1218,23 @@ namespace RobocupPlays
         {
             showForm.Close();
             definitionForm.Close();
+        }
+
+        private bool returningPlay = false;
+        /// <summary>
+        /// Whether or not the play should be looked at when the form closes.
+        /// For instance, if the user messes up and wants to just exit out, this will be false and the
+        /// play should be discarded.
+        /// </summary>
+        public bool ReturningPlay
+        {
+            get { return returningPlay; }
+        }
+	
+        private void toolstripExitReturn_Click(object sender, EventArgs e)
+        {
+            returningPlay = true;
+            Close();
         }
 
     }

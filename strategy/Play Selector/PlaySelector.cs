@@ -45,45 +45,43 @@ namespace RobocupPlays
 	
     class PlaySelector
     {
-        InterpreterPlay[] plays;
         //int tick = 0;
         PlayEvaluator evaluator;
-        public PlaySelector(InterpreterPlay[] plays)
+        public PlaySelector()
         {
             evaluator = new PlayEvaluator();
-            this.plays = plays;
         }
         Random r = new Random();
-        public SelectorResults selectPlays(PlayTypes type, RobotInfo[] ourteaminfo, RobotInfo[] theirteaminfo, BallInfo ballinfo,
+        public SelectorResults selectPlays(List<InterpreterPlay> plays, RobotInfo[] ourteaminfo, RobotInfo[] theirteaminfo, BallInfo ballinfo,
             List<InterpreterPlay> preferedPlays, List<SelectorResults.RobotAssignments> lastAssignments)
         {
             evaluator.updateConditions(ourteaminfo, theirteaminfo, ballinfo);
 
             //Array.Sort(plays, new PlayComparer(preferedPlays));
-            Array.Sort(plays, new RandomizedPlayComparer(preferedPlays, 20, .3));
+            plays.Sort(new RandomizedPlayComparer(preferedPlays, 20, .3));
 
             List<ActionInfo> rtnActions = new List<ActionInfo>();
             List<SelectorResults.RobotAssignments> assignments=new List<SelectorResults.RobotAssignments>();
 
             int numOurRobotsAvailable = ourteaminfo.Length;
             //foreach (InterpreterPlay play in plays)
-            for (int playnum = 0; playnum < plays.Length; playnum++)
+            for (int playnum = 0; playnum < plays.Count; playnum++)
             {
                 InterpreterPlay play = plays[playnum];
                 //the score difference between this play, and the one that comes after it
                 double scoreDiff = play.Score;
-                if (playnum < plays.Length - 1)
+                if (playnum < plays.Count - 1)
                     scoreDiff -= plays[playnum + 1].Score;
                 //Console.Write("Evaluating play " + play.Name + "......     ");
                 try
                 {
-                    if (play.PlayType == type && play.NumOurRobots <= ourteaminfo.Length && play.Actions.Count <= numOurRobotsAvailable && play.NumTheirRobots <= theirteaminfo.Length)
+                    if (play.NumOurRobots <= ourteaminfo.Length && play.Actions.Count <= numOurRobotsAvailable && play.NumTheirRobots <= theirteaminfo.Length)
                     {
                         int[] assignedIDs=null;
                         //the larger the difference in score between this play and the next play,
                         //the higher the chances that this play will break free and take the better
                         //robots for itself
-                        if (r.NextDouble() > scoreDiff * plays.Length /10 - .2)
+                        if (r.NextDouble() > scoreDiff * plays.Count / 10 - .2)
                         {
                             foreach (SelectorResults.RobotAssignments ra in lastAssignments)
                             {

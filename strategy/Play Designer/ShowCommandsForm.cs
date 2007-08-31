@@ -103,7 +103,7 @@ namespace RobocupPlays
             }
             f.highlightAll();*/
             prevexpression = exp;
-            mainform.repaint();
+            mainform.Invalidate();
         }
 
         private void ShowCommandsForm_Deactivate(object sender, EventArgs e)

@@ -50,7 +50,6 @@
   <ItemGroup>
     <Compile Include="CoordinateFlippers.cs" />
     <Compile Include="InterpreterPlay.cs" />
-    <Compile Include="LearningInterpreter.cs" />
     <Compile Include="PlayComparer.cs" />
     <Compile Include="ActionInterpreter.cs" />
     <Compile Include="Interpreter.cs" />

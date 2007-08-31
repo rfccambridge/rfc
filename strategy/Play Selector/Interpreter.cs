@@ -14,13 +14,16 @@ namespace RobocupPlays
         private readonly PlaySelector selector;
         private readonly IActionInterpreter actioninterpreter;
         private readonly IPredictor predictor;
+        private List<InterpreterPlay> plays = new List<InterpreterPlay>();
 
         public Interpreter(bool flipCoordinates, InterpreterPlay[] plays,
                            IPredictor predictor, IActionInterpreter actioninterpreter)
         {
-            selector = new PlaySelector(plays);
+            selector = new PlaySelector();
+            this.plays.AddRange(plays);
             if (flipCoordinates)
             {
+                //if we have to flip the coordinates, wrap the predictor/actioninterpreter
                 this.actioninterpreter = new FlipActionInterpreter(actioninterpreter);
                 this.predictor = new FlipPredictor(predictor);
             }
@@ -31,29 +34,28 @@ namespace RobocupPlays
             }
         }
         public Interpreter(bool flipCoordinates, InterpreterPlay[] plays, IPredictor predictor, IController commander)
-            : this(flipCoordinates, plays, predictor, new ActionInterpreter(commander, predictor))
-        {
-        }
-        volatile int numselecting = 0;
+            : this(flipCoordinates, plays , predictor , new ActionInterpreter(commander, predictor)) { }
+        volatile bool running = false;
+        object run_lock = new object();
         private List<InterpreterPlay> lastRunPlays = new List<InterpreterPlay>();
-        /// <summary>
-        /// Returns the list of all plays that were run the most recent time.
-        /// </summary>
-        protected List<InterpreterPlay> LastRunPlays
-        {
-            get { return lastRunPlays; }
-        }
-        /// <summary>
-        /// This method is intended to be overriden in any subclasses.  It gets called at the end of every
-        /// interpreting step.
-        /// </summary>
-        protected virtual void finishedInterpreting()
-        {
-        }
 
         public bool canInterpret()
         {
-            return numselecting == 0;
+            return !running;
+        }
+
+        public void AddPlay(InterpreterPlay play)
+        {
+            plays.Add(play);
+        }
+        public void RemovePlay(InterpreterPlay play)
+        {
+            plays.Remove(play);
+        }
+        public void ReplacePlay(InterpreterPlay old_play, InterpreterPlay new_play)
+        {
+            RemovePlay(old_play);
+            AddPlay(new_play);
         }
 
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();
@@ -66,13 +68,12 @@ namespace RobocupPlays
             RobotInfo[] theirteaminfo = predictor.getTheirTeamInfo().ToArray();
             BallInfo ballinfo = predictor.getBallInfo();
 
-            numselecting++;
-            if (numselecting > 1)
+            lock (run_lock)
             {
-                numselecting--;
-                return false;
+                if (running)
+                    return false;
+                running = true;
             }
-            //DateTime start = System.DateTime.Now;
 
             //make sure all of the robots are not busy or assigned:
             foreach (RobotInfo robot in ourteaminfo)
@@ -84,8 +85,10 @@ namespace RobocupPlays
                 robot.setFree();
             }
 
+            List<InterpreterPlay> plays_to_run = plays.FindAll(
+                delegate(InterpreterPlay play) { return play.PlayType == type; });
             //find all the actions we want to do
-            SelectorResults results = selector.selectPlays(type, ourteaminfo, theirteaminfo, ballinfo, lastRunPlays, lastAssignments);
+            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, lastRunPlays, lastAssignments);
 
             lastAssignments = results.Assignments;
 
@@ -123,9 +126,11 @@ namespace RobocupPlays
             }
             active = nowactive;
 
-            finishedInterpreting();
             //commander.finishRound();
-            numselecting--;
+            lock (run_lock)
+            {
+                running = false;
+            }
             return true;
         }
     }
