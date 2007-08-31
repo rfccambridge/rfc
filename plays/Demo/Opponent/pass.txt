@@ -1,0 +1,28 @@
+Metadata:
+type NormalPlay
+score 1.005054
+name pass
+Objects:
+topLeftCorner (point -2.45 1.7)
+bottomLeftCorner (point -2.45 -1.7)
+bottomRightCorner (point 2.45 -1.7)
+topRightCorner (point 2.45 1.7)
+ourgoal (point -2.53 0)
+theirgoal (point 2.53 0)
+robot1 (closest friendly point3 target)
+point0 (pointof robot1)
+robot2 (closest friendly point4 strict)
+point1 (pointof robot2)
+line5 (line point0 theirgoal)
+point3 (point 1.71 -0.92)
+point4 (pointof ball)
+circle6 (circle point0 0.10)
+point7 (linecircleintersection line5 circle6 1)
+Conditions:
+Actions:
+(robotpointkick robot2 point7)
+DesignerData:
+ball <1.49,0.75>
+robot1 <1.51,-0.96>
+robot2 <1.54,1.01>
+
