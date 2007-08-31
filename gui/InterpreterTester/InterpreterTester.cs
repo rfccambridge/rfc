@@ -762,6 +762,7 @@ namespace InterpreterTester
 
         private void InterpreterTester_FormClosing(object sender, FormClosingEventArgs e)
         {
+            play_manager.Close();
 #if MULTITHREAD
             workerThread.Abort();
 #endif
