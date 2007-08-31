@@ -742,7 +742,7 @@ namespace InterpreterTester
                 infos = theirinfo;
                 robotID -= TEAMSIZE;
             }
-            const float randomComponent = ballspeed / 6;
+            const float randomComponent = ballspeed / 6000;
             ballvx = (float)(ballspeed * Math.Cos(infos[robotID].Orientation));
             ballvy = (float)(ballspeed * Math.Sin(infos[robotID].Orientation));
             ballvx += (float)(r.NextDouble() * 2 - 1) * randomComponent;
