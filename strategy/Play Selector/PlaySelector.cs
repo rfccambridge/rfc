@@ -89,11 +89,6 @@ namespace RobocupPlays
                                     assignedIDs = ra.Assignments;
                             }
                         }
-                        /*else
-                        {
-                            playnum++;
-                            playnum--;
-                        }*/
                         EvaluatorResults results = evaluator.evaluatePlay(play,assignedIDs);
                         if (results == null)
                             //this play was rejected

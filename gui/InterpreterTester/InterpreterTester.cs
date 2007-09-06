@@ -1,5 +1,4 @@
 #define DIFFERENTPLAYS
-//#define MULTITHREAD
 //#define TIMING
 
 
@@ -137,9 +136,6 @@ namespace InterpreterTester
         private void InterpreterTester_Load(object sender, EventArgs e)
         {
         }
-#if MULTITHREAD
-        System.Threading.Thread workerThread;
-#endif
         public InterpreterTester()
         {
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.DoubleBuffer, true);
@@ -147,19 +143,6 @@ namespace InterpreterTester
             loadPlays();
 
             init();
-#if MULTITHREAD
-            workerThread = new System.Threading.Thread(delegate()
-            {
-                while (true)
-                {
-                    while (ourcopy3 == null || theircopy3 == null) { System.Threading.Thread.Sleep(0); }
-                    interpreter.interpret(ourcopy3, theircopy3, ballinfo, playType);
-                    ourcopy3 = null;
-                    theircopy3 = null;
-                }
-            });
-            workerThread.Start();
-#endif
         }
         private void init()
         {
@@ -303,10 +286,6 @@ namespace InterpreterTester
         #endregion
         #region Interpreting
 
-#if MULTITHREAD
-        volatile RobotInfo[] ourcopy3 = null;
-        volatile RobotInfo[] theircopy3 = null;
-#endif
         private void interpret()
         {
 #if TIMING
@@ -326,40 +305,17 @@ namespace InterpreterTester
             }
             foreach (RobotInfo r in theirinfo)
                 r.setFree();
-#if MULTITHREAD
-            int ol = ourinfo.Length, tl = theirinfo.Length;
-            RobotInfo[] ourcopy1 = new RobotInfo[ol];
-            RobotInfo[] theircopy1 = new RobotInfo[tl];
-            for (int i = 0; i < ol; i++)
-            {
-                ourcopy1[i] = ourinfo[i].copy();
-            }
-            for (int i = 0; i < tl; i++)
-            {
-                theircopy1[i] = theirinfo[i].copy();
-            }
-#endif
 #if TIMING
             timer.Stop();
             Console.WriteLine(timer.Duration * 1000 + " ms for getting ready to interpreter.interpret()");
             timer.Start();
 #endif
-#if MULTITHREAD
-            ourcopy3 = ourcopy1;
-            theircopy3 = theircopy1;
-#else
             interpreter.interpret(playType);
             foreach (RobotInfo r in ourinfo)
                 r.setFree();
             foreach (RobotInfo r in theirinfo)
                 r.setFree();
-#endif
             defensiveinterpreter.interpret(playType);
-#if MULTITHREAD
-            while (ourcopy3!=null && theircopy3!=null)
-            {
-            }
-#endif
 #if TIMING
             timer.Stop();
             Console.WriteLine(timer.Duration * 1000 + " ms for calling interpreter.interpret()");
@@ -763,9 +719,6 @@ namespace InterpreterTester
         private void InterpreterTester_FormClosing(object sender, FormClosingEventArgs e)
         {
             play_manager.Close();
-#if MULTITHREAD
-            workerThread.Abort();
-#endif
         }
 
         /// <summary>
