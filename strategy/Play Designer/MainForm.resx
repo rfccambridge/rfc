@@ -121,15 +121,6 @@
     <value>141, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="toolstripAddRobot.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAHhJREFUOE+1U0EO
-        wCAI8338/z9OzDQFcdQtMyFepC22lPLTqQ0Xi6aZTSJStU6A+uPR6G8A2qrZNgdqFpBHdmaclD1T8QZA
-        Vc9zNAK4Y/4iVYEu3a5YAMZGl43YjYDJjBixL/+BCcRQMYFSsE+RHmr8Hhjb6O3KHl58HNbwiAEXgQAA
-        AABJRU5ErkJggg==
-</value>
-  </data>
   <data name="toolstriponsAddClosestDefinition.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

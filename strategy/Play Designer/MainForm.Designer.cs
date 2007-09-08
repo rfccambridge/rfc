@@ -94,7 +94,7 @@ namespace RobocupPlays
             this.toolstripAddRobot.Checked = true;
             this.toolstripAddRobot.CheckState = System.Windows.Forms.CheckState.Checked;
             this.toolstripAddRobot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripAddRobot.Image = ((System.Drawing.Image)(resources.GetObject("toolstripAddRobot.Image")));
+            this.toolstripAddRobot.Image = global::RobocupPlays.Properties.Resources.roboticon;
             this.toolstripAddRobot.ImageTransparentColor = System.Drawing.Color.White;
             this.toolstripAddRobot.Name = "toolstripAddRobot";
             this.toolstripAddRobot.Size = new System.Drawing.Size(23, 22);
