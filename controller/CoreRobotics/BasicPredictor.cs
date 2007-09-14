@@ -186,7 +186,7 @@ namespace Robocup.CoreRobotics
             }
         }
 
-        protected BallInfo ballInfo = new BallInfo(new Vector2(0, 0), 0, 0);
+        protected BallInfo ballInfo = new BallInfo(new Vector2(0, 0));
         private readonly BasicPredictorHelper our_helper = new BasicPredictorHelper(true);
         private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(false);
 

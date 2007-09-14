@@ -29,6 +29,9 @@ namespace InterpreterTester
         Interpreter interpreter, defensiveinterpreter;
         const float ballspeed = .08f, balldecay = .98f;
         private const float ballbounce = .01f, collisionradius = .12f, speed = 0.02f;
+        // This is an approximation; assuming that the ball travels at max 10m/s, here it travels at
+        // ballspeed m/tick, so ms/tick = 1000 ms/s * (ballspeed m/tick) / (10m/s)
+        private const float ms_per_tick = 1000 * ballspeed / 10;
 
         const int testIterations = 1000;
 
@@ -170,7 +173,7 @@ namespace InterpreterTester
                 new RobotInfo(new Vector2(1f, 0), 3, TEAMSIZE+0),
                 new RobotInfo(new Vector2(2f, 0), 3, TEAMSIZE+1),
             };
-            ballinfo = new BallInfo(new Vector2(0, 0), 0, 0);
+            ballinfo = new BallInfo(new Vector2(0, 0));
             ballvx = ballvy = 0;
         }
 
@@ -181,7 +184,7 @@ namespace InterpreterTester
 
         RobotInfo[] theirinfo;
 
-        BallInfo ballinfo = new BallInfo(new Vector2(0, 0), 0, 0);
+        BallInfo ballinfo = new BallInfo(new Vector2(0, 0));
         float ballvx = 0, ballvy = 0;
 
         int ballImmobile = 0;
@@ -301,20 +304,13 @@ namespace InterpreterTester
                 r.Tags.Clear();
                 if (r.ID == 0)
                     r.Tags.Add("goalie");
-                r.setFree();
             }
-            foreach (RobotInfo r in theirinfo)
-                r.setFree();
 #if TIMING
             timer.Stop();
             Console.WriteLine(timer.Duration * 1000 + " ms for getting ready to interpreter.interpret()");
             timer.Start();
 #endif
             interpreter.interpret(playType);
-            foreach (RobotInfo r in ourinfo)
-                r.setFree();
-            foreach (RobotInfo r in theirinfo)
-                r.setFree();
             defensiveinterpreter.interpret(playType);
 #if TIMING
             timer.Stop();
@@ -323,16 +319,6 @@ namespace InterpreterTester
         }
         private void goalScored(bool scoredByLeftTeam)
         {
-            /*if (interpreter is LearningInterpreter)
-            {
-                LearningInterpreter linterpreter = (LearningInterpreter)interpreter;
-                linterpreter.goalScored(scoredByLeftTeam);
-            }
-            if (defensiveinterpreter is LearningInterpreter)
-            {
-                LearningInterpreter linterpreter = (LearningInterpreter)defensiveinterpreter;
-                linterpreter.goalScored(!scoredByLeftTeam);
-            }*/
             if (scoredByLeftTeam)
                 ourgoals++;
             else
@@ -391,7 +377,7 @@ namespace InterpreterTester
             if (Math.Abs(ballinfo.Position.Y) <= .35 && Math.Abs(ballinfo.Position.X) >= 2.4)
             {
                 goalScored(ballinfo.Position.X > 0);
-                ballinfo = new BallInfo(new Vector2(0, 0), 0, 0);
+                ballinfo = new BallInfo(new Vector2(0, 0));
                 ballvx = ballvy = 0;
                 return;
             }
@@ -423,7 +409,7 @@ namespace InterpreterTester
                 }
             }
 
-            ballinfo = new BallInfo(newballlocation, ballvx, ballvy);
+            ballinfo = new BallInfo(newballlocation, (1 / (ms_per_tick * 1000))*(new Vector2(ballvx, ballvy)));
             ballvx *= balldecay;
             ballvy *= balldecay;
 
@@ -455,7 +441,7 @@ namespace InterpreterTester
                 ballImmobile++;
                 if (ballImmobile > 1000)
                 {
-                    ballinfo = new BallInfo(new Vector2(0, 0), 0, 0);
+                    ballinfo = new BallInfo(new Vector2(0, 0));
                     ballvx = ballvy = 0;
                     ballImmobile = 0;
                 }
@@ -589,7 +575,7 @@ namespace InterpreterTester
             if (e.Button == MouseButtons.Middle)
             {
                 ballvx = ballvy = 0;
-                ballinfo = new BallInfo(pixeltofieldPoint((Vector2)e.Location), 0, 0);
+                ballinfo = new BallInfo(pixeltofieldPoint((Vector2)e.Location));
                 this.Invalidate();
             }
         }
@@ -644,7 +630,7 @@ namespace InterpreterTester
                 return;
             double ballavoidance = 0;
             if (avoidBall)
-                ballavoidance = (float)Math.Max(1, Math.Min(1.7, (1 + 10 * Math.Sqrt(ballinfo.dX * ballinfo.dX + ballinfo.dY * ballinfo.dY)) * (2.40 - 1.5 * ((destination - ballposition).normalize() * (position - ballposition).normalize()))));
+                ballavoidance = (float)Math.Max(1, Math.Min(1.7, (1 + Math.Sqrt(ballinfo.Velocity.magnitudeSq())) * (2.40 - 1.5 * ((destination - ballposition).normalize() * (position - ballposition).normalize()))));
             //PAB.HiPerfTimer timer = new global::InterpreterTester.PAB.HiPerfTimer();
             //timer.Start();
             /*Vector2 result = n.navigate(robotID, position, destination,

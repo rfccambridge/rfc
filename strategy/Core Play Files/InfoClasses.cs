@@ -14,13 +14,13 @@ namespace RobocupPlays
         {
             get { return tick; }
         }
-        private RobotInfo[] ourteaminfo;
-        public RobotInfo[] OurTeamInfo
+        private InterpreterRobotInfo[] ourteaminfo;
+        public InterpreterRobotInfo[] OurTeamInfo
         {
             get { return ourteaminfo; }
         }
-        private RobotInfo[] theirteaminfo;
-        public RobotInfo[] TheirTeamInfo
+        private InterpreterRobotInfo[] theirteaminfo;
+        public InterpreterRobotInfo[] TheirTeamInfo
         {
             get { return theirteaminfo; }
         }
@@ -29,7 +29,7 @@ namespace RobocupPlays
         {
             get { return ball; }
         }
-        public EvaluatorState(RobotInfo[] ourteaminfo, RobotInfo[] theirteaminfo, BallInfo ballinfo, int tickNum)
+        public EvaluatorState(InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo, int tickNum)
         {
             this.ourteaminfo = ourteaminfo;
             this.theirteaminfo = theirteaminfo;

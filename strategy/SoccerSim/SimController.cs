@@ -72,7 +72,7 @@ namespace SoccerSim
                 return;
             double ballAvoidance = 0;
             if (avoidBall)
-                ballAvoidance = (float)Math.Max(1, Math.Min(1.7, (1 + 10 * Math.Sqrt(ball.dX * ball.dX + ball.dY * ball.dY)) * (2.40 - 1.5 * ((destination - ballPosition).normalize() * (position - ballPosition).normalize()))));
+                ballAvoidance = (float)Math.Max(1, Math.Min(1.7, (1 + 1 * Math.Sqrt(ball.Velocity.magnitudeSq())) * (2.40 - 1.5 * ((destination - ballPosition).normalize() * (position - ballPosition).normalize()))));
 
             Vector2 result = n.navigate(navigatorId, position, destination, infos, otherinfo, ball, .12f);
 

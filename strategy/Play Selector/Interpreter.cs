@@ -34,7 +34,7 @@ namespace RobocupPlays
             }
         }
         public Interpreter(bool flipCoordinates, InterpreterPlay[] plays, IPredictor predictor, IController commander)
-            : this(flipCoordinates, plays , predictor , new ActionInterpreter(commander, predictor)) { }
+            : this(flipCoordinates, plays, predictor, new ActionInterpreter(commander, predictor)) { }
         volatile bool running = false;
         object run_lock = new object();
         private List<InterpreterPlay> lastRunPlays = new List<InterpreterPlay>();
@@ -64,8 +64,16 @@ namespace RobocupPlays
         /// false if it quit because it was already interpreting.</returns>
         public bool interpret(PlayTypes type)
         {
-            RobotInfo[] ourteaminfo = predictor.getOurTeamInfo().ToArray();
-            RobotInfo[] theirteaminfo = predictor.getTheirTeamInfo().ToArray();
+            List<RobotInfo> ourteaminfo_base = predictor.getOurTeamInfo();
+            List<RobotInfo> theirteaminfo_base = predictor.getTheirTeamInfo();
+            InterpreterRobotInfo[] ourteaminfo = ourteaminfo_base.ConvertAll<InterpreterRobotInfo>(delegate(RobotInfo info)
+            {
+                return new InterpreterRobotInfo(info.Position, info.Velocity, info.Orientation, info.ID);
+            }).ToArray();
+            InterpreterRobotInfo[] theirteaminfo = theirteaminfo_base.ConvertAll<InterpreterRobotInfo>(delegate(RobotInfo info)
+            {
+                return new InterpreterRobotInfo(info.Position, info.Velocity, info.Orientation, info.ID);
+            }).ToArray();
             BallInfo ballinfo = predictor.getBallInfo();
 
             lock (run_lock)
@@ -76,11 +84,11 @@ namespace RobocupPlays
             }
 
             //make sure all of the robots are not busy or assigned:
-            foreach (RobotInfo robot in ourteaminfo)
+            foreach (InterpreterRobotInfo robot in ourteaminfo)
             {
                 robot.setFree();
             }
-            foreach (RobotInfo robot in theirteaminfo)
+            foreach (InterpreterRobotInfo robot in theirteaminfo)
             {
                 robot.setFree();
             }

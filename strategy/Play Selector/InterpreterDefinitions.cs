@@ -24,7 +24,7 @@ namespace RobocupPlays
         /// </summary>
         public bool canForceDefine(int robotID)
         {
-            foreach (RobotInfo rinf in evaluatorstate.OurTeamInfo)
+            foreach (InterpreterRobotInfo rinf in evaluatorstate.OurTeamInfo)
             {
                 if (rinf.ID == robotID)
                 {
@@ -33,7 +33,7 @@ namespace RobocupPlays
                     return !failed;
                 }
             }
-            foreach (RobotInfo rinf in evaluatorstate.TheirTeamInfo)
+            foreach (InterpreterRobotInfo rinf in evaluatorstate.TheirTeamInfo)
             {
                 if (rinf.ID == robotID)
                 {
@@ -48,7 +48,7 @@ namespace RobocupPlays
         }
         public void forceDefine(int robotID)
         {
-            foreach (RobotInfo rinf in evaluatorstate.OurTeamInfo)
+            foreach (InterpreterRobotInfo rinf in evaluatorstate.OurTeamInfo)
             {
                 if (rinf.ID == robotID)
                 {
@@ -60,7 +60,7 @@ namespace RobocupPlays
                     return;
                 }
             }
-            foreach (RobotInfo rinf in evaluatorstate.TheirTeamInfo)
+            foreach (InterpreterRobotInfo rinf in evaluatorstate.TheirTeamInfo)
             {
                 if (rinf.ID == robotID)
                 {
@@ -75,7 +75,7 @@ namespace RobocupPlays
             throw new ApplicationException("could not find the robot with ID " + robotID);
         }
 
-        protected RobotInfo thisrobot = null;
+        protected InterpreterRobotInfo thisrobot = null;
         protected EvaluatorState evaluatorstate = null;
         public void setEvaluatorState(EvaluatorState evaluatorstate)
         {
@@ -119,12 +119,12 @@ namespace RobocupPlays
         }
         public override bool define()
         {
-            RobotInfo[] infos;
+            InterpreterRobotInfo[] infos;
             if (Ours)
                 infos = evaluatorstate.OurTeamInfo;
             else
                 infos = evaluatorstate.TheirTeamInfo;
-            foreach (RobotInfo info in infos)
+            foreach (InterpreterRobotInfo info in infos)
             {
                 if (info.ID == this.ID)
                     thisrobot = info;
@@ -150,7 +150,7 @@ namespace RobocupPlays
 
         public override bool define()
         {
-            RobotInfo[] infos;
+            InterpreterRobotInfo[] infos;
             if (Ours)
                 infos = evaluatorstate.OurTeamInfo;
             else
@@ -158,9 +158,9 @@ namespace RobocupPlays
 
             Vector2 closest = closesttopoint;
 
-            RobotInfo bestrobot = null;
+            InterpreterRobotInfo bestrobot = null;
             float bestdistance = 1000000;
-            foreach (RobotInfo rinf in infos)
+            foreach (InterpreterRobotInfo rinf in infos)
             {
                 if (Assignment.SkipAssigned && rinf.Assigned)
                     continue;

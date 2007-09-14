@@ -185,10 +185,7 @@ namespace SoccerSim
                     if (r.ID == 5)
                         r.Tags.Add("goalie");
                 }
-                r.setFree();
             }
-            foreach (RobotInfo r in _predictor.getTheirTeamInfo())
-                r.setFree();
             _interpreter.interpret(toRun);
         }
 

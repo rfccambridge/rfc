@@ -36,7 +36,7 @@ namespace SoccerSim
                 new RobotInfo(new Vector2(2f, -1), 3, TEAM_SIZE+3),
                 new RobotInfo(new Vector2(2f, 1), 3, TEAM_SIZE+4)
             };
-            BallInfo ball = new BallInfo(new Vector2(0, 0), 0, 0);
+            BallInfo ball = new BallInfo(new Vector2(0, 0));
 
             init(ourBots, theirBots, ball);
         }

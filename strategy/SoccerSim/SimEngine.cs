@@ -112,7 +112,7 @@ namespace SoccerSim
             if (Math.Abs(ball.Position.Y) <= .35 && Math.Abs(ball.Position.X) >= 2.4)
             {
                 goalScored(ball.Position.X > 0);
-                _state.updateBallInfo(new BallInfo(new Vector2(0, 0), 0, 0));
+                _state.updateBallInfo(new BallInfo(new Vector2(0, 0)));
                 ballVx = ballVy = 0;
                 return;
             }
@@ -148,7 +148,7 @@ namespace SoccerSim
             }
 
             // friction
-            _state.updateBallInfo(new BallInfo(newballlocation, ballVx, ballVy));
+            _state.updateBallInfo(new BallInfo(newballlocation, 10*(new Vector2(ballVx, ballVy))));
             ballVx *= balldecay;
             ballVy *= balldecay;
 
@@ -183,7 +183,7 @@ namespace SoccerSim
                 _ballImmobile++;
                 if (_ballImmobile > 200)
                 {
-                    _state.updateBallInfo(new BallInfo(new Vector2(0, 0), 0, 0));
+                    _state.updateBallInfo(new BallInfo(new Vector2(0, 0)));
                     ballVx = ballVy = 0;
                     _ballImmobile = 0;
                 }

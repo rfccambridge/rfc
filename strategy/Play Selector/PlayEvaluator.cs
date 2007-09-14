@@ -30,8 +30,6 @@ namespace RobocupPlays
 
     class PlayEvaluator
     {
-
-
         EvaluatorState state;
         public EvaluatorState State
         {
@@ -54,7 +52,7 @@ namespace RobocupPlays
         /// <summary>
         /// Updates the conditions, and the tick will be increased by one.
         /// </summary>
-        public void updateConditions(RobotInfo[] ourteaminfo, RobotInfo[] theirteaminfo, BallInfo ballinfo)
+        public void updateConditions(InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo)
         {
             /*int newtime = 0;
             if (state != null)
@@ -64,11 +62,11 @@ namespace RobocupPlays
         }
         private void clearAssignments()
         {
-            foreach (RobotInfo rinf in state.OurTeamInfo)
+            foreach (InterpreterRobotInfo rinf in state.OurTeamInfo)
             {
                 rinf.Assigned = false;
             }
-            foreach (RobotInfo rinf in state.TheirTeamInfo)
+            foreach (InterpreterRobotInfo rinf in state.TheirTeamInfo)
             {
                 rinf.Assigned = false;
             }

@@ -6,33 +6,30 @@ namespace Robocup.Infrastructure
 {
     public class BallInfo
     {
-        private Vector2 position;
+        private readonly Vector2 position;
         public Vector2 Position
         {
             get { return position; }
         }
-        private float dx;
-        public float dX
+        private readonly Vector2 velocity;
+        public Vector2 Velocity
         {
-            get { return dx; }
-        }
-        private float dy;
-        public float dY
-        {
-            get { return dy; }
+            get { return velocity; }
         }
 
-        public BallInfo(Vector2 position, float dx, float dy)
+        /// <summary>
+        /// Creates a BallInfo with zero velocity.
+        /// </summary>
+        public BallInfo(Vector2 position) : this(position, Vector2.ZERO) { }
+        public BallInfo(Vector2 position, Vector2 velocity)
         {
             this.position = position;
-            this.dx = dx;
-            this.dy = dy;
+            this.velocity = velocity;
         }
         public BallInfo(BallInfo copy)
         {
             this.position = copy.position;
-            this.dx = copy.dx;
-            this.dy = copy.dy;
+            this.velocity = copy.velocity;
         }
 
         public override string ToString()
@@ -42,70 +39,107 @@ namespace Robocup.Infrastructure
     }
     public class RobotInfo
     {
+        /// <summary>
+        /// Creates a RobotInfo with zero velocity.
+        /// </summary>
+        public RobotInfo(Vector2 position, float orientation, int id)
+            : this(position, Vector2.ZERO, orientation, id)
+        { }
+        public RobotInfo(Vector2 position, Vector2 velocity, float orientation, int id)
+        {
+            this.position = position;
+            this.velocity = velocity;
+            this.orientation = orientation;
+            this.idnum = id;
+        }
+
         private readonly List<string> tags = new List<string>();
+        /// <summary>
+        /// The list of strings that this particular robot has been tagged with.  Ex: "goalie" if this is the goalie bot.
+        /// You can add and remove tags from this.
+        /// </summary>
         public List<string> Tags
         {
             get { return tags; }
         }
 
-        private Vector2 position;
+        private readonly Vector2 position;
+        /// <summary>
+        /// The position of the robot.
+        /// </summary>
         public Vector2 Position
         {
             get { return position; }
         }
-        private float orientation;
+        private readonly Vector2 velocity;
+        /// <summary>
+        /// The velocity of the robot.
+        /// </summary>
+        public Vector2 Velocity
+        {
+            get { return velocity; }
+        }
+
+        private readonly float orientation;
         public float Orientation
         {
             get { return orientation; }
         }
+
+        private readonly int idnum;
+        public int ID
+        {
+            get { return idnum; }
+        }
+
+        public override string ToString()
+        {
+            return idnum + ": " + position;
+        }
+    }
+    /// <summary>
+    /// This class is for use by the interpreter only.  The interpreter copies the data from RobotInfos into these objects,
+    /// adding some extra data.
+    /// </summary>
+    public class InterpreterRobotInfo : RobotInfo
+    {
         private RobotStates state;
+        /// <summary>
+        /// Whether this robot has an action assigned or not.
+        /// </summary>
         public RobotStates State
         {
             get { return state; }
             set { state = value; }
         }
         private bool assigned = false;
+        /// <summary>
+        /// Whether this robot has a definition assigned or not, for this particular play.
+        /// </summary>
         public bool Assigned
         {
             get { return assigned; }
             set { assigned = value; }
         }
-        private int idnum;
-
-        public int ID
-        {
-            get { return idnum; }
-            //set { idnum = value; }
-        }
-
-        public RobotInfo(Vector2 position, float orientation, int id) : this(position, orientation, id, RobotStates.Free) { }
-        internal RobotInfo(Vector2 position, float orientation, int id, RobotStates state)
-        {
-            this.position = position;
-            this.orientation = orientation;
-            this.state = state;
-            this.assigned = false;
-            this.idnum = id;
-        }
-
+        /// <summary>
+        /// </summary>
         public void setFree()
         {
             this.State = RobotStates.Free;
             this.Assigned = false;
         }
-        public RobotInfo copy()
+
+        public InterpreterRobotInfo(Vector2 position, Vector2 velocity, float orientation, int id)
+            : base(position, velocity, orientation, id)
         {
-            return new RobotInfo(position, orientation, idnum, state);
-        }
-        public override string ToString()
-        {
-            return idnum + ": " + position;
+            this.state = RobotStates.Free;
+            this.assigned = false;
         }
     }
 
     public enum RobotStates
     {
-        Free = 0,
-        Busy = 10
+        Free,
+        Busy
     }
 }

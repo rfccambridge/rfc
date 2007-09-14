@@ -19,11 +19,11 @@ namespace RobocupPlays
             this.predictor = predictor;
         }
         /// <summary>
-        /// Creates a copy of the given RobotInfo, and flips the position.
+        /// Creates a copy of the given RobotInfo, and flips the position, velocity, and orientation
         /// </summary>
         private RobotInfo flipRobotInfo(RobotInfo info)
         {
-            return new RobotInfo(-info.Position, info.Orientation, info.ID);
+            return new RobotInfo(-info.Position, -info.Velocity, (float)(info.Orientation+Math.PI), info.ID);
         }
         #region IPredictor Members
 
@@ -45,7 +45,7 @@ namespace RobocupPlays
         public BallInfo getBallInfo()
         {
             BallInfo info = predictor.getBallInfo();
-            return new BallInfo(-info.Position, -info.dX, -info.dY);
+            return new BallInfo(-info.Position, -info.Velocity);
         }
 
         #endregion

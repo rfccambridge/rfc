@@ -52,7 +52,7 @@ namespace RobocupPlays
             evaluator = new PlayEvaluator();
         }
         Random r = new Random();
-        public SelectorResults selectPlays(List<InterpreterPlay> plays, RobotInfo[] ourteaminfo, RobotInfo[] theirteaminfo, BallInfo ballinfo,
+        public SelectorResults selectPlays(List<InterpreterPlay> plays, InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo,
             List<InterpreterPlay> preferedPlays, List<SelectorResults.RobotAssignments> lastAssignments)
         {
             evaluator.updateConditions(ourteaminfo, theirteaminfo, ballinfo);
@@ -136,7 +136,7 @@ namespace RobocupPlays
             }
             return new SelectorResults(rtnActions, assignments);
         }
-        private bool canUseActions(ActionDefinition[] actions, RobotInfo[] ourteam)
+        private bool canUseActions(ActionDefinition[] actions, InterpreterRobotInfo[] ourteam)
         {
             int numrobots = ourteam.Length;
             RobotStates[] states = new RobotStates[numrobots];

@@ -112,11 +112,11 @@ namespace RobocupPlays
             }
             else
             {
-
+                destination += ballLeading * ballinfo.Velocity;
                 commander.move(
                     robotID,
                     true,
-                    new Vector2(destination.X + ballLeading * ballinfo.dX, destination.Y + ballLeading * ballinfo.dY),
+                    new Vector2(destination.X, destination.Y),
                     destinationAngle
                 );
             }

@@ -50,6 +50,15 @@ namespace Robocup.Infrastructure
         {
             return new Vector2(p.X, p.Y);
         }
+        static private Vector2 zero = new Vector2(0,0);
+        /// <summary>
+        /// The Vector (0,0)
+        /// </summary>
+        static public Vector2 ZERO
+        {
+            get { return zero; }
+        }
+	
 
         /// <summary>
         /// Checks for equality between two Vector2's.  Since the class is
