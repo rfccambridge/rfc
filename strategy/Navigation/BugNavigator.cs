@@ -56,7 +56,7 @@ namespace Navigation
             readonly Vector2 goal1 = new Vector2(-2.45f, 0f);
             readonly Vector2 goal2 = new Vector2(2.45f, 0f);
             const float goalieBoxAvoid = .65f;
-            public Vector2 navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
             {
                 List<Obstacle> obstacles = new List<Obstacle>();
                 for (int i = 0; i < teamPositions.Length; i++)
@@ -102,7 +102,7 @@ namespace Navigation
                 {
                     if (position.distanceSq(o.position) < o.size * o.size)
                     {
-                        return o.position + (1f + o.size) * (position - o.position).normalize();
+                        return new NavigationResults(o.position + (1f + o.size) * (position - o.position).normalize());
                     }
                 }
 
@@ -112,7 +112,7 @@ namespace Navigation
                     Vector2 wanted = position + lookAheadDist * (destination - position).normalize();
                     Obstacle o = blockingObstacle(wanted, obstacles, 1);
                     if (o == null)
-                        return wanted;
+                        return new NavigationResults(wanted);
                     avoidingObstacle[id] = true;
                     continueDistanceSq[id] = position.distanceSq(destination);
                     lastDirection[id] = (destination - position).cartesianAngle();
@@ -149,7 +149,7 @@ namespace Navigation
 
                     }
                     lastDirection[id] = direction;
-                    return extend(position, direction);
+                    return new NavigationResults(extend(position, direction));
                 }
                 while (blockingObstacle(extend(position, direction), obstacles, 1f + count / 1000f) != null)
                 {
@@ -157,7 +157,7 @@ namespace Navigation
                     count++;
                 }
                 lastDirection[id] = direction;
-                return extend(position, direction);
+                return new NavigationResults(extend(position, direction));
             }
 
 

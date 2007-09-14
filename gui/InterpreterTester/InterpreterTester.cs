@@ -639,7 +639,8 @@ namespace InterpreterTester
                 , 2.1f,
              (float)Math.Max(.00006, Math.Min(.06, Math.Sqrt(position.distanceSq(destination) * .25f)))
             );*/
-            Vector2 result = n.navigate(navigatorId, position, destination, infos, otherinfo, ballinfo, .12f);
+            NavigationResults result = n.navigate(navigatorId, position, destination, infos, otherinfo, ballinfo, .12f);
+            Vector2 waypoint = result.waypoint;
             //timer.Stop();
             //Console.WriteLine(timer.Duration*1000+" ms for navigation");
             //Console.WriteLine(navigator.treecount + " nodes, and " + navigator.obstacleStuckCount + " stuck");
@@ -662,13 +663,13 @@ namespace InterpreterTester
             //infos[robotID] = new RobotInfo(translate(prev.Position, normalize((new Vector2(x, y)) - prev.Position), .01f), (prev.Orientation * .9f + orientation * .1f), prev.ID);
             if (position.distanceSq(destination) > chop * chop)
             {
-                addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(result), Color.Green, 3.0f));
+                addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(waypoint), Color.Green, 3.0f));
                 addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(destination), Color.Red, 3.0f));
                 //float neworientation = prev.Orientation * .85f + orientation * .15f;
                 float neworientation = orientation;
-                if (prev.Position != result)
+                if (prev.Position != waypoint)
                 {
-                    infos[robotID] = new RobotInfo(prev.Position + speed * (result - prev.Position).normalize(), neworientation, prev.ID);
+                    infos[robotID] = new RobotInfo(prev.Position + speed * (waypoint - prev.Position).normalize(), neworientation, prev.ID);
                 }
             }
             //Console.WriteLine("going from " + prev.Position + " to " + result);

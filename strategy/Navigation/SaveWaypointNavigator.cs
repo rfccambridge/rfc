@@ -57,7 +57,7 @@ namespace Navigation
             /// We store this so that on the next time, we can just return the previous
             /// destination if it's still reachable.
             /// </summary>
-            Vector2[] lastReturn = new Vector2[TEAMSIZE];
+            NavigationResults[] lastReturn = new NavigationResults[TEAMSIZE];
             /// <summary>
             /// An array of the destination that the path was calculated to, for each robot.
             /// If the destination changes too much, then the path should be recalculated.
@@ -67,7 +67,7 @@ namespace Navigation
             /// </summary>
             Vector2[] lastDestination = new Vector2[TEAMSIZE];
 
-            public Vector2 navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
             {
                 List<Obstacle> obstacles = new List<Obstacle>();
                 for (int i = 0; i < teamPositions.Length; i++)
@@ -85,18 +85,18 @@ namespace Navigation
                 //if we can go straight to the destination, go for it
                 if (!blocked(new Line(position, destination), obstacles))
                 {
-                    lastReturn[id] = destination;
-                    return destination;
+                    lastReturn[id] = new NavigationResults(destination);
+                    return lastReturn[id];
                 }
 
                 //if we returned something last time,
                 if (lastReturn[id] != null)
                 {
                     //if we're there, then move one
-                    if (position.distanceSq(lastReturn[id]) < .1 * .1)
+                    if (position.distanceSq(lastReturn[id].waypoint) < .1 * .1)
                         lastReturn[id] = null;
                     //if we can't get there, move on
-                    else if (blocked(new Line(position, lastReturn[id]), obstacles))
+                    else if (blocked(new Line(position, lastReturn[id].waypoint), obstacles))
                         lastReturn[id] = null;
                     //if the destination has moved, then move on
                     else if (lastDestination[id].distanceSq(destination) > .2 * .2)

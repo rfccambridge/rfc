@@ -75,7 +75,7 @@ namespace Navigation
             /// We store this so that on the next time, we can just return the previous
             /// destination if it's still reachable.
             /// </summary>
-            Vector2[] lastReturn = new Vector2[TEAMSIZE];
+            NavigationResults[] lastReturn = new NavigationResults[TEAMSIZE];
             /// <summary>
             /// An array of the destination that the path was calculated to, for each robot.
             /// If the destination changes too much, then the path should be recalculated.
@@ -88,7 +88,7 @@ namespace Navigation
             readonly Vector2 goal1 = new Vector2(-2.45f, 0f);
             readonly Vector2 goal2 = new Vector2(2.45f, 0f);
             const float goalieBoxAvoid = .65f;
-            public Vector2 navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
             {
                 List<Obstacle> obstacles = new List<Obstacle>();
                 for (int i = 0; i < teamPositions.Length; i++)
@@ -128,8 +128,8 @@ namespace Navigation
                 //if we can go straight to the destination, go for it
                 if (!blocked(new Line(position, destination), obstacles))
                 {
-                    lastReturn[id] = destination;
-                    return destination;
+                    lastReturn[id] = new NavigationResults(destination);
+                    return lastReturn[id];
                 }
                 foreach (Obstacle o in obstacles)
                 {
@@ -139,9 +139,9 @@ namespace Navigation
                         Circle obstacleCircle = new Circle(o.position, o.size);
                         Vector2 newDestination = Intersections.intersect(l, obstacleCircle, 0);
                         newDestination = newDestination + .15f * (newDestination - o.position);
-                        Vector2 recursed = this.navigate(id, position, newDestination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
+                        return this.navigate(id, position, newDestination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
                         //System.Windows.Forms.MessageBox.Show("moving destination from\n"+destination+"\nto\n"+newDestination);
-                        return recursed;
+                        //return recursed;
                         //return this.navigate(
                     }
                 }
@@ -150,10 +150,10 @@ namespace Navigation
                 if (lastReturn[id] != null)
                 {
                     //if we're there, then move one
-                    if (position.distanceSq(lastReturn[id]) < .1 * .1)
+                    if (position.distanceSq(lastReturn[id].waypoint) < .1 * .1)
                         lastReturn[id] = null;
                     //if we can't get there, move on
-                    else if (blocked(new Line(position, lastReturn[id]), obstacles))
+                    else if (blocked(new Line(position, lastReturn[id].waypoint), obstacles))
                         lastReturn[id] = null;
                     //if the destination has moved, then move on
                     else if (destination.distanceSq(lastDestination[id]) > .2 * .2)
@@ -174,7 +174,8 @@ namespace Navigation
                 {
                     if (steps.Count > 500)
                         return navigator.navigate(id, position, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
-                    Vector2 waypoint = navigator.navigate(id, current, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
+                    NavigationResults results = navigator.navigate(id, current, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
+                    Vector2 waypoint = results.waypoint;
                     float step = (float)Math.Min(stepSize, Math.Sqrt((waypoint - current).magnitudeSq()));
                     if (!blocked(new Line(waypoint, position), obstacles))
                         step = (float)Math.Max(stepSize, Math.Sqrt((waypoint - current).magnitudeSq()));
@@ -186,7 +187,7 @@ namespace Navigation
                 if (steps.Count == 0)
                 {
                     steps.Add(destination);
-                    return steps[0];
+                    return new NavigationResults(steps[0]);
                 }
 
                 //now start at the end of the path, and work your way backwards until you find a point
@@ -196,7 +197,7 @@ namespace Navigation
                     Line line = new Line(position, steps[i]);
                     if (!blocked(line, obstacles))
                     {
-                        lastReturn[id] = steps[i];
+                        lastReturn[id] = new NavigationResults(steps[i]);
                         break;
                     }
                 }

@@ -17,10 +17,10 @@ namespace Navigation
                 get { return NAME; }
             }
 
-            public Vector2 navigate(int id, Vector2 position, Vector2 destination,
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination,
                 RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
             {
-                return destination;
+                return new NavigationResults(destination);
             }
 
 

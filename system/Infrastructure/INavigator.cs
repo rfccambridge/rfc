@@ -5,6 +5,21 @@ using System.Text;
 namespace Robocup.Infrastructure
 {
     /// <summary>
+    /// A simple data structure for holding the various data that a navigation algorithm will return.
+    /// </summary>
+    public class NavigationResults
+    {
+        public NavigationResults(Vector2 waypoint)
+        {
+            this.waypoint = waypoint;
+        }
+        /// <summary>
+        /// The point to which the robot should start moving, to get to the final destination
+        /// </summary>
+        public Vector2 waypoint;
+    }
+
+    /// <summary>
     /// The interface to any navigation class.
     /// Each navigation object is responsible for navigating all the robots on one team
     /// (though not the other team, in the case that we are playing against ourselves).
@@ -48,8 +63,8 @@ namespace Robocup.Infrastructure
         /// <param name="enemyPositions">The positions of the enemy robots.  This array can have any size.</param>
         /// <param name="ballPosition">The position of the ball.</param>
         /// <param name="avoidBall">How much to avoid the ball.  If it is zero, the ball is not avoided.</param>
-        /// <returns>A point towards which the robot should start to move</returns>
-        Vector2 navigate(int id, Vector2 position, Vector2 destination,
+        /// <returns>A NavigationResults item containing the necessary data (see NavigationResults)</returns>
+        NavigationResults navigate(int id, Vector2 position, Vector2 destination,
             RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallRadius);
     }
 }

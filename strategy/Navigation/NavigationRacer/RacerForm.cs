@@ -140,6 +140,7 @@ namespace NavigationRacer
                 for (int i = 0; i < num; i++)
                 {
                     Vector2 curposition = state.OurPositions[r];
+                    NavigationResults results;
                     Vector2 waypoint;
                     RobotInfo[] ourinfos = new RobotInfo[state.OurPositions.Length];
                     for (int j = 0; j < state.OurPositions.Length; j++)
@@ -153,7 +154,8 @@ namespace NavigationRacer
                     }
                     lock (navigator)
                     {
-                        waypoint = navigator.navigate(r, curposition, state.Destinations[r], ourinfos, theirinfos, new BallInfo(state.BallPos, 0, 0), .12f);
+                        results = navigator.navigate(r, curposition, state.Destinations[r], ourinfos, theirinfos, new BallInfo(state.BallPos), .12f);
+                        waypoint = results.waypoint;
                     }
                     Vector2 newvelocity = (waypoint - curposition);
                     if (newvelocity.magnitudeSq() > moveSpeed * moveSpeed)

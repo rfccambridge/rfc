@@ -74,17 +74,18 @@ namespace SoccerSim
             if (avoidBall)
                 ballAvoidance = (float)Math.Max(1, Math.Min(1.7, (1 + 1 * Math.Sqrt(ball.Velocity.magnitudeSq())) * (2.40 - 1.5 * ((destination - ballPosition).normalize() * (position - ballPosition).normalize()))));
 
-            Vector2 result = n.navigate(navigatorId, position, destination, infos, otherinfo, ball, .12f);
+            NavigationResults results = n.navigate(navigatorId, position, destination, infos, otherinfo, ball, .12f);
+            Vector2 waypoint = results.waypoint;
 
             RobotInfo prev = _state.getCurrentInformation(robotID);
 
             if (position.distanceSq(destination) > chop * chop)
             {
-                _view.addArrow(new Arrow(_view.fieldtopixelPoint(position), _view.fieldtopixelPoint(result), Color.Green, 3.0f));
+                _view.addArrow(new Arrow(_view.fieldtopixelPoint(position), _view.fieldtopixelPoint(waypoint), Color.Green, 3.0f));
                 _view.addArrow(new Arrow(_view.fieldtopixelPoint(position), _view.fieldtopixelPoint(destination), Color.Red, 3.0f));
-                if (prev.Position != result)
+                if (prev.Position != waypoint)
                 {
-                    _acceptor.updateRobot(robotID, new RobotInfo(prev.Position + speed * (result - prev.Position).normalize(), (prev.Orientation * .85f + orientation * .15f), prev.ID));
+                    _acceptor.updateRobot(robotID, new RobotInfo(prev.Position + speed * (waypoint - prev.Position).normalize(), (prev.Orientation * .85f + orientation * .15f), prev.ID));
                 }
             }
         }

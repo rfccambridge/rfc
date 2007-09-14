@@ -94,7 +94,7 @@ namespace Robocup.CoreRobotics
             RobotInfo thisRobot = Predictor.getCurrentInformation(robotID);
 
             float avoidBallDist = (avoidBall ? ballAvoidDist : 0f);
-            Vector2 newDest =
+            NavigationResults results =
                 Navigator.navigate(robotID,
                     thisRobot.Position,
                     destination,
@@ -107,11 +107,11 @@ namespace Robocup.CoreRobotics
             {
                 arrows[robotID] = new Arrow[] {
                     new Arrow(thisRobot.Position, destination, Color.Red, .04f),
-                    new Arrow(thisRobot.Position, newDest, Color.Green,.04f)
+                    new Arrow(thisRobot.Position, results.waypoint, Color.Green,.04f)
                 };
             }
 
-            WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(robotID, thisRobot, newDest);
+            WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(robotID, thisRobot, results);
 
             Commander.setMotorSpeeds(robotID, motorSpeeds);
         }

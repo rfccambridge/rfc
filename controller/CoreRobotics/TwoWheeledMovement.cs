@@ -22,9 +22,9 @@ namespace Robocup.CoreRobotics
 
         #region IMovement Members
 
-        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, Vector2 destination)
+        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results)
         {
-            return calculateWheelSpeeds(robotID, currentInfo, destination, currentInfo.Orientation);
+            return calculateWheelSpeeds(robotID, currentInfo, results, currentInfo.Orientation);
         }
 
         const float MoveTol = .01f;
@@ -43,8 +43,9 @@ namespace Robocup.CoreRobotics
             Constants.Constants.get<float>("MOVE_PID_RESET")
             );
 
-        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, Vector2 destination, float desiredOrientation)
+        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, float desiredOrientation)
         {
+            Vector2 destination = results.waypoint;
             Vector2 position = currentInfo.Position;
             double distanceToMove = Math.Sqrt(position.distanceSq(destination));
             double angleToTarget = Math.Atan2(destination.Y - position.Y, destination.X - position.X);

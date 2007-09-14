@@ -75,7 +75,7 @@ namespace Navigation
 
             //List<Vector2> sums = new List<Vector2>();
 
-            public Vector2 navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
             {
                 this.lastDestination = destination;
                 List<Obstacle> obstacles = new List<Obstacle>();
@@ -93,7 +93,7 @@ namespace Navigation
                 lastObstacles = obstacles;
 
                 Vector2 total = calcForce(position, destination, obstacles);
-                return position + .1f * (total.normalize());
+                return new NavigationResults(position + .1f * (total.normalize()));
             }
         }
     }

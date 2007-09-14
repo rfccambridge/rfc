@@ -115,8 +115,8 @@ namespace Robocup.Infrastructure {
      * 
      */
     public interface IMovement {
-        WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, Vector2 destination);
-        WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, Vector2 destination, float desiredOrientation);
+        WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results);
+        WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, float desiredOrientation);
     }
 
     /// <summary>

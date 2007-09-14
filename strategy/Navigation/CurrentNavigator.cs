@@ -142,7 +142,7 @@ namespace Navigation
             }
 
 
-            public Vector2 navigate(int robotId, Vector2 pos, Vector2 destination, RobotInfo[] teamBots, RobotInfo[] enemyBots, BallInfo ballpos, double avoid_ball, float avoid_robots, float dist_thresh)
+            public NavigationResults navigate(int robotId, Vector2 pos, Vector2 destination, RobotInfo[] teamBots, RobotInfo[] enemyBots, BallInfo ballpos, double avoid_ball, float avoid_robots, float dist_thresh)
             {
                 EXTEND_DISTANCE = (float)Math.Max(.0005, Math.Min(.05, Math.Sqrt(pos.distanceSq(destination)) * .25f));
                 BOT_AVOID_MULT = avoid_robots;
@@ -162,7 +162,7 @@ namespace Navigation
                     if (Distance(enemyBots[i].Position, pos) < 2 * ROBOT_RADIUS)
                     {
                         Console.WriteLine("ShortCircuit enemy close");
-                        return destination;
+                        return new NavigationResults(destination);
                     }
                     obstacles[i].copy(enemyBots[i].Position);
                 }
@@ -205,7 +205,7 @@ namespace Navigation
                 if (Distance(ballpos.Position, pos) < ROBOT_RADIUS)
                 {
                     Console.WriteLine("ShortCircuit ball close");
-                    return destination;
+                    return new NavigationResults(destination);
                 }
 
 
@@ -237,18 +237,18 @@ namespace Navigation
                     if ((next.x == destination.X) && (next.y == destination.Y))
                     {
                         //Console.WriteLine("Strafing to final destination...");
-                        return go;
+                        return new NavigationResults(go);
                     }
                     else
                     {
                         //Console.WriteLine("Strafing to nonfinal destination...");
-                        return go;
+                        return new NavigationResults(go);
                     }
 
 
                 }
                 //Console.WriteLine("reached target");
-                return pos;
+                return new NavigationResults(pos);
             }
 
             /**
@@ -749,7 +749,7 @@ namespace Navigation
 
 
 
-            public Vector2 navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
             {
                 return navigate(id, position, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist, 2.3f, .05f);
             }

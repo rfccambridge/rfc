@@ -68,7 +68,7 @@ namespace Navigation
         readonly Vector2 goal1 = new Vector2(-2.45f, 0f);
         readonly Vector2 goal2 = new Vector2(2.45f, 0f);
         const float goalieBoxAvoid = .65f;
-        public Vector2 navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+        public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
         {
             List<Obstacle> obstacles = new List<Obstacle>();
             for (int i = 0; i < teamPositions.Length; i++)
@@ -108,7 +108,7 @@ namespace Navigation
             if (!blocked(new Line(position, destination), obstacles))
             {
                 waypoints = null;
-                return destination;
+                return new NavigationResults(destination);
             }
             waypoints = new Vector2[numWaypoints+2];
             for (int i = 0; i < numWaypoints + 2; i++)
@@ -142,7 +142,7 @@ namespace Navigation
                     waypoints[i] += .1f * forces[i];
                 }
             }
-            return waypoints[1];
+            return new NavigationResults(waypoints[1]);
         }
 
         #endregion
