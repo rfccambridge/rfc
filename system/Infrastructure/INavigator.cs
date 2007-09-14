@@ -38,12 +38,6 @@ namespace Robocup.Infrastructure
     /// </summary>
     public interface INavigator
     {
-
-        //for labeling purposes only
-        string Name
-        {
-            get;
-        }
         /// <summary>
         /// Allows you to draw things onto the screen.
         /// </summary>

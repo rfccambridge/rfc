@@ -23,18 +23,8 @@ namespace Navigation
         {
             T navigator = new T();
 
-            readonly string NAME;
-            public string Name
-            {
-                get { return NAME; }
-            }
-
             public LookAheadNavigator()
             {
-                if (this.GetType() == typeof(LookAheadNavigator<T>))
-                    this.NAME = "LookAhead - " + navigator.Name;
-                else
-                    this.NAME = this.GetType().Name;
                 for (int i = 0; i < lastReturn.Length; i++)
                 {
                     lastReturn[i] = null;

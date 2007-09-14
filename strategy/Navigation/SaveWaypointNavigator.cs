@@ -12,18 +12,8 @@ namespace Navigation
         {
             T navigator = new T();
 
-            readonly string NAME;
-            public string Name
-            {
-                get { return NAME; }
-            }
-
             public SaveWaypointNavigator()
             {
-                if (this.GetType() == typeof(SaveWaypointNavigator<T>))
-                    this.NAME = "SaveWaypoint - " + navigator.Name;
-                else
-                    this.NAME = this.GetType().Name;
                 for (int i = 0; i < lastReturn.Length; i++)
                 {
                     lastReturn[i] = null;

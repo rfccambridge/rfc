@@ -10,16 +10,10 @@ namespace Navigation
         public class PotentialBasedNavigator : INavigator
         {
             //for labeling purposes only
-            const string NAME = "PotentialBasedNavigator";
             const float avoidRobotDist = .25f;
             const float extraAvoidBallDist = .1f;
             Vector2 lastDestination;
             List<Obstacle> lastObstacles = null;
-
-            public string Name
-            {
-                get { return NAME; }
-            }
 
             public void drawLast(System.Drawing.Graphics g, ICoordinateConverter c)
             {

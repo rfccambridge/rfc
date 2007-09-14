@@ -51,9 +51,6 @@ namespace Navigation
 
         public class CurrentNavigator : INavigator
         {
-            //for labeling purposes only
-            const string NAME = "CurrentNavigator";
-
             const float RRTHEIGHT = 3.4f;
             const float RRTWIDTH = 4.9f;
             //TODO find good values for this
@@ -89,11 +86,6 @@ namespace Navigation
             public int lasttreecount;
 
             Random rand;
-
-            public string Name
-            {
-                get { return NAME; }
-            }
 
             public CurrentNavigator()
             {

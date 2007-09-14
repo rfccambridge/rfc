@@ -9,13 +9,6 @@ namespace Navigation
     {
         public class BugNavigator : INavigator
         {
-            //for labeling purposes only
-            const string NAME = "BugNavigator";
-            public string Name
-            {
-                get { return NAME; }
-            }
-
             const int TEAMSIZE = 25;
             bool[] avoidingObstacle = new bool[TEAMSIZE];
             float[] lastDirection = new float[TEAMSIZE];

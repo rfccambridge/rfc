@@ -720,7 +720,7 @@ namespace NavigationRacer
                     inStream.BaseStream.Seek(0, SeekOrigin.Begin);
                     navigator = navigators[j - 1]; //navigators is zero-indexed
                     testResults[i, j] = test();
-                    testResults[i, j].NavigatorName = navigators[j - 1].Name; //"Navigator #" + j.ToString();
+                    testResults[i, j].NavigatorName = navigators[j - 1].GetType().Name; //"Navigator #" + j.ToString();
                     this.Invoke(incrProgressDel);
 
                 }

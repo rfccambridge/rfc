@@ -9,14 +9,6 @@ namespace Navigation
     {
         public class DumbNavigator : INavigator
         {
-            //for labeling purposes only
-            const string NAME = "DumbNavigator";
-
-            public string Name
-            {
-                get { return NAME; }
-            }
-
             public NavigationResults navigate(int id, Vector2 position, Vector2 destination,
                 RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
             {

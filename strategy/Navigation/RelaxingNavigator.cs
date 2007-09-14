@@ -9,17 +9,13 @@ namespace Navigation
     {
         #region INavigator Members
 
-        public string Name
-        {
-            get { return "RelaxingNavigator"; }
-        }
-
         //these are hard limits -- it will try to avoid by more
         const float avoidRobotDist = .22f;
         const float extraAvoidBallDist = .1f;
         const float maxExtraAvoid = .2f;
 
-        const int numWaypoints = 10;
+        const int numWaypoints = 8;
+        Dictionary<int, Vector2[]> old_waypoints = new Dictionary<int, Vector2[]>();
         Vector2[] waypoints;
 
         /// <summary>
@@ -108,16 +104,31 @@ namespace Navigation
             if (!blocked(new Line(position, destination), obstacles))
             {
                 waypoints = null;
+                old_waypoints[id] = null;
                 return new NavigationResults(destination);
             }
-            waypoints = new Vector2[numWaypoints+2];
-            for (int i = 0; i < numWaypoints + 2; i++)
+            if (!old_waypoints.ContainsKey(id) || old_waypoints[id] == null)
             {
-                float percent = (float)i / (numWaypoints + 1);
-                waypoints[i] = position + percent * (destination - position);
+                waypoints = new Vector2[numWaypoints + 2];
+                for (int i = 0; i < numWaypoints + 2; i++)
+                {
+                    float percent = (float)i / (numWaypoints + 1);
+                    waypoints[i] = position + percent * (destination - position);
+                }
+            }
+            else
+            {
+                waypoints = old_waypoints[id];
+                waypoints[0] = position;
+                for (int i = 0; i < numWaypoints + 2; i++)
+                {
+                    float percent = (float)i / (numWaypoints + 1);
+                    const float keepold = .8f;
+                    waypoints[i] = keepold * waypoints[i] + (1 - keepold) * (position + percent * (destination - position));
+                }
             }
             Vector2[] forces = new Vector2[numWaypoints + 2];
-            for (int step = 0; step < 100; step++)
+            for (int step = 0; step < 25; step++)
             {
                 forces[0] = forces[numWaypoints + 1] = new Vector2(0, 0);
                 for (int i = 1; i < numWaypoints + 1; i++)
@@ -125,10 +136,11 @@ namespace Navigation
                     //initial attraction to the midpoint
                     forces[i] = .5f * (waypoints[i + 1] + waypoints[i - 1]) - waypoints[i];
                 }
-                for (int line = 0; line < numWaypoints+1; line++)
+                for (int line = 0; line < numWaypoints + 1; line++)
                 {
                     Line l = new Line(waypoints[line], waypoints[line + 1]);
-                    foreach (Obstacle o in obstacles){
+                    foreach (Obstacle o in obstacles)
+                    {
                         Vector2 newforce = repulsion(o, l);
                         forces[line] += newforce;
                         forces[line + 1] += newforce;
@@ -139,9 +151,10 @@ namespace Navigation
                     //initial attraction to the midpoint
                     if (forces[i].magnitudeSq() > 1)
                         forces[i] = forces[i].normalize();
-                    waypoints[i] += .1f * forces[i];
+                    waypoints[i] += .1f / (.1f*step+1) * forces[i];
                 }
             }
+            old_waypoints[id] = waypoints;
             return new NavigationResults(waypoints[1]);
         }
 
