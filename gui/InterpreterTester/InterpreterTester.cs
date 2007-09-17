@@ -535,7 +535,7 @@ namespace InterpreterTester
             }*/
             else if (c == 't')
             {
-                PAB.HiPerfTimer timer = new global::InterpreterTester.PAB.HiPerfTimer();
+                Robocup.Infrastructure.HighResTimer timer = new Robocup.Infrastructure.HighResTimer();
                 timer.Start();
                 run(testIterations);
                 timer.Stop();

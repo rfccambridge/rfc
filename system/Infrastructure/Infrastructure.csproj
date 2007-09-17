@@ -34,7 +34,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,6 +50,7 @@
     <Compile Include="Circle.cs" />
     <Compile Include="CoordinateConverter.cs" />
     <Compile Include="GeneralPID.cs" />
+    <Compile Include="HighResTimer.cs" />
     <Compile Include="INavigator.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Intersections.cs" />
