@@ -35,7 +35,8 @@ namespace Robocup.MessageSystem
                         SocketException se = e.InnerException as SocketException;
                         if (se == null)
                             throw e;
-                        if (se.SocketErrorCode == SocketError.ConnectionReset)
+                        if (se.SocketErrorCode == SocketError.ConnectionReset
+                             || se.SocketErrorCode == SocketError.ConnectionAborted)
                         {
                             done = true;
                             if (OnDone != null)
@@ -54,6 +55,11 @@ namespace Robocup.MessageSystem
             client.Close();
             client.Client.Close();
             Console.WriteLine("worker closed");
+            GC.SuppressFinalize(this);
+        }
+        ~BasicMessageSender()
+        {
+            this.Close();
         }
 
         public delegate void DoneHandler(BasicMessageSender<T> doneItem);
@@ -93,7 +99,8 @@ namespace Robocup.MessageSystem
                     SocketException inner = e.InnerException as SocketException;
                     if (inner == null)
                         throw e;
-                    if (inner.SocketErrorCode == SocketError.ConnectionReset)
+                    if (inner.SocketErrorCode == SocketError.ConnectionReset ||
+                        inner.SocketErrorCode == SocketError.Interrupted)
                     {
                         if (OnDone != null)
                             OnDone.BeginInvoke(this, null, null);
@@ -107,7 +114,8 @@ namespace Robocup.MessageSystem
                 {
                     if (se.Message == "End of Stream encountered before parsing was completed.")
                     {
-                        OnDone.BeginInvoke(this, null, null);
+                        if (OnDone != null)
+                            OnDone.BeginInvoke(this, null, null);
                         return;
                     }
                     else
@@ -127,6 +135,11 @@ namespace Robocup.MessageSystem
             client.Close();
             client.Client.Close();
             Console.WriteLine("worker closed");
+            GC.SuppressFinalize(this);
+        }
+        ~BasicMessageReceiver()
+        {
+            this.Close();
         }
 
         public delegate void DoneHandler(BasicMessageReceiver<T> doneItem);

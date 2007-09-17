@@ -34,13 +34,20 @@ namespace Robocup.MessageSystem
         }
         private void Run(object o)
         {
+            TcpClient client;
+            lock (listener)
+            {
+                if (beginAcceptResult == null)
+                    return;
+                client = listener.EndAcceptTcpClient(beginAcceptResult);
+            }
             Console.WriteLine("connection received!");
-            TcpClient client = listener.EndAcceptTcpClient(beginAcceptResult);
             BasicMessageReceiver<T> receiver = new BasicMessageReceiver<T>(client);
             receiver.MessageReceived += OnMessageReceived;
             receiver.Start();
             receiver.OnDone += delegate(BasicMessageReceiver<T> doneItem)
             {
+                Console.WriteLine("receiver done");
                 doneItem.Close();
                 receivers.Remove(doneItem);
             };
@@ -50,11 +57,20 @@ namespace Robocup.MessageSystem
         }
         public void Close()
         {
-            listener.Stop();
+            lock (listener)
+            {
+                listener.Stop();
+                beginAcceptResult = null;
+            }
             foreach (BasicMessageReceiver<T> receiver in receivers) {
                 receiver.Close();
             }
             receivers.Clear();
+            GC.SuppressFinalize(this);
+        }
+        ~ServerMessageReceiver()
+        {
+            this.Close();
         }
     }
 
@@ -81,8 +97,14 @@ namespace Robocup.MessageSystem
         }
         private void Run(object o)
         {
+            TcpClient client;
+            lock (listener)
+            {
+                if (beginAcceptResult == null)
+                    return;
+                client = listener.EndAcceptTcpClient(beginAcceptResult);
+            }
             Console.WriteLine("connection received!");
-            TcpClient client = listener.EndAcceptTcpClient(beginAcceptResult);
             BasicMessageSender<T> sender = new BasicMessageSender<T>(client);
             sender.OnDone += delegate(BasicMessageSender<T> doneItem)
             {
@@ -101,7 +123,11 @@ namespace Robocup.MessageSystem
         }
         public void Close()
         {
-            listener.Stop();
+            lock (listener)
+            {
+                listener.Stop();
+                beginAcceptResult = null;
+            }
             lock (senders)
             {
                 foreach (BasicMessageSender<T> sender in senders)
@@ -110,6 +136,11 @@ namespace Robocup.MessageSystem
                 }
                 senders.Clear();
             }
+            GC.SuppressFinalize(this);
+        }
+        ~ServerMessageSender()
+        {
+            this.Close();
         }
 
         public void Post(T t)

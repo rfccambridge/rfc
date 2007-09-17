@@ -45,6 +45,10 @@ namespace Robocup.MessageSystem
                 TcpClient client = new TcpClient(hostname, portNum);
                 receiver = new BasicMessageReceiver<T>(client);
                 receiver.MessageReceived += OnMessageReceived;
+                receiver.OnDone += delegate(BasicMessageReceiver<T> rec)
+                {
+                    this.Close();
+                };
                 receiver.Start();
             }
             catch (System.Net.Sockets.SocketException e)
@@ -65,6 +69,12 @@ namespace Robocup.MessageSystem
         public void Close()
         {
             receiver.Close();
+            GC.SuppressFinalize(this);
+        }
+        ~ClientMessageReceiver()
+        {
+            Console.WriteLine("~ClientMessageReceiver");
+            this.Close();
         }
 
         public event ReceiveMessageDelegate<T> MessageReceived;

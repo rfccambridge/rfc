@@ -7,6 +7,7 @@ namespace Robocup.MessageSystem
     public interface MessageSender<T>
     {
         void Post(T t);
+        void Close();
     }
 
     public delegate void ReceiveMessageDelegate<T>(T t);
@@ -14,9 +15,10 @@ namespace Robocup.MessageSystem
     {
         /// <summary>
         /// This event is called when a message is received.  Do not modify the parameter, as the same
-        /// reference will be passed to all the observers.
+        /// reference will be passed to all the observers (in an asynchronous manner).
         /// </summary>
         event ReceiveMessageDelegate<T> MessageReceived;
+        void Close();
     }
 
     /// <summary>

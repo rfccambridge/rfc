@@ -9,14 +9,20 @@ namespace TestServer
     {
         static void Main(string[] args)
         {
-            MessageSender<string> sender = Messages.CreateServerSender<string>(12345);
-            int i=0;
             while (true)
             {
-                sender.Post("this is message number: " + i);
-                Console.WriteLine("posted message number " + i);
-                System.Threading.Thread.Sleep(1000);
-                i++;
+                GC.Collect();
+                GC.Collect();
+                GC.Collect();
+                MessageSender<string> sender = Messages.CreateServerSender<string>(12345);
+                for (int i = 0; i < 5; i++)
+                {
+                    sender.Post("this is message number: " + i);
+                    Console.WriteLine("posted message number " + i);
+                    System.Threading.Thread.Sleep(500);
+                }
+                //sender.Close();
+                Console.ReadKey();
             }
         }
     }
@@ -26,8 +32,13 @@ namespace TestServer
         {
             MessageReceiver<string> receiver = Messages.CreateServerReceiver<string>(12345);
             receiver.MessageReceived += receiver_MessageReceived;
-            Console.WriteLine("receiving -- press any key to quit");
+            Console.WriteLine("receiving -- press any key to start another");
             Console.ReadKey();
+            receiver.Close();
+            MessageReceiver<string> receiver2 = Messages.CreateServerReceiver<string>(12345);
+            receiver2.MessageReceived += receiver_MessageReceived;
+            Console.ReadKey();
+            receiver2.Close();
         }
 
         static void receiver_MessageReceived(string t)
