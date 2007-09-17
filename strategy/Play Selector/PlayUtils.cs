@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     public class PlayUtils
     {

@@ -7,12 +7,13 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
 /* This file holds all the code for the separate variables that we want to keep track of,
  * based on what the user is currently doing (rather than cluttering up the main form, and
  * trying to remember what each is, and trying to resolve naming conflicts).
  */
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     /// <summary>
     /// The base State class.  This is for polymorphism, and so that all states keep track of

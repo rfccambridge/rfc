@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Infrastructure;
 using Robocup.Geometry;
+using Robocup.Core;
 
 namespace Navigation
 {

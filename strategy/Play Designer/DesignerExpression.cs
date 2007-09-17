@@ -4,8 +4,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     static class ExpressionUtils
     {

@@ -1,4 +1,4 @@
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     partial class MainForm
     {
@@ -94,7 +94,7 @@ namespace RobocupPlays
             this.toolstripAddRobot.Checked = true;
             this.toolstripAddRobot.CheckState = System.Windows.Forms.CheckState.Checked;
             this.toolstripAddRobot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripAddRobot.Image = global::RobocupPlays.Properties.Resources.roboticon;
+            this.toolstripAddRobot.Image = global::Robocup.Plays.Properties.Resources.roboticon;
             this.toolstripAddRobot.ImageTransparentColor = System.Drawing.Color.White;
             this.toolstripAddRobot.Name = "toolstripAddRobot";
             this.toolstripAddRobot.Size = new System.Drawing.Size(23, 22);
@@ -104,7 +104,7 @@ namespace RobocupPlays
             // toolstripAddBall
             // 
             this.toolstripAddBall.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripAddBall.Image = global::RobocupPlays.Properties.Resources.ballicon;
+            this.toolstripAddBall.Image = global::Robocup.Plays.Properties.Resources.ballicon;
             this.toolstripAddBall.ImageTransparentColor = System.Drawing.Color.White;
             this.toolstripAddBall.Name = "toolstripAddBall";
             this.toolstripAddBall.Size = new System.Drawing.Size(23, 22);
@@ -114,7 +114,7 @@ namespace RobocupPlays
             // toolstripAddPoint
             // 
             this.toolstripAddPoint.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripAddPoint.Image = global::RobocupPlays.Properties.Resources.pointicon;
+            this.toolstripAddPoint.Image = global::Robocup.Plays.Properties.Resources.pointicon;
             this.toolstripAddPoint.ImageTransparentColor = System.Drawing.Color.White;
             this.toolstripAddPoint.Name = "toolstripAddPoint";
             this.toolstripAddPoint.Size = new System.Drawing.Size(23, 22);
@@ -124,7 +124,7 @@ namespace RobocupPlays
             // toolstripAddCircle
             // 
             this.toolstripAddCircle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripAddCircle.Image = global::RobocupPlays.Properties.Resources.circleicon;
+            this.toolstripAddCircle.Image = global::Robocup.Plays.Properties.Resources.circleicon;
             this.toolstripAddCircle.ImageTransparentColor = System.Drawing.Color.White;
             this.toolstripAddCircle.Name = "toolstripAddCircle";
             this.toolstripAddCircle.Size = new System.Drawing.Size(23, 22);
@@ -134,7 +134,7 @@ namespace RobocupPlays
             // toolstripMoveObjects
             // 
             this.toolstripMoveObjects.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripMoveObjects.Image = global::RobocupPlays.Properties.Resources.handicon;
+            this.toolstripMoveObjects.Image = global::Robocup.Plays.Properties.Resources.handicon;
             this.toolstripMoveObjects.ImageTransparentColor = System.Drawing.Color.White;
             this.toolstripMoveObjects.Name = "toolstripMoveObjects";
             this.toolstripMoveObjects.Size = new System.Drawing.Size(23, 22);
@@ -144,7 +144,7 @@ namespace RobocupPlays
             // toolstripDrawLine
             // 
             this.toolstripDrawLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripDrawLine.Image = global::RobocupPlays.Properties.Resources.lineicon;
+            this.toolstripDrawLine.Image = global::Robocup.Plays.Properties.Resources.lineicon;
             this.toolstripDrawLine.ImageTransparentColor = System.Drawing.Color.White;
             this.toolstripDrawLine.Name = "toolstripDrawLine";
             this.toolstripDrawLine.Size = new System.Drawing.Size(23, 22);
@@ -154,7 +154,7 @@ namespace RobocupPlays
             // toolstripPlaceIntersection
             // 
             this.toolstripPlaceIntersection.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripPlaceIntersection.Image = global::RobocupPlays.Properties.Resources.intersectionicon;
+            this.toolstripPlaceIntersection.Image = global::Robocup.Plays.Properties.Resources.intersectionicon;
             this.toolstripPlaceIntersection.ImageTransparentColor = System.Drawing.Color.White;
             this.toolstripPlaceIntersection.Name = "toolstripPlaceIntersection";
             this.toolstripPlaceIntersection.Size = new System.Drawing.Size(23, 22);
@@ -367,7 +367,7 @@ namespace RobocupPlays
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::RobocupPlays.Properties.Resources.field_drawing_quer;
+            this.BackgroundImage = global::Robocup.Plays.Properties.Resources.field_drawing_quer;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(551, 455);
             this.Controls.Add(this.toolStripContainer2);

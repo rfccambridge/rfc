@@ -4,9 +4,10 @@ using System.Text;
 using System.Collections;
 using System.Drawing;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     class EvaluatorResults
     {

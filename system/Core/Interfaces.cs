@@ -23,7 +23,7 @@ using System.Text;
  * In all these interfaces, where robotID is used it refers to the global ID of the robot
  * 
  */
-namespace Robocup.Infrastructure {
+namespace Robocup.Core {
 
 
 

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RobocupPlays.Properties {
+namespace Robocup.Plays.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

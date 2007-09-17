@@ -4,7 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     public static class PlayDesignerInterface
     {

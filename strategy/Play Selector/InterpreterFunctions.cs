@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     static class InterpreterFunctions
     {

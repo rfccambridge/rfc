@@ -6,7 +6,7 @@ using System.Drawing;
 using Robocup.Infrastructure;
 using Robocup.Geometry;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     public class PlayLoader<P, E> where P:Play<E>, new() where E:Expression
     {

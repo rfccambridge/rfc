@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Robocup.Infrastructure
+namespace Robocup.Core
 {
     /// <summary>
     /// A simple data structure for holding the various data that a navigation algorithm will return.

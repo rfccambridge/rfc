@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 
 using Robocup.CoreRobotics;
-using RobocupPlays;
+using Robocup.Plays;
 using Robocup.Infrastructure;
 using Navigator = Navigation.Examples.DumbNavigator;
 

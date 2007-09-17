@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
 namespace Robocup.Geometry {
     public class Line {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     static class Program
     {

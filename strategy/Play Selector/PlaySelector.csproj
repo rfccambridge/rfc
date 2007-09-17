@@ -7,7 +7,7 @@
     <ProjectGuid>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RobocupPlays</RootNamespace>
+    <RootNamespace>Robocup.Plays</RootNamespace>
     <AssemblyName>PlaySelector</AssemblyName>
     <StartupObject>
     </StartupObject>
@@ -66,6 +66,10 @@
     <None Include="rfc.snk" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\system\Core\Core.csproj">
+      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\system\Infrastructure\Infrastructure.csproj">
       <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
       <Name>Infrastructure</Name>

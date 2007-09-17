@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     public class TeamCondition
     {

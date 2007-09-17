@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     public class Link : LinkLabel
     {

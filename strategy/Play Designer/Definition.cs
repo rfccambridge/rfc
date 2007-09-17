@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     
     abstract class DesignerRobotDefinition:PlayRobotDefinition

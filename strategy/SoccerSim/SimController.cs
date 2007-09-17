@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Text;
+using Robocup.Core;
 
 using Robocup.Infrastructure;
 using Navigator = Navigation.Examples.DumbNavigator;

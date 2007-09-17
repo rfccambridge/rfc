@@ -5,8 +5,9 @@ using System.Collections;
 using System.Drawing;
 using Robocup.Infrastructure;
 using Robocup.Geometry;
+using Robocup.Core;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     class SelectorResults
     {

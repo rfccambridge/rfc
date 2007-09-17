@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
 using System.Drawing;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     interface Clickable
     {

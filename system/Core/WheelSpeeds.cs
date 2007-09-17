@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Robocup.Infrastructure
+namespace Robocup.Core
 {
     /// <summary>
     /// A simple storage class for holding the four wheel speeds.

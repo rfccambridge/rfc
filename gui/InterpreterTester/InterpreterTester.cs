@@ -11,16 +11,15 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
-using RobocupPlays;
+using Robocup.Plays;
 using System.Collections;
 
 using Robocup.Infrastructure;
+using Robocup.Core;
 
 //using Navigator = Navigation.Examples.LookAheadPotential;
 //using Navigator = Navigation.Examples.DumbNavigator;
 using Navigator = Navigation.Current.CurrentNavigator;
-
-using RobotInfo = Robocup.Infrastructure.RobotInfo;
 
 namespace InterpreterTester
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Infrastructure;
 using Robocup.Geometry;
+using Robocup.Core;
 
 namespace Navigation
 {
@@ -33,7 +34,7 @@ namespace Navigation
             return false;
         }
 
-        public void drawLast(System.Drawing.Graphics g, Robocup.Infrastructure.ICoordinateConverter c)
+        public void drawLast(System.Drawing.Graphics g, ICoordinateConverter c)
         {
             if (waypoints != null)
             {

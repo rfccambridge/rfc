@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Robocup.Core;
 
 namespace Robocup.Infrastructure
 {
@@ -39,7 +40,7 @@ namespace Robocup.Infrastructure
             return (int)(f / Math.Sqrt(width * width + height * height) * Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0));
         }
 
-        public Robocup.Infrastructure.Vector2 fieldtopixelPoint(Robocup.Infrastructure.Vector2 p)
+        public Vector2 fieldtopixelPoint(Vector2 p)
         {
             return new Vector2(fieldtopixelX(p.X), fieldtopixelY(p.Y));
         }
@@ -54,7 +55,7 @@ namespace Robocup.Infrastructure
             return 2 - y * 4.0f / height;
         }
 
-        public Robocup.Infrastructure.Vector2 pixeltofieldPoint(Robocup.Infrastructure.Vector2 p)
+        public Vector2 pixeltofieldPoint(Vector2 p)
         {
             return new Vector2(pixeltofieldX(p.X), pixeltofieldY(p.Y));
         }

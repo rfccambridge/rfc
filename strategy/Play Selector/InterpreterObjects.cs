@@ -4,8 +4,9 @@ using System.Text;
 using System.Drawing;
 using System.Collections;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     class InterpreterBall : PlayBall
     {

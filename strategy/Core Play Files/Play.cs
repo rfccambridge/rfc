@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Infrastructure;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     abstract public class Play<T> where T : Expression
     {

@@ -6,7 +6,8 @@ using System.Threading;
 
 using Robocup.Constants;
 using Robocup.Infrastructure;
-using RobocupPlays;
+using Robocup.Plays;
+using Robocup.Core;
 
 
 namespace Robocup.CoreRobotics

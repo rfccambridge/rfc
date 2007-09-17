@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     partial class ShowExpressionsForm : Form
     {

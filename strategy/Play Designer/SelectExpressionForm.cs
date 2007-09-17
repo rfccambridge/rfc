@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     partial class SelectExpressionForm : Form
     {

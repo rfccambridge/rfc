@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using Robocup.Infrastructure;
+using Robocup.Core;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     /// <summary>
     /// This class wraps an IPredictor and negates all of the coordinates

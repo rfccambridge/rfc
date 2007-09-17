@@ -9,8 +9,9 @@ using System.Collections;
 using System.IO;
 using Robocup.Infrastructure;
 using Robocup.Geometry;
+using Robocup.Core;
 
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     /// <summary>
     /// The main form for the Play Designer

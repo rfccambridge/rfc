@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Infrastructure;
 using Robocup.Geometry;
+using Robocup.Core;
 
 namespace Navigation
 {
@@ -110,7 +111,7 @@ namespace Navigation
                     avoidingObstacle[id] = true;
                     continueDistanceSq[id] = position.distanceSq(destination);
                     lastDirection[id] = (destination - position).cartesianAngle();
-                    //RobocupPlays.CommonFunctions.crossproduct
+                    //Robocup.Plays.CommonFunctions.crossproduct
                     if (roundsSinceTrace[id] > 20)
                     {
                         traceDirection[id] = Math.Sign(UsefulFunctions.crossproduct(destination, position, o.position));

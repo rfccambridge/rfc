@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 
-namespace Robocup.Infrastructure
+namespace Robocup.Core
 {
     /// <summary>
     /// An immutable class that represents a point in 2D space, or a vector in 2D space.
@@ -50,6 +50,7 @@ namespace Robocup.Infrastructure
         {
             return new Vector2(p.X, p.Y);
         }
+
         static private Vector2 zero = new Vector2(0,0);
         /// <summary>
         /// The Vector (0,0)
@@ -89,7 +90,7 @@ namespace Robocup.Infrastructure
             Vector2 v = obj as Vector2;
             if (v == null)
                 return false;
-            return (this == v);
+            return (X == v.X && Y == v.Y);
         }
         /// <summary>
         /// Checks for value equality between this and another object.  Returns
@@ -175,7 +176,7 @@ namespace Robocup.Infrastructure
         }
         /// <summary>
         /// Returns a vector that is parallel to this vector and has length 1.
-        /// Has no meaning for the zero vector.
+        /// Has no meaning for the zero vector (will return NaN).
         /// </summary>
         public Vector2 normalize()
         {
@@ -189,6 +190,12 @@ namespace Robocup.Infrastructure
             return String.Format("<{0:G4},{1:G4}>", x, y);
         }
 
+        /// <summary>
+        /// Parses a Vector2 from the string format of ToString().  There is not much guarantee about
+        /// how constant the string representation will be, however.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         static public Vector2 Parse(string s)
         {
             string[] split = s.Trim('<', '>', ' ').Split(',');

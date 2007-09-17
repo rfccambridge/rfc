@@ -6,9 +6,9 @@ using System.Threading;
 
 using Robocup.Constants;
 using Robocup.Infrastructure;
-using RobocupPlays;
+using Robocup.Plays;
 using Robocup.CoreRobotics;
-
+using Robocup.Core;
 
 namespace SoccerSim
 {

@@ -1,4 +1,4 @@
-namespace RobocupPlays
+namespace Robocup.Plays
 {
     partial class ValueForm
     {

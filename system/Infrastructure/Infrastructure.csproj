@@ -50,16 +50,17 @@
     <Compile Include="CoordinateConverter.cs" />
     <Compile Include="GeneralPID.cs" />
     <Compile Include="HighResTimer.cs" />
-    <Compile Include="INavigator.cs" />
-    <Compile Include="Interfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RobotInfo.cs" />
     <Compile Include="SpecialFunctions.cs" />
-    <Compile Include="Vector2.cs" />
-    <Compile Include="WheelSpeeds.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rfc.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
