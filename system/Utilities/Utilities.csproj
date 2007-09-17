@@ -41,6 +41,7 @@
     <Compile Include="CoordinateConverter.cs" />
     <Compile Include="GeneralPID.cs" />
     <Compile Include="HighResTimer.cs" />
+    <Compile Include="Logging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpecialFunctions.cs" />
   </ItemGroup>

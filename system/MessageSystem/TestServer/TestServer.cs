@@ -11,9 +11,6 @@ namespace TestServer
         {
             while (true)
             {
-                GC.Collect();
-                GC.Collect();
-                GC.Collect();
                 MessageSender<string> sender = Messages.CreateServerSender<string>(12345);
                 for (int i = 0; i < 5; i++)
                 {
@@ -21,7 +18,7 @@ namespace TestServer
                     Console.WriteLine("posted message number " + i);
                     System.Threading.Thread.Sleep(500);
                 }
-                //sender.Close();
+                sender.Close();
                 Console.ReadKey();
             }
         }
