@@ -6,8 +6,6 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using Robocup.Core;
 
-using Robocup.Infrastructure;
-
 namespace Robocup.CoreRobotics
 {
     public class RefBoxListener : IReferee

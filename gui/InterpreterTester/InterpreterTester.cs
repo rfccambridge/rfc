@@ -12,9 +12,8 @@ using System.Windows.Forms;
 using System.IO;
 
 using Robocup.Plays;
-using System.Collections;
+using Robocup.Utilities;
 
-using Robocup.Infrastructure;
 using Robocup.Core;
 
 //using Navigator = Navigation.Examples.LookAheadPotential;
@@ -534,7 +533,7 @@ namespace InterpreterTester
             }*/
             else if (c == 't')
             {
-                Robocup.Infrastructure.HighResTimer timer = new Robocup.Infrastructure.HighResTimer();
+                HighResTimer timer = new HighResTimer();
                 timer.Start();
                 run(testIterations);
                 timer.Stop();

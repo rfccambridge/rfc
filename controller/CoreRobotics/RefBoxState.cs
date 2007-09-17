@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using Robocup.Infrastructure;
 using Robocup.Plays;
 using Robocup.Core;
 

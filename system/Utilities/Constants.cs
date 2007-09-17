@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace Robocup.Constants
+namespace Robocup.Utilities
 {
     static public class Constants
     {

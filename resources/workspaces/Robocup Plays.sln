@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\..\stra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\..\strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "..\..\system\Infrastructure\Infrastructure.csproj", "{5A581DB2-B25E-4DDB-B870-4C63D8876D19}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTester", "..\..\gui\InterpreterTester\InterpreterTester.csproj", "{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navigation", "..\..\strategy\Navigation\Navigation.csproj", "{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}"
@@ -18,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "..\..\strategy\Geometry\Geometry.csproj", "{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\system\Core\Core.csproj", "{501CE524-9C56-4C08-B04F-69A92318872A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "..\..\system\Utilities\Utilities.csproj", "{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +37,6 @@ Global
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,6 +57,10 @@ Global
 		{501CE524-9C56-4C08-B04F-69A92318872A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{501CE524-9C56-4C08-B04F-69A92318872A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{501CE524-9C56-4C08-B04F-69A92318872A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

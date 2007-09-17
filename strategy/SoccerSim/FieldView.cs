@@ -4,8 +4,8 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Robocup.Infrastructure;
 using Robocup.Core;
+using Robocup.Utilities;
 
 namespace SoccerSim
 {

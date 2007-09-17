@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Robocup.Infrastructure;
 using Robocup.Core;
+using Robocup.Utilities;
 
 namespace Robocup.CoreRobotics
 {
@@ -90,7 +90,7 @@ namespace Robocup.CoreRobotics
                             else
                             {
                                 if (oldInfo.Position.distanceSq(newInfo.Position) <
-                                    Constants.Constants.get<float>("DELTA_DIST_SQ_MERGE"))
+                                    Constants.get<float>("DELTA_DIST_SQ_MERGE"))
                                 {
                                     matched = newInfo;
                                     break;
@@ -150,7 +150,7 @@ namespace Robocup.CoreRobotics
                     foreach (RobotInfo oldinfo in oldInfos)
                     {
                         if (roundsSinceSeen.ContainsKey(oldinfo) && roundsSinceSeen[oldinfo] >=
-                            Constants.Constants.get<int>("MAX_ROUNDS_TO_KEEP_INFO"))
+                            Constants.get<int>("MAX_ROUNDS_TO_KEEP_INFO"))
                         {
                             roundsSinceSeen.Remove(oldinfo);
                             //don't re-add this

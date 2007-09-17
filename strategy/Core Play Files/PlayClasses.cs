@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using System.Collections;
-using Robocup.Infrastructure;
 using Robocup.Core;
 
 /* The way that the designer/interpreter is currently set up is so that they can share a lot of the same code logic.

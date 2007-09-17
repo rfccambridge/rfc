@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
-using Robocup.Infrastructure;
 using Robocup.Core;
 
 namespace Robocup.Plays

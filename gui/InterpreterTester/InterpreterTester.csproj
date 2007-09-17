@@ -112,9 +112,9 @@
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\Infrastructure\Infrastructure.csproj">
-      <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
-      <Name>Infrastructure</Name>
+    <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
+      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

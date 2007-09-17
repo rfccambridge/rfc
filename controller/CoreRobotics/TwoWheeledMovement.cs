@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Robocup.Infrastructure;
 using Robocup.Core;
+using Robocup.Utilities;
 
 namespace Robocup.CoreRobotics
 {
@@ -30,18 +30,18 @@ namespace Robocup.CoreRobotics
 
         const float MoveTol = .01f;
         GeneralPID anglePID = new GeneralPID(
-            Constants.Constants.get<float>("ANGLE_PID_KP"),
-            Constants.Constants.get<float>("ANGLE_PID_KI"),
-            Constants.Constants.get<float>("ANGLE_PID_KD"),
-            Constants.Constants.get<float>("ANGLE_PID_MAX"),
-            Constants.Constants.get<float>("ANGLE_PID_RESET")
+            Constants.get<float>("ANGLE_PID_KP"),
+            Constants.get<float>("ANGLE_PID_KI"),
+            Constants.get<float>("ANGLE_PID_KD"),
+            Constants.get<float>("ANGLE_PID_MAX"),
+            Constants.get<float>("ANGLE_PID_RESET")
             );
         GeneralPID movePID = new GeneralPID(
-            Constants.Constants.get<float>("MOVE_PID_KP"),
-            Constants.Constants.get<float>("MOVE_PID_KI"),
-            Constants.Constants.get<float>("MOVE_PID_KD"),
-            Constants.Constants.get<float>("MOVE_PID_MAX"),
-            Constants.Constants.get<float>("MOVE_PID_RESET")
+            Constants.get<float>("MOVE_PID_KP"),
+            Constants.get<float>("MOVE_PID_KI"),
+            Constants.get<float>("MOVE_PID_KD"),
+            Constants.get<float>("MOVE_PID_MAX"),
+            Constants.get<float>("MOVE_PID_RESET")
             );
 
         public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, float desiredOrientation)
@@ -108,18 +108,18 @@ namespace Robocup.CoreRobotics
         public void reloadPID()
         {
             anglePID = new GeneralPID(
-                Constants.Constants.get<float>("ANGLE_PID_KP"),
-                Constants.Constants.get<float>("ANGLE_PID_KD"),
-                Constants.Constants.get<float>("ANGLE_PID_KI"),
-                Constants.Constants.get<float>("ANGLE_PID_MAX"),
-                Constants.Constants.get<float>("ANGLE_PID_RESET")
+                Constants.get<float>("ANGLE_PID_KP"),
+                Constants.get<float>("ANGLE_PID_KD"),
+                Constants.get<float>("ANGLE_PID_KI"),
+                Constants.get<float>("ANGLE_PID_MAX"),
+                Constants.get<float>("ANGLE_PID_RESET")
             );
             movePID = new GeneralPID(
-                Constants.Constants.get<float>("MOVE_PID_KP"),
-                Constants.Constants.get<float>("MOVE_PID_KD"),
-                Constants.Constants.get<float>("MOVE_PID_KI"),
-                Constants.Constants.get<float>("MOVE_PID_MAX"),
-                Constants.Constants.get<float>("MOVE_PID_RESET")
+                Constants.get<float>("MOVE_PID_KP"),
+                Constants.get<float>("MOVE_PID_KD"),
+                Constants.get<float>("MOVE_PID_KI"),
+                Constants.get<float>("MOVE_PID_MAX"),
+                Constants.get<float>("MOVE_PID_RESET")
             );
         }
 

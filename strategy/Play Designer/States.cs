@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Collections;
-using Robocup.Infrastructure;
 using Robocup.Core;
 
 /* This file holds all the code for the separate variables that we want to keep track of,

@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Collections;
-using Robocup.Infrastructure;
 using Robocup.Geometry;
 using Robocup.Core;
 

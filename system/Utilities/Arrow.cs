@@ -4,7 +4,7 @@ using System.Text;
 using System.Drawing;
 using Robocup.Core;
 
-namespace Robocup.Infrastructure
+namespace Robocup.Utilities
 {
     /// <summary>
     /// A simple construct for drawing an arrow, given a start and end point, a color, and a width.

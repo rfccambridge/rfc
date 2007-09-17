@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Threading;
 
-namespace Robocup.Infrastructure
+namespace Robocup.Utilities
 {
     /// <summary>
     /// A class that measures time at a much higher resolution than the standard C# timers.

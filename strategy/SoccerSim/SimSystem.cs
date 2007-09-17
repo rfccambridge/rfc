@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-using Robocup.Constants;
-using Robocup.Infrastructure;
+using Robocup.Utilities;
 using Robocup.Plays;
 using Robocup.CoreRobotics;
 using Robocup.Core;

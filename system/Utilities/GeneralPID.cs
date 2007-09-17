@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Robocup.Infrastructure
+namespace Robocup.Utilities
 {
     public class GeneralPID
     {

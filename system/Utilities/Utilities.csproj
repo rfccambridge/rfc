@@ -4,19 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</ProjectGuid>
+    <ProjectGuid>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Robocup.Infrastructure</RootNamespace>
-    <AssemblyName>Infrastructure</AssemblyName>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <RootNamespace>Robocup.Utilities</RootNamespace>
+    <AssemblyName>Utilities</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -28,8 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arrow.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="CoordinateConverter.cs" />
     <Compile Include="GeneralPID.cs" />
     <Compile Include="HighResTimer.cs" />

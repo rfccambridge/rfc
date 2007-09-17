@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
 
-namespace Robocup.Infrastructure
+namespace Robocup.Utilities
 {
     /// <summary>
     /// A basic ICoordinateConverter implementation.
