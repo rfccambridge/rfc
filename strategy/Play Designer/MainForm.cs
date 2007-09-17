@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Collections;
 using System.IO;
 using Robocup.Infrastructure;
+using Robocup.Geometry;
 
 namespace RobocupPlays
 {

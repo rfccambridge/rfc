@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Robocup.Infrastructure;
 
-namespace Robocup.Infrastructure {
+namespace Robocup.Geometry {
     public class Line {
         private Vector2[] points;
 

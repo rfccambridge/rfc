@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreRobotics", "..\..\contr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "..\..\system\Constants\Constants.csproj", "{064297F9-12D0-4BD1-BF96-146E2B28461D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "..\..\strategy\Geometry\Geometry.csproj", "{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayDesigner", "..\..\strategy\Play Designer\PlayDesigner.csproj", "{C57C048E-0954-44CD-8FF6-BD7269962214}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,14 @@ Global
 		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C57C048E-0954-44CD-8FF6-BD7269962214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C57C048E-0954-44CD-8FF6-BD7269962214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C57C048E-0954-44CD-8FF6-BD7269962214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C57C048E-0954-44CD-8FF6-BD7269962214}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

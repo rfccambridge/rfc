@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Robocup.Infrastructure;
 
-namespace Robocup.Infrastructure {
+namespace Robocup.Geometry {
     public static class UsefulFunctions {
 
         static public float distance(Vector2 p1, Vector2 p2) {
@@ -22,50 +23,6 @@ namespace Robocup.Infrastructure {
         /// </summary>
         static public float dotproduct(Vector2 p1, Vector2 p2, Vector2 p3) {
             return (p1.X - p2.X) * (p3.X - p2.X) + (p1.Y - p2.Y) * (p3.Y - p2.Y);
-        }
-        /// <summary>
-        /// Takes a string s, assumed to start and end with parenthesis, and splits it up into subexpressions.
-        /// Ex: (line (robot robot1) point2) gives {"line","(robot robot1)","point2"}
-        /// </summary>
-        static public string[] parse(string s) {
-            //s = s.Trim('(', ')');
-            //TODO is this really what I want?
-            //TODO change TODO to NOTE?
-            if (s[0] == '(')
-                s = s.Substring(1, s.Length - 2);
-            StringBuilder token = new StringBuilder();
-            List<string> strings = new List<string>();
-
-            int depth = 0;
-            for (int i = 0; i < s.Length; i++) {
-                char c = s[i];
-                if (c == ' ' && depth == 0) {
-                    if (token.Length != 0) {
-                        strings.Add(token.ToString());
-                        token = new StringBuilder();
-                    }
-                    continue;
-                }
-
-                if (c == '(') {
-                    depth++;
-                } else if (c == ')') {
-                    depth--;
-                    if (depth == 0) {
-                        token.Append(c);
-                        if (token.Length != 0) {
-                            strings.Add(token.ToString());
-                            token = new StringBuilder();
-                        }
-                        continue;
-                    }
-                }
-                token.Append(c);
-            }
-            if (token.Length != 0)
-                strings.Add(token.ToString());
-
-            return strings.ToArray();
         }
 
         /// <summary>

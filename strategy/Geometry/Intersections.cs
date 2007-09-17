@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Drawing;
+using Robocup.Infrastructure;
 
 /*
  * This file stores all the code for determining the intersection of two lines/circles.  Since there's
@@ -17,7 +17,7 @@ using System.Drawing;
  * for you.  Eventually, maybe there'll be a list of them so people will know what they do and don't have to
  * worry about in actions (for instance, do people have to worry about having a clear shot before shooting?).
  */
-namespace Robocup.Infrastructure
+namespace Robocup.Geometry
 {
 
     public static class Intersections

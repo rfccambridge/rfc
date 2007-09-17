@@ -62,7 +62,7 @@ namespace RobocupPlays
         }*/
         public bool willClick(Vector2 p)
         {
-            return UsefulFunctions.distancesq(p, getPoint()) <= radius * radius;
+            return p.distanceSq(getPoint()) <= radius * radius;
         }
         public void highlight()
         {

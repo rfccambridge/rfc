@@ -67,6 +67,10 @@
       <Name>Infrastructure</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Geometry\Geometry.csproj">
+      <Project>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</Project>
+      <Name>Geometry</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

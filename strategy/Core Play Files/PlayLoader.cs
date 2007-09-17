@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections;
 using System.Drawing;
 using Robocup.Infrastructure;
+using Robocup.Geometry;
 
 namespace RobocupPlays
 {
@@ -117,7 +118,7 @@ namespace RobocupPlays
 
         private void processMetadata(string header)
         {
-            string[] strings = UsefulFunctions.parse(header);
+            string[] strings = parse(header);
             string command = strings[0];
 
             switch (command)
@@ -190,7 +191,7 @@ namespace RobocupPlays
 
         private E treatAsFunction(string definition, Type wantedType)
         {
-            string[] strings = UsefulFunctions.parse(definition);
+            string[] strings = parse(definition);
             Function f = Function.getFunction(strings[0]);
             if (f == null)
                 throw new ApplicationException("Could not find a function of the name \"" + strings[0] + "\"");
@@ -204,6 +205,61 @@ namespace RobocupPlays
                 objects[i] = getObject(strings[i + 1], f.ArgTypes[i]);
             }
             return factory.Create(f, objects);
+        }
+
+
+        /// <summary>
+        /// Takes a string s, assumed to start and end with parenthesis, and splits it up into subexpressions.
+        /// Ex: (line (robot robot1) point2) gives {"line","(robot robot1)","point2"}
+        /// </summary>
+        static private string[] parse(string s)
+        {
+            //s = s.Trim('(', ')');
+            //TODO is this really what I want?
+            //TODO change TODO to NOTE?
+            if (s[0] == '(')
+                s = s.Substring(1, s.Length - 2);
+            StringBuilder token = new StringBuilder();
+            List<string> strings = new List<string>();
+
+            int depth = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                char c = s[i];
+                if (c == ' ' && depth == 0)
+                {
+                    if (token.Length != 0)
+                    {
+                        strings.Add(token.ToString());
+                        token = new StringBuilder();
+                    }
+                    continue;
+                }
+
+                if (c == '(')
+                {
+                    depth++;
+                }
+                else if (c == ')')
+                {
+                    depth--;
+                    if (depth == 0)
+                    {
+                        token.Append(c);
+                        if (token.Length != 0)
+                        {
+                            strings.Add(token.ToString());
+                            token = new StringBuilder();
+                        }
+                        continue;
+                    }
+                }
+                token.Append(c);
+            }
+            if (token.Length != 0)
+                strings.Add(token.ToString());
+
+            return strings.ToArray();
         }
     }
 }

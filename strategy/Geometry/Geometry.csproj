@@ -4,19 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</ProjectGuid>
+    <ProjectGuid>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Robocup.Infrastructure</RootNamespace>
-    <AssemblyName>Infrastructure</AssemblyName>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <RootNamespace>Robocup.Geometry</RootNamespace>
+    <AssemblyName>Geometry</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -24,17 +16,15 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -43,20 +33,19 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arrow.cs" />
-    <Compile Include="CoordinateConverter.cs" />
-    <Compile Include="GeneralPID.cs" />
-    <Compile Include="HighResTimer.cs" />
-    <Compile Include="INavigator.cs" />
-    <Compile Include="Interfaces.cs" />
+    <Compile Include="Circle.cs" />
+    <Compile Include="Intersections.cs" />
+    <Compile Include="Line.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RobotInfo.cs" />
-    <Compile Include="SpecialFunctions.cs" />
-    <Compile Include="Vector2.cs" />
-    <Compile Include="WheelSpeeds.cs" />
+    <Compile Include="UsefulFunctions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\system\Infrastructure\Infrastructure.csproj">
+      <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
+      <Name>Infrastructure</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="rfc.snk" />

@@ -182,7 +182,7 @@ namespace RobocupPlays
                         continue;
                 }
 
-                float dist = UsefulFunctions.distancesq(closest, rinf.Position);
+                float dist = closest.distanceSq(rinf.Position);
                 if (dist < bestdistance)
                 {
                     bestdistance = dist;

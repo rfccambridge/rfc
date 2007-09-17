@@ -92,6 +92,10 @@
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
       <Name>CorePlayFiles</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\strategy\Geometry\Geometry.csproj">
+      <Project>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</Project>
+      <Name>Geometry</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\strategy\Navigation\Navigation.csproj">
       <Project>{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}</Project>
       <Name>Navigation</Name>
