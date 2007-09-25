@@ -41,7 +41,7 @@ namespace Robotics.Commander
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(373, 173);
+            this.textBox1.Size = new System.Drawing.Size(373, 408);
             this.textBox1.TabIndex = 0;
             this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.From1_KeyUp);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.From1_KeyDown);
@@ -52,6 +52,7 @@ namespace Robotics.Commander
             this.OpenCOM.Name = "OpenCOM";
             this.OpenCOM.Size = new System.Drawing.Size(118, 54);
             this.OpenCOM.TabIndex = 1;
+            this.OpenCOM.TabStop = false;
             this.OpenCOM.Text = "Open COM";
             this.OpenCOM.UseVisualStyleBackColor = true;
             this.OpenCOM.Click += new System.EventHandler(this.toggleSettings);
@@ -62,7 +63,7 @@ namespace Robotics.Commander
             // 
             this.statusLabel.AutoSize = true;
             this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.statusLabel.Location = new System.Drawing.Point(199, 211);
+            this.statusLabel.Location = new System.Drawing.Point(199, 424);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(329, 64);
             this.statusLabel.TabIndex = 3;
@@ -83,7 +84,7 @@ namespace Robotics.Commander
             // 
             this.lblID.AutoSize = true;
             this.lblID.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblID.Location = new System.Drawing.Point(12, 236);
+            this.lblID.Location = new System.Drawing.Point(6, 449);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(153, 33);
             this.lblID.TabIndex = 45;
@@ -93,7 +94,7 @@ namespace Robotics.Commander
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(558, 307);
+            this.ClientSize = new System.Drawing.Size(568, 497);
             this.Controls.Add(this.lblID);
             this.Controls.Add(this.reloadMotor);
             this.Controls.Add(this.OpenCOM);

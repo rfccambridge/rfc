@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO.Ports;
-using Robocup.Infrastructure;
+using Robocup.Core;
 
 namespace Robotics.Commander
 {
@@ -49,7 +49,7 @@ namespace Robotics.Commander
         }
         #endregion
 
-        private const string fname = "C:\\Microsoft Robotics Studio (1.0)\\simulator\\MasterCommander\\scaling.txt";
+        private const string fname = "..\\..\\resources\\scaling.txt";
         //private const string fname = "C:\\Debug\\scaling.txt";
 
         public SerialRobots()
@@ -108,7 +108,6 @@ namespace Robotics.Commander
 
 
             string smsg;
-            //smsg = headsign + star + ssou + allmotorsign + sdir + ssp1 + ssp2 + ssp3 + ssp4 + sdur + endsign;
             //robots expect wheel powers in this order:
             //lb lf rf rb
             smsg = headsigns[target] + wheel + slb + slf + srf + srb + sdir + endsign;
@@ -214,7 +213,7 @@ namespace Robotics.Commander
 
             /////
             //process motor scalings
-            int maxspeed = 127;
+            int maxspeed = 255;
             if (wheelSpeeds.lf > 0)
                 frontLeft = (int)Math.Min(wheelSpeeds.lf * scaling[robotID, 0, 1], maxspeed);
             else

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO.Ports;
+using Robocup.Core;
 
 namespace Robotics.Commander
 {
@@ -75,7 +76,7 @@ namespace Robotics.Commander
         {
             if (remotecontrol)
             {
-                srobots.setMotorSpeeds(id, new Robocup.Infrastructure.WheelSpeeds(lf, rf, lb, rb));
+                srobots.setMotorSpeeds(id, new WheelSpeeds(lf, rf, lb, rb));
                 statusLabel.Text = "computercmd";
             }
         }
@@ -109,7 +110,7 @@ namespace Robotics.Commander
 
         private void setMotorSpeeds(int lf, int rf, int lb, int rb)
         {
-            srobots.setMotorSpeeds(curRobot, new Robocup.Infrastructure.WheelSpeeds(lf, rf, lb, rb));
+            srobots.setMotorSpeeds(curRobot, new WheelSpeeds(lf, rf, lb, rb));
         }
 
         private void From1_KeyDown(object sender, KeyEventArgs e)

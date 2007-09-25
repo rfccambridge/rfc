@@ -6,7 +6,7 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3CCB17A5-8943-4535-A148-7AE8D237BA32}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SerialControl</RootNamespace>
     <AssemblyName>SerialControl</AssemblyName>
@@ -18,8 +18,7 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>Robotics.Commander.RunSerial</StartupObject>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -71,13 +70,12 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
-      <Project>{5A581DB2-B25E-4DDB-B870-4C63D8876D19}</Project>
-      <Name>Infrastructure</Name>
-      <Private>False</Private>
-    </ProjectReference>
+    <None Include="rfc.snk" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="rfc.snk" />
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
