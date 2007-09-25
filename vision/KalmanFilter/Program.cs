@@ -14,8 +14,8 @@ namespace KalmanFilter
         {
             for (int i = 0; i < a.Count; i++)
             {
-                Console.Write(a[i]);
-                Console.Write(", ");
+                //Console.Write(a[i]);
+                Console.Write("{0:G4}, ",a[i]);
             }
             Console.Write("\n");
         }
@@ -31,10 +31,10 @@ namespace KalmanFilter
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
             Console.WriteLine("George: hello robin");
-            filter george = new filter();
-            george.initialize(0, 0, 0, 0, 0, 100);
+            filter f = new filter();
+            f.initialize(0, 0, 0, 0, 0, 100);
             Console.WriteLine("Initial State");
-            pAL(george.get_state(0, 0));
+            pAL(f.get_state(0, 0));
             Console.WriteLine("Initial P has doubt = 100.0");
 
             Random n = new Random();
@@ -43,15 +43,29 @@ namespace KalmanFilter
             {
                 double e1 = n.NextDouble();
                 double e2 = n.NextDouble();
-                george.update(0, 1, i + erfi(2.0 * e1 - 1.0) * 0.2, i + erfi(2.0 * e2 - 1.0) * 0.2);
+                f.update(0, 1, i + erfi(2.0 * e1 - 1.0) * 0.2, i + erfi(2.0 * e2 - 1.0) * 0.2);
                 Console.Write(i);
                 Console.Write(", ");
-                Console.Write(i + erfi(2.0 * e1 - 1.0) * 0.2);
+                Console.Write("{0:G4}",i + erfi(2.0 * e1 - 1.0) * 0.2);
                 Console.Write(", ");
-                Console.Write(i + erfi(2.0 * e2 - 1.0) * 0.2);
+                Console.Write("{0:G4}", i + erfi(2.0 * e2 - 1.0) * 0.2);
                 Console.Write(", ");
-                pAL(george.get_state(0, 0));
+                pAL(f.get_state(0, 0));
             }
+            for (double i = 1.0; i < 200.0; i = i + 1.0)
+            {
+                double e1 = n.NextDouble();
+                double e2 = n.NextDouble();
+                f.update(0, 1, i + erfi(2.0 * e1 - 1.0) * 0.2, i + erfi(2.0 * e2 - 1.0) * 0.2);
+                Console.Write(i);
+                Console.Write(", ");
+                Console.Write("{0:G4}", i + erfi(2.0 * e1 - 1.0) * 0.2);
+                Console.Write(", ");
+                Console.Write("{0:G4}", i + erfi(2.0 * e2 - 1.0) * 0.2);
+                Console.Write(", ");
+                pAL(f.get_state(0, 0));
+            }
+            k.display();
             /*george.update(0, 1, 2, 2);
             ArrayList george_state = george.get_state(0, 1);
             Console.WriteLine("Output:");
