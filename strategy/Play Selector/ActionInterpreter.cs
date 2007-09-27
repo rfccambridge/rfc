@@ -76,7 +76,7 @@ namespace Robocup.Plays
         /// </summary>
         private float targetAngle(Vector2 robot, Vector2 target)
         {
-            return (float)Math.Atan2(target.Y - robot.Y, target.X - robot.X);
+            return (target - robot).cartesianAngle();
         }
         /// <summary>
         /// This is the distance that the robots should put themselves from the ball,

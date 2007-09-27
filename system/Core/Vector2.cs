@@ -43,6 +43,16 @@ namespace Robocup.Core
             this.x = x;
             this.y = y;
         }
+        /// <summary>
+        /// Creates a new Vector2
+        /// </summary>
+        /// <param name="x">the x-coordinate</param>
+        /// <param name="y">the y-coordinate</param>
+        public Vector2(double x, double y)
+        {
+            this.x = (float)x;
+            this.y = (float)y;
+        }
         static public implicit operator PointF(Vector2 p)
         {
             return new PointF(p.X, p.Y);
@@ -59,6 +69,11 @@ namespace Robocup.Core
         static public Vector2 ZERO
         {
             get { return zero; }
+        }
+
+        static public Vector2 GetUnitVector(double orientation)
+        {
+            return new Vector2(Math.Cos(orientation), Math.Sin(orientation));
         }
 	
 
