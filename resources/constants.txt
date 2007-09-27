@@ -5,7 +5,7 @@
 string OUR_TEAM_COLOR YELLOW
 
 # RFCSystem constants
-int UPDATE_SLEEP_TIME 10
+int UPDATE_SLEEP_TIME 30
 
 float DELTA_DIST_SQ_MERGE .03
 # running at 15 fps, pretty much

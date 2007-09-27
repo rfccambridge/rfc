@@ -68,7 +68,7 @@ namespace Robocup.Core {
 
     /// <summary>
     /// Abstracts away a source of data on robot positions.
-    /// The returned lists will be copies -- don't modify them.
+    /// The returned lists are copies -- any changes to them will not be seen anywhere else.
     /// Implementations: MRSPredictor, CameraPredictor, KalmanPredictor
     /// 
     /// <remarks>These operations could be expensive, and may change during the course of a single function.
@@ -97,11 +97,10 @@ namespace Robocup.Core {
         void Dribble(int robotID, Vector2 target);
     }
 
-    /** Abstraction for the main team controller
-     *  
-     *  Implementations: RFCController
-     * 
-     */
+    /// <summary>
+    /// Takes any single order for a robot ("move to here", "kick the kicker", "stop"), and
+    /// has the robot execute it.
+    /// </summary>
     public interface IController {
         void move(int robotID, bool avoidBall, Vector2 dest);
         void move(int robotID, bool avoidBall, Vector2 dest, float orientation);

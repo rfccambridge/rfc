@@ -9,7 +9,7 @@ using Robocup.Utilities;
 
 namespace SoccerSim
 {
-    public class FieldView : ICoordinateConverter
+    class FieldView : ICoordinateConverter
     {
         // drawing constants
         const int ROBOT_SIZE = 20;
@@ -23,16 +23,16 @@ namespace SoccerSim
         // field drawing
         const float FIELD_XMIN = -2.45f;
         const float FIELD_XMAX = 2.45f;
-        const float FIELD_YMIN = 1.7f;
-        const float FIELD_YMAX = -1.7f; // note the reversed coord system
+        const float FIELD_YMIN = -1.7f;
+        const float FIELD_YMAX = 1.7f;
         const float GOAL_WIDTH = 0.18f;
         const float GOAL_HEIGHT = 0.7f;
-        
 
-        FieldState _state;
-        public FieldView(FieldState state)
+
+        IPredictor predictor;
+        public FieldView(IPredictor predictor)
         {
-            _state = state;
+            this.predictor = predictor;
         }
 
         #region Drawing Commands
@@ -85,19 +85,19 @@ namespace SoccerSim
             g.DrawRectangle(
                 p, 
                 fieldtopixelX(FIELD_XMIN), 
-                fieldtopixelY(FIELD_YMIN), 
+                fieldtopixelY(FIELD_YMAX), 
                 fieldtopixelX(FIELD_XMAX) - fieldtopixelX(FIELD_XMIN), 
-                fieldtopixelY(FIELD_YMAX) - fieldtopixelY(FIELD_YMIN)
+                fieldtopixelY(FIELD_YMIN) - fieldtopixelY(FIELD_YMAX)
             );
             p.Dispose();
             Brush b = new SolidBrush(Color.Black);
-            foreach (RobotInfo r in _state.getOurTeamInfo())
+            foreach (RobotInfo r in predictor.getOurTeamInfo())
             {
                 drawRobot(r, g, Color.Black);
             }
             b.Dispose();
             b = new SolidBrush(Color.Red);
-            foreach (RobotInfo r in _state.getTheirTeamInfo())
+            foreach (RobotInfo r in predictor.getTheirTeamInfo())
             {
                 drawRobot(r, g, Color.Red);
             }
@@ -108,15 +108,15 @@ namespace SoccerSim
             b = new SolidBrush(Color.Orange);
             g.FillEllipse(
                 b, 
-                fieldtopixelX(_state.getBallInfo().Position.X) - BALL_SIZE/2, 
-                fieldtopixelY(_state.getBallInfo().Position.Y) - BALL_SIZE/2, 
+                fieldtopixelX(predictor.getBallInfo().Position.X) - BALL_SIZE/2,
+                fieldtopixelY(predictor.getBallInfo().Position.Y) - BALL_SIZE / 2, 
                 BALL_SIZE, 
                 BALL_SIZE
             );
 
         }
 
-        List<Arrow> arrows = new List<Arrow>();
+        /*List<Arrow> arrows = new List<Arrow>();
         public void addArrow(Arrow a)
         {
             lock (arrows)
@@ -142,21 +142,21 @@ namespace SoccerSim
             {
                 arrows.Clear();
             }
-        }
+        }*/
 
         #endregion
         #region Coordinate Conversions
 
         const float PIXELSPERMETER = 120.0f;
-        const float BORDER_X = 350.0f;
-        const float BORDER_Y = 250.0f;
+        const float CENTER_X = 350.0f;
+        const float CENTER_Y = 250.0f;
         public int fieldtopixelX(double x)
         {
-            return (int)(BORDER_X + PIXELSPERMETER * x);
+            return (int)(CENTER_X + PIXELSPERMETER * x);
         }
         public int fieldtopixelY(double y)
         {
-            return (int)(BORDER_Y - PIXELSPERMETER * y);
+            return (int)(CENTER_Y - PIXELSPERMETER * y);
         }
         public Vector2 fieldtopixelPoint(Vector2 p)
         {
@@ -164,11 +164,11 @@ namespace SoccerSim
         }
         public float pixeltofieldX(float x)
         {
-            return (float)((x - BORDER_X) / PIXELSPERMETER);
+            return (float)((x - CENTER_X) / PIXELSPERMETER);
         }
         public float pixeltofieldY(float y)
         {
-            return (float)((y - BORDER_Y) / -PIXELSPERMETER);
+            return (float)((y - CENTER_Y) / -PIXELSPERMETER);
         }
         public Vector2 pixeltofieldPoint(Vector2 p)
         {

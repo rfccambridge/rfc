@@ -10,23 +10,19 @@ using Navigator = Navigation.Examples.DumbNavigator;
 
 namespace SoccerSim
 {
-    class SimController : IController
+    /*class SimController : IController
     {
         const int TEAMSIZE = 5;
         const float speed = 0.02f;
-        const float ballspeed = .06f;
         Random r = new Random();
 
-        float ballVx;
-        float ballVy;
-
         IPredictor _state;
-        IInfoAcceptor _acceptor;
+        PhysicsEngine physics_engine;
         FieldView _view;
-        public SimController(IPredictor state, IInfoAcceptor acceptor, FieldView view)
+        public SimController(PhysicsEngine physics_engine, FieldView view)
         {
-            _state = state;
-            _acceptor = acceptor;
+            _state = physics_engine;
+            this.physics_engine = physics_engine;
             _view = view;
         }
 
@@ -51,6 +47,14 @@ namespace SoccerSim
 
         const float distThreshold = .005f;
         private const float chop = .001f;
+
+        private Dictionary<int, IMovement> _planners;
+        public IMovement GetPlanner(int robotId)
+        {
+            if (!_planners.ContainsKey(robotId))
+                throw new ApplicationException("trying to move with a robot that doesn't have an IMovement defined");
+            return _planners[robotId];
+        }
 
         Navigator _navigator = new Navigator(),
             _otherNavigator = new Navigator();
@@ -77,9 +81,12 @@ namespace SoccerSim
                 ballAvoidance = (float)Math.Max(1, Math.Min(1.7, (1 + 1 * Math.Sqrt(ball.Velocity.magnitudeSq())) * (2.40 - 1.5 * ((destination - ballPosition).normalize() * (position - ballPosition).normalize()))));
 
             NavigationResults results = n.navigate(navigatorId, position, destination, infos, otherinfo, ball, .12f);
-            Vector2 waypoint = results.waypoint;
 
-            RobotInfo prev = _state.getCurrentInformation(robotID);
+            WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(robotID, thisRobot, results);
+
+            physics_engine.SetWheelSpeeds(robotID, motorSpeeds);
+
+            /*RobotInfo prev = _state.getCurrentInformation(robotID);
 
             if (position.distanceSq(destination) > chop * chop)
             {
@@ -89,29 +96,21 @@ namespace SoccerSim
                 {
                     _acceptor.updateRobot(robotID, new RobotInfo(prev.Position + speed * (waypoint - prev.Position).normalize(), (prev.Orientation * .85f + orientation * .15f), prev.ID));
                 }
-            }
+            }*
         }
 
         public void kick(int robotID)
         {
-            RobotInfo robot = _state.getCurrentInformation(robotID);
-            // add randomness to actual robot location / direction
-            const float randomComponent = ballspeed / 3;
-            ballVx = (float)(ballspeed * Math.Cos(robot.Orientation));
-            ballVy = (float)(ballspeed * Math.Sin(robot.Orientation));
-            ballVx += (float)(r.NextDouble() * 2 - 1) * randomComponent;
-            ballVy += (float)(r.NextDouble() * 2 - 1) * randomComponent;
-            RobotInfo prev = robot;
-            float recoil = 1.5f;
-            _acceptor.updateRobot(robotID, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
+            physics_engine.Kick(robotID);
         }
 
         public void stop(int robotID)
         {
+            physics_engine.Stop(robotID);
         }
 
         #endregion
 
         
-    }
+    }*/
 }

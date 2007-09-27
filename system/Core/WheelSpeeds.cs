@@ -18,6 +18,9 @@ namespace Robocup.Core
             this.rb = rb;
         }
 
+        /// <summary>
+        /// Creates a WheelSpeeds object with all speeds defaulting to 0.
+        /// </summary>
         public WheelSpeeds()
             : this(0, 0, 0, 0)
         {

@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicPredictor.cs" />
+    <Compile Include="MovementModeler.cs" />
     <Compile Include="RefBoxListener.cs" />
     <Compile Include="RefBoxState.cs" />
     <Compile Include="RFCController.cs" />

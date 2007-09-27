@@ -5,10 +5,12 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8DAD1CA8-6B0B-4186-B337-72085101396C}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SoccerSim</RootNamespace>
     <AssemblyName>SoccerSim</AssemblyName>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,8 +38,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FieldState.cs" />
     <Compile Include="FieldView.cs" />
+    <Compile Include="PhysicsEngine.cs" />
+    <Compile Include="Referees.cs" />
     <Compile Include="SimController.cs" />
     <Compile Include="SimEngine.cs" />
     <Compile Include="SimSystem.cs" />

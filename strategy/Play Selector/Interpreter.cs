@@ -68,11 +68,11 @@ namespace Robocup.Plays
             List<RobotInfo> theirteaminfo_base = predictor.getTheirTeamInfo();
             InterpreterRobotInfo[] ourteaminfo = ourteaminfo_base.ConvertAll<InterpreterRobotInfo>(delegate(RobotInfo info)
             {
-                return new InterpreterRobotInfo(info.Position, info.Velocity, info.Orientation, info.ID);
+                return new InterpreterRobotInfo(info.Position, info.Velocity, info.RotationalVelocity, info.Orientation, info.ID);
             }).ToArray();
             InterpreterRobotInfo[] theirteaminfo = theirteaminfo_base.ConvertAll<InterpreterRobotInfo>(delegate(RobotInfo info)
             {
-                return new InterpreterRobotInfo(info.Position, info.Velocity, info.Orientation, info.ID);
+                return new InterpreterRobotInfo(info.Position, info.Velocity, info.RotationalVelocity, info.Orientation, info.ID);
             }).ToArray();
             BallInfo ballinfo = predictor.getBallInfo();
 

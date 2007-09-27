@@ -17,36 +17,36 @@ namespace SoccerSim
 {
     public partial class SoccerSim : Form
     {
-        
+
         public SoccerSim()
         {
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.DoubleBuffer, true);
             InitializeComponent();
 
-            init();  
+            init();
         }
 
-        FieldState _state;
         FieldView _fieldView;
         SimSystem _player1;
         SimSystem _player2;
         SimEngine _engine;
+        VirtualRef referee;
 
         private void init()
         {
-            // init score
-            _state = new FieldState();
-            _fieldView = new FieldView(_state);
+            referee = new SimpleReferee();
+            PhysicsEngine physics_engine = new PhysicsEngine(referee);
+            _fieldView = new FieldView(physics_engine);
             // TODO make configurable how many to load
 
             RefBoxListener refbox = new RefBoxListener(10001);
 
-            _player1 = new SimSystem(_fieldView,_state,refbox,true);
-            _player2 = new SimSystem(_fieldView,_state,refbox,false);
-            _engine = new SimEngine(_state, this);
+            _player1 = new SimSystem(_fieldView, physics_engine, refbox, true);
+            _player2 = new SimSystem(_fieldView, physics_engine, refbox, false);
+            _engine = new SimEngine(physics_engine, this);
         }
 
-        
+
 
 
         bool drawArrows = false;
@@ -57,13 +57,15 @@ namespace SoccerSim
             _fieldView.paintField(g);
             if (drawArrows)
             {
-                _fieldView.paintArrows(g);
+                _player1.Controller.drawCurrent(g, _fieldView);
+                _player2.Controller.drawCurrent(g, _fieldView);
+                //_fieldView.paintArrows(g);
             }
         }
 
         #region User Input
         bool berunning = false;
-        
+
         private void SoccerSim_KeyPress(object sender, KeyPressEventArgs e)
         {
             char c = char.ToLower(e.KeyChar);
@@ -75,7 +77,7 @@ namespace SoccerSim
                 {
                     _player1.runRound();
                     _player2.runRound();
-                    _engine.step();
+                    _engine.step(1.0/30);
                 }
                 this.Invalidate();
             }
@@ -103,7 +105,7 @@ namespace SoccerSim
             }
             else if (c == 'r')
             {
-                
+
                 berunning = !berunning;
                 if (berunning)
                 {
@@ -117,7 +119,7 @@ namespace SoccerSim
                     _player2.stop();
                     _player1.stop();
                 }
-                
+
             }
             else if (c == 'p')
             {
@@ -169,8 +171,8 @@ namespace SoccerSim
             _engine.stop();
         }
 
-        
 
-        
+
+
     }
 }

@@ -176,6 +176,13 @@ namespace Robocup.Core
             return new Vector2(p.X * f, p.Y * f);
         }
         /// <summary>
+        /// Returns this vector scaled by a constant.
+        /// </summary>
+        static public Vector2 operator *(double d, Vector2 p)
+        {
+            return new Vector2((float)(p.X * d), (float)(p.Y * d));
+        }
+        /// <summary>
         /// Returns a vector that is parallel to this vector and has length 1.
         /// Has no meaning for the zero vector (will return NaN).
         /// </summary>

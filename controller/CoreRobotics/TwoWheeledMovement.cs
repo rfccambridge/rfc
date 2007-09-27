@@ -75,18 +75,18 @@ namespace Robocup.CoreRobotics
             }
 
             int anglepower = (int)(anglePID.getNext(angleChange));
-            Console.WriteLine("angle diff: " + angleChange);
-            Console.WriteLine("anglepower: " + anglepower);
+            //Console.WriteLine("angle diff: " + angleChange);
+            //Console.WriteLine("anglepower: " + anglepower);
             WheelSpeeds angleSpeeds = new WheelSpeeds(-anglepower, anglepower, -anglepower, anglepower);
             WheelSpeeds rtn = angleSpeeds;
-            Console.WriteLine("move diff: " + distanceToMove);
+            //Console.WriteLine("move diff: " + distanceToMove);
 
             if (angleChange < Math.PI / 2 && distanceToMove > MoveTol)
             {
                 if (isbackwards)
                     distanceToMove *= -1;
                 int forwardpower = (int)(movePID.getNext(distanceToMove));
-                Console.WriteLine("forwardpower: " + forwardpower);
+                //Console.WriteLine("forwardpower: " + forwardpower);
                 WheelSpeeds forwardSpeeds = new WheelSpeeds(forwardpower, forwardpower, forwardpower, forwardpower);
                 rtn += forwardSpeeds;
             }

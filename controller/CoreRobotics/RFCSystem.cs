@@ -33,8 +33,8 @@ namespace Robocup.CoreRobotics
             get { return _acceptor; }
         }
 
+        System.Timers.Timer t;
 
-        Thread worker;
         private volatile bool running;
         private bool initialized;
         private int counter;
@@ -80,7 +80,7 @@ namespace Robocup.CoreRobotics
 
 
             // create helper interfaces
-            if(_commander==null)
+            if (_commander == null)
                 _commander = new StubRobots();
 
             INavigator navigator = new Navigation.Examples.LookAheadBug();
@@ -159,7 +159,7 @@ namespace Robocup.CoreRobotics
 
         public void registerCommander(IRobots commander)
         {
-            if ( ! initialized )
+            if (!initialized)
                 _commander = commander;
         }
 
@@ -191,8 +191,13 @@ namespace Robocup.CoreRobotics
                 isYellow = Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
 
                 _refbox.start();
-                worker = new Thread(run);
-                worker.Start();
+                t = new System.Timers.Timer(_sleepTime);
+                t.AutoReset = true;
+                t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
+                {
+                    runRound();
+                };
+                t.Start();
                 counter = 0;
                 running = true;
             }
@@ -203,47 +208,27 @@ namespace Robocup.CoreRobotics
             if (running)
             {
                 running = false;
+                //stop the timer:
+                t.Enabled = false;
                 _refbox.stop();
                 foreach (RobotInfo info in Predictor.getOurTeamInfo())
                 {
                     _controller.stop(info.ID);
                 }
+                Console.WriteLine("--------------DONE RUNNING: -----------------");
             }
-            
+
         }
 
-        public void run()
+        private void runRound()
         {
-            //TimeSpan sleepDuration = new TimeSpan(0, 0, 0, 0, _sleepTime);
-            while (running)
-            {
-
-                //int curTime = DateTime.Now.Millisecond;
-                if( counter % 100 == 0)
-                    Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
-
-                _runRound();
-                
-                /*int timeToSleep = DateTime.Now.Millisecond - curTime;
-                if(timeToSleep < 0)
-                    timeToSleep = timeToSleep + 1000;*/
-
-
-
-                //Thread.Sleep(Math.Max(1,_sleepTime - timeToSleep));
-                counter++;
-                Thread.Sleep(_sleepTime);
-                
-            }
-            Console.WriteLine("--------------DONE RUNNING: -----------------");
-        }
-
-        private void _runRound()
-        {
+            if (counter % 100 == 0)
+                Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
             _controller.clearArrows();
-            _interpreter.interpret( 
+            _interpreter.interpret(
                 _refbox.getCurrentPlayType()
             );
+            counter++;
         }
 
         public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter)
