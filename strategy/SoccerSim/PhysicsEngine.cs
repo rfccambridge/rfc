@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
+using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 
 namespace SoccerSim
 {
@@ -15,6 +16,7 @@ namespace SoccerSim
         List<RobotInfo> theirinfo;
         BallInfo ball_info;
         VirtualRef referee;
+        Dictionary<int, MovementModeler> movement_modelers = new Dictionary<int, MovementModeler>();
 
         public PhysicsEngine(VirtualRef referee)
         {
@@ -35,6 +37,10 @@ namespace SoccerSim
             });
             ball_info = new BallInfo(Vector2.ZERO);
             this.referee = referee;
+            foreach (RobotInfo info in ourinfo)
+                movement_modelers.Add(info.ID, new MovementModeler());
+            foreach (RobotInfo info in theirinfo)
+                movement_modelers.Add(info.ID, new MovementModeler());
         }
 
         #region IPredictor Members
@@ -85,14 +91,14 @@ namespace SoccerSim
                 int id = info.ID;
                 if (!speeds.ContainsKey(id))
                     speeds[id] = new WheelSpeeds();
-                UpdateRobot(info, Robocup.CoreRobotics.MovementModeler.ModelWheelSpeeds(info, speeds[id], dt));
+                UpdateRobot(info, movement_modelers[id].ModelWheelSpeeds(info, speeds[id], dt));
             }
             foreach (RobotInfo info in getTheirTeamInfo())
             {
                 int id = info.ID;
                 if (!speeds.ContainsKey(id))
                     speeds[id] = new WheelSpeeds();
-                UpdateRobot(info, Robocup.CoreRobotics.MovementModeler.ModelWheelSpeeds(info, speeds[id], dt));
+                UpdateRobot(info, movement_modelers[id].ModelWheelSpeeds(info, speeds[id], dt));
             }
 
             //the speed at which the ball will bounce when it hits another robot
