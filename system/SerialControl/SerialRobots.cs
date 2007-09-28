@@ -215,27 +215,27 @@ namespace Robotics.Commander
             //process motor scalings
             int maxspeed = 255;
             if (wheelSpeeds.lf > 0)
-                frontLeft = (int)Math.Min(wheelSpeeds.lf * scaling[robotID, 0, 1], maxspeed);
+                frontLeft = (int)Math.Min(wheelSpeeds.lf * forwardpower[robotID].lf, maxspeed);
             else
-                frontLeft = (int)Math.Max(wheelSpeeds.lf * scaling[robotID, 0, 0], -maxspeed);
+                frontLeft = (int)Math.Max(wheelSpeeds.lf * backwardspower[robotID].lf, -maxspeed);
 
             if (wheelSpeeds.rf > 0)
-                frontRight = (int)Math.Min(wheelSpeeds.rf * scaling[robotID, 1, 1], maxspeed);
+                frontRight = (int)Math.Min(wheelSpeeds.rf * forwardpower[robotID].rf, maxspeed);
             else
-                frontRight = (int)Math.Max(wheelSpeeds.rf * scaling[robotID, 1, 0], -maxspeed);
+                frontRight = (int)Math.Max(wheelSpeeds.rf * backwardspower[robotID].rf, -maxspeed);
 
             if (wheelSpeeds.lb > 0)
-                backLeft = (int)Math.Min(wheelSpeeds.lb * scaling[robotID, 2, 1], maxspeed);
+                backLeft = (int)Math.Min(wheelSpeeds.lb * forwardpower[robotID].lb, maxspeed);
             else
-                backLeft = (int)Math.Max(wheelSpeeds.lb * scaling[robotID, 2, 0], -maxspeed);
+                backLeft = (int)Math.Max(wheelSpeeds.lb * backwardspower[robotID].lb, -maxspeed);
 
             if (wheelSpeeds.rb > 0)
-                backRight = (int)Math.Min(wheelSpeeds.rb * scaling[robotID, 3, 1], maxspeed);
+                backRight = (int)Math.Min(wheelSpeeds.rb * forwardpower[robotID].rb, maxspeed);
             else
-                backRight = (int)Math.Max(wheelSpeeds.rb * scaling[robotID, 3, 0], -maxspeed);
+                backRight = (int)Math.Max(wheelSpeeds.rb * backwardspower[robotID].rb, -maxspeed);
 
 
-            if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 50)
+            if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 10)
                 setAllMotor(robotID, 0, frontLeft, frontRight, backLeft, backRight, 1000);
             else
                 setAllMotor(robotID, 0, 0, 0, 0, 0, 65535);
@@ -248,12 +248,10 @@ namespace Robotics.Commander
 
         #endregion
 
-        private const int NUMROBOTS = 10;
-        /// <summary>
-        /// robot, wheel, direction
-        /// wheels go lf, rf, lb, rb
-        /// </summary>
-        float[, ,] scaling = new float[NUMROBOTS, 4, 2];
+
+        //TODO: this is not the right place to scale powers
+        Dictionary<int, WheelsInfo<float>> forwardpower = new Dictionary<int, WheelsInfo<float>>();
+        Dictionary<int, WheelsInfo<float>> backwardspower = new Dictionary<int, WheelsInfo<float>>();
 
         public void loadMotorScale()
         {
@@ -261,7 +259,6 @@ namespace Robotics.Commander
         }
         public void loadMotorScale(string filename)
         {
-            //System.IO.FileStream stream = new System.IO.FileStream(filename, System.IO.FileMode.Open);
             System.IO.StreamReader reader = new System.IO.StreamReader(filename);
             string s = "";
             while (s != "*****")
@@ -271,15 +268,22 @@ namespace Robotics.Commander
             string wholething = reader.ReadToEnd();
             string[] values = wholething.Split(new char[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             int count = 0;
-            for (int id = 0; id < NUMROBOTS; id++)
+            while (count < values.Length)
             {
-                for (int direction = 0; direction < 2; direction++)
+                int id = int.Parse(values[count++]);
                 {
-                    for (int wheel = 0; wheel < 4; wheel++)
-                    {
-                        scaling[id, wheel, direction] = float.Parse(values[count]);
-                        count++;
-                    }
+                    float lf = float.Parse(values[count++]);
+                    float rf = float.Parse(values[count++]);
+                    float lb = float.Parse(values[count++]);
+                    float rb = float.Parse(values[count++]);
+                    backwardspower[id] = new WheelsInfo<float>(lf, rf, lb, rb);
+                }
+                {
+                    float lf = float.Parse(values[count++]);
+                    float rf = float.Parse(values[count++]);
+                    float lb = float.Parse(values[count++]);
+                    float rb = float.Parse(values[count++]);
+                    forwardpower[id] = new WheelsInfo<float>(lf, rf, lb, rb);
                 }
             }
             reader.Close();

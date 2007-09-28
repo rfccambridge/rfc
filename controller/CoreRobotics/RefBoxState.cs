@@ -24,7 +24,7 @@ namespace Robocup.CoreRobotics
         {
             marking = false;
             markedPosition = new Vector2(0.0f, 0.0f);
-            playsToRun = PlayTypes.Halt;
+            playsToRun = PlayTypes.NormalPlay;
             
             isYellow = yellow;
 

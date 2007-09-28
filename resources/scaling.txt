@@ -2,6 +2,7 @@ new system:
 0 means going backwards
 1 means going forwards
 
+id
 lf0 rf0 lb0 rb0
 lf1 rf1 lb1 rb1
 
@@ -9,6 +10,7 @@ or!
 0 means clockwise (faster)
 1 means counterclockwise (slower)
 
+id
 lf1 rf0 lb1 rb0
 lf0 rf1 lb0 rb1
 
@@ -22,32 +24,42 @@ for a weak robot (low on power):
 
 *****
 
+0
 1 .85 1 .85
 .85 1 .85 1
 
+1
 1 .85 1 .85
 .85 1 .85 1
 
+2
 1 .85 1 .85
 .85 1 .85 1
 
+3
 1 .85 1 .85
 .85 1 .85 1
 
+4
 1 .85 1 .85
 .85 1 .85 1
 
+5
 1 .85 1 .85
 .85 1 .85 1
 
+6
 1 .85 1 .85
 .85 1 .85 1
 
+7
 1 .85 1 .85
 .85 1 .85 1
 
+8
 1 .85 1 .85
 .85 1 .85 1
 
+9
 1 .85 1 .85
 .85 1 .85 1
