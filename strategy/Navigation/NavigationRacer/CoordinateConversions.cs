@@ -18,7 +18,7 @@ namespace NavigationRacer
         }
         public double fieldtopixelDistance(double f)
         {
-            return f * 100;
+            return f * 100; 
         }
         public double pixeltofieldDistance(double f)
         {
