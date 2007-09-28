@@ -11,7 +11,7 @@ namespace Robocup.CoreRobotics
     /// </summary>
     public class MovementModeler
     {
-        private Random r = new Random();
+        static private Random r = new Random();
         /// <summary>
         /// Given the current state of a robot, the command most recently sent to the robot,
         /// extrapolates the state of the robot forward a given amount of time.
