@@ -22,7 +22,7 @@ namespace Robocup.Utilities
                     return int.Parse(s);
                 case "string":
                     return s;
-                case "double":
+                case "float":
                     return double.Parse(s);
                 case "bool":
                     return bool.Parse(s);
