@@ -36,15 +36,15 @@ namespace Navigation
             /// <summary>
             /// The amount that this moves the virtual robot each time in creating th path
             /// </summary>
-            const float stepSize = .05f;
+            const double stepSize = .05;
             /// <summary>
             /// How close the path has to get to the goal before it's considered there.
             /// </summary>
-            const float destTolerance = .01f;
+            const double destTolerance = .01;
 
             //these are only used to backtrack once we find a path, not in finding the path:
-            const float avoidRobotDist = .22f;
-            const float extraAvoidBallDist = .1f;
+            const double avoidRobotDist = .22;
+            const double extraAvoidBallDist = .1;
 
             /// <summary>
             /// Returns if this line is blocked by any of the obstacles.
@@ -76,10 +76,10 @@ namespace Navigation
             /// </summary>
             Vector2[] lastDestination = new Vector2[TEAMSIZE];
 
-            readonly Vector2 goal1 = new Vector2(-2.45f, 0f);
-            readonly Vector2 goal2 = new Vector2(2.45f, 0f);
-            const float goalieBoxAvoid = .65f;
-            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            readonly Vector2 goal1 = new Vector2(-2.45, 0);
+            readonly Vector2 goal2 = new Vector2(2.45, 0);
+            const double goalieBoxAvoid = .65;
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, double avoidBallDist)
             {
                 List<Obstacle> obstacles = new List<Obstacle>();
                 for (int i = 0; i < teamPositions.Length; i++)
@@ -129,7 +129,7 @@ namespace Navigation
                     {
                         Circle obstacleCircle = new Circle(o.position, o.size);
                         Vector2 newDestination = Intersections.intersect(l, obstacleCircle, 0);
-                        newDestination = newDestination + .15f * (newDestination - o.position);
+                        newDestination = newDestination + .15 * (newDestination - o.position);
                         return this.navigate(id, position, newDestination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
                         //System.Windows.Forms.MessageBox.Show("moving destination from\n"+destination+"\nto\n"+newDestination);
                         //return recursed;
@@ -167,9 +167,9 @@ namespace Navigation
                         return navigator.navigate(id, position, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
                     NavigationResults results = navigator.navigate(id, current, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
                     Vector2 waypoint = results.waypoint;
-                    float step = (float)Math.Min(stepSize, Math.Sqrt((waypoint - current).magnitudeSq()));
+                    double step = Math.Min(stepSize, Math.Sqrt((waypoint - current).magnitudeSq()));
                     if (!blocked(new Line(waypoint, position), obstacles))
-                        step = (float)Math.Max(stepSize, Math.Sqrt((waypoint - current).magnitudeSq()));
+                        step = Math.Max(stepSize, Math.Sqrt((waypoint - current).magnitudeSq()));
                     current = current + step * (waypoint - current).normalize();
                     steps.Add(current);
                 }
@@ -208,7 +208,7 @@ namespace Navigation
                 foreach (Vector2 p in steps)
                 {
                     Vector2 pixelPoint = c.fieldtopixelPoint(p);
-                    g.FillRectangle(b, pixelPoint.X - 1, pixelPoint.Y - 1, 2, 2);
+                    g.FillRectangle(b, (int)pixelPoint.X - 1, (int)pixelPoint.Y - 1, 2, 2);
                 }
                 b.Dispose();
             }

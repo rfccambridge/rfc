@@ -20,7 +20,7 @@ namespace MachineLearning.ExternalProgramScoring
     /// Currently, there is no support for having the tag itself appear in the file [but
     /// if useful there eventually will be a way, such as two tags that have nothing inbetween].
     /// 
-    /// Currently, all values must be unconstrained floating point numbers [eventually there
+    /// Currently, all values must be unconstrained doubleing point numbers [eventually there
     /// may be extra information that you can include between the tags, or inside a tag,
     /// specifying what type it it, or what constraints].
     /// 

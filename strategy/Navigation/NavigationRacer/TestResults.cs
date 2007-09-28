@@ -6,7 +6,7 @@ namespace NavigationRacer
 {
     class TestResults
     {
-        public TestResults(int numRuns, int totalIterations, float totalMilliseconds,float closestDistance)
+        public TestResults(int numRuns, int totalIterations, double totalMilliseconds,double closestDistance)
         {
             this.numRuns = numRuns;
             this.totalIterations = totalIterations;
@@ -23,25 +23,25 @@ namespace NavigationRacer
         {
             get { return totalIterations; }
         }
-        private readonly float totalMilliseconds;
-        public float TotalMilliseconds
+        private readonly double totalMilliseconds;
+        public double TotalMilliseconds
         {
             get { return totalMilliseconds; }
         }
-        public float AverageMillisecondsPerRun
+        public double AverageMillisecondsPerRun
         {
             get { return TotalMilliseconds / NumRuns; }
         }
-        public float AverageMillisecondsPerIteration
+        public double AverageMillisecondsPerIteration
         {
             get { return TotalMilliseconds / TotalIterations; }
         }
-        public float AverageIterationsPerRun
+        public double AverageIterationsPerRun
         {
             get { return TotalIterations / NumRuns; }
         }
-        private readonly float closestDistance;
-        public float ClosestDistanceToObstacle
+        private readonly double closestDistance;
+        public double ClosestDistanceToObstacle
         {
             get { return closestDistance; }
         }
@@ -58,15 +58,15 @@ namespace NavigationRacer
         }
 	
 
-        public float IterationsScore(TestResults reference)
+        public double IterationsScore(TestResults reference)
         {
             return reference.AverageIterationsPerRun / this.AverageIterationsPerRun;
         }
-        public float TotalTimeScore(TestResults reference)
+        public double TotalTimeScore(TestResults reference)
         {
             return reference.AverageMillisecondsPerRun / this.AverageMillisecondsPerRun;
         }
-        public float IterationSpeedScore(TestResults reference)
+        public double IterationSpeedScore(TestResults reference)
         {
             return reference.AverageMillisecondsPerIteration / this.AverageMillisecondsPerIteration;
         }

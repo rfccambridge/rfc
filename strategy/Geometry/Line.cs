@@ -19,8 +19,8 @@ namespace Robocup.Geometry {
         /// </summary>
         public double distFromLine(Vector2 p) {
             Vector2[] points = getPoints();
-            float dx = points[1].X - points[0].X;
-            float dy = points[1].Y - points[0].Y;
+            double dx = points[1].X - points[0].X;
+            double dy = points[1].Y - points[0].Y;
             double mag = Math.Sqrt(dx * dx + dy * dy);
             double crossp = UsefulFunctions.crossproduct(points[0], points[1], p);
             //double crossp = dx * (p.Y - points[0].Y) - dy * (p.X - points[0].X);
@@ -41,7 +41,7 @@ namespace Robocup.Geometry {
         {
             Vector2[] points = getPoints();
             Vector2 tangent = (points[1] - points[0]).normalize();
-            float dotp = tangent * (p - points[0]);
+            double dotp = tangent * (p - points[0]);
             return points[0] + dotp * tangent;
         }
         public override string ToString() {

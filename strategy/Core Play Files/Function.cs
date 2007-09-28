@@ -62,9 +62,9 @@ namespace Robocup.Plays
         static public readonly TeamCondition FRIENDLY=new TeamCondition("friendly"),ENEMY=new TeamCondition("enemy"),EITHER=new TeamCondition("either");
         static public readonly string[] strings = new string[] { "friendly", "enemy", "either" };
     }
-    public static class FloatComparer
+    public static class doubleComparer
     {
-        public static bool compare(float f1, float f2, string comparison)
+        public static bool compare(double f1, double f2, string comparison)
         {
             switch (comparison)
             {
@@ -79,10 +79,10 @@ namespace Robocup.Plays
                 case ">":
                     return f1 > f2;
                 default:
-                    throw new ApplicationException("Unable to compare two floats with the comparison " + comparison);
+                    throw new ApplicationException("Unable to compare two doubles with the comparison " + comparison);
             }
         }
-        public static bool compare(float f1, float f2, GreaterLessThan glt)
+        public static bool compare(double f1, double f2, GreaterLessThan glt)
         {
             return compare(f1, f2, glt.ToString());
         }

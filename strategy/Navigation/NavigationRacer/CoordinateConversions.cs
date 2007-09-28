@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Robocup.Infrastructure;
+using Robocup.Core;
 
 namespace NavigationRacer
 {
@@ -16,11 +16,11 @@ namespace NavigationRacer
         {
             return (int)(250 - 100 * y);
         }
-        public float fieldtopixelDistance(float f)
+        public double fieldtopixelDistance(double f)
         {
             return f * 100;
         }
-        public float pixeltofieldDistance(float f)
+        public double pixeltofieldDistance(double f)
         {
             return f / 100;
         }
@@ -28,13 +28,13 @@ namespace NavigationRacer
         {
             return new Vector2(fieldtopixelX(p.X), fieldtopixelY(p.Y));
         }
-        public float pixeltofieldX(float x)
+        public double pixeltofieldX(double x)
         {
-            return (float)((x - 300f) / 100f);
+            return (x - 300d) / 100d;
         }
-        public float pixeltofieldY(float y)
+        public double pixeltofieldY(double y)
         {
-            return (float)((y - 250f) / -100f);
+            return (y - 250d) / -100d;
         }
         public Vector2 pixeltofieldPoint(Vector2 p)
         {

@@ -28,23 +28,23 @@ namespace Robocup.CoreRobotics
             return calculateWheelSpeeds(robotID, currentInfo, results, currentInfo.Orientation);
         }
 
-        const float MoveTol = .01f;
+        const double MoveTol = .01;
         GeneralPID anglePID = new GeneralPID(
-            Constants.get<float>("ANGLE_PID_KP"),
-            Constants.get<float>("ANGLE_PID_KI"),
-            Constants.get<float>("ANGLE_PID_KD"),
-            Constants.get<float>("ANGLE_PID_MAX"),
-            Constants.get<float>("ANGLE_PID_RESET")
+            Constants.get<double>("ANGLE_PID_KP"),
+            Constants.get<double>("ANGLE_PID_KI"),
+            Constants.get<double>("ANGLE_PID_KD"),
+            Constants.get<double>("ANGLE_PID_MAX"),
+            Constants.get<double>("ANGLE_PID_RESET")
             );
         GeneralPID movePID = new GeneralPID(
-            Constants.get<float>("MOVE_PID_KP"),
-            Constants.get<float>("MOVE_PID_KI"),
-            Constants.get<float>("MOVE_PID_KD"),
-            Constants.get<float>("MOVE_PID_MAX"),
-            Constants.get<float>("MOVE_PID_RESET")
+            Constants.get<double>("MOVE_PID_KP"),
+            Constants.get<double>("MOVE_PID_KI"),
+            Constants.get<double>("MOVE_PID_KD"),
+            Constants.get<double>("MOVE_PID_MAX"),
+            Constants.get<double>("MOVE_PID_RESET")
             );
 
-        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, float desiredOrientation)
+        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation)
         {
             Vector2 destination = results.waypoint;
             Vector2 position = currentInfo.Position;
@@ -54,9 +54,9 @@ namespace Robocup.CoreRobotics
             if (distanceToMove > MoveTol)
             {
                 if (whichtwowheels == WhichTwoWheels.FrontLeftBackRight)
-                    desiredOrientation = (float)(angleToTarget + Math.PI / 4);
+                    desiredOrientation = (double)(angleToTarget + Math.PI / 4);
                 else
-                    desiredOrientation = (float)(angleToTarget - Math.PI / 4);
+                    desiredOrientation = (double)(angleToTarget - Math.PI / 4);
             }
 
             double angleChange = desiredOrientation - currentInfo.Orientation;
@@ -108,18 +108,18 @@ namespace Robocup.CoreRobotics
         public void reloadPID()
         {
             anglePID = new GeneralPID(
-                Constants.get<float>("ANGLE_PID_KP"),
-                Constants.get<float>("ANGLE_PID_KD"),
-                Constants.get<float>("ANGLE_PID_KI"),
-                Constants.get<float>("ANGLE_PID_MAX"),
-                Constants.get<float>("ANGLE_PID_RESET")
+                Constants.get<double>("ANGLE_PID_KP"),
+                Constants.get<double>("ANGLE_PID_KD"),
+                Constants.get<double>("ANGLE_PID_KI"),
+                Constants.get<double>("ANGLE_PID_MAX"),
+                Constants.get<double>("ANGLE_PID_RESET")
             );
             movePID = new GeneralPID(
-                Constants.get<float>("MOVE_PID_KP"),
-                Constants.get<float>("MOVE_PID_KD"),
-                Constants.get<float>("MOVE_PID_KI"),
-                Constants.get<float>("MOVE_PID_MAX"),
-                Constants.get<float>("MOVE_PID_RESET")
+                Constants.get<double>("MOVE_PID_KP"),
+                Constants.get<double>("MOVE_PID_KD"),
+                Constants.get<double>("MOVE_PID_KI"),
+                Constants.get<double>("MOVE_PID_MAX"),
+                Constants.get<double>("MOVE_PID_RESET")
             );
         }
 

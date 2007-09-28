@@ -25,8 +25,8 @@ namespace Navigation
             const int TEAMSIZE = 5;
 
             //these are only used to backtrack once we find a path, not in finding the path:
-            const float avoidRobotDist = .22f;
-            const float extraAvoidBallDist = .1f;
+            const double avoidRobotDist = .22;
+            const double extraAvoidBallDist = .1;
 
             /// <summary>
             /// Returns if this line is blocked by any of the obstacles.
@@ -58,7 +58,7 @@ namespace Navigation
             /// </summary>
             Vector2[] lastDestination = new Vector2[TEAMSIZE];
 
-            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, double avoidBallDist)
             {
                 List<Obstacle> obstacles = new List<Obstacle>();
                 for (int i = 0; i < teamPositions.Length; i++)

@@ -8,7 +8,7 @@ namespace Robocup.Plays
 {
     class DesignerRobot : GetPointable, Clickable, Robot
     {
-        private const float radius = 9;
+        private const double radius = 9;
         private DesignerRobotDefinition definition;
         /// <summary>
         /// Whether or not this robot is ours, or theirs.
@@ -108,12 +108,12 @@ namespace Robocup.Plays
             Brush myBrush = new SolidBrush(c2);
             Pen myPen = new Pen(c, 2);
             Vector2 p = MainForm.FieldPointToPixelPoint(center);
-            g.FillEllipse(myBrush, p.X - radius, p.Y - radius, 2 * radius, 2 * radius);
-            g.DrawEllipse(myPen, p.X - radius, p.Y - radius, 2 * radius, 2 * radius);
+            g.FillEllipse(myBrush, (float)(p.X - radius), (float)(p.Y - radius), 2 * (float)radius, 2 * (float)radius);
+            g.DrawEllipse(myPen, (float)(p.X - radius), (float)(p.Y - radius), 2 * (float)radius, 2 * (float)radius);
             myBrush.Dispose();
             myPen.Dispose();
         }
-        public void translate(float x, float y)
+        public void translate(double x, double y)
         {
             //center.X += x;
             //center.Y += y;

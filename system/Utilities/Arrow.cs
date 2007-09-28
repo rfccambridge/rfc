@@ -26,12 +26,12 @@ namespace Robocup.Utilities
         {
             get { return c; }
         }
-        float width;
-        public float Width
+        double width;
+        public double Width
         {
             get { return width; }
         }
-        public Arrow(Vector2 start, Vector2 end, Color c, float width)
+        public Arrow(Vector2 start, Vector2 end, Color c, double width)
         {
             this.startpoint = start;
             this.endpoint = end;
@@ -41,7 +41,7 @@ namespace Robocup.Utilities
         /// <summary>
         /// Translates a point p by a point t, scaled by scale.
         /// </summary>
-        private Vector2 translate(Vector2 p, Vector2 t, float scale)
+        private Vector2 translate(Vector2 p, Vector2 t, double scale)
         {
             return new Vector2(p.X + t.X * scale, p.Y + t.Y * scale);
         }
@@ -53,7 +53,7 @@ namespace Robocup.Utilities
             double magnitude = Math.Sqrt(p.X * p.X + p.Y * p.Y);
             if (magnitude == 0)
                 return p;
-            return new Vector2((float)(p.X / magnitude), (float)(p.Y / magnitude));
+            return (1 / magnitude) * p;
         }
         /// <summary>
         /// Draws this arrow straight onto a graphics object, without doing any coordinate conversions
@@ -67,11 +67,11 @@ namespace Robocup.Utilities
             }
             Vector2 start = this.startpoint;
             Vector2 end = this.endpoint;
-            float dx = end.X - start.X;
-            float dy = end.Y - start.Y;
+            double dx = end.X - start.X;
+            double dy = end.Y - start.Y;
             Vector2 normal;
             if (dy != 0)
-                normal = new Vector2(1, -(float)dx / dy);
+                normal = new Vector2(1, -dx / dy);
             else
                 normal = new Vector2(0, 1);
             normal = normalize(normal);
@@ -81,7 +81,7 @@ namespace Robocup.Utilities
             //g.DrawLine(myPen, start, end);
             //g.DrawLine(myPen, Point.Round(new Vector2(start.X + normal.X, start.Y + normal.Y)), Point.Round(new Vector2(end.X + normal.X, end.Y + normal.Y)));
 
-            float arrowheadwidth = width * 2.5f;
+            double arrowheadwidth = width * 2.5;
 
 
             PointF[] corners = new PointF[7];

@@ -22,14 +22,14 @@ using Navigator = Navigation.Current.CurrentNavigator;
 
 namespace InterpreterTester
 {
-    public partial class InterpreterTester : Form, IController, IPredictor
+    public partial class InterpreterTester : Form, IController, IPredictor, ICoordinateConverter
     {
         Interpreter interpreter, defensiveinterpreter;
-        const float ballspeed = .08f, balldecay = .98f;
-        private const float ballbounce = .01f, collisionradius = .12f, speed = 0.02f;
+        const double ballspeed = .08, balldecay = .98;
+        private const double ballbounce = .01, collisionradius = .12, speed = 0.02;
         // This is an approximation; assuming that the ball travels at max 10m/s, here it travels at
         // ballspeed m/tick, so ms/tick = 1000 ms/s * (ballspeed m/tick) / (10m/s)
-        private const float ms_per_tick = 1000 * ballspeed / 10;
+        private const double ms_per_tick = 1000 * ballspeed / 10;
 
         const int testIterations = 1000;
 
@@ -150,26 +150,26 @@ namespace InterpreterTester
             ourgoals = theirgoals = 0;
             ballImmobile = 0;
             /*ourinfo = new RobotInfo[] {
-                new RobotInfo(new Vector2(-1.0f, -1), 3, 0),
-                new RobotInfo(new Vector2(-1.0f, 0), 3, 1),
-                new RobotInfo(new Vector2(-1.0f, 1), 3, 2),
-                new RobotInfo(new Vector2(-2f, -1), 3, 3),
-                new RobotInfo(new Vector2(-2f, 1), 3, 4)
+                new RobotInfo(new Vector2(-1.0, -1), 3, 0),
+                new RobotInfo(new Vector2(-1.0, 0), 3, 1),
+                new RobotInfo(new Vector2(-1.0, 1), 3, 2),
+                new RobotInfo(new Vector2(-2, -1), 3, 3),
+                new RobotInfo(new Vector2(-2, 1), 3, 4)
             };
             theirinfo = new RobotInfo[] {
-                new RobotInfo(new Vector2(1.0f, -1), 3, TEAMSIZE+0),
-                new RobotInfo(new Vector2(1.0f, 0), 3, TEAMSIZE+1),
-                new RobotInfo(new Vector2(1.0f, 1), 3, TEAMSIZE+2),
-                new RobotInfo(new Vector2(2f, -1), 3, TEAMSIZE+3),
-                new RobotInfo(new Vector2(2f, 1), 3, TEAMSIZE+4)
+                new RobotInfo(new Vector2(1.0, -1), 3, TEAMSIZE+0),
+                new RobotInfo(new Vector2(1.0, 0), 3, TEAMSIZE+1),
+                new RobotInfo(new Vector2(1.0, 1), 3, TEAMSIZE+2),
+                new RobotInfo(new Vector2(2, -1), 3, TEAMSIZE+3),
+                new RobotInfo(new Vector2(2, 1), 3, TEAMSIZE+4)
             };*/
             ourinfo = new RobotInfo[] {
-                new RobotInfo(new Vector2(-2f, 0), 1, 0),
-                new RobotInfo(new Vector2(-1f, 0), 1, 1)
+                new RobotInfo(new Vector2(-2, 0), 1, 0),
+                new RobotInfo(new Vector2(-1, 0), 1, 1)
             };
             theirinfo = new RobotInfo[] {
-                new RobotInfo(new Vector2(1f, 0), 3, TEAMSIZE+0),
-                new RobotInfo(new Vector2(2f, 0), 3, TEAMSIZE+1),
+                new RobotInfo(new Vector2(1, 0), 3, TEAMSIZE+0),
+                new RobotInfo(new Vector2(2, 0), 3, TEAMSIZE+1),
             };
             ballinfo = new BallInfo(new Vector2(0, 0));
             ballvx = ballvy = 0;
@@ -183,34 +183,42 @@ namespace InterpreterTester
         RobotInfo[] theirinfo;
 
         BallInfo ballinfo = new BallInfo(new Vector2(0, 0));
-        float ballvx = 0, ballvy = 0;
+        double ballvx = 0, ballvy = 0;
 
         int ballImmobile = 0;
 
         #region Coordinate Conversions
-        private int fieldtopixelX(double x)
+        public int fieldtopixelX(double x)
         {
             return (int)(300 + 100 * x);
         }
-        private int fieldtopixelY(double y)
+        public int fieldtopixelY(double y)
         {
             return (int)(200 - 100 * y);
         }
-        private Vector2 fieldtopixelPoint(Vector2 p)
+        public Vector2 fieldtopixelPoint(Vector2 p)
         {
             return new Vector2(fieldtopixelX(p.X), fieldtopixelY(p.Y));
         }
-        private float pixeltofieldX(float x)
+        public double pixeltofieldX(double x)
         {
-            return (float)((x - 300f) / 100f);
+            return ((x - 300) / 100);
         }
-        private float pixeltofieldY(float y)
+        public double pixeltofieldY(double y)
         {
-            return (float)((y - 200f) / -100f);
+            return ((y - 200) / -100);
         }
-        private Vector2 pixeltofieldPoint(Vector2 p)
+        public Vector2 pixeltofieldPoint(Vector2 p)
         {
             return new Vector2(pixeltofieldX(p.X), pixeltofieldY(p.Y));
+        }
+        public double fieldtopixelDistance(double d)
+        {
+            return d * 100;
+        }
+        public double pixeltofieldDistance(double d)
+        {
+            return d * .01;
         }
         #endregion
 
@@ -219,17 +227,17 @@ namespace InterpreterTester
         {
             Brush b = new SolidBrush(c);
             Vector2 center = fieldtopixelPoint(r.Position);
-            g.FillEllipse(b, center.X - 10, center.Y - 10, 20, 20);
+            g.FillEllipse(b, (float)center.X - 10, (float)center.Y - 10, 20, 20);
             PointF[] corners = new PointF[4];
-            float angle = -r.Orientation;
-            float outerangle = .6f;
-            float innerangle = 1.0f;
-            float innerradius = 7f;
-            float outerradius = 11f;
-            corners[0] = (PointF)(center + (new Vector2((float)(innerradius * Math.Cos(angle + innerangle)), (float)(innerradius * Math.Sin(angle + innerangle)))));
-            corners[1] = (PointF)(center + (new Vector2((float)(innerradius * Math.Cos(angle - innerangle)), (float)(innerradius * Math.Sin(angle - innerangle)))));
-            corners[2] = (PointF)(center + (new Vector2((float)(outerradius * Math.Cos(angle - outerangle)), (float)(outerradius * Math.Sin(angle - outerangle)))));
-            corners[3] = (PointF)(center + (new Vector2((float)(outerradius * Math.Cos(angle + outerangle)), (float)(outerradius * Math.Sin(angle + outerangle)))));
+            double angle = -r.Orientation;
+            double outerangle = .6;
+            double innerangle = 1.0;
+            double innerradius = 7;
+            double outerradius = 11;
+            corners[0] = (PointF)(center + (new Vector2(innerradius * Math.Cos(angle + innerangle), innerradius * Math.Sin(angle + innerangle))));
+            corners[1] = (PointF)(center + (new Vector2(innerradius * Math.Cos(angle - innerangle), innerradius * Math.Sin(angle - innerangle))));
+            corners[2] = (PointF)(center + (new Vector2(outerradius * Math.Cos(angle - outerangle), outerradius * Math.Sin(angle - outerangle))));
+            corners[3] = (PointF)(center + (new Vector2(outerradius * Math.Cos(angle + outerangle), outerradius * Math.Sin(angle + outerangle))));
             Brush b2 = new SolidBrush(Color.Gray);
             g.FillPolygon(b2, corners);
             b2.Dispose();
@@ -340,7 +348,7 @@ namespace InterpreterTester
                     collided = true;
                     ballvx = ballbounce * ((ballinfo.Position - location).normalize().X);
                     ballvy = ballbounce * ((ballinfo.Position - location).normalize().Y);
-                    newballlocation = location + .13f * (ballinfo.Position - location).normalize();
+                    newballlocation = location + .13 * (ballinfo.Position - location).normalize();
                     break;
                 }
             }
@@ -354,7 +362,7 @@ namespace InterpreterTester
                         collided = true;
                         ballvx = ballbounce * ((ballinfo.Position - location).normalize().X);
                         ballvy = ballbounce * ((ballinfo.Position - location).normalize().Y);
-                        newballlocation = location + .13f * (ballinfo.Position - location).normalize();
+                        newballlocation = location + .13 * (ballinfo.Position - location).normalize();
                         break;
                     }
                 }
@@ -392,8 +400,8 @@ namespace InterpreterTester
                     Vector2 p2 = allinfos[j].Position;
                     if (p1.distanceSq(p2) <= .2 * .2)
                     {
-                        Vector2 t1 = p1 + .01f * (p1 - p2).normalize();
-                        Vector2 t2 = p2 + .01f * (p2 - p1).normalize();
+                        Vector2 t1 = p1 + .01 * (p1 - p2).normalize();
+                        Vector2 t2 = p2 + .01 * (p2 - p1).normalize();
                         if (i < ourinfo.Length)
                             ourinfo[i] = new RobotInfo(t1, allinfos[i].Orientation, allinfos[i].ID);
                         else
@@ -407,7 +415,7 @@ namespace InterpreterTester
                 }
             }
 
-            ballinfo = new BallInfo(newballlocation, (1 / (ms_per_tick * 1000))*(new Vector2(ballvx, ballvy)));
+            ballinfo = new BallInfo(newballlocation, (1 / (ms_per_tick * 1000)) * (new Vector2(ballvx, ballvy)));
             ballvx *= balldecay;
             ballvy *= balldecay;
 
@@ -579,7 +587,7 @@ namespace InterpreterTester
         }
         #endregion
 
-        private const float chop = .001f;
+        private const double chop = .001;
 
         #region Commander Members
         public void move(int robotID, bool avoidBall, Vector2 dest)
@@ -594,14 +602,14 @@ namespace InterpreterTester
                 newid -= TEAMSIZE;
             }
             RobotInfo r = infos[newid];
-            move(robotID, avoidBall, dest, (float)Math.Atan2(ballinfo.Position.Y - r.Position.Y, change * (ballinfo.Position.X - r.Position.X)));
+            move(robotID, avoidBall, dest, (double)Math.Atan2(ballinfo.Position.Y - r.Position.Y, change * (ballinfo.Position.X - r.Position.X)));
         }
-        const float distThreshold = .005f;
+        const double distThreshold = .005;
         //Navigation.Current.CurrentNavigator navigator = new Navigation.Current.CurrentNavigator(),
         //    othernavigator = new Navigation.Current.CurrentNavigator();
         Navigator navigator = new Navigator(),
             othernavigator = new Navigator();
-        public void move(int robotID, bool avoidBall, Vector2 destination, float orientation)
+        public void move(int robotID, bool avoidBall, Vector2 destination, double orientation)
         {
             //Graphics g = this.CreateGraphics();
 
@@ -611,7 +619,7 @@ namespace InterpreterTester
             RobotInfo[] otherinfo = theirinfo;
             Navigator n = navigator;
             int navigatorId = robotID;
-            //float mult=1f;
+            //double mult=1;
             if (robotID >= TEAMSIZE)
             {
                 infos = theirinfo;
@@ -619,7 +627,7 @@ namespace InterpreterTester
                 robotID -= TEAMSIZE;
                 n = othernavigator;
                 //mult=-1;
-                //orientation = (float)(Math.PI - orientation);
+                //orientation = Math.PI - orientation;
             }
             //Vector2 destination = new Vector2(x, y); // changed 6/9/07 to use Vector2 (jie)
             Vector2 ballposition = ballinfo.Position;
@@ -628,16 +636,16 @@ namespace InterpreterTester
                 return;
             double ballavoidance = 0;
             if (avoidBall)
-                ballavoidance = (float)Math.Max(1, Math.Min(1.7, (1 + Math.Sqrt(ballinfo.Velocity.magnitudeSq())) * (2.40 - 1.5 * ((destination - ballposition).normalize() * (position - ballposition).normalize()))));
+                ballavoidance = (double)Math.Max(1, Math.Min(1.7, (1 + Math.Sqrt(ballinfo.Velocity.magnitudeSq())) * (2.40 - 1.5 * ((destination - ballposition).normalize() * (position - ballposition).normalize()))));
             //PAB.HiPerfTimer timer = new global::InterpreterTester.PAB.HiPerfTimer();
             //timer.Start();
             /*Vector2 result = n.navigate(robotID, position, destination,
                 ourteam, theirteam, ballposition,
                 ballavoidance
-                , 2.1f,
-             (float)Math.Max(.00006, Math.Min(.06, Math.Sqrt(position.distanceSq(destination) * .25f)))
+                , 2.1,
+             (double)Math.Max(.00006, Math.Min(.06, Math.Sqrt(position.distanceSq(destination) * .25)))
             );*/
-            NavigationResults result = n.navigate(navigatorId, position, destination, infos, otherinfo, ballinfo, .12f);
+            NavigationResults result = n.navigate(navigatorId, position, destination, infos, otherinfo, ballinfo, .12);
             Vector2 waypoint = result.waypoint;
             //timer.Stop();
             //Console.WriteLine(timer.Duration*1000+" ms for navigation");
@@ -657,22 +665,22 @@ namespace InterpreterTester
 
 
             RobotInfo prev = infos[robotID];
-            //addArrow(new Arrow(fieldtopixelPoint(infos[robotID].Position), fieldtopixelPoint(new Vector2(x, y)), Color.Blue, 4.0f));
-            //infos[robotID] = new RobotInfo(translate(prev.Position, normalize((new Vector2(x, y)) - prev.Position), .01f), (prev.Orientation * .9f + orientation * .1f), prev.ID);
+            //addArrow(new Arrow(fieldtopixelPoint(infos[robotID].Position), fieldtopixelPoint(new Vector2(x, y)), Color.Blue, 4.0));
+            //infos[robotID] = new RobotInfo(translate(prev.Position, normalize((new Vector2(x, y)) - prev.Position), .01), (prev.Orientation * .9 + orientation * .1), prev.ID);
             if (position.distanceSq(destination) > chop * chop)
             {
-                addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(waypoint), Color.Green, 3.0f));
-                addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(destination), Color.Red, 3.0f));
-                //float neworientation = prev.Orientation * .85f + orientation * .15f;
-                float neworientation = orientation;
+                addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(waypoint), Color.Green, 3.0));
+                addArrow(new Arrow(fieldtopixelPoint(position), fieldtopixelPoint(destination), Color.Red, 3.0));
+                //double neworientation = prev.Orientation * .85 + orientation * .15;
+                double neworientation = orientation;
                 if (prev.Position != waypoint)
                 {
                     infos[robotID] = new RobotInfo(prev.Position + speed * (waypoint - prev.Position).normalize(), neworientation, prev.ID);
                 }
             }
             //Console.WriteLine("going from " + prev.Position + " to " + result);
-            //Console.WriteLine(prev.Position + .01f * (result - prev.Position).normalize());
-            //infos[robotID] = new RobotInfo(translate(prev.Position, normalize(result - prev.Position), .01f), (prev.Orientation * .9f + orientation * .1f), prev.ID);
+            //Console.WriteLine(prev.Position + .01 * (result - prev.Position).normalize());
+            //infos[robotID] = new RobotInfo(translate(prev.Position, normalize(result - prev.Position), .01), (prev.Orientation * .9 + orientation * .1), prev.ID);
         }
 
         public void kick(int robotID)
@@ -683,13 +691,13 @@ namespace InterpreterTester
                 infos = theirinfo;
                 robotID -= TEAMSIZE;
             }
-            const float randomComponent = ballspeed / 6000;
-            ballvx = (float)(ballspeed * Math.Cos(infos[robotID].Orientation));
-            ballvy = (float)(ballspeed * Math.Sin(infos[robotID].Orientation));
-            ballvx += (float)(r.NextDouble() * 2 - 1) * randomComponent;
-            ballvy += (float)(r.NextDouble() * 2 - 1) * randomComponent;
+            const double randomComponent = ballspeed / 6000;
+            ballvx = ballspeed * Math.Cos(infos[robotID].Orientation);
+            ballvy = ballspeed * Math.Sin(infos[robotID].Orientation);
+            ballvx += (r.NextDouble() * 2 - 1) * randomComponent;
+            ballvy += (r.NextDouble() * 2 - 1) * randomComponent;
             RobotInfo prev = infos[robotID];
-            float recoil = 1.5f;
+            double recoil = 1.5;
             infos[robotID] = new RobotInfo(prev.Position + (new Vector2(-ballvx * recoil, -ballvy * recoil)), prev.Orientation, prev.ID);
             //throw new Exception("The method or operation is not implemented.");
         }
@@ -725,7 +733,7 @@ namespace InterpreterTester
                 stepsLeft -= speed;
             }
             stddev = Math.Sqrt(ourgoals + theirgoals + 1) * 10000d / steps;
-            return (double)(ourgoals - theirgoals) * 10000d / steps;
+            return (ourgoals - theirgoals) * 10000d / steps;
         }
 
 

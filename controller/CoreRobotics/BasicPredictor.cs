@@ -90,7 +90,7 @@ namespace Robocup.CoreRobotics
                             else
                             {
                                 if (oldInfo.Position.distanceSq(newInfo.Position) <
-                                    Constants.get<float>("DELTA_DIST_SQ_MERGE"))
+                                    Constants.get<double>("DELTA_DIST_SQ_MERGE"))
                                 {
                                     matched = newInfo;
                                     break;
@@ -103,7 +103,7 @@ namespace Robocup.CoreRobotics
                             Vector2 position = matched.Position;
                             if (otherCameraInfos.Contains(oldInfo))
                             {
-                                position = .5f * (position + 1f * oldInfo.Position);
+                                position = .5 * (position + 1f * oldInfo.Position);
                             }
                             newInfoList.Add(new RobotInfo(position, matched.Orientation, oldInfo.ID));
                         }

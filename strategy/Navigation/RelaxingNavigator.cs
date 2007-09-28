@@ -11,9 +11,9 @@ namespace Navigation
         #region INavigator Members
 
         //these are hard limits -- it will try to avoid by more
-        const float avoidRobotDist = .22f;
-        const float extraAvoidBallDist = .1f;
-        const float maxExtraAvoid = .2f;
+        const double avoidRobotDist = .22;
+        const double extraAvoidBallDist = .1;
+        const double maxExtraAvoid = .2;
 
         const int numWaypoints = 8;
         Dictionary<int, Vector2[]> old_waypoints = new Dictionary<int, Vector2[]>();
@@ -41,7 +41,7 @@ namespace Navigation
                 foreach (Vector2 p in waypoints)
                 {
                     Vector2 pixelPoint = c.fieldtopixelPoint(p);
-                    g.FillRectangle(b, pixelPoint.X - 1, pixelPoint.Y - 1, 2, 2);
+                    g.FillRectangle(b, (int)pixelPoint.X - 1, (int)pixelPoint.Y - 1, 2, 2);
                 }
                 b.Dispose();
             }
@@ -49,23 +49,23 @@ namespace Navigation
 
         private Vector2 repulsion(Obstacle o, Line l)
         {
-            float d = (float)l.distFromSegment(o.position);
+            double d = l.distFromSegment(o.position);
             if (d > o.size + maxExtraAvoid)
                 return new Vector2(0, 0);
             Vector2 projection = l.projectionOntoLine(o.position);
             if ((projection - o.position).magnitudeSq() < 1E-9)
                 return new Vector2(0, 0);
 
-            float scale = .5f;
-            float leeway = Math.Max(.001f, d - o.size);
-            float magnitude = scale / (leeway * leeway);
+            double scale = .5;
+            double leeway = Math.Max(.001, d - o.size);
+            double magnitude = scale / (leeway * leeway);
             return magnitude * (projection - o.position).normalize();
         }
 
-        readonly Vector2 goal1 = new Vector2(-2.45f, 0f);
-        readonly Vector2 goal2 = new Vector2(2.45f, 0f);
-        const float goalieBoxAvoid = .65f;
-        public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+        readonly Vector2 goal1 = new Vector2(-2.45, 0);
+        readonly Vector2 goal2 = new Vector2(2.45, 0);
+        const double goalieBoxAvoid = .65;
+        public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, double avoidBallDist)
         {
             List<Obstacle> obstacles = new List<Obstacle>();
             for (int i = 0; i < teamPositions.Length; i++)
@@ -113,7 +113,7 @@ namespace Navigation
                 waypoints = new Vector2[numWaypoints + 2];
                 for (int i = 0; i < numWaypoints + 2; i++)
                 {
-                    float percent = (float)i / (numWaypoints + 1);
+                    double percent = (double)i / (numWaypoints + 1);
                     waypoints[i] = position + percent * (destination - position);
                 }
             }
@@ -123,8 +123,8 @@ namespace Navigation
                 waypoints[0] = position;
                 for (int i = 0; i < numWaypoints + 2; i++)
                 {
-                    float percent = (float)i / (numWaypoints + 1);
-                    const float keepold = .8f;
+                    double percent = (double)i / (numWaypoints + 1);
+                    const double keepold = .8;
                     waypoints[i] = keepold * waypoints[i] + (1 - keepold) * (position + percent * (destination - position));
                 }
             }
@@ -135,7 +135,7 @@ namespace Navigation
                 for (int i = 1; i < numWaypoints + 1; i++)
                 {
                     //initial attraction to the midpoint
-                    forces[i] = .5f * (waypoints[i + 1] + waypoints[i - 1]) - waypoints[i];
+                    forces[i] = .5 * (waypoints[i + 1] + waypoints[i - 1]) - waypoints[i];
                 }
                 for (int line = 0; line < numWaypoints + 1; line++)
                 {
@@ -152,7 +152,7 @@ namespace Navigation
                     //initial attraction to the midpoint
                     if (forces[i].magnitudeSq() > 1)
                         forces[i] = forces[i].normalize();
-                    waypoints[i] += .1f / (.1f*step+1) * forces[i];
+                    waypoints[i] += .1 / (.1*step+1) * forces[i];
                 }
             }
             old_waypoints[id] = waypoints;

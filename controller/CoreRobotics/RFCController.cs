@@ -67,7 +67,7 @@ namespace Robocup.CoreRobotics
 
         #endregion
 
-        float ballAvoidDist = .02f;
+        double ballAvoidDist = .02;
 
         public void clearArrows()
         {
@@ -82,9 +82,9 @@ namespace Robocup.CoreRobotics
         {
             Commander.kick(robotID);
         }
-        public void move(int robotID, bool avoidBall, Vector2 destination, float orientation)
+        public void move(int robotID, bool avoidBall, Vector2 destination, double orientation)
         {
-            if(float.IsNaN(destination.X) || float.IsNaN(destination.Y))
+            if(double.IsNaN(destination.X) || double.IsNaN(destination.Y))
             {
                 Console.WriteLine("invalid destination");
                 return;
@@ -92,7 +92,7 @@ namespace Robocup.CoreRobotics
 
             RobotInfo thisRobot = Predictor.getCurrentInformation(robotID);
 
-            float avoidBallDist = (avoidBall ? ballAvoidDist : 0f);
+            double avoidBallDist = (avoidBall ? ballAvoidDist : 0f);
             NavigationResults results =
                 Navigator.navigate(robotID,
                     thisRobot.Position,
@@ -105,8 +105,8 @@ namespace Robocup.CoreRobotics
             lock (arrows)
             {
                 arrows[robotID] = new Arrow[] {
-                    new Arrow(thisRobot.Position, destination, Color.Red, .04f),
-                    new Arrow(thisRobot.Position, results.waypoint, Color.Green,.04f)
+                    new Arrow(thisRobot.Position, destination, Color.Red, .04),
+                    new Arrow(thisRobot.Position, results.waypoint, Color.Green,.04)
                 };
             }
 

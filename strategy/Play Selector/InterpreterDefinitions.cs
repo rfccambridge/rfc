@@ -159,7 +159,7 @@ namespace Robocup.Plays
             Vector2 closest = closesttopoint;
 
             InterpreterRobotInfo bestrobot = null;
-            float bestdistance = 1000000;
+            double bestdistance = 1000000;
             foreach (InterpreterRobotInfo rinf in infos)
             {
                 if (Assignment.SkipAssigned && rinf.Assigned)
@@ -182,7 +182,7 @@ namespace Robocup.Plays
                         continue;
                 }
 
-                float dist = closest.distanceSq(rinf.Position);
+                double dist = closest.distanceSq(rinf.Position);
                 if (dist < bestdistance)
                 {
                     bestdistance = dist;

@@ -21,17 +21,17 @@ namespace SoccerSim
         public PhysicsEngine(VirtualRef referee)
         {
             ourinfo = new List<RobotInfo>(new RobotInfo[]{
-                new RobotInfo(new Vector2(-1.0f, -1), 3, 0),
-                new RobotInfo(new Vector2(-1.0f, 0), 3, 1),
-                new RobotInfo(new Vector2(-1.0f, 1), 3, 2),
+                new RobotInfo(new Vector2(-1.0, -1), 3, 0),
+                new RobotInfo(new Vector2(-1.0, 0), 3, 1),
+                new RobotInfo(new Vector2(-1.0, 1), 3, 2),
                 new RobotInfo(new Vector2(-2f, -1), 3, 3),
                 new RobotInfo(new Vector2(-2f, 1), 3, 4),
             });
 
             theirinfo = new List<RobotInfo>(new RobotInfo[]{
-                new RobotInfo(new Vector2(1.0f, -1), 3, 5),
-                new RobotInfo(new Vector2(1.0f, 0), 3, 6),
-                new RobotInfo(new Vector2(1.0f, 1), 3, 7),
+                new RobotInfo(new Vector2(1.0, -1), 3, 5),
+                new RobotInfo(new Vector2(1.0, 0), 3, 6),
+                new RobotInfo(new Vector2(1.0, 1), 3, 7),
                 new RobotInfo(new Vector2(2f, -1), 3, 8),
                 new RobotInfo(new Vector2(2f, 1), 3, 9)
             });
@@ -102,18 +102,18 @@ namespace SoccerSim
             }
 
             //the speed at which the ball will bounce when it hits another robot
-            const float ballbounce = .01f;
-            const float collisionradius = .10f;
+            const double ballbounce = .01;
+            const double collisionradius = .10;
             //the fraction of the ball velocity that it loses every second
             //well, roughly, because compounding counts, so it's off by about a factor of 2.5
-            const float balldecay = .05f;
+            const double balldecay = .05;
 
             BallInfo ball = getBallInfo();
             // run one step of tester
 
             // update ball location
-            Vector2 newballlocation = ball.Position + ((float)dt) * ball.Velocity;
-            Vector2 newballvelocity = ((float)(1 - dt * balldecay)) * ball.Velocity;
+            Vector2 newballlocation = ball.Position + ((double)dt) * ball.Velocity;
+            Vector2 newballvelocity = ((double)(1 - dt * balldecay)) * ball.Velocity;
 
             // check for collisions ball-robot, update ball position
             bool collided = false;
@@ -124,7 +124,7 @@ namespace SoccerSim
                 {
                     collided = true;
                     newballvelocity = ballbounce * ((ball.Position - location).normalize());
-                    newballlocation = location + .13f * (ball.Position - location).normalize();
+                    newballlocation = location + .13 * (ball.Position - location).normalize();
                     break;
                 }
             }
@@ -139,7 +139,7 @@ namespace SoccerSim
                     {
                         collided = true;
                         newballvelocity = ballbounce * ((ball.Position - location).normalize());
-                        newballlocation = location + .13f * (ball.Position - location).normalize();
+                        newballlocation = location + .13 * (ball.Position - location).normalize();
                         break;
                     }
                 }
@@ -149,8 +149,8 @@ namespace SoccerSim
             if (!collided)
             {
                 Vector2 ballPos = ball.Position;
-                float ballVx = newballvelocity.X;
-                float ballVy = newballvelocity.Y;
+                double ballVx = newballvelocity.X;
+                double ballVy = newballvelocity.Y;
                 if (ballPos.X < -2.45)
                     ballVx = Math.Abs(ballVx);
                 else if (ballPos.X > 2.45)
@@ -178,8 +178,8 @@ namespace SoccerSim
                     Vector2 p2 = allinfos[j].Position;
                     if (p1.distanceSq(p2) <= .2 * .2)
                     {
-                        Vector2 t1 = p1 + .01f * (p1 - p2).normalize();
-                        Vector2 t2 = p2 + .01f * (p2 - p1).normalize();
+                        Vector2 t1 = p1 + .01 * (p1 - p2).normalize();
+                        Vector2 t2 = p2 + .01 * (p2 - p1).normalize();
                         UpdateRobot(allinfos[i], new RobotInfo(t1, allinfos[i].Orientation, allinfos[i].ID));
                         UpdateRobot(allinfos[j], new RobotInfo(t2, allinfos[j].Orientation, allinfos[j].ID));
                     }
@@ -233,19 +233,19 @@ namespace SoccerSim
         }
 
         #region IRobot members
-        const float initial_ball_speed = 4f;
+        const double initial_ball_speed = 4f;
         readonly Random r = new Random();
         public void kick(int robotID)
         {
             RobotInfo robot = getCurrentInformation(robotID);
             // add randomness to actual robot location / direction
-            const float randomComponent = initial_ball_speed / 3;
-            float ballVx = (float)(initial_ball_speed * Math.Cos(robot.Orientation));
-            float ballVy = (float)(initial_ball_speed * Math.Sin(robot.Orientation));
-            ballVx += (float)(r.NextDouble() * 2 - 1) * randomComponent;
-            ballVy += (float)(r.NextDouble() * 2 - 1) * randomComponent;
+            const double randomComponent = initial_ball_speed / 3;
+            double ballVx = (double)(initial_ball_speed * Math.Cos(robot.Orientation));
+            double ballVy = (double)(initial_ball_speed * Math.Sin(robot.Orientation));
+            ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
+            ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
             RobotInfo prev = robot;
-            const float recoil = .02f / initial_ball_speed; ;
+            const double recoil = .02 / initial_ball_speed; ;
             UpdateBall(new BallInfo(ball_info.Position, new Vector2(ballVx, ballVx)));
             UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
         }

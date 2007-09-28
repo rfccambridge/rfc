@@ -84,28 +84,28 @@ namespace Robocup.Geometry
         {
             Vector2 p0 = c0.getCenter();
             Vector2 p1 = c1.getCenter();
-            float d = (float)Math.Sqrt(p0.distanceSq(p1));
-            float r0 = c0.Radius;
-            float r1 = c1.Radius;
+            double d = Math.Sqrt(p0.distanceSq(p1));
+            double r0 = c0.Radius;
+            double r1 = c1.Radius;
             if (d > r0 + r1 || d < Math.Abs(r1 - r0))
             {
                 throw new NoIntersectionException("No intersection!");
             }
-            float a = (r0 * r0 - r1 * r1 + d * d) / (2 * d);
+            double a = (r0 * r0 - r1 * r1 + d * d) / (2 * d);
 
             Vector2[] bothpoints = new Vector2[2];
-            float newx = p0.X + (p1.X - p0.X) * a / d;
-            float newy = p0.Y + (p1.Y - p0.Y) * a / d;
-            float h = (float)Math.Sqrt(r0 * r0 - a * a);
-            float dx = h * (p1.Y - p0.Y) / d;
-            float dy = h * (p0.X - p1.X) / d;
+            double newx = p0.X + (p1.X - p0.X) * a / d;
+            double newy = p0.Y + (p1.Y - p0.Y) * a / d;
+            double h = Math.Sqrt(r0 * r0 - a * a);
+            double dx = h * (p1.Y - p0.Y) / d;
+            double dy = h * (p0.X - p1.X) / d;
             bothpoints[0] = new Vector2(newx + dx, newy + dy);
             bothpoints[1] = new Vector2(newx - dx, newy - dy);
             return bothpoints;
         }
         private static int anglesign(Vector2 p1, Vector2 p2, Vector2 p3)
         {
-            float crossp = UsefulFunctions.crossproduct(p1, p2, p3);//(p1.X - p2.X) * (p3.Y - p2.Y) - (p3.X - p2.X) * (p1.Y - p2.Y);
+            double crossp = UsefulFunctions.crossproduct(p1, p2, p3);//(p1.X - p2.X) * (p3.Y - p2.Y) - (p3.X - p2.X) * (p1.Y - p2.Y);
             return Math.Sign(crossp);
         }
     }
@@ -142,8 +142,8 @@ namespace Robocup.Geometry
         {
             Vector2[] points = getPoints(line, circle);
             double dist = distalongline(p, line.getPoints());
-            float d0 = UsefulFunctions.distancesq(points[0], p);
-            float d1 = UsefulFunctions.distancesq(points[1], p);
+            double d0 = UsefulFunctions.distancesq(points[0], p);
+            double d1 = UsefulFunctions.distancesq(points[1], p);
             Vector2 otherpoint = points[0];
             if (d1 > d0)
                 otherpoint = points[1];
@@ -170,13 +170,13 @@ namespace Robocup.Geometry
             points[0] -= center;
             points[1] -= center;
 
-            float dx = points[1].X - points[0].X;
-            float dy = points[1].Y - points[0].Y;
-            float drs = dx * dx + dy * dy;
-            float dr = (float)Math.Sqrt(drs);
-            float D = points[0].X * points[1].Y - points[1].X * points[0].Y;
-            float r = circle.Radius;
-            float det = r * r * dr * dr - D * D;
+            double dx = points[1].X - points[0].X;
+            double dy = points[1].Y - points[0].Y;
+            double drs = dx * dx + dy * dy;
+            double dr = Math.Sqrt(drs);
+            double D = points[0].X * points[1].Y - points[1].X * points[0].Y;
+            double r = circle.Radius;
+            double det = r * r * dr * dr - D * D;
             if (det < 0)
             {
                 throw new NoIntersectionException("no intersection!");
@@ -185,10 +185,10 @@ namespace Robocup.Geometry
 
             Vector2[] rtnpoints = new Vector2[2];
 
-            float ddx = (float)(Math.Sqrt(det) * sign(dy) * dx);
-            float ddy = (float)(Math.Sqrt(det) * Math.Abs(dy));
-            float x0 = dy * D;
-            float y0 = -dx * D;
+            double ddx = Math.Sqrt(det) * sign(dy) * dx;
+            double ddy = Math.Sqrt(det) * Math.Abs(dy);
+            double x0 = dy * D;
+            double y0 = -dx * D;
 
             rtnpoints[0] = new Vector2((x0 - ddx) / drs, (y0 - ddy) / drs);
             rtnpoints[1] = new Vector2((x0 + ddx) / drs, (y0 + ddy) / drs);
@@ -198,7 +198,7 @@ namespace Robocup.Geometry
 
             return rtnpoints;
         }
-        static private int sign(float f)
+        static private int sign(double f)
         {
             if (f < 0)
                 return -1;
@@ -211,14 +211,14 @@ namespace Robocup.Geometry
         {
             Vector2[] l1 = line0.getPoints();
             Vector2[] l2 = line1.getPoints();
-            float denom = (l2[1].Y - l2[0].Y) * (l1[1].X - l1[0].X) - (l2[1].X - l2[0].X) * (l1[1].Y - l1[0].Y);
+            double denom = (l2[1].Y - l2[0].Y) * (l1[1].X - l1[0].X) - (l2[1].X - l2[0].X) * (l1[1].Y - l1[0].Y);
             if (denom == 0) //the lines are parallel
             {
                 throw new NoIntersectionException("no intersection!");
             }
-            float numerator = (l2[1].X - l2[0].X) * (l1[0].Y - l2[0].Y) - (l2[1].Y - l2[0].Y) * (l1[0].X - l2[0].X);
-            float x = l1[0].X + numerator * (l1[1].X - l1[0].X) / denom;
-            float y = l1[0].Y + numerator * (l1[1].Y - l1[0].Y) / denom;
+            double numerator = (l2[1].X - l2[0].X) * (l1[0].Y - l2[0].Y) - (l2[1].Y - l2[0].Y) * (l1[0].X - l2[0].X);
+            double x = l1[0].X + numerator * (l1[1].X - l1[0].X) / denom;
+            double y = l1[0].Y + numerator * (l1[1].Y - l1[0].Y) / denom;
             return new Vector2(x, y);
         }
     }

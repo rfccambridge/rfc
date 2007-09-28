@@ -135,7 +135,7 @@ namespace Robocup.Plays
                     play.Name = strings[1];
                     break;
                 case "score":
-                    play.Score = float.Parse(strings[1]);
+                    play.Score = double.Parse(strings[1]);
                     break;
                 default:
                     throw new ApplicationException("Unrecognized type of metadata: \"" + strings[0] + '"');

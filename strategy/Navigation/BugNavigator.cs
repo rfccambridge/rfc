@@ -12,16 +12,16 @@ namespace Navigation
         {
             const int TEAMSIZE = 25;
             bool[] avoidingObstacle = new bool[TEAMSIZE];
-            float[] lastDirection = new float[TEAMSIZE];
-            float[] continueDistanceSq = new float[TEAMSIZE];
-            float[] traceDirection = new float[TEAMSIZE];
+            double[] lastDirection = new double[TEAMSIZE];
+            double[] continueDistanceSq = new double[TEAMSIZE];
+            double[] traceDirection = new double[TEAMSIZE];
             int[] roundsSinceTrace = new int[TEAMSIZE];
             Vector2[] lastDestination = new Vector2[TEAMSIZE];
-            const float angleSweep = .1f;
-            const float avoidRobotDist = .22f;
-            const float extraAvoidBallDist = .1f;
-            const float lookAheadDist = .1f;
-            const float getCloserAmount = .1f;
+            const double angleSweep = .1;
+            const double avoidRobotDist = .22;
+            const double extraAvoidBallDist = .1;
+            const double lookAheadDist = .1;
+            const double getCloserAmount = .1;
 
             public BugNavigator()
             {
@@ -32,7 +32,7 @@ namespace Navigation
             }
 
 
-            Obstacle blockingObstacle(Vector2 position, List<Obstacle> obstacles, float gettingTiredFactor)
+            Obstacle blockingObstacle(Vector2 position, List<Obstacle> obstacles, double gettingTiredFactor)
             {
                 foreach (Obstacle o in obstacles)
                 {
@@ -42,15 +42,15 @@ namespace Navigation
                 return null;
             }
 
-            Vector2 extend(Vector2 position, float direction)
+            Vector2 extend(Vector2 position, double direction)
             {
-                return new Vector2((float)(position.X + lookAheadDist * Math.Cos(direction)), (float)(position.Y + lookAheadDist * Math.Sin(direction)));
+                return new Vector2(position.X + lookAheadDist * Math.Cos(direction), position.Y + lookAheadDist * Math.Sin(direction));
             }
 
-            readonly Vector2 goal1 = new Vector2(-2.45f, 0f);
-            readonly Vector2 goal2 = new Vector2(2.45f, 0f);
-            const float goalieBoxAvoid = .65f;
-            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            readonly Vector2 goal1 = new Vector2(-2.45, 0);
+            readonly Vector2 goal2 = new Vector2(2.45, 0);
+            const double goalieBoxAvoid = .65;
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, double avoidBallDist)
             {
                 List<Obstacle> obstacles = new List<Obstacle>();
                 for (int i = 0; i < teamPositions.Length; i++)
@@ -96,7 +96,7 @@ namespace Navigation
                 {
                     if (position.distanceSq(o.position) < o.size * o.size)
                     {
-                        return new NavigationResults(o.position + (1f + o.size) * (position - o.position).normalize());
+                        return new NavigationResults(o.position + (1d + o.size) * (position - o.position).normalize());
                     }
                 }
 
@@ -125,8 +125,8 @@ namespace Navigation
                     avoidingObstacle[id] = false;
                     return navigate(id, position, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
                 }
-                float traceDir = traceDirection[id];
-                float direction = lastDirection[id];
+                double traceDir = traceDirection[id];
+                double direction = lastDirection[id];
                 int count = 0;
                 if (blockingObstacle(extend(position, direction), obstacles, 1) == null)
                 {
@@ -145,7 +145,7 @@ namespace Navigation
                     lastDirection[id] = direction;
                     return new NavigationResults(extend(position, direction));
                 }
-                while (blockingObstacle(extend(position, direction), obstacles, 1f + count / 1000f) != null)
+                while (blockingObstacle(extend(position, direction), obstacles, 1d + count / 1000d) != null)
                 {
                     direction -= traceDir * angleSweep;
                     count++;

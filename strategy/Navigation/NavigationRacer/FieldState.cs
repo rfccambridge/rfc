@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Robocup.Infrastructure;
+using Robocup.Core;
 
 namespace NavigationRacer
 {
     class FieldState
     {
         public FieldState(Vector2 ballpos, Vector2[] destinations, Vector2[][] ourWaypoints, Vector2[][] theirWaypoints, Vector2[] ourVelocities,
-            Vector2[] theirVelocities,float totalMS, float MSPerIteration, float iterations)
+            Vector2[] theirVelocities,double totalMS, double MSPerIteration, double iterations)
             :
-            this(ballpos, destinations, ourWaypoints, theirWaypoints,ourVelocities,theirVelocities, new TestResults(1, (int)iterations, totalMS, .25f))
+            this(ballpos, destinations, ourWaypoints, theirWaypoints,ourVelocities,theirVelocities, new TestResults(1, (int)iterations, totalMS, .25))
         {
         }
         public FieldState(Vector2 ballpos, Vector2[] destinations, Vector2[][] ourWaypoints,
@@ -92,21 +92,21 @@ namespace NavigationRacer
             set { referenceResults = value; }
         }
 
-        const float defaultspeed = .005f;
+        const double defaultspeed = .005;
         static private FieldState basic = new FieldState(new Vector2(1, 0), new Vector2[] { new Vector2(2, 0) }, new Vector2[][]{
                 new Vector2[]{new Vector2(-2,0)},
-                new Vector2[]{new Vector2(-.5f, .3f)},
-                new Vector2[]{new Vector2(.6f,-.4f)},
-                new Vector2[]{new Vector2(.8f,-.8f)},
-                new Vector2[]{new Vector2(.5f,-1.0f)}}, new Vector2[][]{
+                new Vector2[]{new Vector2(-.5, .3)},
+                new Vector2[]{new Vector2(.6,-.4)},
+                new Vector2[]{new Vector2(.8,-.8)},
+                new Vector2[]{new Vector2(.5,-1.0)}}, new Vector2[][]{
                 new Vector2[]{new Vector2(-1,0)},
-                new Vector2[]{new Vector2(-1.5f,0)},
-                new Vector2[]{new Vector2(-.5f,0)},
-                new Vector2[]{new Vector2(-.5f, -.6f)},
-                new Vector2[]{new Vector2(-.5f,-.3f)}},
+                new Vector2[]{new Vector2(-1.5,0)},
+                new Vector2[]{new Vector2(-.5,0)},
+                new Vector2[]{new Vector2(-.5, -.6)},
+                new Vector2[]{new Vector2(-.5,-.3)}},
             new Vector2[] { new Vector2(defaultspeed, 0), new Vector2(defaultspeed, 0), new Vector2(defaultspeed, 0), new Vector2(defaultspeed, 0), new Vector2(defaultspeed, 0) },
             new Vector2[] { new Vector2(defaultspeed, 0), new Vector2(defaultspeed, 0), new Vector2(defaultspeed, 0), new Vector2(defaultspeed, 0), new Vector2(defaultspeed, 0) },
-                    735, 1.48f, 495);
+                    735, 1.48, 495);
         static public FieldState Default
         {
             get { return basic.Clone(); }
@@ -145,9 +145,9 @@ namespace NavigationRacer
         }
         public static FieldState load(System.IO.StreamReader reader)
         {
-            float totalMS = float.Parse(getLine(reader));
-            float iterations = float.Parse(getLine(reader));
-            float MSPerIteration = float.Parse(getLine(reader));
+            double totalMS = double.Parse(getLine(reader));
+            double iterations = double.Parse(getLine(reader));
+            double MSPerIteration = double.Parse(getLine(reader));
             string[] descriptors = getLine(reader).Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 #if DEBUG
             System.Diagnostics.Debug.Assert(descriptors.Length == 3, "wrong number of file descriptors");
@@ -161,12 +161,12 @@ namespace NavigationRacer
             Vector2[] ourVelocities=new Vector2[numOurPositions],theirVelocities=new Vector2[numTheirPositions];
 
             string[] ballcoords = getLine(reader).Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            Vector2 ballpos = new Vector2(float.Parse(ballcoords[0]), float.Parse(ballcoords[1]));
+            Vector2 ballpos = new Vector2(double.Parse(ballcoords[0]), double.Parse(ballcoords[1]));
 
             for (int i = 0; i < numdestinations; i++)
             {
                 string[] coords = getLine(reader).Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                destinations[i] = new Vector2(float.Parse(coords[0]), float.Parse(coords[1]));
+                destinations[i] = new Vector2(double.Parse(coords[0]), double.Parse(coords[1]));
             }
             for (int i = 0; i < numOurPositions; i++)
             {
@@ -175,11 +175,11 @@ namespace NavigationRacer
 #if DEBUG
                 System.Diagnostics.Debug.Assert(coords.Length == numpoints * 2 + 2, "wrong number of coordinates");
 #endif
-                ourVelocities[i] = new Vector2(float.Parse(coords[1]), 0);
+                ourVelocities[i] = new Vector2(double.Parse(coords[1]), 0);
                 ourWaypoints[i] = new Vector2[numpoints];
                 for (int j = 0; j < numpoints; j++)
                 {
-                    ourWaypoints[i][j] = new Vector2(float.Parse(coords[2 * j + 2]), float.Parse(coords[2 * j + 3]));
+                    ourWaypoints[i][j] = new Vector2(double.Parse(coords[2 * j + 2]), double.Parse(coords[2 * j + 3]));
                 }
             }
             for (int i = 0; i < numOurPositions; i++)
@@ -189,11 +189,11 @@ namespace NavigationRacer
 #if DEBUG
                 System.Diagnostics.Debug.Assert(coords.Length == numpoints * 2 + 2, "wrong number of coordinates");
 #endif
-                theirVelocities[i] = new Vector2(float.Parse(coords[1]), 0);
+                theirVelocities[i] = new Vector2(double.Parse(coords[1]), 0);
                 theirWaypoints[i] = new Vector2[numpoints];
                 for (int j = 0; j < numpoints; j++)
                 {
-                    theirWaypoints[i][j] = new Vector2(float.Parse(coords[2 * j + 2]), float.Parse(coords[2 * j + 3]));
+                    theirWaypoints[i][j] = new Vector2(double.Parse(coords[2 * j + 2]), double.Parse(coords[2 * j + 3]));
                 }
             }
 
@@ -295,25 +295,25 @@ namespace NavigationRacer
         /*public static FieldState load(System.IO.StreamReader reader)
         {
             while (reader.ReadLine() != "#####") { }
-            float totalMS = float.Parse(reader.ReadLine());
-            float iterations = float.Parse(reader.ReadLine());
-            float MSPerIteration = float.Parse(reader.ReadLine());
+            double totalMS = double.Parse(reader.ReadLine());
+            double iterations = double.Parse(reader.ReadLine());
+            double MSPerIteration = double.Parse(reader.ReadLine());
             string[] split = reader.ReadToEnd().Split(new char[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             int numOurPositions = int.Parse(split[0]);
             int numTheirPositions = int.Parse(split[1]);
             Vector2[] ourPositions = new Vector2[numOurPositions];
             Vector2[] theirPositions = new Vector2[numTheirPositions];
-            Vector2 destination = new Vector2(float.Parse(split[2]), float.Parse(split[3]));
-            Vector2 ballpos = new Vector2(float.Parse(split[4]), float.Parse(split[5]));
+            Vector2 destination = new Vector2(double.Parse(split[2]), double.Parse(split[3]));
+            Vector2 ballpos = new Vector2(double.Parse(split[4]), double.Parse(split[5]));
             int offset = 6;
             for (int i = 0; i < numOurPositions; i++)
             {
-                ourPositions[i] = new Vector2(float.Parse(split[2 * i + offset]), float.Parse(split[2 * i + offset + 1]));
+                ourPositions[i] = new Vector2(double.Parse(split[2 * i + offset]), double.Parse(split[2 * i + offset + 1]));
             }
             offset = (3 + numOurPositions) * 2;
             for (int i = 0; i < numTheirPositions; i++)
             {
-                theirPositions[i] = new Vector2(float.Parse(split[2 * i + offset]), float.Parse(split[2 * i + offset + 1]));
+                theirPositions[i] = new Vector2(double.Parse(split[2 * i + offset]), double.Parse(split[2 * i + offset + 1]));
             }
             reader.Close();
             return new FieldState(ballpos, destination, ourPositions, theirPositions, totalMS, MSPerIteration, iterations);

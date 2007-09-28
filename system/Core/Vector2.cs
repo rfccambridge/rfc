@@ -11,21 +11,21 @@ namespace Robocup.Core
     [Serializable]
     public class Vector2
     {
-        private readonly float x;
+        private readonly double x;
 
         /// <summary>
         /// The x-coordinate of this vector
         /// </summary>
-        public float X
+        public double X
         {
             get { return x; }
         }
-        private readonly float y;
+        private readonly double y;
 
         /// <summary>
         /// The y-coordinate of this vector
         /// </summary>
-        public float Y
+        public double Y
         {
             get { return y; }
         }
@@ -38,24 +38,14 @@ namespace Robocup.Core
         /// </summary>
         /// <param name="x">the x-coordinate</param>
         /// <param name="y">the y-coordinate</param>
-        public Vector2(float x, float y)
+        public Vector2(double x, double y)
         {
             this.x = x;
             this.y = y;
         }
-        /// <summary>
-        /// Creates a new Vector2
-        /// </summary>
-        /// <param name="x">the x-coordinate</param>
-        /// <param name="y">the y-coordinate</param>
-        public Vector2(double x, double y)
-        {
-            this.x = (float)x;
-            this.y = (float)y;
-        }
         static public implicit operator PointF(Vector2 p)
         {
-            return new PointF(p.X, p.Y);
+            return new PointF((float)p.X, (float)p.Y);
         }
         static public explicit operator Vector2(Point p)
         {
@@ -126,7 +116,7 @@ namespace Robocup.Core
         /// <summary>
         /// Returns the square of the length of this vector.
         /// </summary>
-        public float magnitudeSq()
+        public double magnitudeSq()
         {
             return X * X + Y * Y;
         }
@@ -135,9 +125,9 @@ namespace Robocup.Core
         /// vector (1,0) in the counter-clockwise direction until
         /// it points in the same direction as this Vector2.
         /// </summary>
-        public float cartesianAngle()
+        public double cartesianAngle()
         {
-            return (float)Math.Atan2(Y, X);
+            return Math.Atan2(Y, X);
         }
         /// <summary>
         /// Adds two Vector2's and returns the result.  Addition is done
@@ -166,10 +156,10 @@ namespace Robocup.Core
         /// Returns the distance between this point and another point.
         /// Returns the same value (within tolerance) as (p1-p2).magnitudeSq()
         /// </summary>
-        public float distanceSq(Vector2 p2)
+        public double distanceSq(Vector2 p2)
         {
             if (p2 == null)
-                return float.PositiveInfinity;
+                return double.PositiveInfinity;
             //less safe but faster?:
             //return (x - p2.x) * (x - p2.x) + (y - p2.y) * (y - p2.y);
             //more safe but slower?
@@ -179,23 +169,16 @@ namespace Robocup.Core
         /// <summary>
         /// Returns the dot product of two Vector2's
         /// </summary>
-        static public float operator *(Vector2 p1, Vector2 p2)
+        static public double operator *(Vector2 p1, Vector2 p2)
         {
             return p1.X * p2.X + p1.Y * p2.Y;
         }
         /// <summary>
         /// Returns this vector scaled by a constant.
         /// </summary>
-        static public Vector2 operator *(float f, Vector2 p)
+        static public Vector2 operator *(double f, Vector2 p)
         {
             return new Vector2(p.X * f, p.Y * f);
-        }
-        /// <summary>
-        /// Returns this vector scaled by a constant.
-        /// </summary>
-        static public Vector2 operator *(double d, Vector2 p)
-        {
-            return new Vector2((float)(p.X * d), (float)(p.Y * d));
         }
         /// <summary>
         /// Returns a vector that is parallel to this vector and has length 1.
@@ -203,7 +186,15 @@ namespace Robocup.Core
         /// </summary>
         public Vector2 normalize()
         {
-            return (float)(1 / Math.Sqrt(magnitudeSq())) * this;
+            return (1 / Math.Sqrt(magnitudeSq())) * this;
+        }
+        /// <summary>
+        /// Scales the current vector to have the desired length.
+        /// Returns NaN for the zero vector.
+        /// </summary>
+        public Vector2 setLength(double newLength)
+        {
+            return newLength * (this.normalize());
         }
         /// <summary>
         /// Provides a string representation of this Vector2.
@@ -224,7 +215,7 @@ namespace Robocup.Core
             string[] split = s.Trim('<', '>', ' ').Split(',');
             if (split.Length != 2)
                 throw new FormatException("invalid format for Vector2");
-            return new Vector2(float.Parse(split[0]), float.Parse(split[1]));
+            return new Vector2(double.Parse(split[0]), double.Parse(split[1]));
         }
     }
 }

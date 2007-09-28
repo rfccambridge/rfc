@@ -290,13 +290,13 @@ namespace Robocup.Plays
             Random r = new Random();
             foreach (DesignerExpression exp in oldRobots)
             {
-                CreateNewRobot(exp.Name, new Vector2((float)r.NextDouble() * 5f - 2.5f,
-                    (float)r.NextDouble() * 4f - 2f), exp);
+                CreateNewRobot(exp.Name, new Vector2(r.NextDouble() * 5 - 2.5,
+                    r.NextDouble() * 4 - 2), exp);
             }
             // If we didnt find the ball, let's temporarily create one (in case we need it)
             if (!foundball)
             {
-                b = new DesignerBall(new Vector2((float)r.NextDouble() * 2 - 1, (float)r.NextDouble() * 2 - 1));
+                b = new DesignerBall(new Vector2(r.NextDouble() * 2 - 1, r.NextDouble() * 2 - 1));
                 // Lets see if anything needs it:
                 bool needball = false;
                 foreach (DesignerExpression exp in PlayObjects.Values)

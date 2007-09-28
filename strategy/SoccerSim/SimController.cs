@@ -13,7 +13,7 @@ namespace SoccerSim
     /*class SimController : IController
     {
         const int TEAMSIZE = 5;
-        const float speed = 0.02f;
+        const double speed = 0.02;
         Random r = new Random();
 
         IPredictor _state;
@@ -42,11 +42,11 @@ namespace SoccerSim
                 change = -1;
             }
             RobotInfo r = _state.getCurrentInformation(robotID);
-            move(robotID, avoidBall, dest, (float)Math.Atan2(ball.Position.Y - r.Position.Y, change * (ball.Position.X - r.Position.X)));
+            move(robotID, avoidBall, dest, (double)Math.Atan2(ball.Position.Y - r.Position.Y, change * (ball.Position.X - r.Position.X)));
         }
 
-        const float distThreshold = .005f;
-        private const float chop = .001f;
+        const double distThreshold = .005;
+        private const double chop = .001;
 
         private Dictionary<int, IMovement> _planners;
         public IMovement GetPlanner(int robotId)
@@ -58,7 +58,7 @@ namespace SoccerSim
 
         Navigator _navigator = new Navigator(),
             _otherNavigator = new Navigator();
-        public void move(int robotID, bool avoidBall, Vector2 destination, float orientation)
+        public void move(int robotID, bool avoidBall, Vector2 destination, double orientation)
         {
             RobotInfo[] infos = _state.getOurTeamInfo().ToArray();
             RobotInfo[] otherinfo = _state.getTheirTeamInfo().ToArray();
@@ -78,9 +78,9 @@ namespace SoccerSim
                 return;
             double ballAvoidance = 0;
             if (avoidBall)
-                ballAvoidance = (float)Math.Max(1, Math.Min(1.7, (1 + 1 * Math.Sqrt(ball.Velocity.magnitudeSq())) * (2.40 - 1.5 * ((destination - ballPosition).normalize() * (position - ballPosition).normalize()))));
+                ballAvoidance = (double)Math.Max(1, Math.Min(1.7, (1 + 1 * Math.Sqrt(ball.Velocity.magnitudeSq())) * (2.40 - 1.5 * ((destination - ballPosition).normalize() * (position - ballPosition).normalize()))));
 
-            NavigationResults results = n.navigate(navigatorId, position, destination, infos, otherinfo, ball, .12f);
+            NavigationResults results = n.navigate(navigatorId, position, destination, infos, otherinfo, ball, .12);
 
             WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(robotID, thisRobot, results);
 
@@ -90,11 +90,11 @@ namespace SoccerSim
 
             if (position.distanceSq(destination) > chop * chop)
             {
-                _view.addArrow(new Arrow(_view.fieldtopixelPoint(position), _view.fieldtopixelPoint(waypoint), Color.Green, 3.0f));
-                _view.addArrow(new Arrow(_view.fieldtopixelPoint(position), _view.fieldtopixelPoint(destination), Color.Red, 3.0f));
+                _view.addArrow(new Arrow(_view.fieldtopixelPoint(position), _view.fieldtopixelPoint(waypoint), Color.Green, 3.0));
+                _view.addArrow(new Arrow(_view.fieldtopixelPoint(position), _view.fieldtopixelPoint(destination), Color.Red, 3.0));
                 if (prev.Position != waypoint)
                 {
-                    _acceptor.updateRobot(robotID, new RobotInfo(prev.Position + speed * (waypoint - prev.Position).normalize(), (prev.Orientation * .85f + orientation * .15f), prev.ID));
+                    _acceptor.updateRobot(robotID, new RobotInfo(prev.Position + speed * (waypoint - prev.Position).normalize(), (prev.Orientation * .85 + orientation * .15), prev.ID));
                 }
             }*
         }

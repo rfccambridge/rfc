@@ -193,9 +193,9 @@ namespace Robocup.Plays
             actionToolstripButtons.Add(new ToolstripButtonAndState(toolstripAddCircle, new state_AddingCircle()));
             actionToolstripButtons.Add(new ToolstripButtonAndState(toolstripEditObject, new state_EditingObject()));
 
-            float minx = PixelXToFieldX(30), maxx = PixelXToFieldX(520);
-            float miny = PixelYToFieldY(56), maxy = PixelYToFieldY(396);
-            float goalback = PixelDistanceToFieldDistance(8);// 12;
+            double minx = PixelXToFieldX(30), maxx = PixelXToFieldX(520);
+            double miny = PixelYToFieldY(56), maxy = PixelYToFieldY(396);
+            double goalback = PixelDistanceToFieldDistance(8);// 12;
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx, miny), "topLeftCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx, maxy), "bottomLeftCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), maxx, maxy), "bottomRightCorner");
@@ -359,8 +359,8 @@ namespace Robocup.Plays
                 else if (s.point != null)
                 {
                     //s.point.translate(s.diff(clickPoint));
-                    s.point.setArgument(0, (float)clickPoint.X);
-                    s.point.setArgument(1, (float)clickPoint.Y);
+                    s.point.setArgument(0, clickPoint.X);
+                    s.point.setArgument(1, clickPoint.Y);
                     needtorepaint = true;
                 }
                 else if (s.ball != null)
@@ -575,7 +575,7 @@ namespace Robocup.Plays
         private void state_AddingPoint_MouseDown(Vector2 clickPoint, MouseEventArgs e)
         {
             state_AddingPoint s = (state_AddingPoint)state;
-            s.point = new DesignerExpression(Function.getFunction("point"), (float)clickPoint.X, (float)clickPoint.Y);
+            s.point = new DesignerExpression(Function.getFunction("point"), clickPoint.X, clickPoint.Y);
             play.AddPlayObject(s.point);
             repaint();
         }
@@ -740,37 +740,37 @@ namespace Robocup.Plays
          * (for drawing the right size circles) and at the very end, when you save the play and convert all
          * the coordinates into field coordinates.
          */
-        static public float PixelXToFieldX(float x)
+        static public double PixelXToFieldX(double x)
         {
-            return (x - 275f) / 100f;
+            return (x - 275) / 100;
         }
-        static public float PixelYToFieldY(float y)
+        static public double PixelYToFieldY(double y)
         {
-            return -(y - 26f - 200f) / 100f;
+            return -(y - 26 - 200) / 100;
         }
         static public Vector2 PixelPointToFieldPoint(Vector2 p)
         {
-            //return new Vector2((p.X - 275f) / 100f, (p.Y - 26f - 200f) / 100f);
+            //return new Vector2((p.X - 275) / 100, (p.Y - 26 - 200) / 100);
             return new Vector2(PixelXToFieldX(p.X), PixelYToFieldY(p.Y));
         }
-        static public float FieldXToPixelX(float x)
+        static public double FieldXToPixelX(double x)
         {
-            return x * 100f + 275f;
+            return x * 100 + 275;
         }
-        static public float FieldYToPixelY(float y)
+        static public double FieldYToPixelY(double y)
         {
-            return -y * 100f + 26f + 200f;
+            return -y * 100 + 26 + 200;
         }
         static public Vector2 FieldPointToPixelPoint(Vector2 p)
         {
-            //return new Vector2(p.X * 100f + 275f, p.Y * 100f + 26f + 200f);
+            //return new Vector2(p.X * 100 + 275, p.Y * 100 + 26 + 200);
             return new Vector2(FieldXToPixelX(p.X), FieldYToPixelY(p.Y));
         }
-        static public float PixelDistanceToFieldDistance(float d)
+        static public double PixelDistanceToFieldDistance(double d)
         {
             return d / 100;
         }
-        static public float FieldDistanceToPixelDistance(float d)
+        static public double FieldDistanceToPixelDistance(double d)
         {
             return d * 100;
         }
@@ -860,8 +860,8 @@ namespace Robocup.Plays
             {
                 Brush b = new SolidBrush(play.Ball.color);
                 Vector2 ballloc = FieldPointToPixelPoint(play.Ball.getPoint());
-                float radius = FieldDistanceToPixelDistance(DesignerBall.Radius);
-                g.FillEllipse(b, ballloc.X - radius, ballloc.Y - radius, 2 * radius, 2 * radius);
+                double radius = FieldDistanceToPixelDistance(DesignerBall.Radius);
+                g.FillEllipse(b, (float)(ballloc.X - radius), (float)(ballloc.Y - radius), 2 * (float)radius, 2 * (float)radius);
                 b.Dispose();
             }
             if (drawPointsButton.Checked)
@@ -921,12 +921,12 @@ namespace Robocup.Plays
                     c = Color.Blue;
                 Pen myPen = new Pen(c);
 
-                float Radius = ((Circle)o).Radius;
+                double Radius = ((Circle)o).Radius;
                 Radius = FieldDistanceToPixelDistance(Radius);
                 Vector2 p = ((Circle)o).getCenter();
                 p = FieldPointToPixelPoint(p);
 
-                g.DrawEllipse(myPen, p.X - Radius, p.Y - Radius, 2 * Radius, 2 * Radius);
+                g.DrawEllipse(myPen, (float)(p.X - Radius), (float)(p.Y - Radius), (float)(2 * Radius), (float)(2 * Radius));
                 myPen.Dispose();
             }
             else if (o is Vector2)
@@ -941,8 +941,8 @@ namespace Robocup.Plays
                 Vector2 p = (Vector2)o;
                 p = FieldPointToPixelPoint(p);
 
-                float radius = 3;
-                g.FillEllipse(myBrush, p.X - radius, p.Y - radius, 2 * radius, 2 * radius);
+                double radius = 3;
+                g.FillEllipse(myBrush, (float)(p.X - radius), (float)(p.Y - radius), (float)(2 * radius), (float)(2 * radius));
                 myBrush.Dispose();
                 /*}
                 catch (NoIntersectionException)

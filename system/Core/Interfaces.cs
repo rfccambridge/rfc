@@ -103,7 +103,7 @@ namespace Robocup.Core {
     /// </summary>
     public interface IController {
         void move(int robotID, bool avoidBall, Vector2 dest);
-        void move(int robotID, bool avoidBall, Vector2 dest, float orientation);
+        void move(int robotID, bool avoidBall, Vector2 dest, double orientation);
         void kick(int robotID);
         void stop(int robotID);
     }
@@ -115,7 +115,7 @@ namespace Robocup.Core {
      */
     public interface IMovement {
         WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results);
-        WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, float desiredOrientation);
+        WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation);
     }
 
     /// <summary>
@@ -140,11 +140,11 @@ namespace Robocup.Core {
     {
         int fieldtopixelX(double x);
         int fieldtopixelY(double y);
-        float fieldtopixelDistance(float f);
-        float pixeltofieldDistance(float f);
+        double fieldtopixelDistance(double f);
+        double pixeltofieldDistance(double f);
         Vector2 fieldtopixelPoint(Vector2 p);
-        float pixeltofieldX(float x);
-        float pixeltofieldY(float y);
+        double pixeltofieldX(double x);
+        double pixeltofieldY(double y);
         Vector2 pixeltofieldPoint(Vector2 p);
     }
 }

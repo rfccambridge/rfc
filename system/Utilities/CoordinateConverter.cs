@@ -30,14 +30,14 @@ namespace Robocup.Utilities
             return (int)((-y + 2.0) / 4.0 * height);
         }
 
-        public float fieldtopixelDistance(float f)
+        public double fieldtopixelDistance(double f)
         {
-            return (int)(f * Math.Sqrt(width * width + height * height) / Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0));
+            return f * Math.Sqrt(width * width + height * height) / Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0);
         }
 
-        public float pixeltofieldDistance(float f)
+        public double pixeltofieldDistance(double f)
         {
-            return (int)(f / Math.Sqrt(width * width + height * height) * Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0));
+            return f / Math.Sqrt(width * width + height * height) * Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0);
         }
 
         public Vector2 fieldtopixelPoint(Vector2 p)
@@ -45,14 +45,14 @@ namespace Robocup.Utilities
             return new Vector2(fieldtopixelX(p.X), fieldtopixelY(p.Y));
         }
 
-        public float pixeltofieldX(float x)
+        public double pixeltofieldX(double x)
         {
-            return x * 5.5f / width - 2.75f;
+            return x * 5.5 / width - 2.75;
         }
 
-        public float pixeltofieldY(float y)
+        public double pixeltofieldY(double y)
         {
-            return 2 - y * 4.0f / height;
+            return 2 - y * 4.0 / height;
         }
 
         public Vector2 pixeltofieldPoint(Vector2 p)

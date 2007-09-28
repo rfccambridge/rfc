@@ -22,8 +22,8 @@ namespace Robocup.Utilities
                     return int.Parse(s);
                 case "string":
                     return s;
-                case "float":
-                    return float.Parse(s);
+                case "double":
+                    return double.Parse(s);
                 case "bool":
                     return bool.Parse(s);
                 default:
@@ -78,13 +78,13 @@ namespace Robocup.Utilities
                 used.Add(name);
             return (T)val;
         }
-        /*static public float get(string name) {
+        /*static public double get(string name) {
             /*object val = 0;
             bool worked = dictionary.TryGetValue(name, out val);
             if (!worked)
                 throw new ApplicationException("tried to get an unknown variable called \"" + name + "\"");
-            return (float)val;*
-            return get<float>(name);
+            return (double)val;*
+            return get<double>(name);
         }*/
         static public bool nondestructiveGet<T>(string name, out T val)
         {

@@ -10,7 +10,7 @@ namespace Navigation
         public class DumbNavigator : INavigator
         {
             public NavigationResults navigate(int id, Vector2 position, Vector2 destination,
-                RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+                RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, double avoidBallDist)
             {
                 return new NavigationResults(destination);
             }

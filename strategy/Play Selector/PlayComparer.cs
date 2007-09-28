@@ -12,12 +12,12 @@ namespace Robocup.Plays
         {
             this.preferedPlays = preferedPlays;
         }
-        private const float BOOST = .1f;
+        private const double BOOST = .1;
         public override int Compare(InterpreterPlay x, InterpreterPlay y)
         {
             if (x == y)
                 return 0;
-            float diff = 0;
+            double diff = 0;
             if (preferedPlays.Contains(x))
                 diff -= BOOST;
             if (preferedPlays.Contains(y))
@@ -35,7 +35,7 @@ namespace Robocup.Plays
             double r = rand.NextDouble();
             return (Math.Pow(expBase + 1, r) - 1) / expBase * maxAdd;
         }
-        private const float BOOST = .3f;
+        private const double BOOST = .3;
         /// <summary>
         /// Adds some randomness to it.  expBase determines how skewed the distribution is
         /// (as expBase -> 0, it approaches linearity)

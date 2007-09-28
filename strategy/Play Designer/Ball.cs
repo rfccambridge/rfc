@@ -27,8 +27,8 @@ namespace Robocup.Plays
         {
             this.p = p;
         }
-        private const float radius=.06f;
-        static public float Radius
+        private const double radius=.06;
+        static public double Radius
         {
             get { return radius; }
         }
@@ -72,7 +72,7 @@ namespace Robocup.Plays
         {
             c = Color.Orange;
         }
-        public void translate(float dx, float dy)
+        public void translate(double dx, double dy)
         {
             Vector2 p = getPoint();
             setPosition(new Vector2(p.X + dx, p.Y + dy));

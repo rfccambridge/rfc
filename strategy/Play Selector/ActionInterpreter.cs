@@ -24,7 +24,7 @@ namespace Robocup.Plays
         /// <param name="ballLead">Default: 3</param>
         /// <param name="distTolerance">Default: .04</param>
         /// <param name="angleTolerance">Default: Math.PI/60</param>
-        public ActionInterpreter(IController commander, IPredictor predictor, float kickDistance, float ballLead, float distTolerance, float angleTolerance)
+        public ActionInterpreter(IController commander, IPredictor predictor, double kickDistance, double ballLead, double distTolerance, double angleTolerance)
         {
             this.commander = commander;
             this.predictor = predictor;
@@ -43,12 +43,12 @@ namespace Robocup.Plays
             RobotInfo thisrobot = getOurRobotFromID(robotID);
             Vector2 ball = predictor.getBallInfo().Position;
             Vector2 robotposition = thisrobot.Position;
-            float dotP = (target - ball).normalize() * (ball - robotposition).normalize();
+            double dotP = (target - ball).normalize() * (ball - robotposition).normalize();
             Vector2 destination = target;
             bool avoidBall = false;
             if (dotP > .9)  //~8 degrees
             {
-                destination = extend(target, ball, -.14f);
+                destination = extend(target, ball, -.14);
             }
             else
             {
@@ -62,19 +62,20 @@ namespace Robocup.Plays
         /// <summary>
         /// Extends the line P1->P2 (from P2) by a distance [distance], and returns that point.
         /// </summary>
-        private Vector2 extend(Vector2 p1, Vector2 p2, float distance)
+        private Vector2 extend(Vector2 p1, Vector2 p2, double distance)
         {
-            float dx = p2.X - p1.X;
-            float dy = p2.Y - p1.Y;
-            float mag = (float)Math.Sqrt(dx * dx + dy * dy);
+            return p2 + (p2 - p1).setLength(distance);
+            /*double dx = p2.X - p1.X;
+            double dy = p2.Y - p1.Y;
+            double mag = Math.Sqrt(dx * dx + dy * dy);
             dx *= distance / mag;
             dy *= distance / mag;
-            return new Vector2(p2.X + dx, p2.Y + dy);
+            return new Vector2(p2.X + dx, p2.Y + dy);*/
         }
         /// <summary>
         /// Returns the angle that this robot will have to face to face at the target.
         /// </summary>
-        private float targetAngle(Vector2 robot, Vector2 target)
+        private double targetAngle(Vector2 robot, Vector2 target)
         {
             return (target - robot).cartesianAngle();
         }
@@ -82,12 +83,12 @@ namespace Robocup.Plays
         /// This is the distance that the robots should put themselves from the ball,
         /// when they get ready to kick it.
         /// </summary>
-        private readonly float kickDistance = .11f;//.095f
+        private readonly double kickDistance = .11;//.095
 
         /// <summary>
         /// This is how many ticks of ball motion you should add to the distance to lead the ball appropriately
         /// </summary>
-        private readonly float ballLeading = 3.0f;
+        private readonly double ballLeading = 3.0;
 
         public void Stop(int robotID)
         {
@@ -103,10 +104,10 @@ namespace Robocup.Plays
             RobotInfo thisrobot = getOurRobotFromID(robotID);
             BallInfo ballinfo = predictor.getBallInfo();
             Vector2 ball = predictor.getBallInfo().Position;
-            //float dx = ballinfo.Position.X - target.X;
-            //float dy = ballinfo.Position.Y - target.Y;
+            //double dx = ballinfo.Position.X - target.X;
+            //double dy = ballinfo.Position.Y - target.Y;
             Vector2 destination = extend(target, ball, kickDistance);
-            float destinationAngle = targetAngle(ball, target);
+            double destinationAngle = targetAngle(ball, target);
             if (closeEnough(thisrobot, destination.X, destination.Y, destinationAngle))
             {
                 commander.kick(robotID);
@@ -128,7 +129,7 @@ namespace Robocup.Plays
         /// </summary>
         public void Move(int robotID, Vector2 target)
         {
-            if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01f * .01f)
+            if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01)
                 commander.stop(robotID);
             else
                 commander.move(robotID, true, target);
@@ -138,23 +139,23 @@ namespace Robocup.Plays
         /// </summary>
         public void Move(int robotID, Vector2 target, Vector2 facing)
         {
-            if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01f * .01f)
+            if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01)
                 commander.stop(robotID);
             else
-                commander.move(robotID, true, target, (float)Math.Atan2(facing.Y - target.Y, facing.X - target.X));
+                commander.move(robotID, true, target, Math.Atan2(facing.Y - target.Y, facing.X - target.X));
         }
-        private readonly float angleTolerance = (float)(Math.PI / 10);  //18º
-        //private const float angleTolerance = (float)(Math.PI);  //180º
-        private readonly float distanceTolerance = .04f;  //4d cm
+        private readonly double angleTolerance = Math.PI / 10;  //18º
+        //private const double angleTolerance = (Math.PI);  //180º
+        private readonly double distanceTolerance = .04;  //4d cm
         /// <summary>
         /// Returns if this robot is close enough to the desired position and orientation
         /// (such as to decide whether or not the robot is in position to kick the ball)
         /// </summary>
         /// 
-        private bool closeEnough(RobotInfo robot, float x, float y, float orientation)
+        private bool closeEnough(RobotInfo robot, double x, double y, double orientation)
         {
             double anglediff = UsefulFunctions.angleDifference(orientation, robot.Orientation);
-            float dist = UsefulFunctions.distance(new Vector2(x, y), robot.Position);
+            double dist = UsefulFunctions.distance(new Vector2(x, y), robot.Position);
             return (Math.Abs(anglediff) <= angleTolerance) && (dist <= distanceTolerance);
         }
     }

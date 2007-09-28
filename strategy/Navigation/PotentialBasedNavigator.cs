@@ -12,8 +12,8 @@ namespace Navigation
         public class PotentialBasedNavigator : INavigator
         {
             //for labeling purposes only
-            const float avoidRobotDist = .25f;
-            const float extraAvoidBallDist = .1f;
+            const double avoidRobotDist = .25;
+            const double extraAvoidBallDist = .1;
             Vector2 lastDestination;
             List<Obstacle> lastObstacles = null;
 
@@ -21,17 +21,17 @@ namespace Navigation
             {
                 if (lastObstacles != null)
                 {
-                    for (float x = -2.5f; x <= 2.5f; x += .2f)
+                    for (double x = -2.5; x <= 2.5; x += .2)
                     {
-                        for (float y = -2f; y <= 2f; y += .2f)
+                        for (double y = -2; y <= 2; y += .2)
                         {
                             Vector2 position = new Vector2(x, y);
                             Vector2 force = calcForce(position, lastDestination, lastObstacles);
                             if (force.magnitudeSq() >= 2 * 2)
                             {
-                                force = 2f * force.normalize();
+                                force = 2 * force.normalize();
                             }
-                            Arrow r = new Arrow(c.fieldtopixelPoint(position), c.fieldtopixelPoint(position + .1f * force), System.Drawing.Color.Blue, 1);
+                            Arrow r = new Arrow(c.fieldtopixelPoint(position), c.fieldtopixelPoint(position + .1 * force), System.Drawing.Color.Blue, 1);
                             r.draw(g);
                         }
                     }
@@ -40,18 +40,18 @@ namespace Navigation
 
             private Vector2 repulsion(Obstacle o, Vector2 position)
             {
-                float d = (float)Math.Sqrt(o.position.distanceSq(position));
+                double d = Math.Sqrt(o.position.distanceSq(position));
 
-                float scale = 1.2f;
-                float magnitude = o.size / (d);
+                double scale = 1.2;
+                double magnitude = o.size / (d);
                 magnitude = scale * magnitude * magnitude;
                 return magnitude * (position - o.position).normalize();
             }
             private Vector2 attraction(Vector2 destination, Vector2 position)
             {
-                float scale = 1f;
+                double scale = 1;
                 if (destination.distanceSq(position) < .5 * .5)
-                    scale = 2f;
+                    scale = 2;
                 return scale * (destination - position).normalize();
             }
             private Vector2 calcForce(Vector2 position, Vector2 destination, List<Obstacle> obstacles)
@@ -61,7 +61,7 @@ namespace Navigation
                 {
                     total += repulsion(o, position);
                 }
-                Vector2 add = .01f * (new Vector2(destination.Y - position.Y, position.X - destination.X)).normalize();
+                Vector2 add = .01 * (new Vector2(destination.Y - position.Y, position.X - destination.X)).normalize();
                 while (total.magnitudeSq() < .5 * .5)
                 {
                     total += add;
@@ -71,7 +71,7 @@ namespace Navigation
 
             //List<Vector2> sums = new List<Vector2>();
 
-            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, double avoidBallDist)
             {
                 this.lastDestination = destination;
                 List<Obstacle> obstacles = new List<Obstacle>();
@@ -89,7 +89,7 @@ namespace Navigation
                 lastObstacles = obstacles;
 
                 Vector2 total = calcForce(position, destination, obstacles);
-                return new NavigationResults(position + .1f * (total.normalize()));
+                return new NavigationResults(position + .1 * (total.normalize()));
             }
         }
     }

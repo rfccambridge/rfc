@@ -186,17 +186,17 @@ namespace Robocup.Plays
             string command = strings[0];
             if (command == "linelength")
             {
-                //format: line <> float
+                //format: line <> double
                 PlayLine l = (InterpreterLine)curplay.getObject(strings[1]);
                 Vector2[] points = l.getPoints();
-                return FloatComparer.compare(CommonFunctions.distance(points[0], points[1]), float.Parse(strings[3]), strings[2]);
+                return doubleComparer.compare(CommonFunctions.distance(points[0], points[1]), double.Parse(strings[3]), strings[2]);
             }
             else if (command == "pointpointdistance")
             {
-                //format: point point <> float
+                //format: point point <> double
                 Vector2 p1 = ((InterpreterPoint)curplay.getObject(strings[1])).getPoint();
                 Vector2 p2 = ((InterpreterPoint)curplay.getObject(strings[2])).getPoint();
-                return FloatComparer.compare(CommonFunctions.distance(p1, p2), float.Parse(strings[4]), strings[3]);
+                return doubleComparer.compare(CommonFunctions.distance(p1, p2), double.Parse(strings[4]), strings[3]);
             }
             else if (command == "robotpointclosest")
             {
@@ -220,10 +220,10 @@ namespace Robocup.Plays
             }
             else if (command == "pointsegmentdistance")
             {
-                //format: point line <> float
+                //format: point line <> double
                 Vector2 p = ((InterpreterPoint)curplay.getObject(strings[1])).getPoint();
                 PlayLine l = (InterpreterLine)(curplay.getObject(strings[2]));
-                return FloatComparer.compare((float)l.distFromSegment(p), float.Parse(strings[4]), strings[3]);
+                return doubleComparer.compare((double)l.distFromSegment(p), double.Parse(strings[4]), strings[3]);
             }
             else if (command == "circleinside")
             {
@@ -234,7 +234,7 @@ namespace Robocup.Plays
             }
             else if (command == "circlerobotsinside")
             {
-                //format: team circle <> float
+                //format: team circle <> double
                 ArrayList distances = new ArrayList();
 
                 InterpreterCircle c = (InterpreterCircle)curplay.getObject(strings[2]);
@@ -262,12 +262,12 @@ namespace Robocup.Plays
                 int numinside = 0;
                 for (int i = 0; i < distances.Count; i++)
                 {
-                    if ((float)distances[i] <= c.Radius)
+                    if ((double)distances[i] <= c.Radius)
                     {
                         numinside++;
                     }
                 }
-                return FloatComparer.compare(numinside, Int32.Parse(strings[4]), strings[3]);
+                return doubleComparer.compare(numinside, Int32.Parse(strings[4]), strings[3]);
             }
             else
                 throw new ApplicationException("Could not recognize condition " + String.Join(" ", strings));

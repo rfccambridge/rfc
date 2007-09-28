@@ -59,6 +59,6 @@ namespace Robocup.Core
         /// <param name="avoidBall">How much to avoid the ball.  If it is zero, the ball is not avoided.</param>
         /// <returns>A NavigationResults item containing the necessary data (see NavigationResults)</returns>
         NavigationResults navigate(int id, Vector2 position, Vector2 destination,
-            RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallRadius);
+            RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, double avoidBallRadius);
     }
 }

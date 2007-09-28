@@ -42,10 +42,10 @@ namespace Robocup.Core
         /// <summary>
         /// Creates a RobotInfo with zero velocity.
         /// </summary>
-        public RobotInfo(Vector2 position, float orientation, int id)
+        public RobotInfo(Vector2 position, double orientation, int id)
             : this(position, Vector2.ZERO, 0, orientation, id)
         { }
-        public RobotInfo(Vector2 position, Vector2 velocity, double rotational_velocity, float orientation, int id)
+        public RobotInfo(Vector2 position, Vector2 velocity, double rotational_velocity, double orientation, int id)
         {
             this.position = position;
             this.velocity = velocity;
@@ -91,8 +91,8 @@ namespace Robocup.Core
         }
 
 
-        private readonly float orientation;
-        public float Orientation
+        private readonly double orientation;
+        public double Orientation
         {
             get { return orientation; }
         }
@@ -140,7 +140,7 @@ namespace Robocup.Core
             this.Assigned = false;
         }
 
-        public InterpreterRobotInfo(Vector2 position, Vector2 velocity, double rotational_velocity, float orientation, int id)
+        public InterpreterRobotInfo(Vector2 position, Vector2 velocity, double rotational_velocity, double orientation, int id)
             : base(position, velocity, rotational_velocity, orientation, id)
         {
             this.state = RobotStates.Free;

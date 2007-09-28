@@ -23,7 +23,7 @@ namespace Robocup.Plays
         /// </summary>
         private RobotInfo flipRobotInfo(RobotInfo info)
         {
-            return new RobotInfo(-info.Position, -info.Velocity, -info.RotationalVelocity, (float)(info.Orientation+Math.PI), info.ID);
+            return new RobotInfo(-info.Position, -info.Velocity, -info.RotationalVelocity, info.Orientation+Math.PI, info.ID);
         }
         #region IPredictor Members
 

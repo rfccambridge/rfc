@@ -23,7 +23,7 @@ namespace Robocup.CoreRobotics
         public RefBoxState(IReferee referee, IPredictor predictor, bool yellow)
         {
             marking = false;
-            markedPosition = new Vector2(0.0f, 0.0f);
+            markedPosition = new Vector2(0.0, 0.0);
             playsToRun = PlayTypes.Halt;
             
             isYellow = yellow;
@@ -48,7 +48,7 @@ namespace Robocup.CoreRobotics
         {
             if (marking)
             {
-                if (hasBallMoved(.02f))
+                if (hasBallMoved(.02))
                 {
                     playsToRun = PlayTypes.NormalPlay;
                     clearBallMark();
@@ -161,7 +161,7 @@ namespace Robocup.CoreRobotics
             marking = true;
         }
 
-        bool hasBallMoved(float dist_mm)
+        bool hasBallMoved(double dist_mm)
         {
             if (!marking) return true;
             bool ret = markedPosition.distanceSq(_predictor.getBallInfo().Position) > dist_mm * dist_mm;

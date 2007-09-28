@@ -68,8 +68,8 @@ namespace Robocup.Plays
         }
         public static string getStringFromType(Type t)
         {
-            if (t == typeof(float))
-                return "<float>";
+            if (t == typeof(double))
+                return "<double>";
             else if (t.IsAssignableFrom(typeof(Vector2)))
                 return "<point>";
             else if (t == typeof(GreaterLessThan))
@@ -110,8 +110,8 @@ namespace Robocup.Plays
         }
         static private void addGenerics()
         {
-            addAll(addIf, typeof(int), typeof(float), typeof(Vector2), typeof(Line), typeof(Circle), typeof(ActionDefinition));
-            /*Type[] typelist = new Type[] { typeof(int), typeof(float), typeof(Vector2), typeof(Line), typeof(PlayCircle) };
+            addAll(addIf, typeof(int), typeof(double), typeof(Vector2), typeof(Line), typeof(Circle), typeof(ActionDefinition));
+            /*Type[] typelist = new Type[] { typeof(int), typeof(double), typeof(Vector2), typeof(Line), typeof(PlayCircle) };
             addGenericFunction[] functionlist = new addGenericFunction[] { addIf };
             foreach (addGenericFunction function in functionlist)
             {
@@ -144,15 +144,15 @@ namespace Robocup.Plays
         {
             addGenerics();
             #region geometric functions
-            addFunction("point", "X, Y - Point", typeof(Vector2), new Type[] { typeof(float), typeof(float) }, "The point ~, ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("point", "X, Y - Point", typeof(Vector2), new Type[] { typeof(double), typeof(double) }, "The point ~, ~", delegate(EvaluatorState state, object[] objects)
             {
-                return new Vector2((float)objects[0], (float)objects[1]);
+                return new Vector2((double)objects[0], (double)objects[1]);
             });
-            addFunction("getXcoord", "Point - X coordinate", typeof(float), new Type[] { typeof(Vector2) }, "The x coordinate of point ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("getXcoord", "Point - X coordinate", typeof(double), new Type[] { typeof(Vector2) }, "The x coordinate of point ~", delegate(EvaluatorState state, object[] objects)
             {
                 return ((Vector2)objects[0]).X;
             });
-            addFunction("getYcoord", "Point - Y coordinate", typeof(float), new Type[] { typeof(Vector2) }, "The y coordinate of point ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("getYcoord", "Point - Y coordinate", typeof(double), new Type[] { typeof(Vector2) }, "The y coordinate of point ~", delegate(EvaluatorState state, object[] objects)
             {
                 return ((Vector2)objects[0]).Y;
             });
@@ -160,9 +160,9 @@ namespace Robocup.Plays
             {
                 return new Line((Vector2)objects[0], (Vector2)objects[1]);
             });
-            addFunction("circle", "Point, Radius - Circle", typeof(Circle), new Type[] { typeof(Vector2), typeof(float) }, "The circle with ~ as its center, and radius ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("circle", "Point, Radius - Circle", typeof(Circle), new Type[] { typeof(Vector2), typeof(double) }, "The circle with ~ as its center, and radius ~", delegate(EvaluatorState state, object[] objects)
             {
-                return new Circle((Vector2)objects[0], (float)objects[1]);
+                return new Circle((Vector2)objects[0], (double)objects[1]);
             });
             addFunction("pointof", "Point-object - Point", typeof(Vector2), new Type[] { typeof(GetPointable) }, "The point of ~", delegate(EvaluatorState state, object[] objects)
             {
@@ -190,22 +190,22 @@ namespace Robocup.Plays
                 return Intersections.intersect(c1, c2, (int)objects[2]);
                 //return new Vector2(new PlayCircleCircleIntersection(c1, c2, (int)objects[2]));
             });
-            addFunction("pointpointdistance", "Point, Point - Distance", typeof(float), new Type[] { typeof(Vector2), typeof(Vector2) }, "The distance between ~ and ~ (in meters)", delegate(EvaluatorState state, object[] objects)
+            addFunction("pointpointdistance", "Point, Point - Distance", typeof(double), new Type[] { typeof(Vector2), typeof(Vector2) }, "The distance between ~ and ~ (in meters)", delegate(EvaluatorState state, object[] objects)
             {
                 /*Vector2 p1 = (Vector2)objects[0];
                 Vector2 p2 = (Vector2)objects[1];
                 return CommonFunctions.distance(p1.getPoint(), p2.getPoint());*/
                 return UsefulFunctions.distance((Vector2)objects[0], (Vector2)objects[1]);
             });
-            addFunction("linelength", "Line - Length", typeof(float), new Type[] { typeof(Line) }, "The length of line ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("linelength", "Line - Length", typeof(double), new Type[] { typeof(Line) }, "The length of line ~", delegate(EvaluatorState state, object[] objects)
             {
                 Vector2[] points = ((Line)objects[0]).getPoints();
                 return UsefulFunctions.distance(points[0], points[1]);
             });
 
-            addFunction("scalepoint", "Point, Float - Scale", typeof(Vector2), new Type[] { typeof(Vector2), typeof(float) }, "The point ~ scaled by ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("scalepoint", "Point, double - Scale", typeof(Vector2), new Type[] { typeof(Vector2), typeof(double) }, "The point ~ scaled by ~", delegate(EvaluatorState state, object[] objects)
             {
-                return ((float)objects[1]) * ((Vector2)objects[0]);
+                return ((double)objects[1]) * ((Vector2)objects[0]);
             });
             addFunction("pointadd", "Point, Point - Add", typeof(Vector2), new Type[] { typeof(Vector2), typeof(Vector2) }, "Point ~ + Point ~", delegate(EvaluatorState state, object[] objects)
             {
@@ -217,11 +217,11 @@ namespace Robocup.Plays
             });
             addFunction("midpoint", "Point, Point - Midpoint", typeof(Vector2), new Type[] { typeof(Vector2), typeof(Vector2) }, "The midpoint of points ~ and ~", delegate(EvaluatorState state, object[] objects)
             {
-                return .5f * (((Vector2)objects[0]) + ((Vector2)objects[1]));
+                return .5 * (((Vector2)objects[0]) + ((Vector2)objects[1]));
             });
-            addFunction("closestRobotToLine", "Line, Team - closest robot", typeof(float), new Type[] { typeof(Line), typeof(TeamCondition) }, "The distance from the line ~ to the closest robot on team ~ (excluding the robots that are the endpoints of the line)", delegate(EvaluatorState state, object[] objects)
+            addFunction("closestRobotToLine", "Line, Team - closest robot", typeof(double), new Type[] { typeof(Line), typeof(TeamCondition) }, "The distance from the line ~ to the closest robot on team ~ (excluding the robots that are the endpoints of the line)", delegate(EvaluatorState state, object[] objects)
             {
-                float rtn = 1000000;
+                double rtn = 1000000;
 #if DEBUG
                 if (state == null) throw new ApplicationException("tried to call a function that needed an evaluatorState without one!");
 #endif
@@ -238,7 +238,7 @@ namespace Robocup.Plays
                     Vector2 position = r.Position;
                     if (position == endpoints[0] || position == endpoints[1])
                         continue;
-                    rtn = (float)Math.Min(rtn, line.distFromSegment(position));
+                    rtn = Math.Min(rtn, line.distFromSegment(position));
                 }
                 return rtn;
             });
@@ -246,21 +246,21 @@ namespace Robocup.Plays
             #endregion
 
             #region arithmetic functions
-            addFunction("/", "Float, Float - Divide", typeof(float), new Type[] { typeof(float), typeof(float) }, "~ / ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("/", "double, double - Divide", typeof(double), new Type[] { typeof(double), typeof(double) }, "~ / ~", delegate(EvaluatorState state, object[] objects)
             {
-                return ((float)objects[0]) / ((float)objects[1]);
+                return ((double)objects[0]) / ((double)objects[1]);
             });
-            addFunction("floatround", "Float - Round", typeof(int), new Type[] { typeof(float) }, "~ rounded to the nearest integer", delegate(EvaluatorState state, object[] objects)
+            addFunction("doubleround", "double - Round", typeof(int), new Type[] { typeof(double) }, "~ rounded to the nearest integer", delegate(EvaluatorState state, object[] objects)
             {
-                float f = (float)objects[0];
+                double f = (double)objects[0];
                 return (int)(f + .5);
             });
-            addFunction("floatcomparison", "Float, Float - Compare", typeof(bool), new Type[] { typeof(float), typeof(GreaterLessThan), typeof(float) }, "~ ~ ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("doublecomparison", "double, double - Compare", typeof(bool), new Type[] { typeof(double), typeof(GreaterLessThan), typeof(double) }, "~ ~ ~", delegate(EvaluatorState state, object[] objects)
             {
-                float f1 = (float)(objects[0]);
-                float f2 = (float)(objects[2]);
+                double f1 = (double)(objects[0]);
+                double f2 = (double)(objects[2]);
                 GreaterLessThan glt = (GreaterLessThan)(objects[1]);
-                return FloatComparer.compare(f1, f2, glt);
+                return doubleComparer.compare(f1, f2, glt);
             });
             addFunction("or", "Bool, Bool - Or", typeof(bool), new Type[] { typeof(bool), typeof(bool) }, "~ or ~", delegate(EvaluatorState state, object[] objects)
             {
@@ -270,49 +270,49 @@ namespace Robocup.Plays
             {
                 return ((bool)objects[0]) && ((bool)objects[1]);
             });
-            addFunction("+", "Float, Float - Add", typeof(float), new Type[] { typeof(float), typeof(float) }, "~ + ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("+", "double, double - Add", typeof(double), new Type[] { typeof(double), typeof(double) }, "~ + ~", delegate(EvaluatorState state, object[] objects)
             {
-                return ((float)objects[0]) + ((float)objects[1]);
+                return ((double)objects[0]) + ((double)objects[1]);
             });
-            addFunction("*", "Float, Float - Multiply", typeof(float), new Type[] { typeof(float), typeof(float) }, "~ * ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("*", "double, double - Multiply", typeof(double), new Type[] { typeof(double), typeof(double) }, "~ * ~", delegate(EvaluatorState state, object[] objects)
             {
-                return ((float)objects[0]) * ((float)objects[1]);
+                return ((double)objects[0]) * ((double)objects[1]);
             });
-            addFunction("-", "Float, Float - Subtract", typeof(float), new Type[] { typeof(float), typeof(float) }, "~ - ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("-", "double, double - Subtract", typeof(double), new Type[] { typeof(double), typeof(double) }, "~ - ~", delegate(EvaluatorState state, object[] objects)
             {
-                return ((float)objects[0]) - ((float)objects[1]);
+                return ((double)objects[0]) - ((double)objects[1]);
             });
-            addFunction("min", "Float, Float - Minimum", typeof(float), new Type[] { typeof(float), typeof(float) }, "min( ~ , ~ )", delegate(EvaluatorState state, object[] objects)
+            addFunction("min", "double, double - Minimum", typeof(double), new Type[] { typeof(double), typeof(double) }, "min( ~ , ~ )", delegate(EvaluatorState state, object[] objects)
             {
-                return Math.Min((float)objects[0], (float)objects[1]);
+                return Math.Min((double)objects[0], (double)objects[1]);
             });
-            addFunction("max", "Float, Float - Maximum", typeof(float), new Type[] { typeof(float), typeof(float) }, "max( ~ , ~ )", delegate(EvaluatorState state, object[] objects)
+            addFunction("max", "double, double - Maximum", typeof(double), new Type[] { typeof(double), typeof(double) }, "max( ~ , ~ )", delegate(EvaluatorState state, object[] objects)
             {
-                return Math.Max((float)objects[0], (float)objects[1]);
+                return Math.Max((double)objects[0], (double)objects[1]);
             });
-            addFunction("intmin", "int, int - Minimum", typeof(float), new Type[] { typeof(int), typeof(int) }, "min( ~ , ~ )", delegate(EvaluatorState state, object[] objects)
+            addFunction("intmin", "int, int - Minimum", typeof(double), new Type[] { typeof(int), typeof(int) }, "min( ~ , ~ )", delegate(EvaluatorState state, object[] objects)
             {
                 return Math.Min((int)objects[0], (int)objects[1]);
             });
-            addFunction("intmax", "int, int - Maximum", typeof(float), new Type[] { typeof(int), typeof(int) }, "max( ~ , ~ )", delegate(EvaluatorState state, object[] objects)
+            addFunction("intmax", "int, int - Maximum", typeof(double), new Type[] { typeof(int), typeof(int) }, "max( ~ , ~ )", delegate(EvaluatorState state, object[] objects)
             {
                 return Math.Max((int)objects[0], (int)objects[1]);
             });
-            addFunction("<", "Float, Float - Less than", typeof(bool), new Type[] { typeof(float), typeof(float) }, "~ < ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("<", "double, double - Less than", typeof(bool), new Type[] { typeof(double), typeof(double) }, "~ < ~", delegate(EvaluatorState state, object[] objects)
             {
-                return ((float)objects[0]) < ((float)objects[1]);
+                return ((double)objects[0]) < ((double)objects[1]);
             });
             addFunction("intadd", "int, int - Add", typeof(int), new Type[] { typeof(int), typeof(int) }, "~ + ~", delegate(EvaluatorState state, object[] objects)
             {
                 return ((int)objects[0]) + ((int)objects[1]);
             });
-            addFunction("rand", " - Rand", typeof(float), new Type[] { }, "A random number between 0 and 1", delegate(EvaluatorState state, object[] objects)
+            addFunction("rand", " - Rand", typeof(double), new Type[] { }, "A random number between 0 and 1", delegate(EvaluatorState state, object[] objects)
             {
-                return (float)r.NextDouble();
+                return (double)r.NextDouble();
             });
-            addFunction("floatAbs", "Float - Absolute Value", typeof(float), new Type[] { typeof(float) }, "The absolute value of ~", delegate(EvaluatorState state, object[] objects)
+            addFunction("doubleAbs", "double - Absolute Value", typeof(double), new Type[] { typeof(double) }, "The absolute value of ~", delegate(EvaluatorState state, object[] objects)
             {
-                return Math.Abs((float)objects[0]);
+                return Math.Abs((double)objects[0]);
             });
             addFunction("intAbs", "Int - Absolute Value", typeof(int), new Type[] { typeof(int) }, "The absolute value of ~", delegate(EvaluatorState state, object[] objects)
             {

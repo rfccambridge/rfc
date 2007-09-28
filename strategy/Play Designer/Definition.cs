@@ -6,8 +6,8 @@ using Robocup.Core;
 
 namespace Robocup.Plays
 {
-    
-    abstract class DesignerRobotDefinition:PlayRobotDefinition
+
+    abstract class DesignerRobotDefinition : PlayRobotDefinition
     {
         public override int getID()
         {
@@ -48,9 +48,9 @@ namespace Robocup.Plays
             Vector2[] points = new Vector2[2];
             points[0] = MainForm.FieldPointToPixelPoint(((DesignerRobot)robot.getValue(tick, null)).getPoint());
             points[1] = MainForm.FieldPointToPixelPoint((Vector2)point.getValue(tick, null));
-            float ddx = points[1].X - points[0].X;
-            float ddy = points[1].Y - points[0].Y;
-            float dx, dy;
+            double ddx = points[1].X - points[0].X;
+            double ddy = points[1].Y - points[0].Y;
+            double dx, dy;
             if (ddy == 0)
             {
                 dx = 0;
@@ -60,12 +60,15 @@ namespace Robocup.Plays
             {
                 dx = 1;
                 dy = -ddx / ddy;
-                float mag = (float)Math.Sqrt(dx * dx + dy * dy);
+                double mag = Math.Sqrt(dx * dx + dy * dy);
                 dx /= mag;
                 dy /= mag;
             }
-            float scale=5;
-            PointF[] vertices = new PointF[3] { (PointF)points[1], new PointF(points[0].X + dx * scale, points[0].Y + dy * scale), new PointF(points[0].X - dx * scale, points[0].Y - dy * scale) };
+            double scale = 5;
+            Vector2 diff = new Vector2(dx, dy);
+            PointF[] vertices = new PointF[3] { (PointF)points[1], (PointF)(points[0] + scale * diff), (PointF)(points[0] - scale * diff) };
+            //new PointF(points[0].X + dx * scale, points[0].Y + dy * scale),
+            //new PointF(points[0].X - dx * scale, points[0].Y - dy * scale) };
             Brush myBrush = new SolidBrush(Color.White);
             g.FillPolygon(myBrush, vertices);
             myBrush.Dispose();

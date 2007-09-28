@@ -30,8 +30,8 @@ namespace Robocup.Plays
             set { name = value; }
         }
 
-        private float score = (float)(1.0 + new Random().NextDouble() / 100);
-        public float Score
+        private double score = 1.0 + new Random().NextDouble() / 100;
+        public double Score
         {
             get { return score; }
             set { score = value; }

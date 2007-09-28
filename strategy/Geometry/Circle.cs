@@ -7,7 +7,7 @@ namespace Robocup.Geometry
 {
     public class Circle
     {
-        private float radius;
+        private double radius;
         private Vector2 center;
 
         public Vector2 getCenter()
@@ -15,15 +15,15 @@ namespace Robocup.Geometry
             return center;
         }
 
-        public float Radius
+        public double Radius
         {
             get { return radius; }
         }
-        public float distanceFromCenter(Vector2 p)
+        public double distanceFromCenter(Vector2 p)
         {
             return UsefulFunctions.distance(p, getCenter());
         }
-        public Circle(Vector2 center, float radius)
+        public Circle(Vector2 center, double radius)
         {
             this.center = center;
             this.radius = radius;

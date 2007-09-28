@@ -8,7 +8,8 @@ using System.Windows.Forms;
 
 using Navigation;
 
-using Robocup.Infrastructure;
+using Robocup.Core;
+using Robocup.Utilities;
 using System.IO;
 using System.Runtime.Remoting.Messaging;
 
@@ -65,10 +66,10 @@ namespace NavigationRacer
         #region Navigation Simulation
         bool berunning = false;
         System.Threading.Timer t = null;
-        const float distThresh = .02f;
-        const float moveSpeed = .015f;
-        const float momentum = .975f; //the percentage of the new velocity that comes from the old velocity
-        const float friction = .015f; //the amount lost to friction
+        const double distThresh = .02;
+        const double moveSpeed = .015;
+        const double momentum = .975; //the percentage of the new velocity that comes from the old velocity
+        const double friction = .015; //the amount lost to friction
         private TestResults test()
         {
             int numRobots = state.Destinations.Length;
@@ -77,13 +78,13 @@ namespace NavigationRacer
             DateTime start = DateTime.Now;
             TimeSpan time;
             int totalCalls = 0;
-            float minDistanceSq = 100000f;
-            float seconds = float.Parse(textBoxTestLength.Text);
+            double minDistanceSq = 100000f;
+            double seconds = double.Parse(textBoxTestLength.Text);
             do
             {
                 initialize();
                 totalruns += numRobots;
-                float dist = 0;
+                double dist = 0;
                 for (int i = 0; i < numRobots; i++)
                 {
                     dist = Math.Max(dist, state.OurPositions[i].distanceSq(state.Destinations[i]));
@@ -110,7 +111,7 @@ namespace NavigationRacer
                         }
                         foreach (Vector2 p in state.OurPositions)
                         {
-                            float d = p.distanceSq(curposition);
+                            double d = p.distanceSq(curposition);
                             if (d > .000001)
                                 minDistanceSq = Math.Min(minDistanceSq, d);
                         }
@@ -118,7 +119,7 @@ namespace NavigationRacer
                 }
                 time = DateTime.Now - start;
             } while (time.TotalSeconds < seconds && totalCalls < 2000000000);
-            TestResults t = new TestResults(totalruns, totalCalls, (float)time.TotalMilliseconds, (float)Math.Sqrt(minDistanceSq));
+            TestResults t = new TestResults(totalruns, totalCalls, (double)time.TotalMilliseconds, (double)Math.Sqrt(minDistanceSq));
 
             initialize();
 
@@ -154,7 +155,7 @@ namespace NavigationRacer
                     }
                     lock (navigator)
                     {
-                        results = navigator.navigate(r, curposition, state.Destinations[r], ourinfos, theirinfos, new BallInfo(state.BallPos), .12f);
+                        results = navigator.navigate(r, curposition, state.Destinations[r], ourinfos, theirinfos, new BallInfo(state.BallPos), .12);
                         waypoint = results.waypoint;
                     }
                     Vector2 newvelocity = (waypoint - curposition);
@@ -182,7 +183,7 @@ namespace NavigationRacer
             {
                 if (state.OurWaypoints[i].Length > 1)
                 {
-                    float v = (float)Math.Sqrt(state.OurVelocities[i].magnitudeSq());
+                    double v = (double)Math.Sqrt(state.OurVelocities[i].magnitudeSq());
                     while (state.OurPositions[i].distanceSq(state.currentPathWaypoint(true, i)) <= .5 * v * v)
                         state.nextPathWaypoint(true, i);
                     Vector2 next = state.currentPathWaypoint(true, i);
@@ -193,7 +194,7 @@ namespace NavigationRacer
             {
                 if (state.TheirWaypoints[i].Length > 1)
                 {
-                    float v = (float)Math.Sqrt(state.TheirVelocities[i].magnitudeSq());
+                    double v = (double)Math.Sqrt(state.TheirVelocities[i].magnitudeSq());
                     while (state.TheirPositions[i].distanceSq(state.currentPathWaypoint(false, i)) <= .5 * v * v)
                         state.nextPathWaypoint(false, i);
                     Vector2 next = state.currentPathWaypoint(false, i);
@@ -227,8 +228,8 @@ namespace NavigationRacer
         }
         #endregion
         #region Drawing
-        readonly float robotPixelRadius = new CoordinateConversions().fieldtopixelDistance(.1f);
-        readonly float waypointPixelRadius = new CoordinateConversions().fieldtopixelDistance(.05f);
+        readonly double robotPixelRadius = new CoordinateConversions().fieldtopixelDistance(.1);
+        readonly double waypointPixelRadius = new CoordinateConversions().fieldtopixelDistance(.05);
         private object GraphicsLock = new object();
         private void RacerForm_Paint(object sender, PaintEventArgs e)
         {
@@ -247,8 +248,8 @@ namespace NavigationRacer
                             for (int i = 0; i < waypoints.Length; i++)
                             {
                                 waypoints[i] = c.fieldtopixelPoint(points[i]);
-                                g.FillEllipse(purpleBrush, waypoints[i].X - waypointPixelRadius, waypoints[i].Y - waypointPixelRadius,
-                                    2 * waypointPixelRadius, 2 * waypointPixelRadius);
+                                g.FillEllipse(purpleBrush, (float)(waypoints[i].X - waypointPixelRadius), (float)(waypoints[i].Y - waypointPixelRadius),
+                                    (float)(2 * waypointPixelRadius), (float)(2 * waypointPixelRadius));
                             }
                             g.DrawPolygon(purplePen, waypoints);
                         }
@@ -261,8 +262,8 @@ namespace NavigationRacer
                             for (int i = 0; i < waypoints.Length; i++)
                             {
                                 waypoints[i] = c.fieldtopixelPoint(points[i]);
-                                g.FillEllipse(purpleBrush, waypoints[i].X - waypointPixelRadius, waypoints[i].Y - waypointPixelRadius,
-                                    2 * waypointPixelRadius, 2 * waypointPixelRadius);
+                                g.FillEllipse(purpleBrush, (float)(waypoints[i].X - waypointPixelRadius), (float)(waypoints[i].Y - waypointPixelRadius),
+                                    (float)(2 * waypointPixelRadius), (float)(2 * waypointPixelRadius));
                             }
                             g.DrawPolygon(purplePen, waypoints);
                         }
@@ -273,14 +274,16 @@ namespace NavigationRacer
                     foreach (Vector2 p in state.OurPositions)
                     {
                         Vector2 pp = fieldtopixelPoint(p);
-                        g.FillEllipse(b, pp.X - robotPixelRadius, pp.Y - robotPixelRadius, 2 * robotPixelRadius, 2 * robotPixelRadius);
+                        g.FillEllipse(b, (float)(pp.X - robotPixelRadius), (float)(pp.Y - robotPixelRadius),
+                            (float)(2 * robotPixelRadius), (float)(2 * robotPixelRadius));
                     }
                     b.Dispose();
                     b = new SolidBrush(Color.Red);
                     foreach (Vector2 p in state.TheirPositions)
                     {
                         Vector2 pp = fieldtopixelPoint(p);
-                        g.FillEllipse(b, pp.X - robotPixelRadius, pp.Y - robotPixelRadius, 2 * robotPixelRadius, 2 * robotPixelRadius);
+                        g.FillEllipse(b, (float)(pp.X - robotPixelRadius), (float)(pp.Y - robotPixelRadius),
+                            (float)(2 * robotPixelRadius), (float)(2 * robotPixelRadius));
                     }
                     b.Dispose();
 
@@ -288,12 +291,12 @@ namespace NavigationRacer
                     foreach (Vector2 p in state.Destinations)
                     {
                         Vector2 dest = fieldtopixelPoint(p);
-                        g.FillEllipse(b, dest.X - 5, dest.Y - 5, 10, 10);
+                        g.FillEllipse(b, (float)(dest.X - 5), (float)(dest.Y - 5), 10, 10);
                     }
                     b.Dispose();
                     b = new SolidBrush(Color.Orange);
                     Vector2 ballpos = fieldtopixelPoint(state.BallPos);
-                    g.FillEllipse(b, ballpos.X - 5, ballpos.Y - 5, 10, 10);
+                    g.FillEllipse(b, (float)(ballpos.X - 5), (float)(ballpos.Y - 5), 10, 10);
                     b.Dispose();
                     lock (arrows)
                     {

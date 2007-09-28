@@ -10,17 +10,17 @@ namespace Navigation
         public class State
         {
             public int parent, id;
-            public float x, y;
+            public double x, y;
 
             public State()
             {
                 parent = -1;
                 id = -1;
-                x = -10000.0f;
-                y = -10000.0f;
+                x = -10000.0;
+                y = -10000.0;
             }
 
-            public State(int parent, int id, float x, float y)
+            public State(int parent, int id, double x, double y)
             {
                 this.parent = parent;
                 this.id = id;
@@ -40,7 +40,7 @@ namespace Navigation
                 x = vector.X;
                 y = vector.Y;
             }
-            public void set(int parent, int id, float x, float y)
+            public void set(int parent, int id, double x, double y)
             {
                 this.parent = parent;
                 this.id = id;
@@ -51,29 +51,29 @@ namespace Navigation
 
         public class CurrentNavigator : INavigator
         {
-            const float RRTHEIGHT = 3.4f;
-            const float RRTWIDTH = 4.9f;
+            const double RRTHEIGHT = 3.4;
+            const double RRTWIDTH = 4.9;
             //TODO find good values for this
-            const float RANDEXPLORE = 0.07f;//.05
-            const float WAYEXPLORE = 0.05f;//.2f
-            //const float THRESHOLD = .050f;
+            const double RANDEXPLORE = 0.07;//.05
+            const double WAYEXPLORE = 0.05;//.2
+            //const double THRESHOLD = .050;
             const int WAYPTS = 10;
             const int NODES = 500;
-            const float OBSTACLE_STUCK_CONSTANT = 2000;
-            const float PENALTYRADIUS = .550f;
-            float EXTEND_DISTANCE = .0500f;
-            //const float BALL_MULTIPLIER = 1.4f;
+            const double OBSTACLE_STUCK_CONSTANT = 2000;
+            const double PENALTYRADIUS = .550;
+            double EXTEND_DISTANCE = .0500;
+            //const double BALL_MULTIPLIER = 1.4;
             const int NUM_OPP = 5;
             const int NUM_TEAM = 5;
-            const float ROBOT_RADIUS = .100f;
-            float BOT_AVOID_MULT = 2.5f;
-            const float BOT_STUCK_MULT = 1.5f;
+            const double ROBOT_RADIUS = .100;
+            double BOT_AVOID_MULT = 2.5;
+            const double BOT_STUCK_MULT = 1.5;
 
-            const float FIELDMIN = -(RRTWIDTH / 2 + 1f);
-            const float FIELDMAX = (RRTWIDTH / 2 + 1f);
+            const double FIELDMIN = -(RRTWIDTH / 2 + 1);
+            const double FIELDMAX = (RRTWIDTH / 2 + 1);
 
-            Vector2 THE_GOAL = new Vector2(2.28f, 0.0f);
-            Vector2 HOME_GOAL = new Vector2(-2.28f, 0.0f);
+            Vector2 THE_GOAL = new Vector2(2.28, 0.0);
+            Vector2 HOME_GOAL = new Vector2(-2.28, 0.0);
 
             public State[] rrttree = new State[NODES];
             public State[,] waypoints = new State[NUM_TEAM, WAYPTS];
@@ -110,15 +110,15 @@ namespace Navigation
             Vector2 unblockedDestination(Vector2 pos, Vector2 oldDest, Vector2 obs, double radMult)
             {
                 //if the destination is too close to ball or enemy, pick a new one that is closer
-                //Vector2 ret = new Vector2(0.0f,0.0f);
-                //Vector2 inc = new Vector2(0.0f,0.0f); //iterate up or down
+                //Vector2 ret = new Vector2(0.0,0.0);
+                //Vector2 inc = new Vector2(0.0,0.0); //iterate up or down
 
-                return oldDest + ((float)(radMult * ROBOT_RADIUS)) * (oldDest - obs + .001f * (pos - oldDest)).normalize();
+                return oldDest + (radMult * ROBOT_RADIUS) * (oldDest - obs + .001 * (pos - oldDest)).normalize();
 
                 /*Vector2 ret = new Vector2(oldDest.X, oldDest.Y);
-                float deltax = pos.X - oldDest.X;
-                float deltay = pos.Y - oldDest.Y;
-                float norm = (float)Math.Sqrt(deltax * deltax + deltay * deltay);
+                double deltax = pos.X - oldDest.X;
+                double deltay = pos.Y - oldDest.Y;
+                double norm = (double)Math.Sqrt(deltax * deltax + deltay * deltay);
                 deltax = deltax/norm * ROBOT_RADIUS / 2;
                 deltay = deltay/norm * ROBOT_RADIUS / 2;
 
@@ -134,9 +134,9 @@ namespace Navigation
             }
 
 
-            public NavigationResults navigate(int robotId, Vector2 pos, Vector2 destination, RobotInfo[] teamBots, RobotInfo[] enemyBots, BallInfo ballpos, double avoid_ball, float avoid_robots, float dist_thresh)
+            public NavigationResults navigate(int robotId, Vector2 pos, Vector2 destination, RobotInfo[] teamBots, RobotInfo[] enemyBots, BallInfo ballpos, double avoid_ball, double avoid_robots, double dist_thresh)
             {
-                EXTEND_DISTANCE = (float)Math.Max(.0005, Math.Min(.05, Math.Sqrt(pos.distanceSq(destination)) * .25f));
+                EXTEND_DISTANCE = Math.Max(.0005, Math.Min(.05, Math.Sqrt(pos.distanceSq(destination)) * .25));
                 BOT_AVOID_MULT = avoid_robots;
 
                 DeleteLastPlan();
@@ -174,8 +174,8 @@ namespace Navigation
                     }
                     else
                     {
-                        obstacles[i].x = -10000.5f;
-                        obstacles[i].y = -10000.5f;
+                        obstacles[i].x = -10000.5;
+                        obstacles[i].y = -10000.5;
 
                         id = i - NUM_OPP;
                     }
@@ -266,8 +266,8 @@ namespace Navigation
                 // return normalized vectors with changes for current position
                 else
                 {
-                    extend.y = (float)(EXTEND_DISTANCE * (dy / distance) + cur.y);
-                    extend.x = (float)(EXTEND_DISTANCE * (dx / distance) + cur.x);
+                    extend.y = EXTEND_DISTANCE * (dy / distance) + cur.y;
+                    extend.x = EXTEND_DISTANCE * (dx / distance) + cur.x;
                 }
 
                 // set the parent of the result to the current node
@@ -285,8 +285,8 @@ namespace Navigation
 
                         // -2 indicates an invalid point on an obstacle
                         // this is returned to the function that called this so a new target can be found
-                        extend.y = -10000.2f;
-                        extend.x = -10000.2f;
+                        extend.y = -10000.2;
+                        extend.x = -10000.2;
                         return;
                     }
                 }
@@ -303,8 +303,8 @@ namespace Navigation
                         //	<< Distance(extend, obstacles[i+NUM_OPP]) << endl;
 
                         // if our robots are an obstacle return an invalid result
-                        extend.y = -10000.3f;
-                        extend.x = -10000.3f;
+                        extend.y = -10000.3;
+                        extend.x = -10000.3;
                         return;
                     }
                 }
@@ -316,8 +316,8 @@ namespace Navigation
                     {
                         //debugstream << "Obstacle met (ball): " << endl;
 
-                        extend.y = -10000.4f;
-                        extend.x = -10000.4f;
+                        extend.y = -10000.4;
+                        extend.x = -10000.4;
                         return;
                     }
                 }
@@ -340,8 +340,8 @@ namespace Navigation
             void RandomState() //random state
             { //-300-5100
 
-                random.x = (float)(rand.NextDouble() * (RRTHEIGHT + .600) - RRTHEIGHT / 2 - .300);
-                random.y = (float)(rand.NextDouble() * (RRTWIDTH + .600) - RRTWIDTH / 2 - .300);
+                random.x = rand.NextDouble() * (RRTHEIGHT + .600) - RRTHEIGHT / 2 - .300;
+                random.y = rand.NextDouble() * (RRTWIDTH + .600) - RRTWIDTH / 2 - .300;
             }
 
             // before calling, make sure toAdd has good value
@@ -448,11 +448,11 @@ namespace Navigation
 
                 for (int i = 0; i < treecount; i++)
                 {
-                    rrttree[i].set(-1, -1, -10000.0f, -10000.0f);
+                    rrttree[i].set(-1, -1, -10000.0, -10000.0);
                 }
                 for (int i = 0; i < NUM_OPP + NUM_TEAM + 1; i++)
                 {
-                    obstacles[i].set(-1, -1, -10000.0f, -10000.0f);
+                    obstacles[i].set(-1, -1, -10000.0, -10000.0);
                 }
 
                 treecount = 0;
@@ -741,9 +741,9 @@ namespace Navigation
 
 
 
-            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, float avoidBallDist)
+            public NavigationResults navigate(int id, Vector2 position, Vector2 destination, RobotInfo[] teamPositions, RobotInfo[] enemyPositions, BallInfo ballPosition, double avoidBallDist)
             {
-                return navigate(id, position, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist, 2.3f, .05f);
+                return navigate(id, position, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist, 2.3, .05);
             }
 
 
