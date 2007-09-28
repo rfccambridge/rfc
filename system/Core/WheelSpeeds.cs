@@ -35,7 +35,7 @@ namespace Robocup.Core
     /// A storage class for holding the four wheel speeds.
     /// 
     /// The convention for wheel speeds is that positive values contribute to the robot going forward,
-    /// negative values for the robot going backwards.  (Not clockwise vs counterclockwise)
+    /// negative values for the robot going backwards.  (As opposed to the EE team, which has positive values going counterclockwise)
     /// </summary>
     public class WheelSpeeds : WheelsInfo<int>
     {

@@ -75,9 +75,6 @@ namespace Robotics.Commander
             comport.Close();
         }
 
-        const int WHEELCMDLEN = 7;
-        const int WHEELCMD = 1;
-
         private void setAllMotor(int target, int source, int lf, int rf, int lb, int rb, int duration)
         {
             if (target >= headsigns.Length || target < 0)
@@ -86,6 +83,8 @@ namespace Robotics.Commander
             Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
 
             int dir = 0;
+            //Here we have to convert from our convention (positive values->robot forward)
+            //to the EE convention (positive values->counterclockwise)
             if (lb < 0) dir += 1;
             if (lf < 0) dir += 2;
             if (rf > 0) dir += 4;
@@ -119,54 +118,64 @@ namespace Robotics.Commander
         }
 
         private List<int> canKick = new List<int>();
+        private List<int> charging = new List<int>();
 
-        internal void setCharge(int target)
+        internal void setCharge(int robotID)
         {
-            /*string smsg = headsigns[target] + "EE" + endsign;
+            lock (canKick)
+            {
+                if (charging.Contains(robotID))
+                    return;
+
+                //make sure that we never kick after sending a setCharge command
+                //but before sending the stopcharge command
+                canKick.Remove(robotID);
+                charging.Add(robotID);
+            }
+            string smsg = headsigns[robotID] + "EE" + endsign;
             //Console.WriteLine("charge:" + smsg);
             comport.Write(smsg);
             System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
             {
-                this.setStopCharge(target);
+                this.setStopCharge(robotID);
             }, null, 10000, System.Threading.Timeout.Infinite);
-            lock (canKick)
-            {
-                //make sure that we never kick after sending a setCharge command
-                //but before sending the stopcharge command
-                canKick.Remove(target);
-            }
-            Console.WriteLine("robot " + target + " is now charging");*/
+            Console.WriteLine("robot " + robotID + " is now charging");
         }
 
-        internal void setStopCharge(int target)
+        internal void setStopCharge(int robotID)
         {
-            /*string smsg = headsigns[target] + "DD" + endsign;
-            //Console.WriteLine("stopcharge:" + smsg);
-            comport.Write(smsg);
             lock (canKick)
             {
-                canKick.Add(target);
-            }
-            Console.WriteLine("robot " + target + " is stopped charging");*/
-        }
-
-        public void setKick(int target)
-        {
-            /*System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
-            {
-                this.setCharge(target);
-            }, null, 1000, System.Threading.Timeout.Infinite);
-            lock (canKick)
-            {
-                if (!canKick.Contains(target))
+                if (!charging.Contains(robotID))
                     return;
 
-                canKick.Remove(target);
+                charging.Remove(robotID);
+                canKick.Add(robotID);
             }
-            Console.WriteLine("robot " + target+" is kicking!");
-            string smsg = headsigns[target] + "KK" + endsign;
+            string smsg = headsigns[robotID] + "DD" + endsign;
+            //Console.WriteLine("stopcharge:" + smsg);
+            comport.Write(smsg);
+            Console.WriteLine("robot " + robotID + " has stopped charging");
+        }
+
+        public void setKick(int robotID)
+        {
+            //uncomment this to have the robot start charging after kicking
+            /*System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
+            {
+                this.setCharge(robotID);
+            }, null, 1000, System.Threading.Timeout.Infinite);*/
+            lock (canKick)
+            {
+                if (!canKick.Contains(robotID))
+                    return;
+
+                canKick.Remove(robotID);
+            }
+            Console.WriteLine("robot " + robotID + " is kicking!");
+            string smsg = headsigns[robotID] + "KK" + endsign;
             //Console.WriteLine("kick:" + smsg);
-            comport.Write(smsg);*/
+            comport.Write(smsg);
         }
 
         public void startDribbler(int target)
