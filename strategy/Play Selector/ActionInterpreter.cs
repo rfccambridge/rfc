@@ -64,7 +64,7 @@ namespace Robocup.Plays
         /// </summary>
         private Vector2 extend(Vector2 p1, Vector2 p2, double distance)
         {
-            return p2 + (p2 - p1).setLength(distance);
+            return p2 + (p2 - p1).normalizeToLength(distance);
             /*double dx = p2.X - p1.X;
             double dy = p2.Y - p1.Y;
             double mag = Math.Sqrt(dx * dx + dy * dy);

@@ -28,7 +28,7 @@ namespace Robocup.CoreRobotics
             Vector2 newposition = info.Position + dt * info.Velocity;
             Vector2 newvelocity = new Vector2((double)(r.NextDouble() * 4 - 2), (double)(r.NextDouble() * 4 - 2));
             double newrotvelocity = 20 * r.NextDouble() - 10;
-            return new RobotInfo(newposition, newvelocity, newrotvelocity, info.Orientation + (double)(info.RotationalVelocity * dt), info.ID);
+            return new RobotInfo(newposition, newvelocity, newrotvelocity, info.Orientation + (double)(info.AngularVelocity * dt), info.ID);
             
 
             //idea for implementation:

@@ -189,10 +189,10 @@ namespace Robocup.Core
             return (1 / Math.Sqrt(magnitudeSq())) * this;
         }
         /// <summary>
-        /// Scales the current vector to have the desired length.
+        /// Returns a vector in the same direction as this one, with the desired length.
         /// Returns NaN for the zero vector.
         /// </summary>
-        public Vector2 setLength(double newLength)
+        public Vector2 normalizeToLength(double newLength)
         {
             return newLength * (this.normalize());
         }

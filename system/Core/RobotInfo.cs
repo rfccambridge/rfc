@@ -85,7 +85,7 @@ namespace Robocup.Core
         /// <summary>
         /// The rotational velocity of this robot.  Units are rad/s, CCW direction is positive.
         /// </summary>
-        public double RotationalVelocity
+        public double AngularVelocity
         {
             get { return rotational_velocity; }
         }
