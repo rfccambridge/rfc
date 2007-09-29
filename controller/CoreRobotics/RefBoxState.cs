@@ -24,7 +24,8 @@ namespace Robocup.CoreRobotics
         {
             marking = false;
             markedPosition = new Vector2(0.0, 0.0);
-            playsToRun = PlayTypes.Halt;
+            //TODO change this back so that it defaults to Halt?
+            playsToRun = PlayTypes.NormalPlay;
             
             isYellow = yellow;
 
