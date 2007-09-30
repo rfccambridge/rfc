@@ -497,7 +497,6 @@ namespace InterpreterTester
                 sb.AppendLine("R  \t same, but skips frames");
                 sb.AppendLine("a  \t toggles arrow drawing");
                 sb.AppendLine("p  \t reloads all the plays");
-                sb.AppendLine("s  \t saves all the plays");
                 sb.AppendLine("t  \t runs " + testIterations + " frames and shows you the elapsed time");
                 //sb.AppendLine("o  \t shows current results");
                 MessageBox.Show(sb.ToString());
