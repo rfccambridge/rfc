@@ -65,14 +65,14 @@ namespace Robocup.CoreRobotics
             while (angleChange < -Math.PI)
                 angleChange += 2 * Math.PI;
             bool isbackwards = false;
-            if (Math.Abs(angleChange) > Math.PI / 2)
+            /*if (Math.Abs(angleChange) > Math.PI / 2)
             {
                 isbackwards = true;
                 if (angleChange > 0)
                     angleChange -= Math.PI;
                 else if (angleChange < 0)
                     angleChange += Math.PI;
-            }
+            }*/
 
             int anglepower = (int)(anglePID.getNext(angleChange));
             //Console.WriteLine("angle diff: " + angleChange);
@@ -86,6 +86,7 @@ namespace Robocup.CoreRobotics
                 if (isbackwards)
                     distanceToMove *= -1;
                 int forwardpower = (int)(movePID.getNext(distanceToMove));
+                forwardpower = Math.Sign(forwardpower) * Math.Max(0, Math.Abs(forwardpower) - Math.Abs(anglepower));
                 //Console.WriteLine("forwardpower: " + forwardpower);
                 WheelSpeeds forwardSpeeds = new WheelSpeeds(forwardpower, forwardpower, forwardpower, forwardpower);
                 rtn += forwardSpeeds;
