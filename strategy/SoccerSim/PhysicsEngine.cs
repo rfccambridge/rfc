@@ -106,7 +106,7 @@ namespace SoccerSim
             const double collisionradius = .10;
             //the fraction of the ball velocity that it loses every second
             //well, roughly, because compounding counts, so it's off by about a factor of 2.5
-            const double balldecay = .05;
+            const double balldecay = .8;
 
             BallInfo ball = getBallInfo();
             // run one step of tester
@@ -212,8 +212,6 @@ namespace SoccerSim
 #if DEBUG
             if (old_info.ID != new_info.ID)
                 throw new ApplicationException("old robot id and new robot ids dont match!");
-            if (theirinfo.Count != 5)
-                throw new ApplicationException("wtf");
             foreach (RobotInfo info in getOurTeamInfo())
             {
                 if (info.ID == old_info.ID)
