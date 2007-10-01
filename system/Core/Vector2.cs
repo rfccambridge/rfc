@@ -52,7 +52,7 @@ namespace Robocup.Core
             return new Vector2(p.X, p.Y);
         }
 
-        static private Vector2 zero = new Vector2(0,0);
+        static private Vector2 zero = new Vector2(0, 0);
         /// <summary>
         /// The Vector (0,0)
         /// </summary>
@@ -65,7 +65,7 @@ namespace Robocup.Core
         {
             return new Vector2(Math.Cos(orientation), Math.Sin(orientation));
         }
-	
+
 
         /// <summary>
         /// Checks for equality between two Vector2's.  Since the class is
@@ -195,6 +195,16 @@ namespace Robocup.Core
         public Vector2 normalizeToLength(double newLength)
         {
             return newLength * (this.normalize());
+        }
+        /// <summary>
+        /// Returns a vector that is this vector rotated a given number of radians in the
+        /// counterclockwise direction.
+        /// </summary>
+        public Vector2 rotate(double angle)
+        {
+            double c = Math.Cos(angle);
+            double s = Math.Sin(angle);
+            return new Vector2(c * X - s * y, c * Y + s * x);
         }
         /// <summary>
         /// Provides a string representation of this Vector2.
