@@ -83,7 +83,7 @@ namespace SoccerSim
 
             Dictionary<int, IMovement> planners = new Dictionary<int,IMovement>();
             foreach(RobotInfo info in physics_engine.getOurTeamInfo())
-                planners.Add(info.ID, new TwoWheeledMovement(physics_engine, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight));
+                planners.Add(info.ID, new FourWheeledMovement(physics_engine));
             foreach(RobotInfo info in physics_engine.getTheirTeamInfo())
                 planners.Add(info.ID, new TwoWheeledMovement(physics_engine, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight));
             // create controller

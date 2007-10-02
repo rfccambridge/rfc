@@ -33,7 +33,7 @@ namespace SoccerSim
             }
 
             bool immobile = false;
-            if (ball.Velocity.magnitudeSq() < .01 * .01)
+            if (ball.Velocity.magnitudeSq() < .003 * .003)
                 immobile = true;
 
             // find robot-ball collisions

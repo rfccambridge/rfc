@@ -102,7 +102,7 @@ namespace SoccerSim
             }
 
             //the speed at which the ball will bounce when it hits another robot
-            const double ballbounce = .01;
+            const double ballbounce = .005;
             const double collisionradius = .10;
             //the fraction of the ball velocity that it loses every second
             //well, roughly, because compounding counts, so it's off by about a factor of 2.5
@@ -124,7 +124,7 @@ namespace SoccerSim
                 {
                     collided = true;
                     newballvelocity = ballbounce * ((ball.Position - location).normalize());
-                    newballlocation = location + .13 * (ball.Position - location).normalize();
+                    newballlocation = location + (collisionradius + .005) * (ball.Position - location).normalize();
                     break;
                 }
             }
