@@ -1,8 +1,0 @@
-C:\Microsoft Robotics Studio (1.0)\bin\services\ControlPanel.Y2006.M08.Proxy.dll
-C:\Microsoft Robotics Studio (1.0)\bin\services\ControlPanel.Y2006.M08.Proxy.pdb
-obj\Debug\ResolveAssemblyReference.cache
-obj\Debug\Robotics.ControlPanel.Resources.DssModel.dss
-obj\Debug\Robotics.ControlPanel.Properties.Resources.resources
-obj\Debug\ControlPanel.Y2006.M08.proxy.csproj.GenerateResource.Cache
-obj\Debug\ControlPanel.Y2006.M08.Proxy.dll
-obj\Debug\ControlPanel.Y2006.M08.Proxy.pdb
