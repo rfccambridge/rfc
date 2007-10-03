@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\system\Core\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "..\..\system\Utilities\Utilities.csproj", "{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RRTTester", "..\..\simulator\RRTTester\RRTTester.csproj", "{07A473F5-5310-4397-BBE6-9772AA03A22D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RRTTester", "..\..\simulators\RRTTester\RRTTester.csproj", "{07A473F5-5310-4397-BBE6-9772AA03A22D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

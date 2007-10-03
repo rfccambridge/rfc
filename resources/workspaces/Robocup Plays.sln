@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\..\stra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\..\strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTester", "..\..\gui\InterpreterTester\InterpreterTester.csproj", "{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTester", "..\..\simulators\InterpreterTester\InterpreterTester.csproj", "{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navigation", "..\..\strategy\Navigation\Navigation.csproj", "{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}"
 EndProject

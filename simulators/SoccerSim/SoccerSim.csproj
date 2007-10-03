@@ -89,17 +89,17 @@
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core Play Files\CorePlayFiles.csproj">
+    <ProjectReference Include="..\..\strategy\Core Play Files\CorePlayFiles.csproj">
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
       <Name>CorePlayFiles</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Navigation\Navigation.csproj">
+    <ProjectReference Include="..\..\strategy\Navigation\Navigation.csproj">
       <Project>{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}</Project>
       <Name>Navigation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Play Selector\PlaySelector.csproj">
+    <ProjectReference Include="..\..\strategy\Play Selector\PlaySelector.csproj">
       <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
       <Name>PlaySelector</Name>
       <Private>False</Private>
