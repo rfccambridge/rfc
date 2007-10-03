@@ -1,6 +1,6 @@
-namespace RRTTester
+namespace Robocup.RRT
 {
-    partial class Form1
+    partial class RRTTester
     {
         /// <summary>
         /// Required designer variable.

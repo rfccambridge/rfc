@@ -6,11 +6,11 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace RRTTester
+namespace Robocup.RRT
 {
-    public partial class Form1 : Form
+    public partial class RRTTester : Form
     {
-        public Form1()
+        public RRTTester()
         {
             InitializeComponent();
         }
