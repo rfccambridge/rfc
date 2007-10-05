@@ -85,7 +85,8 @@ namespace SoccerSim
             foreach (RobotInfo info in physics_engine.getOurTeamInfo())
                 planners.Add(info.ID, new FourWheeledMovement(physics_engine));
             foreach (RobotInfo info in physics_engine.getTheirTeamInfo())
-                planners.Add(info.ID, new TwoWheeledMovement(physics_engine, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight));
+                planners.Add(info.ID, new FourWheeledMovement(physics_engine));
+                //planners.Add(info.ID, new TwoWheeledMovement(physics_engine, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight));
             // create controller
             _controller = new RFCController(physics_engine, planners, new Navigation.Current.CurrentNavigator(), physics_engine);
 
