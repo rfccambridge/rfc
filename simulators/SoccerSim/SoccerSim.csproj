@@ -38,7 +38,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FieldView.cs" />
     <Compile Include="SimController.cs" />
     <Compile Include="SimEngine.cs" />
     <Compile Include="SimSystem.cs" />

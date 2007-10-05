@@ -96,6 +96,14 @@ namespace Robocup.Simulation
             return new List<RobotInfo>(theirinfo);
         }
 
+        //not an IPredictor method, but useful
+        public List<RobotInfo> getAllInfos()
+        {
+            List<RobotInfo> infos = new List<RobotInfo>(ourinfo);
+            infos.AddRange(theirinfo);
+            return infos;
+        }
+
         public BallInfo getBallInfo()
         {
             return ball_info;

@@ -83,7 +83,7 @@
       <Name>Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimulationLib\SimulationLib.csproj">
-      <Project>{A0758D47-8B52-4E25-A7B7-5AA40861E806}</Project>
+      <Project>{A343AA15-D817-4E28-AB24-24CD4359BDF7}</Project>
       <Name>SimulationLib</Name>
     </ProjectReference>
   </ItemGroup>

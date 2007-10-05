@@ -14,7 +14,7 @@ namespace SoccerSim
     class SimSystem
     {
         IPredictor _predictor;
-        FieldView _view;
+        FieldDrawer _view;
         PhysicsEngine physics_engine;
 
         RFCController _controller;
@@ -35,7 +35,7 @@ namespace SoccerSim
         private int _sleepTime;
         private bool isYellow;
 
-        public SimSystem(FieldView view, PhysicsEngine physics_engine, RefBoxListener refbox, bool isYell)
+        public SimSystem(FieldDrawer view, PhysicsEngine physics_engine, RefBoxListener refbox, bool isYell)
         {
             _view = view;
             initialized = false;

@@ -118,10 +118,26 @@ namespace Robocup.RRT
             {
                 return new Vector2(r.NextDouble() * 5.5 - 2.75, r.NextDouble() * 4 - 2);
             }
+            const int MAX_EXTENDS = 3;
             ExtendResults<Vector2> ExtendGoalTreeTo(Vector2 point)
             {
                 Vector2 v = v2Finder.NearestNeighbor(point);
-                return Extend(v, point);
+                ExtendResults<Vector2> cur = Extend(v, point);
+                if (cur.resultType!= ExtendResultType.Success)
+                    return cur;
+                int num = 1;
+                while (num < MAX_EXTENDS)
+                {
+                    ExtendResults<Vector2> next = Extend(cur.extension, point);
+                    if (next.resultType == ExtendResultType.Destination)
+                        return next;
+                    if (next.resultType == ExtendResultType.Blocked)
+                        return cur;
+                    addGoalTreeNode(cur);
+                    cur = next;
+                    num++;
+                }
+                return cur;
             }
             ExtendResults<RobotInfo> ExtendStartTreeTo(RobotInfo point)
             {

@@ -39,6 +39,7 @@ namespace Robocup.Core {
         KickOff_Ours_Setup,
         KickOff_Theirs
     }
+    public delegate T ValueFunction<T>();
 
 
     /** Abstraction for the command executer

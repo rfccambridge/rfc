@@ -11,6 +11,7 @@ using System.IO;
 
 using Robocup.CoreRobotics;
 using Robocup.Plays;
+using Robocup.Core;
 using Navigator = Navigation.Examples.DumbNavigator;
 using Robocup.Simulation;
 
@@ -27,17 +28,18 @@ namespace SoccerSim
             init();
         }
 
-        FieldView _fieldView;
+        FieldDrawer _fieldView;
         SimSystem _player1;
         SimSystem _player2;
         SimEngine _engine;
         VirtualRef referee;
+        ICoordinateConverter converter = new Robocup.Utilities.BasicCoordinateConverter(650, 30, 50);
 
         private void init()
         {
             referee = new SimpleReferee();
             PhysicsEngine physics_engine = new PhysicsEngine(referee);
-            _fieldView = new FieldView(physics_engine);
+            _fieldView = new FieldDrawer(physics_engine, converter);
             // TODO make configurable how many to load
 
             RefBoxListener refbox = new RefBoxListener(10001);
@@ -58,8 +60,8 @@ namespace SoccerSim
             _fieldView.paintField(g);
             if (drawArrows)
             {
-                _player1.Controller.drawCurrent(g, _fieldView);
-                _player2.Controller.drawCurrent(g, _fieldView);
+                _player1.Controller.drawCurrent(g, converter);
+                _player2.Controller.drawCurrent(g, converter);
                 //_fieldView.paintArrows(g);
             }
         }
