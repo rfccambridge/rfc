@@ -85,13 +85,13 @@ namespace Robocup.Utilities
 
 
             PointF[] corners = new PointF[7];
-            corners[0] = translate(start, normal, width);
-            corners[1] = translate(start, normal, -width);
-            corners[2] = translate(translate(end, normal, -width), unitvector, -arrowheadwidth * 3 / 2);
-            corners[3] = translate(translate(end, normal, -arrowheadwidth), unitvector, -arrowheadwidth * 3 / 2);
-            corners[4] = end;
-            corners[5] = translate(translate(end, normal, arrowheadwidth), unitvector, -arrowheadwidth * 3 / 2);
-            corners[6] = translate(translate(end, normal, width), unitvector, -arrowheadwidth * 3 / 2);
+            corners[0] = translate(start, normal, width).ToPointF();
+            corners[1] = translate(start, normal, -width).ToPointF();
+            corners[2] = translate(translate(end, normal, -width), unitvector, -arrowheadwidth * 3 / 2).ToPointF();
+            corners[3] = translate(translate(end, normal, -arrowheadwidth), unitvector, -arrowheadwidth * 3 / 2).ToPointF();
+            corners[4] = end.ToPointF();
+            corners[5] = translate(translate(end, normal, arrowheadwidth), unitvector, -arrowheadwidth * 3 / 2).ToPointF();
+            corners[6] = translate(translate(end, normal, width), unitvector, -arrowheadwidth * 3 / 2).ToPointF();
 
 
             try

@@ -43,9 +43,13 @@ namespace Robocup.Core
             this.x = x;
             this.y = y;
         }
-        static public implicit operator PointF(Vector2 p)
+        /*static public implicit operator PointF(Vector2 p)
         {
             return new PointF((float)p.X, (float)p.Y);
+        }*/
+        public PointF ToPointF()
+        {
+            return new PointF((float)X, (float)Y);
         }
         static public explicit operator Vector2(Point p)
         {
