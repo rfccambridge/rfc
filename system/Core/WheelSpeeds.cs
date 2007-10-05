@@ -30,6 +30,11 @@ namespace Robocup.Core
         {
             return "{" + lf.ToString() + " " + rf.ToString() + " " + lb.ToString() + " " + rb.ToString() + "}";
         }
+
+        static public WheelsInfo<double> Add(WheelsInfo<double> lhs, WheelsInfo<double> rhs)
+        {
+            return new WheelsInfo<double>(rhs.lf + lhs.lf, rhs.rf + lhs.rf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
+        }
     }
     /// <summary>
     /// A storage class for holding the four wheel speeds.
@@ -40,19 +45,32 @@ namespace Robocup.Core
     public class WheelSpeeds : WheelsInfo<int>
     {
         public WheelSpeeds(int lf, int rf, int lb, int rb)
-            : base(lf, rf, lb , rb)
+            : base(lf, rf, lb, rb)
         { }
 
         /// <summary>
         /// Creates a WheelSpeeds object with all speeds defaulting to 0.
         /// </summary>
         public WheelSpeeds()
-            : this(0, 0, 0 , 0)
+            : this(0, 0, 0, 0)
         { }
 
         static public WheelSpeeds operator +(WheelSpeeds lhs, WheelSpeeds rhs)
         {
             return new WheelSpeeds(rhs.lf + lhs.lf, rhs.rf + lhs.rf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
+        }
+
+        static public WheelsInfo<double> operator *(double d, WheelSpeeds ws)
+        {
+            return new WheelsInfo<double>(d * ws.lf, d * ws.rf, d * ws.lb, d * ws.rb);
+        }
+        static public WheelsInfo<double> operator +(WheelsInfo<double> lhs, WheelSpeeds rhs)
+        {
+            return new WheelsInfo<double>(rhs.lf + lhs.lf, rhs.rf + lhs.rf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
+        }
+        static public explicit operator WheelSpeeds(WheelsInfo<double> ws)
+        {
+            return new WheelSpeeds((int)ws.lf, (int)ws.rf, (int)ws.lb, (int)ws.rb);
         }
     }
 }

@@ -114,12 +114,12 @@ namespace Robocup.RRT
                 {
                     lock (planner)
                     {
-                        try
-                        {
+                        //try
+                        //{
                             planner.DrawLast(g, converter);
-                        }
+                        //}
                         //sometimes it throws this, i think because of some synchronization issue with the Graphics object
-                        catch (AccessViolationException) { }
+                        //catch (AccessViolationException) { }
                     }
                 }
                 Brush b = new SolidBrush(Color.Green);
@@ -143,12 +143,11 @@ namespace Robocup.RRT
             foreach (RobotInfo info in engine.getAllInfos())
             {
                 int id = info.ID;
-                double orientation = info.Orientation;
                 draganddrop.AddDragandDrop(delegate() { return engine.getCurrentInformation(id).Position; }, .1,
                     delegate(Vector2 v)
                     {
                         RobotInfo inf = engine.getCurrentInformation(id);
-                        engine.MoveRobot(id, new RobotInfo(v, orientation, id));
+                        engine.MoveRobot(id, new RobotInfo(v, inf.Orientation, id));
                     }
                 );
             }
@@ -197,18 +196,23 @@ namespace Robocup.RRT
                 this.restoreFocus();*/
                 HighResTimer timer = new HighResTimer();
                 timer.Start();
-                step(1000);
+                step(100);
                 timer.Stop();
-                MessageBox.Show(timer.Duration.ToString());
+                MessageBox.Show((timer.Duration*10).ToString());
+                restoreFocus();
+                this.Invalidate();
             }
             else if (c == 'r')
             {
-                if (t==null)
+                if (t == null)
                 {
                     t = new System.Threading.Timer(new System.Threading.TimerCallback(show), null, 0, 10);
                 }
                 else
+                {
                     t.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                    t = null;
+                }
             }
             /*else if (c == 'c')
             {

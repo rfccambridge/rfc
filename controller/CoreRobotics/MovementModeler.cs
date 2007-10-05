@@ -23,15 +23,19 @@ namespace Robocup.CoreRobotics
         /// <returns>Returns the state of the robot, extrapolated a time dt into the future.</returns>
         public RobotInfo ModelWheelSpeeds(RobotInfo info, WheelSpeeds command, double dt)
         {
-            //this just has it move randomly:
+            const double fractionold = .4;
+            double oldfraction = Math.Exp(dt * Math.Log(fractionold));
 
-            Vector2 newposition = info.Position + dt * info.Velocity;
-            double neworientation = info.Orientation + info.AngularVelocity * dt;
             Vector2 fl = new Vector2(1, 1).normalize();
             Vector2 fr = new Vector2(1, -1).normalize();
             Vector2 newvelocity = (command.rf + command.lb) * fl + (command.lf + command.rb) * fr;
             newvelocity = (2.0 / 512) * newvelocity.rotate(info.Orientation);
             double newrotvelocity = (10.0 / 256) * (command.rf - command.lb - command.lf + command.rb);
+
+            newrotvelocity = oldfraction * info.AngularVelocity + (1 - oldfraction) * newrotvelocity;
+            newvelocity = oldfraction * info.Velocity.rotate(info.AngularVelocity * dt) + (1 - oldfraction) * newvelocity;
+            Vector2 newposition = info.Position + dt * .5 * (info.Velocity + newvelocity);
+            double neworientation = info.Orientation + dt * .5 * (info.AngularVelocity + newrotvelocity);
             return new RobotInfo(newposition, newvelocity, newrotvelocity, neworientation, info.ID);
 
 

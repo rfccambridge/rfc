@@ -46,6 +46,7 @@ namespace Robocup.RRT
             // 
             // plannerChooseBox
             // 
+            this.plannerChooseBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.plannerChooseBox.Name = "plannerChooseBox";
             this.plannerChooseBox.Size = new System.Drawing.Size(121, 21);
             this.plannerChooseBox.SelectedIndexChanged += new System.EventHandler(this.navigatorChooseBox_SelectedIndexChanged);

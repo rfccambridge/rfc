@@ -45,6 +45,10 @@
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CoreRobotics\CoreRobotics.csproj">
+      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
+      <Name>CoreRobotics</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
