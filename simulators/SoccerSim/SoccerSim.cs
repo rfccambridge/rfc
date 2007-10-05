@@ -88,10 +88,8 @@ namespace SoccerSim
                 sb.AppendLine("h  \t show this help box");
                 sb.AppendLine("1-9\t advance that many frames");
                 sb.AppendLine("r  \t sets it to run continuously");
-                sb.AppendLine("R  \t same, but skips frames");
                 sb.AppendLine("a  \t toggles arrow drawing");
                 sb.AppendLine("p  \t reloads all the plays");
-                sb.AppendLine("s  \t saves all the plays");
                 MessageBox.Show(sb.ToString());
             }
             else if (c == 's')
