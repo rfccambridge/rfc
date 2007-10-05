@@ -911,7 +911,7 @@ namespace Robocup.Plays
                 drawpoints[0] = FieldPointToPixelPoint(points[0]);
                 drawpoints[1] = FieldPointToPixelPoint(points[1]);
                 Pen myPen = new Pen(c, 2);
-                g.DrawLine(myPen, drawpoints[0], drawpoints[1]);
+                g.DrawLine(myPen, drawpoints[0].ToPointF(), drawpoints[1].ToPointF());
                 myPen.Dispose();
             }
             else if (o is Circle)

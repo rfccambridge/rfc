@@ -234,10 +234,10 @@ namespace InterpreterTester
             double innerangle = 1.0;
             double innerradius = 7;
             double outerradius = 11;
-            corners[0] = (PointF)(center + (new Vector2(innerradius * Math.Cos(angle + innerangle), innerradius * Math.Sin(angle + innerangle))));
-            corners[1] = (PointF)(center + (new Vector2(innerradius * Math.Cos(angle - innerangle), innerradius * Math.Sin(angle - innerangle))));
-            corners[2] = (PointF)(center + (new Vector2(outerradius * Math.Cos(angle - outerangle), outerradius * Math.Sin(angle - outerangle))));
-            corners[3] = (PointF)(center + (new Vector2(outerradius * Math.Cos(angle + outerangle), outerradius * Math.Sin(angle + outerangle))));
+            corners[0] = (center + (new Vector2(innerradius * Math.Cos(angle + innerangle), innerradius * Math.Sin(angle + innerangle)))).ToPointF();
+            corners[1] = (center + (new Vector2(innerradius * Math.Cos(angle - innerangle), innerradius * Math.Sin(angle - innerangle)))).ToPointF();
+            corners[2] = (center + (new Vector2(outerradius * Math.Cos(angle - outerangle), outerradius * Math.Sin(angle - outerangle)))).ToPointF();
+            corners[3] = (center + (new Vector2(outerradius * Math.Cos(angle + outerangle), outerradius * Math.Sin(angle + outerangle)))).ToPointF();
             Brush b2 = new SolidBrush(Color.Gray);
             g.FillPolygon(b2, corners);
             b2.Dispose();

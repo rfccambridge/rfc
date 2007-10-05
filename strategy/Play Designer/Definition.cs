@@ -66,7 +66,7 @@ namespace Robocup.Plays
             }
             double scale = 5;
             Vector2 diff = new Vector2(dx, dy);
-            PointF[] vertices = new PointF[3] { (PointF)points[1], (PointF)(points[0] + scale * diff), (PointF)(points[0] - scale * diff) };
+            PointF[] vertices = new PointF[3] { points[1].ToPointF(), (points[0] + scale * diff).ToPointF(), (points[0] - scale * diff).ToPointF() };
             //new PointF(points[0].X + dx * scale, points[0].Y + dy * scale),
             //new PointF(points[0].X - dx * scale, points[0].Y - dy * scale) };
             Brush myBrush = new SolidBrush(Color.White);
