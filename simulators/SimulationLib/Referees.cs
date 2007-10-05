@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
 
-namespace SoccerSim
+namespace Robocup.Simulation
 {
-    class SimpleReferee : VirtualRef
+    public class SimpleReferee : VirtualRef
     {
         int _ourGoals = 0, _theirGoals = 0;
 

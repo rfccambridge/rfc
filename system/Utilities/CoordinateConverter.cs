@@ -7,27 +7,44 @@ namespace Robocup.Utilities
 {
     /// <summary>
     /// A basic ICoordinateConverter implementation.
-    /// Assumes that the screen's (0,0) is the top left of the drawable area
-    /// (not true for instance, when there is a menubar).
     /// </summary>
     public class BasicCoordinateConverter : ICoordinateConverter
     {
         int width, height;
-        public BasicCoordinateConverter(int width, int height)
+        int offsetx, offsety;
+        /// <summary>Creates a new coordinate converter; automatically picks a height to create the right ratio of width / height.</summary>
+        /// <param name="width">The total width of the field</param>
+        /// <param name="offsetx">How far to the right of pixel 0 the start of the field (x = -2.75) is.</param>
+        /// <param name="offsety">How far down of pixel 0 the start of the field (y = 2) is.</param>
+        public BasicCoordinateConverter(int width, int offsetx, int offsety)
+        {
+            this.width = width;
+            this.height = (int)(width * 2.0 / 2.75 + .5);
+            this.offsetx = offsetx;
+            this.offsety = offsety;
+        }
+        /// <summary>Creates a new coordinate converter; lets you choose both width and height, even though the ratio should be fixed</summary>
+        /// <param name="width">The total width of the field</param>
+        /// <param name="height">The total height of the field</param>
+        /// <param name="offsetx">How far to the right of pixel 0 the start of the field (x = -2.75) is.</param>
+        /// <param name="offsety">How far down of pixel 0 the start of the field (y = 2) is.</param>
+        public BasicCoordinateConverter(int width, int height, int offsetx, int offsety)
         {
             this.width = width;
             this.height = height;
+            this.offsetx = offsetx;
+            this.offsety = offsety;
         }
         #region ICoordinateConverter Members
 
         public int fieldtopixelX(double x)
         {
-            return (int)((x + 2.75) / 5.5 * width);
+            return (int)((x + 2.75) / 5.5 * width + offsetx);
         }
 
         public int fieldtopixelY(double y)
         {
-            return (int)((-y + 2.0) / 4.0 * height);
+            return (int)((-y + 2.0) / 4.0 * height + offsety);
         }
 
         public double fieldtopixelDistance(double f)
@@ -47,12 +64,12 @@ namespace Robocup.Utilities
 
         public double pixeltofieldX(double x)
         {
-            return x * 5.5 / width - 2.75;
+            return (x - offsetx) * 5.5 / width - 2.75;
         }
 
         public double pixeltofieldY(double y)
         {
-            return 2 - y * 4.0 / height;
+            return 2 - (y - offsety) * 4.0 / height;
         }
 
         public Vector2 pixeltofieldPoint(Vector2 p)

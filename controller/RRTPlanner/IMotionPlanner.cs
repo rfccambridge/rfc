@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
+using System.Drawing;
 
 namespace Robocup.RRT
 {
@@ -13,8 +14,9 @@ namespace Robocup.RRT
         }
         public WheelSpeeds wheel_speeds;
     }
-    interface IMotionPlanner
+    public interface IMotionPlanner
     {
         MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
+        void DrawLast(Graphics g, ICoordinateConverter c);
     }
 }

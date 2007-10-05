@@ -1,3 +1,8 @@
+// THIS FILE WILL BE USED BUT SHOULD BE MOVED
+// currently there is no use for it, but the place to put it doesn't exist yet (some sort of "production" project)
+// eventually, move it in there.
+// (the things that use this should through compile errors, so we wont forget it)
+#if false
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -5,7 +10,6 @@ using System.IO;
 using System.Threading;
 
 using Robocup.Utilities;
-using Robocup.Plays;
 using Robocup.Core;
 
 
@@ -237,3 +241,4 @@ namespace Robocup.CoreRobotics
         }
     }
 }
+#endif

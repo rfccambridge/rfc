@@ -4,19 +4,41 @@ using System.Text;
 using Robocup.Core;
 using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 
-namespace SoccerSim
+namespace Robocup.Simulation
 {
-    interface VirtualRef
+    public interface VirtualRef
     {
         void RunRef(PhysicsEngine physics_engine, Action<BallInfo> move_ball);
     }
-    internal class PhysicsEngine : IPredictor, IRobots
+    public class PhysicsEngine : IPredictor, IRobots
     {
         List<RobotInfo> ourinfo;
         List<RobotInfo> theirinfo;
         BallInfo ball_info;
         VirtualRef referee;
         Dictionary<int, MovementModeler> movement_modelers = new Dictionary<int, MovementModeler>();
+
+        public void MoveRobot(int robotID, RobotInfo new_info)
+        {
+            foreach (RobotInfo info in getOurTeamInfo())
+            {
+                if (info.ID == robotID)
+                {
+                    UpdateRobot(info, new_info);
+                }
+            }
+            foreach (RobotInfo info in getTheirTeamInfo())
+            {
+                if (info.ID == robotID)
+                {
+                    UpdateRobot(info, new_info);
+                }
+            }
+        }
+        public void MoveBall(Vector2 newPosition)
+        {
+            UpdateBall(new BallInfo(newPosition));
+        }
 
         public PhysicsEngine(VirtualRef referee)
         {

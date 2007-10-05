@@ -4,21 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</ProjectGuid>
+    <ProjectGuid>{A0758D47-8B52-4E25-A7B7-5AA40861E806}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Robocup.CoreRobotics</RootNamespace>
-    <AssemblyName>CoreRobotics</AssemblyName>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>Robocup.Simulation</RootNamespace>
+    <AssemblyName>SimulationLib</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,33 +30,23 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicPredictor.cs" />
-    <Compile Include="FourWheeledMovement.cs" />
-    <Compile Include="MovementModeler.cs" />
-    <Compile Include="RefBoxListener.cs" />
-    <Compile Include="RefBoxState.cs" />
-    <Compile Include="RFCController.cs" />
+    <Compile Include="PhysicsEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StubRobots.cs" />
-    <Compile Include="RFCSystem.cs" />
-    <Compile Include="TwoWheeledMovement.cs" />
+    <Compile Include="Referees.cs" />
+    <Compile Include="TestResults.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\controller\CoreRobotics\CoreRobotics.csproj">
+      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
+      <Name>CoreRobotics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\system\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
-      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="rfc.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

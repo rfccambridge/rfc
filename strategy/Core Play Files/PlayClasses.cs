@@ -27,20 +27,6 @@ using Robocup.Core;
 namespace Robocup.Plays
 {
 
-    public enum PlayTypes
-    {
-        NormalPlay,
-        Halt,
-        Stopped,
-        SetPlay_Ours,
-        SetPlay_Theirs,
-        PenaltyKick_Ours,
-        PenaltyKick_Ours_Setup,
-        PenaltyKick_Theirs,
-        KickOff_Ours,
-        KickOff_Ours_Setup,
-        KickOff_Theirs
-    }
     public class RobotAssignmentType
     {
         private readonly bool okIfAssigned;

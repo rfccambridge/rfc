@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
+using Robocup.Simulation;
 
 namespace NavigationRacer
 {
@@ -292,57 +293,5 @@ namespace NavigationRacer
             else
                 theirCurrentWaypoint[robot] = (theirCurrentWaypoint[robot] + 1) % TheirWaypoints[robot].Length;
         }
-        /*public static FieldState load(System.IO.StreamReader reader)
-        {
-            while (reader.ReadLine() != "#####") { }
-            double totalMS = double.Parse(reader.ReadLine());
-            double iterations = double.Parse(reader.ReadLine());
-            double MSPerIteration = double.Parse(reader.ReadLine());
-            string[] split = reader.ReadToEnd().Split(new char[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-            int numOurPositions = int.Parse(split[0]);
-            int numTheirPositions = int.Parse(split[1]);
-            Vector2[] ourPositions = new Vector2[numOurPositions];
-            Vector2[] theirPositions = new Vector2[numTheirPositions];
-            Vector2 destination = new Vector2(double.Parse(split[2]), double.Parse(split[3]));
-            Vector2 ballpos = new Vector2(double.Parse(split[4]), double.Parse(split[5]));
-            int offset = 6;
-            for (int i = 0; i < numOurPositions; i++)
-            {
-                ourPositions[i] = new Vector2(double.Parse(split[2 * i + offset]), double.Parse(split[2 * i + offset + 1]));
-            }
-            offset = (3 + numOurPositions) * 2;
-            for (int i = 0; i < numTheirPositions; i++)
-            {
-                theirPositions[i] = new Vector2(double.Parse(split[2 * i + offset]), double.Parse(split[2 * i + offset + 1]));
-            }
-            reader.Close();
-            return new FieldState(ballpos, destination, ourPositions, theirPositions, totalMS, MSPerIteration, iterations);
-        }
-        public string save()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("anything above the following line is a comment:");
-            sb.AppendLine("#####");
-            sb.AppendLine("" + referenceResults.AverageMillisecondsPerRun);
-            sb.AppendLine("" + referenceResults.AverageIterationsPerRun);
-            sb.AppendLine("" + referenceResults.AverageMillisecondsPerIteration);
-            sb.AppendLine();
-            sb.AppendLine(OurPositions.Length + " " + TheirPositions.Length);
-            sb.AppendLine();
-            sb.AppendLine(destination.X + " " + destination.Y);
-            sb.AppendLine(ballpos.X + " " + ballpos.Y);
-            sb.AppendLine();
-            foreach (Vector2 p in ourPositions)
-            {
-                sb.AppendLine(p.X + " " + p.Y);
-            }
-            sb.AppendLine();
-            foreach (Vector2 p in theirPositions)
-            {
-                sb.AppendLine(p.X + " " + p.Y);
-            }
-            sb.AppendLine();
-            return sb.ToString();
-        }*/
     }
 }

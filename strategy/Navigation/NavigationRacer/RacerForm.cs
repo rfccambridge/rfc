@@ -11,6 +11,7 @@ using Navigation;
 using Robocup.Core;
 using Robocup.Utilities;
 using System.IO;
+using Robocup.Simulation;
 using System.Runtime.Remoting.Messaging;
 
 namespace NavigationRacer
@@ -247,7 +248,7 @@ namespace NavigationRacer
                             PointF[] waypoints = new PointF[points.Length];
                             for (int i = 0; i < waypoints.Length; i++)
                             {
-                                waypoints[i] = c.fieldtopixelPoint(points[i]);
+                                waypoints[i] = c.fieldtopixelPoint(points[i]).ToPointF();
                                 g.FillEllipse(purpleBrush, (float)(waypoints[i].X - waypointPixelRadius), (float)(waypoints[i].Y - waypointPixelRadius),
                                     (float)(2 * waypointPixelRadius), (float)(2 * waypointPixelRadius));
                             }
@@ -261,7 +262,7 @@ namespace NavigationRacer
                             PointF[] waypoints = new PointF[points.Length];
                             for (int i = 0; i < waypoints.Length; i++)
                             {
-                                waypoints[i] = c.fieldtopixelPoint(points[i]);
+                                waypoints[i] = c.fieldtopixelPoint(points[i]).ToPointF();
                                 g.FillEllipse(purpleBrush, (float)(waypoints[i].X - waypointPixelRadius), (float)(waypoints[i].Y - waypointPixelRadius),
                                     (float)(2 * waypointPixelRadius), (float)(2 * waypointPixelRadius));
                             }

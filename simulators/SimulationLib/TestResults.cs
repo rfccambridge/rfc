@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NavigationRacer
+namespace Robocup.Simulation
 {
-    class TestResults
+    public class TestResults
     {
-        public TestResults(int numRuns, int totalIterations, double totalMilliseconds,double closestDistance)
+        public TestResults(int numRuns, int totalIterations, double totalMilliseconds, double closestDistance)
         {
             this.numRuns = numRuns;
             this.totalIterations = totalIterations;
@@ -47,16 +47,18 @@ namespace NavigationRacer
         }
         // for labeling purposes only
         private string navigatorName;
-        public string NavigatorName {
+        public string NavigatorName
+        {
             get { return navigatorName; }
             set { navigatorName = value; }
         }
         private string testFileName;
-        public string TestFileName {
+        public string TestFileName
+        {
             get { return testFileName; }
             set { testFileName = value; }
         }
-	
+
 
         public double IterationsScore(TestResults reference)
         {
@@ -70,11 +72,11 @@ namespace NavigationRacer
         {
             return reference.AverageMillisecondsPerIteration / this.AverageMillisecondsPerIteration;
         }
-        
+
 
         public string compileSingleResult(TestResults reference)
         {
-            StringBuilder sb=new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine("Closest distance: " + closestDistance);
             sb.AppendLine("Average time: " + AverageMillisecondsPerRun + " ms");
             sb.AppendLine("Average iterations: " + AverageIterationsPerRun);
@@ -87,6 +89,6 @@ namespace NavigationRacer
         }
 
 
-	
+
     }
 }

@@ -89,9 +89,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="TestResults.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\simulators\SimulationLib\SimulationLib.csproj">
+      <Project>{A0758D47-8B52-4E25-A7B7-5AA40861E806}</Project>
+      <Name>SimulationLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\system\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>

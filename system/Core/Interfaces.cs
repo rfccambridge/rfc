@@ -25,6 +25,20 @@ using System.Text;
  */
 namespace Robocup.Core {
 
+    public enum PlayTypes
+    {
+        NormalPlay,
+        Halt,
+        Stopped,
+        SetPlay_Ours,
+        SetPlay_Theirs,
+        PenaltyKick_Ours,
+        PenaltyKick_Ours_Setup,
+        PenaltyKick_Theirs,
+        KickOff_Ours,
+        KickOff_Ours_Setup,
+        KickOff_Theirs
+    }
 
 
     /** Abstraction for the command executer

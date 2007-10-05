@@ -26,10 +26,14 @@ namespace Robocup.CoreRobotics
             //this just has it move randomly:
 
             Vector2 newposition = info.Position + dt * info.Velocity;
-            Vector2 newvelocity = new Vector2((double)(r.NextDouble() * 4 - 2), (double)(r.NextDouble() * 4 - 2));
-            double newrotvelocity = 20 * r.NextDouble() - 10;
-            return new RobotInfo(newposition, newvelocity, newrotvelocity, info.Orientation + (double)(info.AngularVelocity * dt), info.ID);
-            
+            double neworientation = info.Orientation + info.AngularVelocity * dt;
+            Vector2 fl = new Vector2(1, 1).normalize();
+            Vector2 fr = new Vector2(1, -1).normalize();
+            Vector2 newvelocity = (command.rf + command.lb) * fl + (command.lf + command.rb) * fr;
+            newvelocity = (2.0 / 512) * newvelocity.rotate(info.Orientation);
+            double newrotvelocity = (10.0 / 256) * (command.rf - command.lb - command.lf + command.rb);
+            return new RobotInfo(newposition, newvelocity, newrotvelocity, neworientation, info.ID);
+
 
             //idea for implementation:
             //calculate current wheel speeds from velocity+rotational velocity (assume there is no slipping)

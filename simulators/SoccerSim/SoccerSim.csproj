@@ -39,8 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FieldView.cs" />
-    <Compile Include="PhysicsEngine.cs" />
-    <Compile Include="Referees.cs" />
     <Compile Include="SimController.cs" />
     <Compile Include="SimEngine.cs" />
     <Compile Include="SimSystem.cs" />
@@ -103,6 +101,10 @@
       <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
       <Name>PlaySelector</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SimulationLib\SimulationLib.csproj">
+      <Project>{A343AA15-D817-4E28-AB24-24CD4359BDF7}</Project>
+      <Name>SimulationLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

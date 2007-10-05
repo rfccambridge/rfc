@@ -8,6 +8,7 @@ using Robocup.Utilities;
 using Robocup.Plays;
 using Robocup.CoreRobotics;
 using Robocup.Core;
+using Robocup.Simulation;
 
 namespace SoccerSim
 {
