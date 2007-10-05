@@ -5,6 +5,10 @@ using Robocup.Core;
 
 namespace Robocup.RRT
 {
+    /// <summary>
+    /// A class that has a collection of points, and allows for queries of the form "what is the point in the collection closest
+    /// to this given point".  The two main functions are AddPoint and NearestNeighbor
+    /// </summary>
     class Vector2NNFinder
     {
         private List<Vector2> points = new List<Vector2>();
