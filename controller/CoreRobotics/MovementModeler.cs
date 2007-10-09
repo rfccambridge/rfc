@@ -27,7 +27,7 @@ namespace Robocup.CoreRobotics
         /// <returns>Returns the state of the robot, extrapolated a time dt into the future.</returns>       
         const double rr = 0.09;
         private double velocityCoe = 127 * 4 / (2 * Math.Sqrt(2)); // assuming maximum velocity is 4m/s
-        const double changeConst = 100;// k = proportional constant. we set the change is proportional to the gap. 
+        const double changeConst = 8;// k = proportional constant. we set the change is proportional to the gap. 
 
         private double GetNewVelocity(double command, double actual, double dt)
         {
