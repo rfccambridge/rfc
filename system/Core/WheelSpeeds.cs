@@ -72,5 +72,9 @@ namespace Robocup.Core
         {
             return new WheelSpeeds((int)ws.lf, (int)ws.rf, (int)ws.lb, (int)ws.rb);
         }
+        static public explicit operator WheelsInfo<double>(WheelSpeeds ws)
+        {
+            return new WheelsInfo<double>(ws.lf, ws.rf, ws.lb, ws.rb);
+        }
     }
 }
