@@ -7,7 +7,7 @@ namespace Robocup.Core
     /// <summary>
     /// A pair of two elements.
     /// </summary>
-    class Pair<T1, T2>
+    public class Pair<T1, T2>
     {
         public Pair(T1 first, T2 second)
         {
