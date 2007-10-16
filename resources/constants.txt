@@ -46,11 +46,19 @@ bool ROBOT_IS_GOALIE_4 true
 # camera 1 for top, camera 2 for bottom
 int CAMERA_ID_LAMBDA 2
 int CAMERA_ID_OMEGA 1
+int CAMERA_ID_MARDUK 2
+int CAMERA_ID_STRATEGIST 1
 
 int THEIR_ID_OFFSET_LAMBDA 0
 int THEIR_ID_OFFSET_OMEGA 10
 
 # areas and errors are in sq. mm
+
+int MIN_BLOB_AREA 5
+int MIN_BLOB_HEIGHT 5
+int MIN_BLOB_WIDTH 5
+int MAX_BLOB_HEIGHT 100
+int MAX_BLOB_WIDTH 100
 
 float AREA_BALL 1400
 float ERROR_BALL 1000
