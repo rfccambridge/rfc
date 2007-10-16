@@ -239,7 +239,6 @@ namespace Robotics.ControlPanel
             this.chkStop.Text = "Stop";
             this.chkStop.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.chkStop.UseVisualStyleBackColor = true;
-            this.chkStop.CheckedChanged += new System.EventHandler(this.chkStop_CheckedChanged);
             // 
             // chkDrive
             // 
@@ -254,7 +253,6 @@ namespace Robotics.ControlPanel
             this.chkDrive.Text = "Drive";
             this.chkDrive.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.chkDrive.UseVisualStyleBackColor = true;
-            this.chkDrive.CheckedChanged += new System.EventHandler(this.chkDrive_CheckedChanged);
             // 
             // picJoystick
             // 
@@ -333,7 +331,6 @@ namespace Robotics.ControlPanel
             this.linkDirectory.TabStop = true;
             this.linkDirectory.Text = "Service Directory:";
             this.linkDirectory.UseCompatibleTextRendering = true;
-            this.linkDirectory.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkDirectory_LinkClicked);
             // 
             // lblNode
             // 
@@ -356,7 +353,6 @@ namespace Robotics.ControlPanel
             this.lstDirectory.Name = "lstDirectory";
             this.lstDirectory.Size = new System.Drawing.Size(176, 148);
             this.lstDirectory.TabIndex = 5;
-            this.lstDirectory.DoubleClick += new System.EventHandler(this.listDirectory_DoubleClick);
             // 
             // btnConnectSim
             // 
@@ -374,7 +370,6 @@ namespace Robotics.ControlPanel
             // 
             this.saveFileDialog.Filter = "Xml log file|*.log;*.xml|All files|*.*";
             this.saveFileDialog.Title = "Log File";
-            this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
             // 
             // groupBox7
             // 

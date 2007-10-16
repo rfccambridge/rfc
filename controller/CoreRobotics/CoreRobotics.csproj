@@ -52,7 +52,6 @@
     <Compile Include="RFCController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StubRobots.cs" />
-    <Compile Include="RFCSystem.cs" />
     <Compile Include="TwoWheeledMovement.cs" />
   </ItemGroup>
   <ItemGroup>
