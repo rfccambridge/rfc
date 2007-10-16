@@ -9,8 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SoccerSim</RootNamespace>
     <AssemblyName>SoccerSim</AssemblyName>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>SoccerSim.Launcher</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
