@@ -16,6 +16,8 @@ namespace Vision {
         private const string DEFAULT_REGION_FILE = WORK_DIR + "region.txt";
         private const string IDLE_STATUS = "Ready. Press F1 for key functions.";
 
+        private const int MESSAGE_SENDER_PORT = 50001;
+
         private static HelpForm HelpForm = new HelpForm();
 
         /* PRIVATE MEMBERS */
@@ -27,8 +29,7 @@ namespace Vision {
         private TsaiCalibrator _tsaiCalibrator;
         private Blobber _blobber;
 
-        // MRS !!!
-        private VisionServiceOperations _visionServicePort;
+        private Robocup.MessageSystem.MessageSender<GameObjects> _messageSender;
 
         private FieldState _fieldState;
 
@@ -42,7 +43,7 @@ namespace Vision {
 
         /* CONSTRUCTORS */
 
-        public ImageForm(VisionServiceOperations visionServicePort) {
+        public ImageForm() {
             InitializeComponent();
 
             Size = new Size(1024 + 20, 768 + 40 + 20);
@@ -52,9 +53,6 @@ namespace Vision {
             regionSelBox.RegionSize = new Size(1024, 768);
 
             _highlights = new List<SelectionBox.SelectionBox>(100);
-
-            //MRS!!
-            _visionServicePort = visionServicePort;
 
             // camera ID depends on which computer this is running on
             // get computer name
@@ -87,7 +85,7 @@ namespace Vision {
 
             _tsaiCalibrator.CreateLabels(imagePicBox);
 
-            
+            _messageSender = Robocup.MessageSystem.Messages.CreateServerSender<GameObjects>(MESSAGE_SENDER_PORT);
 
             FieldState.Form.Show();
         }
@@ -402,6 +400,8 @@ namespace Vision {
                         return;
                     }
                     
+                    
+
                     if (!_blobber.Blobbing)
          
                         _blobber.Start(new OnNewStateReady(delegate(GameObjects gameObjects) {
@@ -411,10 +411,8 @@ namespace Vision {
 
                             _fieldState.Update(gameObjects);
 
-                            //MRS !!!
-                           if (_visionServicePort != null)
-                                _visionServicePort.Post(new GameObjInfoReady(gameObjects));
-        
+                            _messageSender.Post(gameObjects);
+
                         }));
 
                     ChangeStatus("Running...");

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
-using Microsoft.Dss.Core.Attributes;
 using VisionStatic;
 using System.Windows;
 using Robocup.Utilities;
@@ -11,7 +10,7 @@ using Vision;
 
 namespace Vision {
 
-    [DataContract]
+    [Serializable]
     public class GameObjects {
         private string source;
         private List<Robot> ourRobots;
@@ -33,7 +32,6 @@ namespace Vision {
             }
         }
 
-        [DataMember]
         public List<Robot> OurRobots
         {
             get { 
@@ -46,21 +44,18 @@ namespace Vision {
             set { ourRobots = value; }
         }
 
-        [DataMember]
         public List<Robot> TheirRobots
         {
             get { return theirRobots; }
             set { theirRobots = value; }
         }
 
-        [DataMember]
         public Ball Ball
         {
             get { return ball; }
             set { ball = value; }
         }
 
-        [DataMember]
         public int TotalObjects {
             get {
                 int objects = 0;
@@ -78,7 +73,6 @@ namespace Vision {
             }
         }
 
-        [DataMember]
         public string Source
         {
             get { return source; }
@@ -96,17 +90,6 @@ namespace Vision {
             
             ourRobots = new List<Robot>();
             theirRobots = new List<Robot>();
-
-            /*
-            int i;
-            //this is because of a bug in MRS that does not generate clone() method correctly
-            for (i = 0; i < 5; i++)
-            {
-               ourRobots[i] = new Vision.Robot(0, 0, -1, -1);
-              theirRobots[i] = new Vision.Robot(0, 0, -1, -1);
-                
-            }
-             */
         }
 
 
@@ -143,32 +126,28 @@ namespace Vision {
         }
     }
 
-    [DataContract]
+    [Serializable]
     public class Ball {
         private double x, y;
         private int imageX, imageY;
 
-        [DataMember]
         public double X
         {
             get { return x; }
             set { x = value; }
         }
 
-        [DataMember]
         public double Y
         {
             get { return y; }
             set { y = value; }
         }
 
-        [DataMember]
         public int ImageX {
             get { return imageX; }
             set { imageX = value; }
         }
 
-        [DataMember]
         public int ImageY {
             get { return imageY; }
             set { imageY = value; }
@@ -187,7 +166,7 @@ namespace Vision {
         }
     }
 
-    [DataContract]
+    [Serializable]
     public class Robot {
 
         private int team;  //0/1
@@ -198,34 +177,29 @@ namespace Vision {
         private Blob[] dots; 
         public int numDots;
 
-        [DataMember]
         public int Team
         {
             get { return team; }
             set { team = value; }
         }
 
-        [DataMember]
         public int Id
         {
             get { return id; }
             set { id = value; }
         }
 
-        [DataMember]
         public double X 
         {
             get { return x; }
             set { x = value; }
         }
-        [DataMember]
         public double Y
         {
             get { return y; }
             set { y = value; }
         }
 
-        [DataMember]
         public float Orientation
         {
             get { return orient; }

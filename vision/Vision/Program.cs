@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Vision
 {
-    /*static class Program
+    static class Program
     {
         /// <summary>
         /// The main entry point for the application.
@@ -14,7 +14,7 @@ namespace Vision
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmRAWImage());
+            Application.Run(new ImageForm());
         }
-    }*/
+    }
 }

@@ -274,7 +274,7 @@ namespace Vision {
          * --------------------------------
          */
 
-        private const string WORK_DIR = "C:\\Debug\\";
+        private const string WORK_DIR = "../../resources/vision/";
         private const string DEFAULT_TSAI_POINTS_FILE = WORK_DIR + "tsai_points.txt";
         private const string DEFAULT_IMAGE_TO_WORLD_TABLE = WORK_DIR + "image_to_world_table.dat";
 
@@ -685,7 +685,7 @@ namespace Vision {
 
             Process ccal_fo = new Process();
             ccal_fo.StartInfo.FileName = "cmd.exe";
-            ccal_fo.StartInfo.Arguments = "/c " + WORK_DIR + "\\ccal_fo.exe";
+            ccal_fo.StartInfo.Arguments = "/c " + Path.GetFullPath(WORK_DIR) + "ccal_fo.exe";
             ccal_fo.StartInfo.UseShellExecute = false;
 
             ccal_fo.StartInfo.RedirectStandardInput = true;
