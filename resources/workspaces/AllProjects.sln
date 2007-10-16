@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlPanel", "..\..\gui\ControlPanel\ControlPanel.csproj", "{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlPanel", "..\..\system\ControlPanel\ControlPanel.csproj", "{0EF15C7D-0506-4BB0-A9AA-DBEBA64BB630}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterCommander", "..\..\system\MasterCommander\MasterCommander.csproj", "{0582271D-08D1-4539-A4CD-67FE197B3C00}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "..\..\system\Infrastructure\Infrastructure.csproj", "{5A581DB2-B25E-4DDB-B870-4C63D8876D19}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\..\strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
 EndProject
@@ -13,15 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\..\stra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreRobotics", "..\..\controller\CoreRobotics\CoreRobotics.csproj", "{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "..\..\system\Constants\Constants.csproj", "{064297F9-12D0-4BD1-BF96-146E2B28461D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialControl", "..\..\system\SerialControl\SerialControl.csproj", "{3CCB17A5-8943-4535-A148-7AE8D237BA32}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vision", "..\..\vision\Vision\Vision.csproj", "{08383292-7063-4436-ADE4-CCD3AD048D46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelectionBox", "..\..\vision\SelectionBox\SelectionBox.csproj", "{850D79D3-A132-4280-997D-EF106C423D8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTester", "..\..\gui\InterpreterTester\InterpreterTester.csproj", "{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTester", "..\..\simulators\InterpreterTester\InterpreterTester.csproj", "{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationRacer", "..\..\strategy\Navigation\NavigationRacer\NavigationRacer.csproj", "{CB7165CE-ADD5-42A0-ADA8-5FD454FABA41}"
 EndProject
@@ -35,7 +31,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageSystem", "..\..\syst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KalmanFilter", "..\..\vision\KalmanFilter\KalmanFilter.csproj", "{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerSim", "..\..\strategy\SoccerSim\SoccerSim.csproj", "{8DAD1CA8-6B0B-4186-B337-72085101396C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerSim", "..\..\simulators\SoccerSim\SoccerSim.csproj", "{8DAD1CA8-6B0B-4186-B337-72085101396C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\system\Core\Core.csproj", "{501CE524-9C56-4C08-B04F-69A92318872A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "..\..\system\Utilities\Utilities.csproj", "{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "..\..\strategy\Geometry\Geometry.csproj", "{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationLib", "..\..\simulators\SimulationLib\SimulationLib.csproj", "{A343AA15-D817-4E28-AB24-24CD4359BDF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +55,6 @@ Global
 		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0582271D-08D1-4539-A4CD-67FE197B3C00}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A581DB2-B25E-4DDB-B870-4C63D8876D19}.Release|Any CPU.Build.0 = Release|Any CPU
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -67,10 +67,6 @@ Global
 		{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{064297F9-12D0-4BD1-BF96-146E2B28461D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CCB17A5-8943-4535-A148-7AE8D237BA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -115,6 +111,22 @@ Global
 		{8DAD1CA8-6B0B-4186-B337-72085101396C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DAD1CA8-6B0B-4186-B337-72085101396C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DAD1CA8-6B0B-4186-B337-72085101396C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{501CE524-9C56-4C08-B04F-69A92318872A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{501CE524-9C56-4C08-B04F-69A92318872A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{501CE524-9C56-4C08-B04F-69A92318872A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{501CE524-9C56-4C08-B04F-69A92318872A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A343AA15-D817-4E28-AB24-24CD4359BDF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A343AA15-D817-4E28-AB24-24CD4359BDF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A343AA15-D817-4E28-AB24-24CD4359BDF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A343AA15-D817-4E28-AB24-24CD4359BDF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

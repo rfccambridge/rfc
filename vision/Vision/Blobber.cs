@@ -8,7 +8,7 @@ using VisionStatic;
 using VisionCamera;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
-using Robocup.Constants;
+using Robocup.Utilities;
 
 namespace VisionStatic {
 

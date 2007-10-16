@@ -91,21 +91,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Constants, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Debug\Constants.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CorePlayFiles, Version=0.2.2773.28919, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Debug\CorePlayFiles.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CoreRobotics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5ac0250aed336964, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Debug\CoreRobotics.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="DssBase, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\DssBase.dll</HintPath>
@@ -119,10 +104,6 @@
     <Reference Include="DssRuntime.proxy, Version=1.0.313.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\DssRuntime.proxy.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Infrastructure, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="PhysicsEngine, Version=1.0.2406.25171, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=x86">
@@ -178,10 +159,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <Reference Include="Vision, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6167838637cd631e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Vision.Proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=6167838637cd631e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -222,6 +199,20 @@
     <None Include="Resources\cleanfield.jpg" />
     <None Include="obj\Debug\cleanfield.jpg" />
     <None Include="rfc.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\controller\CoreRobotics\CoreRobotics.csproj">
+      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
+      <Name>CoreRobotics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

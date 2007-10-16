@@ -65,7 +65,7 @@ namespace KalmanFilter
                 Console.Write(", ");
                 pAL(f.get_state(0, 0));
             }
-            k.display();
+            //george.display();
             /*george.update(0, 1, 2, 2);
             ArrayList george_state = george.get_state(0, 1);
             Console.WriteLine("Output:");

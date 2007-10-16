@@ -28,9 +28,8 @@ using Microsoft.Dss.Core;
 using Microsoft.Robotics.Simulation.Physics.Proxy;
 using Microsoft.Robotics.PhysicalModel.Proxy;
 using Microsoft.Dss.Services.SubscriptionManager;
-using Robocup.Infrastructure;
+using Robocup.Core;
 using Robocup.CoreRobotics;
-using Vector2 = Robocup.Infrastructure.Vector2;
 
 namespace Robotics.ControlPanel
 {

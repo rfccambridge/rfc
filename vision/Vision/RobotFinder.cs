@@ -6,7 +6,7 @@ using System.Drawing;
 using Microsoft.Dss.Core.Attributes;
 using VisionStatic;
 using System.Windows;
-using Robocup.Constants;
+using Robocup.Utilities;
 using Vision;
 
 namespace Vision {

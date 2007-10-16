@@ -6,7 +6,7 @@ using Microsoft.Dss.ServiceModel.Dssp;
 using W3C.Soap;
 using Microsoft.Dss.Core.Attributes;
 using Microsoft.Dss.Services.SubscriptionManager;
-using Robocup.Constants;
+using Robocup.Utilities;
 
 //namespace VisionServiceNamespace {
 namespace Vision {

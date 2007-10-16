@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Robocup.Constants;
+using Robocup.Utilities;
 using System.Drawing.Text;
 
 namespace Vision {

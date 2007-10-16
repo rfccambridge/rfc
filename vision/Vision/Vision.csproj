@@ -27,7 +27,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\services\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;INSTRUMENTED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,7 +36,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -183,9 +183,9 @@
     <Content Include="VisionService.manifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\system\Constants\Constants.csproj">
-      <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
-      <Name>Constants</Name>
+    <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
+      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\SelectionBox\SelectionBox.csproj">
       <Project>{850D79D3-A132-4280-997D-EF106C423D8C}</Project>

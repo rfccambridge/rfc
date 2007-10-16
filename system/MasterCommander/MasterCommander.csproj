@@ -158,10 +158,9 @@
     <None Include="rfc.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Constants\Constants.csproj">
-      <Project>{064297F9-12D0-4BD1-BF96-146E2B28461D}</Project>
-      <Name>Constants</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
+      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SerialControl\SerialControl.csproj">
       <Project>{3CCB17A5-8943-4535-A148-7AE8D237BA32}</Project>

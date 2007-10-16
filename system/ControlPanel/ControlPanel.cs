@@ -40,13 +40,12 @@ using vision = Vision.Proxy;
 using Microsoft.Robotics.PhysicalModel.Proxy;
 using Robotics.SimDrive.Proxy;
 using Microsoft.Dss.Services.SubscriptionManager;
-using Robocup.Infrastructure;
-using Vector2 = Robocup.Infrastructure.Vector2;
+using Robocup.Core;
+using Robocup.CoreRobotics;
 
 using commander = Robotics.Commander.Proxy;
 
-using Robocup.CoreRobotics;
-using Robocup.Constants;
+using Robocup.Utilities;
 
 namespace Robotics.ControlPanel
 {
@@ -80,7 +79,7 @@ namespace Robotics.ControlPanel
         bool blueVision = false;
         bool yellowVision = false;
 
-        Robocup.CoreRobotics.RFCSystem rfcsystem = new Robocup.CoreRobotics.RFCSystem();
+        RFCSystem rfcsystem = new Robocup.CoreRobotics.RFCSystem();
 
         [ServicePort("/controlpanel", AllowMultipleInstances = true)]
         ControlPanelOperations _mainPort = new ControlPanelOperations();

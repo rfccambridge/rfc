@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using VisionStatic;
-using Robocup.Constants;
+using Robocup.Utilities;
 using System.IO;
 using System.Drawing.Drawing2D;
 

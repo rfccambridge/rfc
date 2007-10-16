@@ -59,12 +59,5 @@ namespace Robotics.ControlPanel.Properties {
                 resourceCulture = value;
             }
         }
-        
-        internal static System.Drawing.Bitmap cleanfield {
-            get {
-                object obj = ResourceManager.GetObject("cleanfield", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }
