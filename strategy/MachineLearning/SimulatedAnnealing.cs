@@ -16,7 +16,7 @@ namespace MachineLearning
     /// </summary>
     public delegate bool SingleTerminationFunction<T>(T current, double score);
 
-    class SimulatedAnnealing<T> : DeterministicOptimizer<T>
+    public class SimulatedAnnealing<T> : DeterministicOptimizer<T>
     {
         public SimulatedAnnealing(ScoreFunction<T> scoreFunction) : base(scoreFunction) { }
 

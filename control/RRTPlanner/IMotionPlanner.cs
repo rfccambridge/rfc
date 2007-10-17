@@ -4,7 +4,7 @@ using System.Text;
 using Robocup.Core;
 using System.Drawing;
 
-namespace Robocup.RRT
+namespace Robocup.MotionControl
 {
     public class MotionPlanningResults
     {

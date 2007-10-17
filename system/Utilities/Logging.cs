@@ -9,12 +9,19 @@ using DefaultFormatter = System.Runtime.Serialization.Formatters.Binary.BinaryFo
 namespace Robocup.Utilities
 {
     [Serializable]
-    public struct LogMessage
+    public struct LogMessage<T> : IComparable<LogMessage<T>>
     {
         public double time;
-        public object message;
+        public string message;
+        public T obj;
+
+
+        public int CompareTo(LogMessage<T> other)
+        {
+            return Math.Sign(time - other.time);
+        }
     }
-    public class LogWriter
+    public class LogWriter<T>
     {
 
         private Stream s;
@@ -41,13 +48,14 @@ namespace Robocup.Utilities
         /// Writes the object to the log output.  Is thread safe.
         /// </summary>
         /// <param name="o">The object to be written.  Must be serializable.</param>
-        public void LogObject(object o)
+        public void LogObject(T o, string message)
         {
             lock (write_lock)
             {
-                LogMessage m;
+                LogMessage<T> m;
                 m.time = HighResTimer.SecondsSinceStart();
-                m.message = o;
+                m.obj = o;
+                m.message = message;
                 f.Serialize(s, m);
             }
         }
@@ -64,7 +72,7 @@ namespace Robocup.Utilities
         /// but also allows the memory to be reclaimed if desired.
         /// </summary>
         private static Dictionary<string, WeakReference> writers = new Dictionary<string, WeakReference>();
-        public static LogWriter GetLogWriter(string name)
+        public static LogWriter<T> GetLogWriter(string name)
         {
             if (!writers.ContainsKey(name) || !writers[name].IsAlive)
             {
@@ -75,31 +83,31 @@ namespace Robocup.Utilities
                     fname = name + string.Format("-{0:G3}.log", tries);
                     tries++;
                 } while (File.Exists(fname));
-                LogWriter writer = new LogWriter(new FileStream(fname, FileMode.Create));
+                LogWriter<T> writer = new LogWriter<T>(new FileStream(fname, FileMode.Create));
                 if (writers.ContainsKey(name))
                     writers.Remove(name);
                 writers.Add(name, new WeakReference(writer));
                 return writer;
             }
-            return (LogWriter)(writers[name].Target);
+            return (LogWriter<T>)(writers[name].Target);
         }
 
         /// <summary>
         /// Reads in all the messages in the log, closes the stream, and returns the messages.
         /// </summary>
-        static public List<LogMessage> ReadLog(Stream s)
+        static public List<LogMessage<T>> ReadLog(Stream s)
         {
             return ReadLog(s, new DefaultFormatter());
         }
         /// <summary>
         /// Reads in all the messages in the log, closes the stream, and returns the messages.
         /// </summary>
-        static public List<LogMessage> ReadLog(Stream s, IFormatter f)
+        static public List<LogMessage<T>> ReadLog(Stream s, IFormatter f)
         {
-            List<LogMessage> messages = new List<LogMessage>();
+            List<LogMessage<T>> messages = new List<LogMessage<T>>();
             while (s.Position < s.Length)
             {
-                messages.Add((LogMessage)f.Deserialize(s));
+                messages.Add((LogMessage<T>)f.Deserialize(s));
             }
             s.Close();
             return messages;

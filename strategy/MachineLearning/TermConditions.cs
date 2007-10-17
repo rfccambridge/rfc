@@ -5,7 +5,7 @@ using System.Text;
 namespace MachineLearning
 {
 
-    static class SomeTerminationFunctions
+    public static class SomeTerminationFunctions
     {
         static public SingleTerminationFunction<T> repeatedTermClass<T>(int numtimes) where T : class
         {

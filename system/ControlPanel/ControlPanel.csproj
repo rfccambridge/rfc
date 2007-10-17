@@ -120,7 +120,7 @@
     <None Include="rfc.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\controller\CoreRobotics\CoreRobotics.csproj">
+    <ProjectReference Include="..\..\control\CoreRobotics\CoreRobotics.csproj">
       <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
       <Name>CoreRobotics</Name>
     </ProjectReference>

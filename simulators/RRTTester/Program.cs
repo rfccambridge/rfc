@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Robocup.RRT
+namespace Robocup.MotionControl
 {
     static class Program
     {

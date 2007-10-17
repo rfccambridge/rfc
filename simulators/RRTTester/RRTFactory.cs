@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
 
-namespace Robocup.RRT {
+namespace Robocup.MotionControl {
     public static class RRTFactory {
         static public IMotionPlanner createPlanner(Type navigatorType) {
             return (IMotionPlanner)Activator.CreateInstance(navigatorType);

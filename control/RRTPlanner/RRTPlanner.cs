@@ -5,7 +5,7 @@ using System.Drawing;
 using Robocup.Core;
 using Robocup.CoreRobotics;
 
-namespace Robocup.RRT
+namespace Robocup.MotionControl
 {
     public class RRTPlanner : IMotionPlanner
     {

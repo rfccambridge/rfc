@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
 
-namespace Robocup.RRT
+namespace Robocup.MotionControl
 {
     /// <summary>
     /// Contains a collection of RobotInfo objects, and can respond to queries about which state is "closest" to another

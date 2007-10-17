@@ -1,4 +1,4 @@
-namespace Robocup.RRT
+namespace Robocup.MotionControl
 {
     partial class RRTTester
     {

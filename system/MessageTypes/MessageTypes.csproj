@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6B407296-924E-4788-A8B4-5E808061889D}</ProjectGuid>
+    <ProjectGuid>{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Robocup.MotionControl</RootNamespace>
-    <AssemblyName>RRTPlanner</AssemblyName>
+    <RootNamespace>Robocup.Core</RootNamespace>
+    <AssemblyName>MessageTypes</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,24 +30,17 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMotionPlanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RobotInfoNNFinder.cs" />
-    <Compile Include="RRTPlanner.cs" />
-    <Compile Include="Vector2NNFinder.cs" />
+    <Compile Include="VisionData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\system\Core\Core.csproj">
+    <ProjectReference Include="..\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CoreRobotics\CoreRobotics.csproj">
-      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
-      <Name>CoreRobotics</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

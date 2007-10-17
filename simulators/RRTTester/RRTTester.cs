@@ -10,7 +10,7 @@ using Robocup.Core;
 using Robocup.Utilities;
 using Robocup.Simulation;
 
-namespace Robocup.RRT
+namespace Robocup.MotionControl
 {
     public partial class RRTTester : Form
     {

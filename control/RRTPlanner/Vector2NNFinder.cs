@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
 
-namespace Robocup.RRT
+namespace Robocup.MotionControl
 {
     /// <summary>
     /// A class that has a collection of points, and allows for queries of the form "what is the point in the collection closest

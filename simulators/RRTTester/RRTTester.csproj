@@ -7,7 +7,7 @@
     <ProjectGuid>{07A473F5-5310-4397-BBE6-9772AA03A22D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Robocup.RRT</RootNamespace>
+    <RootNamespace>Robocup.MotionControl</RootNamespace>
     <AssemblyName>RRTTester</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -70,7 +70,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\controller\RRTPlanner\RRTPlanner.csproj">
+    <ProjectReference Include="..\..\control\RRTPlanner\RRTPlanner.csproj">
       <Project>{6B407296-924E-4788-A8B4-5E808061889D}</Project>
       <Name>RRTPlanner</Name>
     </ProjectReference>
