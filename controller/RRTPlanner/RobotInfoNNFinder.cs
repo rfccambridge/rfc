@@ -1,3 +1,7 @@
+
+
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,14 +17,28 @@ namespace Robocup.RRT
     {
         List<RobotInfo> infos = new List<RobotInfo>();
 
+        //Distance metric:
+        //
+        //distance = Euclidean distance between start and end (squared), 
+        //           plus magnitudeSq of start velocity - ideal velocity vector (scaled to start speed), 
+        //           plus magnitudeSq of end velocity - ideal velocity vector (scaled to end speed).
         private double distance(RobotInfo start, RobotInfo end)
         {
-            return start.Position.distanceSq(end.Position);
+            double startScale = Math.Sqrt(start.Velocity.magnitudeSq() / start.Position.distanceSq(end.Position))+1;
+            double endScale = Math.Sqrt(end.Velocity.magnitudeSq() / start.Position.distanceSq(end.Position))+1;
+            return start.Position.distanceSq(end.Position) + (startScale * (end.Position.X - start.Position.X) - start.Velocity.X) * (startScale * (end.Position.X - start.Position.X) - start.Velocity.X)
+                                                           + (startScale * (end.Position.Y - start.Position.Y) - start.Velocity.Y) * (startScale * (end.Position.Y - start.Position.Y) - start.Velocity.Y)
+                                                           + (endScale * (end.Position.X - start.Position.X) - start.Velocity.X) * (endScale * (end.Position.X - start.Position.X) - start.Velocity.X)
+                                                           + (endScale * (end.Position.Y - start.Position.Y) - start.Velocity.Y) * (endScale * (end.Position.Y - start.Position.Y) - start.Velocity.Y)
+                                                           ;
         }
 
         private double distance(RobotInfo start, Vector2 end)
         {
-            return start.Position.distanceSq(end);
+            double startScale = Math.Sqrt(start.Velocity.magnitudeSq() / start.Position.distanceSq(end))+1;
+            return start.Position.distanceSq(end) + (startScale * (end.X - start.Position.X) - start.Velocity.X) * (startScale * (end.X - start.Position.X) - start.Velocity.X)
+                                                  + (startScale * (end.Y - start.Position.Y) - start.Velocity.Y) * (startScale * (end.Y - start.Position.Y) - start.Velocity.Y)
+                                                  ;
         }
 
         public void AddInfo(RobotInfo info)
