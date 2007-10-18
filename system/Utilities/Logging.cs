@@ -12,7 +12,7 @@ namespace Robocup.Utilities
     public struct LogMessage<T> : IComparable<LogMessage<T>>
     {
         public double time;
-        public string message;
+        //public string message;
         public T obj;
 
 
@@ -48,14 +48,14 @@ namespace Robocup.Utilities
         /// Writes the object to the log output.  Is thread safe.
         /// </summary>
         /// <param name="o">The object to be written.  Must be serializable.</param>
-        public void LogObject(T o, string message)
+        public void LogObject(T o/*, string message*/)
         {
             lock (write_lock)
             {
                 LogMessage<T> m;
                 m.time = HighResTimer.SecondsSinceStart();
                 m.obj = o;
-                m.message = message;
+                //m.message = message;
                 f.Serialize(s, m);
             }
         }

@@ -10,7 +10,7 @@ namespace Robocup.MotionControl
 {
     public class RobotModelCalibrator
     {
-        public MovementModeler CalibrateModel(List<List<LogMessage<VisionDataMessage.RobotData>>> visionData,
+        public MovementModeler CalibrateModel(List<List<LogMessage<VisionMessage.RobotData>>> visionData,
             List<List<LogMessage<WheelSpeeds>>> commands)
         {
             System.Diagnostics.Debug.Assert(visionData.Count == commands.Count);
@@ -32,7 +32,7 @@ namespace Robocup.MotionControl
         /// Gets triggered when a new path has been generated and scored.  The second argument is the score.
         /// </summary>
         public event Action<Pair<List<SimulatedPath>, double>> PathScored;
-        private double ScoreModel(MovementModeler model, List<List<LogMessage<VisionDataMessage.RobotData>>> visionData,
+        private double ScoreModel(MovementModeler model, List<List<LogMessage<VisionMessage.RobotData>>> visionData,
             List<List<LogMessage<WheelSpeeds>>> commands)
         {
             List<SimulatedPath> paths = new List<SimulatedPath>();
@@ -54,12 +54,12 @@ namespace Robocup.MotionControl
 
 
         //Things that Jieyun needs to write:
-        private SimulatedPath SimulateCommands(MovementModeler model, List<LogMessage<VisionDataMessage.RobotData>> visionData,
+        private SimulatedPath SimulateCommands(MovementModeler model, List<LogMessage<VisionMessage.RobotData>> visionData,
             List<LogMessage<WheelSpeeds>> commands)
         {
             throw new Exception("The method or operation is not implemented.");
         }
-        private double ScorePath(SimulatedPath path, List<LogMessage<VisionDataMessage.RobotData>> visionData)
+        private double ScorePath(SimulatedPath path, List<LogMessage<VisionMessage.RobotData>> visionData)
         {
             throw new Exception("The method or operation is not implemented.");
         }

@@ -5,7 +5,7 @@ using System.Text;
 namespace Robocup.Core
 {
     [Serializable]
-    public class VisionDataMessage
+    public class VisionMessage
     {
         public struct RobotData
         {
@@ -26,12 +26,19 @@ namespace Robocup.Core
             }
 
             private int id;
+            /// <summary>
+            /// The ID of the robot -- can be any value
+            /// </summary>
             public int ID
             {
                 get { return id; }
             }
 	
             private Vector2 position;
+            /// <summary>
+            /// The position of the robot, in our standard coordinate system
+            /// ([0,0] is center of field, [1,1] is up and to the right, the unit is meters)
+            /// </summary>
             public Vector2 Position
             {
                 get { return position; }
@@ -42,11 +49,15 @@ namespace Robocup.Core
                 get { return orientation; }
             }
         }
-        public VisionDataMessage(Vector2 ballPosition)
+        public VisionMessage(Vector2 ballPosition)
         {
             this.ballPosition = ballPosition;
         }
         private Vector2 ballPosition;
+        /// <summary>
+        /// The position of the ball, in our standard coordinate system
+        /// ([0,0] is center of field, [1,1] is up and to the right, the unit is meters)
+        /// </summary>
         public Vector2 BallPosition
         {
             get { return ballPosition; }
