@@ -443,7 +443,7 @@ namespace VisionStatic {
             Vector2 ballPos;
 
             if (goBall == null)
-                ballPos = new Vector2();
+                ballPos = null;
             else
                 ballPos = VisionToGeneralCoords(gameObjects.Ball.X, gameObjects.Ball.Y);
 
