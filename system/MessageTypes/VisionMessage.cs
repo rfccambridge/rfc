@@ -49,6 +49,21 @@ namespace Robocup.Core
                 get { return orientation; }
             }
         }
+        /// <summary>
+        /// Creates a VisionMessage which contains no ball or robots
+        /// </summary>
+        public VisionMessage()
+            : this(null)
+        {
+        }
+        /// <summary>
+        /// Creates a new VisionMessage with the specified ball position.
+        /// </summary>
+        /// <param name="ballPosition">The position of the ball on the field, where
+        /// ([0,0] is center of field, [1,1] is up and to the right, and the unit is meters.
+        /// 
+        /// If no ball was found, this parameter should be null.
+        /// </param>
         public VisionMessage(Vector2 ballPosition)
         {
             this.ballPosition = ballPosition;
@@ -56,11 +71,14 @@ namespace Robocup.Core
         private Vector2 ballPosition;
         /// <summary>
         /// The position of the ball, in our standard coordinate system
-        /// ([0,0] is center of field, [1,1] is up and to the right, the unit is meters)
+        /// ([0,0] is center of field, [1,1] is up and to the right, the unit is meters).
+        /// 
+        /// If no ball was found on the field, the value will be null.
         /// </summary>
         public Vector2 BallPosition
         {
             get { return ballPosition; }
+            set { ballPosition = value; }
         }
         private List<RobotData> ourRobots = new List<RobotData>();
         public List<RobotData> OurRobots
