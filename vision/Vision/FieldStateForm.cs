@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using Robocup.Utilities;
 using System.Drawing.Text;
+using Robocup.Core;
 
 namespace Vision {
     public partial class FieldStateForm : Form {
@@ -49,35 +50,35 @@ namespace Vision {
             picField.BackgroundImage = _bmpField;
         }
 
-        public void UpdateState(GameObjects gameObjects) {
+        public void UpdateState(VisionMessage visionMessage) {
             _gfxField.Clear(FIELD_COLOR);
             DrawCoords();
             DrawLines();
 
             int botsOnField = 0;
             int ballsOnField = 0;
-            foreach (Robot robot in gameObjects.OurRobots)
-                if (robot != null && robot.Id >= 0) {
-                    DrawOurRobot(robot);
-                    botsOnField++;
-                }
-            foreach (Robot robot in gameObjects.TheirRobots)
-                if (robot != null && robot.Id >= 0) {
+            foreach (VisionMessage.RobotData robot in visionMessage.OurRobots) {
+                //if (robot != null && robot.ID >= 0) {
+                DrawOurRobot(robot);
+                botsOnField++;
+                //}
+            }
+            foreach (VisionMessage.RobotData robot in visionMessage.TheirRobots) {
+                //if (robot != null && robot.ID >= 0) {
                     DrawTheirRobot(robot);
                     botsOnField++;
-                }
-            if (gameObjects.Ball != null && (gameObjects.Ball.X != 0 && gameObjects.Ball.Y != 0)) {
-                DrawBall(gameObjects.Ball);
-                ballsOnField++;
+              //  }
             }
+
+            //if (visionMessage.Ball != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
+                DrawBall(visionMessage.BallPosition);
+                ballsOnField++;
+           // }
 
            // if (ballsOnField == 0)
            //     Console.WriteLine("Warning: No balls on field!");
             //if (botsOnField == 0)
             //   Console.WriteLine("Warning: No bots on field!");
-
-            
-
 
             picField.Invalidate();
         }
@@ -112,41 +113,41 @@ namespace Vision {
             ScaleLocation(FIELD_SIZE_WORLD.Width / 2 + RADIUS, FIELD_SIZE_WORLD.Height + RADIUS, out x1, out y1);
             _gfxField.DrawArc(Pens.White, new Rectangle(x1, y1, w, h), 0, 180);
         }
-        private void DrawOurRobot(Robot robot) {
+        private void DrawOurRobot(VisionMessage.RobotData robot) {
             const int DIAMETER = 20;
             int x, y;
-            ScaleLocation(robot.X, robot.Y, out x, out y);
+            ScaleLocation(robot.Position.X, robot.Position.Y, out x, out y);
             Brush brush = new SolidBrush(OUR_COLOR);
             Font font = new Font(FontFamily.GenericSansSerif, 6);
             _gfxField.FillEllipse(brush, new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
             _gfxField.DrawLine(new Pen(OUR_COLOR, 3), new PointF(x, y), 
-                               new PointF(x + DIAMETER * (float)Math.Cos((double)robot.Orientation), y - DIAMETER * (float)Math.Sin((double)robot.Orientation)));
-            _gfxField.DrawString(robot.Id.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold), 
+                               new PointF(x + DIAMETER * (float)Math.Cos(robot.Orientation), y - DIAMETER * (float)Math.Sin(robot.Orientation)));
+            _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold), 
                                  Brushes.DarkRed, x - DIAMETER / 3, y - DIAMETER / 3);
-            _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.X, robot.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
+            _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.Position.X, robot.Position.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
         }
 
-        private void DrawTheirRobot(Robot robot) {
+        private void DrawTheirRobot(VisionMessage.RobotData robot) {
             const int DIAMETER = 20;
             int x, y;
             Font font = new Font(FontFamily.GenericSansSerif, 6);
-            ScaleLocation(robot.X, robot.Y, out x, out y);
+            ScaleLocation(robot.Position.X, robot.Position.Y, out x, out y);
             Brush brush = new SolidBrush(THEIR_COLOR);
             _gfxField.FillEllipse(brush, new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
-            _gfxField.DrawString(robot.Id.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold),
+            _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold),
                                  Brushes.DarkRed, x - DIAMETER / 3, y - DIAMETER / 3);
-            _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.X, robot.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
+            _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.Position.X, robot.Position.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
 
         }
 
-        private void DrawBall(Ball ball) {
+        private void DrawBall(Vector2 ballPos) {
             const int DIAMETER = 8;
             int x, y;
             Font font = new Font(FontFamily.GenericSansSerif, 6);
-            ScaleLocation(ball.X, ball.Y, out x, out y);
+            ScaleLocation(ballPos.X, ballPos.Y, out x, out y);
             _gfxField.FillEllipse(new SolidBrush(BALL_COLOR), 
                                   new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
-            _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", ball.X, ball.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
+            _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", ballPos.X, ballPos.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
         }
 
         private void ScaleLocation(double worldX, double worldY, 

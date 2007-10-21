@@ -7,6 +7,7 @@ using VisionStatic;
 using System.Windows;
 using Robocup.Utilities;
 using Vision;
+using Robocup.Core;
 
 namespace Vision {
 
@@ -316,7 +317,11 @@ namespace VisionStatic {
             return ((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
         }
 
-        static public Vision.GameObjects findGameObjects(Vision.Blob[] blobs, int totalBlobs, TsaiCalibrator tsaiCalibrator) {
+        //static public Vision.GameObjects findGameObjects(Vision.Blob[] blobs, int totalBlobs, TsaiCalibrator tsaiCalibrator) {
+        static public VisionMessage findGameObjects(Vision.Blob[] blobs, int totalBlobs, 
+                                                                 TsaiCalibrator tsaiCalibrator) {
+
+            
 
             List<Vision.Robot> ourRobots = new List<Vision.Robot>();
             List<Vision.Robot> theirRobots = new List<Vision.Robot>();
@@ -325,7 +330,7 @@ namespace VisionStatic {
             int ourDotsIndex = 0;
 
             Vision.GameObjects gameObjects = new Vision.GameObjects();
-
+            Vision.Ball goBall = null;
 
             double currBallAreaError;
             double bestBallAreaError;
@@ -342,7 +347,8 @@ namespace VisionStatic {
                         currBallAreaError = Math.Abs(blobs[i].AreaScaled - AREA_BALL);
                         if (currBallAreaError < ERROR_BALL && currBallAreaError < bestBallAreaError) {
                             tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
-                            gameObjects.Ball = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
+                            //gameObjects.Ball = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
+                            goBall = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
                             bestBallAreaError = currBallAreaError;
                         } 
                         break;
@@ -432,7 +438,37 @@ namespace VisionStatic {
 
             }
             
-            return gameObjects;
+            // Convert data form GameObjects (go-) to Vision Message (vm-)
+            
+            Vector2 ballPos;
+
+            if (goBall == null)
+                ballPos = new Vector2();
+            else
+                ballPos = VisionToGeneralCoords(gameObjects.Ball.X, gameObjects.Ball.Y);
+
+            VisionMessage visionMessage = new VisionMessage(ballPos);
+
+            foreach (Vision.Robot goRobot in ourRobots) {
+                VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(goRobot.Id, true, 
+                                                                              VisionToGeneralCoords(goRobot.X, goRobot.Y),
+                                                                              (double)goRobot.Orientation);
+                visionMessage.OurRobots.Add(vmRobot);
+            }
+
+            
+            foreach (Vision.Robot goRobot in theirRobots) {
+                VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(goRobot.Id, false,
+                                                                              VisionToGeneralCoords(goRobot.X, goRobot.Y),
+                                                                              (double)goRobot.Orientation);
+                visionMessage.TheirRobots.Add(vmRobot);
+            }
+
+            
+            
+
+            //return gameObjects;
+            return visionMessage;
         }
 
         public static void IdentifyAndOrient(Vision.Robot robot) {
@@ -598,6 +634,48 @@ namespace VisionStatic {
             // .7933 = sin(7pi/24), .3827 = sin(pi/8), .3 is arbitrary, 1.5 = .7933 + .3827 + .3
             //location[1] = (front[1] * .7933 + back[1] * .3827 + y * .3) / 1.476;
 
+        }
+
+        // Vision coord system  (units: mm)
+        /* --------------------------------
+         * |(3400, 4900)        (0, 4900) |
+         * |                              |
+         * |           TOP                |
+         * |           CAM 1              |
+         * |                              |
+         * |                              |
+         * |------------------------------|
+         * |                              |
+         * |            BOTTOM            |
+         * |            CAM 2             |
+         * |                              |
+         * |(3400, 0)                (0,0)|
+         * --------------------------------
+         */
+
+        // General coord system (units: m)
+        /* --------------------------------
+        * |(-1.7, 2.45)    |      (1.7, 2.45)|
+        * |                 |                |
+        * |                TOP               |
+        * |               CAM 1              |
+        * |                 |                |
+        * |                 |                |
+        * |---------------(0, 0)-------------|
+        * |                 |                |
+        * |               BOTTOM             |
+        * |               CAM 2              |
+        * |                 |                |
+        * |(-1.7, -2.45)    |    (1.7, -2.45)|
+        * ------------------------------------
+        */
+        private static Vector2 VisionToGeneralCoords(double x, double y) {
+            const double V_HEIGHT = 4900;
+            const double V_WIDTH = 3400;
+            const double MM_TO_M_FACTOR = 1000;
+
+            return new Vector2((-(x - V_WIDTH / 2)) / MM_TO_M_FACTOR, 
+                               (y - V_HEIGHT / 2) / MM_TO_M_FACTOR);
         }
     }
 }

@@ -9,6 +9,7 @@ using VisionStatic;
 using Robocup.Utilities;
 using System.IO;
 using System.Drawing.Drawing2D;
+using Robocup.Core;
 
 namespace Vision {
     public partial class ImageForm : Form {
@@ -29,7 +30,7 @@ namespace Vision {
         private TsaiCalibrator _tsaiCalibrator;
         private Blobber _blobber;
 
-        private Robocup.MessageSystem.MessageSender<GameObjects> _messageSender;
+        private Robocup.MessageSystem.MessageSender<Robocup.Core.VisionMessage> _messageSender;
 
         private FieldState _fieldState;
 
@@ -85,7 +86,7 @@ namespace Vision {
 
             _tsaiCalibrator.CreateLabels(imagePicBox);
 
-            _messageSender = Robocup.MessageSystem.Messages.CreateServerSender<GameObjects>(MESSAGE_SENDER_PORT);
+            _messageSender = Robocup.MessageSystem.Messages.CreateServerSender<VisionMessage>(MESSAGE_SENDER_PORT);
 
             FieldState.Form.Show();
         }
@@ -362,16 +363,19 @@ namespace Vision {
                     {
                         return;
                     }
-                    GameObjects gameObjs = VisionStatic.RobotFinder.findGameObjects(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
-                    _fieldState.Update(gameObjs);
+                    //GameObjects gameObjs = VisionStatic.RobotFinder.findGameObjects(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
+                    VisionMessage visionMessageLocal = VisionStatic.RobotFinder.findGameObjects(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
+
+                    _fieldState.Update(visionMessageLocal);
 
                     ClearHighlights();
                     for (int i = 0; i < _blobber.totalBlobs; i++) {
                         _highlights.Add(HighlightBlob(_blobber.blobs[i]));
                     }
 
+                    int totalObjects = 1 + visionMessageLocal.OurRobots.Count + visionMessageLocal.TheirRobots.Count; // 1 for ball
                     ChangeStatus("Frame processed. Found " + _blobber.totalBlobs.ToString() + " blobs and " + 
-                                  gameObjs.TotalObjects.ToString() + " objects.");
+                                  totalObjects.ToString() + " objects.");
 
                     break;
                 case 'h':
@@ -404,14 +408,16 @@ namespace Vision {
 
                     if (!_blobber.Blobbing)
          
-                        _blobber.Start(new OnNewStateReady(delegate(GameObjects gameObjects) {
+                        //_blobber.Start(new OnNewStateReady(delegate(GameObjects gameObjects) {
+                        _blobber.Start(new OnNewStateReady(delegate(VisionMessage visionMessage) {
                             
 
-                            gameObjects.Source = SystemInformation.ComputerName;
+                            //gameObjects.Source = SystemInformation.ComputerName;
 
-                            _fieldState.Update(gameObjects);
+                            _fieldState.Update(visionMessage);
 
-                            _messageSender.Post(gameObjects);
+                            //_messageSender.Post(gameObjects);
+                            _messageSender.Post(visionMessage);
 
                         }));
 

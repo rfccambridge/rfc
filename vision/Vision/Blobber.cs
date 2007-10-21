@@ -9,6 +9,7 @@ using VisionCamera;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using Robocup.Utilities;
+using Robocup.Core;
 
 namespace VisionStatic {
 
@@ -20,7 +21,8 @@ namespace VisionStatic {
 }
 namespace Vision
 {
-    public delegate void OnNewStateReady(GameObjects gameObjects);
+    //public delegate void OnNewStateReady(GameObjects gameObjects);
+    public delegate void OnNewStateReady(VisionMessage visionMessage);
 
     public class Run {
 
@@ -158,7 +160,8 @@ namespace Vision
         private OnNewStateReady _onNewStateReady;
 
         private delegate void VisionLoopDelegate();
-        private delegate void ProcessFrameDelegate(RAWImage frame, Rectangle region, out GameObjects gameObjects);
+        //private delegate void ProcessFrameDelegate(RAWImage frame, Rectangle region, out GameObjects gameObjects);
+        private delegate void ProcessFrameDelegate(RAWImage frame, Rectangle region, out VisionMessage visionMessage);
 
         private VisionLoopDelegate _visionLoopDelegate;
         private IAsyncResult _visionLoopHandle;
@@ -223,7 +226,8 @@ namespace Vision
 
         }
         public void VisionLoop() {
-            GameObjects irrelevant = null;
+            //GameObjects irrelevant = null;
+            VisionMessage irrelevant = null;
             RAWImage rawImage;
             IAsyncResult processFrameHandle = null;
 
@@ -247,29 +251,31 @@ namespace Vision
             }
         }
         
-        private void ProcessFrame(RAWImage frame, Rectangle region, out GameObjects gameObjects) {
+        //private void ProcessFrame(RAWImage frame, Rectangle region, out GameObjects gameObjects) {
+        private void ProcessFrame(RAWImage frame, Rectangle region, out VisionMessage visionMessage) {
 
             //Console.WriteLine("Processing frame...");
             
             doBlob(frame, region);
-            gameObjects = VisionStatic.RobotFinder.findGameObjects(blobs, totalBlobs, _tsaiCalibrator);
+            visionMessage = VisionStatic.RobotFinder.findGameObjects(blobs, totalBlobs, _tsaiCalibrator);
 
             //Console.WriteLine("Frame processed. Blobs found: " + totalBlobs.ToString());
 
         }
 
         private void FrameProcessedCallback(IAsyncResult processFrameHandle) {
-            GameObjects gameObjects = new GameObjects();
+            //GameObjects gameObjects = new GameObjects();
+            VisionMessage visionMessage = new VisionMessage();
 
             // Extract the delegate from the AsyncResult.  
             ProcessFrameDelegate processFrameDelegate = (ProcessFrameDelegate)((AsyncResult)processFrameHandle).AsyncDelegate;
             
             // Obtain the result
-            processFrameDelegate.EndInvoke(out gameObjects, processFrameHandle);
+            processFrameDelegate.EndInvoke(out visionMessage, processFrameHandle);
 
             try
             {
-                _onNewStateReady.DynamicInvoke(new object[] { gameObjects });
+                _onNewStateReady.DynamicInvoke(new object[] { visionMessage });
             } 
             catch (Exception)
             {

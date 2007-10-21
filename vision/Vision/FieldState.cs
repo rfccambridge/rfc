@@ -1,25 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Robocup.Core;
 
 namespace Vision {
     public class FieldState {
         public static readonly FieldStateForm Form = new FieldStateForm();
-        private GameObjects _gameObjects;
+        private VisionMessage _visionMessage;
+        
 
-        public GameObjects GameObjects {
-            get { return _gameObjects; }
-            set { _gameObjects = value; }
+        public VisionMessage VisionMessage {
+            get { return _visionMessage; }
+            set { _visionMessage = value; }
         }
 
         public FieldState() {
         }
 
-        public void Update(GameObjects gameObjects) {
-            _gameObjects = gameObjects;
+        public void Update(VisionMessage visionMessage) {
+            _visionMessage = visionMessage;
 
             if (Form.Visible)
-                Form.UpdateState(gameObjects);
+                Form.UpdateState(visionMessage);
         }
         
     }
