@@ -24,22 +24,28 @@ namespace KalmanFilter
             filter f = new filter();
             f.initialize(0, 0, 0, 0, 0, 100);
 
-            twOut.WriteLine("Initial State: " + ALToString(f.get_state(0, 0)));
+            //twOut.WriteLine("Initial State: " + ALToString(f.get_state(0, 0)));
+            twOut.WriteLine("Initial State: " + ALToString(f.get_state(0)));
             twOut.WriteLine("Initial P has doubt = 100.0");
             twOut.WriteLine();
 
-            Random n = new Random();           
-                                    
+            Random n = new Random();
+
+            double x = 0, y = 0;
+
             for (double i = 1.0; i < 300.0; i = i + 1.0)
             {
                 double e1 = n.NextDouble();
                 double e2 = n.NextDouble();
-                f.update(0, 1, i + erfi(2.0 * e1 - 1.0) * 0.2, i + erfi(2.0 * e2 - 1.0) * 0.2);
+                x = i + erfi(2.0 * e1 - 1.0) * 0.2;
+                y = i + erfi(2.0 * e2 - 1.0) * 0.2;
+                f.update(0, 1, x, y);
 
                 twOut.Write(i + ":\t" +
                             String.Format("{0:G4}", i + erfi(2.0 * e1 - 1.0) * 0.2) + "\t" +
                             String.Format("{0:G4}", i + erfi(2.0 * e2 - 1.0) * 0.2) + "\t\t" +
-                            "STATE: " + ALToString(f.get_state(0,0)));
+                            //"STATE: " + ALToString(f.get_state(0,0)));
+                            "STATE: " + ALToString(f.get_state(0)));
                 
             }
 
@@ -49,14 +55,15 @@ namespace KalmanFilter
             {
                 double e1 = n.NextDouble();
                 double e2 = n.NextDouble();
-                f.update(0, 1, i + erfi(2.0 * e1 - 1.0) * 0.2, i + erfi(2.0 * e2 - 1.0) * 0.2);
+                f.update(0, 1, x + 2*i + erfi(2.0 * e1 - 1.0) * 0.2, y + 2*i + erfi(2.0 * e2 - 1.0) * 0.2);
 
                 twOut.Write(i + ":\t" +
-                            String.Format("{0:G4}", i + erfi(2.0 * e1 - 1.0) * 0.2) + "\t" +
-                            String.Format("{0:G4}", i + erfi(2.0 * e2 - 1.0) * 0.2) + "\t\t" +
-                            "STATE: " + ALToString(f.get_state(0, 0)));
+                            String.Format("{0:G4}", x + 2*i + erfi(2.0 * e1 - 1.0) * 0.2) + "\t" +
+                            String.Format("{0:G4}", y + 2*i + erfi(2.0 * e2 - 1.0) * 0.2) + "\t\t" +
+                            //"STATE: " + ALToString(f.get_state(0, 0)));
+                            "STATE: " + ALToString(f.get_state(0)));
             }
-
+            
             twOut.Close();
 
             //george.display();
@@ -147,7 +154,7 @@ namespace KalmanFilter
             string sOut = "";
 
             for (int i = 0; i < arList.Count; i++)
-                sOut += String.Format("{0:G4}\t", arList[i]);
+                sOut += String.Format("{0:G4}\t", ((CSML.Complex)arList[i]).Re);
             sOut += Environment.NewLine;
 
             return sOut;

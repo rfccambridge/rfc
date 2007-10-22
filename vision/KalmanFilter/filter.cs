@@ -42,9 +42,14 @@ namespace KalmanFilter
             update(object_index, delta_t, observed_state);
         }
 
-        public ArrayList get_state(int object_index, double delta_t)
+//        public ArrayList get_state(int object_index, double delta_t)
+        public ArrayList get_state(int object_index)
         {
-            return myTrackers[object_index].predict_state(delta_t);
+            //return myTrackers[object_index].predict_state(delta_t);
+            ArrayList state = new ArrayList();
+            for (int i = 1; i <= 4; i++)
+                state.Add(myTrackers[object_index].x_hat[i]);
+            return state;
         }
     }
 }
