@@ -124,11 +124,18 @@ namespace Robocup.Plays
         #endregion
 
 
-        public static void addFunction(string name, string longname, Type returnType, Type[] argTypes, string description, FunctionRunDelegate run)
-        {
-            addFunction(new Function(name, longname, returnType, argTypes, description, run));
-        }
-        public static void addFunction<T>(string name, string longname, Type returnType, Type[] argTypes, string description, FunctionRunDelegate run)
+        /// <summary>
+        /// Adds a function to the list of all functions
+        /// </summary>
+        /// <param name="name">The name of the function, that you use when calling it (ex: "linelength")</param>
+        /// <param name="longname">A slightly longer, more descriptive name (ex: "Line -> Length")</param>
+        /// <param name="returnType">The type of object that gets returned (ex: typeof(double))</param>
+        /// <param name="argTypes">An array listing the argument types that it takes (ex: new Type[]{typeof(Line)})</param>
+        /// <param name="description">A description of the function, with tildes (~) where you want the values of the arguments to go
+        /// (ex: "The length of line ~"</param>
+        /// <param name="run">The actual function logic.  It gets passed an EvaluatorState (which can usually be ignored)
+        /// and an array of objects of the evaluated arguments.</param>
+        private static void addFunction(string name, string longname, Type returnType, Type[] argTypes, string description, FunctionRunDelegate run)
         {
             addFunction(new Function(name, longname, returnType, argTypes, description, run));
         }
