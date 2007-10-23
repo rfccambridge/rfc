@@ -852,7 +852,7 @@ namespace Vision {
                 return;
             }
 
-            float ROBOT_HEIGHT_TSAI = Constants.get<float>("ROBOT_HEIGHT_TSAI");
+            float ROBOT_HEIGHT_TSAI = Constants.get<float>("vision", "ROBOT_HEIGHT_TSAI");
 
             imgToWorldLookup = new DPoint[VisionStatic.Field.WIDTH * VisionStatic.Field.HEIGHT];
             

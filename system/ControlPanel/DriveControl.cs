@@ -185,7 +185,7 @@ namespace Robotics.ControlPanel
 
             BallInfo binfo = rfcsystem.Predictor.getBallInfo();
             double ballx = binfo.Position.X, bally = binfo.Position.Y;
-            bool usBlue = Constants.get<string>("OUR_TEAM_COLOR") == "BLUE";
+            bool usBlue = Constants.get<string>("default", "OUR_TEAM_COLOR") == "BLUE";
 
 
             //float diameter = 20.0f;

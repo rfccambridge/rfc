@@ -1,0 +1,24 @@
+# comments come in this form
+# NOTE: the values for string constants are not extracted out of quotes
+#       e.g. string MYCONST "text" is returned as "text" NOT text
+# each text file represents a different constants category
+
+
+# RFCSystem constants
+int UPDATE_SLEEP_TIME 30
+
+float DELTA_DIST_SQ_MERGE .03
+int MAX_ROUNDS_TO_KEEP_INFO 3
+
+# movement models "Two"-wheeled or "Four"-wheeled
+# "TWO-FLBR" for left-front right-back
+# "TWO-FRBL" for right-front left-back
+# "FOUR"
+string ROBOT_3 TWO-FRBL
+string ROBOT_1 TWO-FRBL
+string ROBOT_4 TWO-FRBL
+string ROBOT_2 TWO-FRBL
+string ROBOT_5 TWO-FRBL
+string ROBOT_6 TWO-FRBL
+
+bool ROBOT_IS_GOALIE_4 true

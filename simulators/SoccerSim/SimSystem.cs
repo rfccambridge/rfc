@@ -40,7 +40,7 @@ namespace SoccerSim
             _view = view;
             initialized = false;
             running = false;
-            _sleepTime = Constants.get<int>("UPDATE_SLEEP_TIME");
+            _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
             isYellow = isYell;
 
             this.physics_engine = physics_engine;
@@ -115,8 +115,8 @@ namespace SoccerSim
                 if (!initialized)
                     initialize();
 
-                _sleepTime = Constants.get<int>("UPDATE_SLEEP_TIME");
-                isYellow = Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
+                _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
+                isYellow = Constants.get<string>("default", "OUR_TEAM_COLOR") == "YELLOW";
 
                 _refbox.start();
                 t = new System.Timers.Timer(_sleepTime);

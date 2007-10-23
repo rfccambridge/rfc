@@ -58,7 +58,7 @@ namespace Vision {
             // camera ID depends on which computer this is running on
             // get computer name
             string compName = SystemInformation.ComputerName.ToUpper();
-           int CAMERA_ID = Constants.get<int>("CAMERA_ID_" + compName);
+           int CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID_" + compName);
 
             _camera = new VisionCamera.Camera();
             _tsaiCalibrator = new TsaiCalibrator(CAMERA_ID);

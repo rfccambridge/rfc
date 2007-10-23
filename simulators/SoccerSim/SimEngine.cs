@@ -43,7 +43,7 @@ namespace SoccerSim
             {
                 //if (!initialized)
                 //    initialize();
-                _sleepTime = Constants.get<int>("UPDATE_SLEEP_TIME") / 2;
+                _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME") / 2;
                 t = new System.Timers.Timer(_sleepTime);
                 t.AutoReset = true;
                 t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)

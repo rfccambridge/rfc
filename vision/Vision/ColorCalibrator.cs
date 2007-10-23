@@ -66,7 +66,7 @@ namespace VisionStatic {
 
         public static void LoadParameters()
         {
-            if (Constants.get<string>("OUR_TEAM_COLOR").ToUpper() == "BLUE")
+            if (Constants.get<string>("configuration", "OUR_TEAM_COLOR").ToUpper() == "BLUE")
             {
                 OUR_CENTER_DOT = COLOR_BLUE_CENTER_DOT;
                 THEIR_CENTER_DOT = COLOR_YELLOW_CENTER_DOT;
@@ -89,7 +89,7 @@ namespace VisionStatic {
             string dotPattern;
             for (i = 0; i < TOTAL_ROBOTS; i++)
             {
-                if (Constants.nondestructiveGet<string>("DOTS_R_" + i.ToString(), out dotPattern))
+                if (Constants.nondestructiveGet<string>("configuration", "DOTS_R_" + i.ToString(), out dotPattern))
                 {
                     //front left, front right, rear left, rear right                     
                     DOT_PATTERNS[CHAR_TO_COLOR[dotPattern[0]], CHAR_TO_COLOR[dotPattern[1]],

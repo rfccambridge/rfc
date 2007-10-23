@@ -191,11 +191,11 @@ namespace Vision
 
         public void ReloadParameters()
         {
-                    MIN_BLOB_AREA = Constants.get<int>("MIN_BLOB_AREA");
-                    MIN_BLOB_HEIGHT = Constants.get<int>("MIN_BLOB_WIDTH"); ;
-                    MIN_BLOB_WIDTH = Constants.get<int>("MIN_BLOB_WIDTH"); ;
-                    MAX_BLOB_HEIGHT = Constants.get<int>("MAX_BLOB_HEIGHT"); ;
-                    MAX_BLOB_WIDTH = Constants.get<int>("MAX_BLOB_WIDTH"); ;
+            MIN_BLOB_AREA = Constants.get<int>("vision", "MIN_BLOB_AREA");
+            MIN_BLOB_HEIGHT = Constants.get<int>("vision", "MIN_BLOB_WIDTH"); ;
+            MIN_BLOB_WIDTH = Constants.get<int>("vision", "MIN_BLOB_WIDTH"); ;
+            MAX_BLOB_HEIGHT = Constants.get<int>("vision", "MAX_BLOB_HEIGHT"); ;
+            MAX_BLOB_WIDTH = Constants.get<int>("vision", "MAX_BLOB_WIDTH"); ;
         }
 
         public void Start(OnNewStateReady onNewStateReadyDelegate) {

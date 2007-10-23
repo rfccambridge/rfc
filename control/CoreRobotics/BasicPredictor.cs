@@ -90,7 +90,7 @@ namespace Robocup.CoreRobotics
                             else
                             {
                                 if (oldInfo.Position.distanceSq(newInfo.Position) <
-                                    Constants.get<double>("DELTA_DIST_SQ_MERGE"))
+                                    Constants.get<double>("default", "DELTA_DIST_SQ_MERGE"))
                                 {
                                     matched = newInfo;
                                     break;
@@ -150,7 +150,7 @@ namespace Robocup.CoreRobotics
                     foreach (RobotInfo oldinfo in oldInfos)
                     {
                         if (roundsSinceSeen.ContainsKey(oldinfo) && roundsSinceSeen[oldinfo] >=
-                            Constants.get<int>("MAX_ROUNDS_TO_KEEP_INFO"))
+                            Constants.get<int>("default", "MAX_ROUNDS_TO_KEEP_INFO"))
                         {
                             roundsSinceSeen.Remove(oldinfo);
                             //don't re-add this

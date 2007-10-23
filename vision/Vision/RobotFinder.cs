@@ -275,42 +275,42 @@ namespace VisionStatic {
 
         static public void LoadParameters() {
 
-            DIST_SQ_TO_CENTER = Constants.get<float>("DIST_SQ_TO_CENTER");
+            DIST_SQ_TO_CENTER = Constants.get<float>("vision", "DIST_SQ_TO_CENTER");
 
-            FRONT_ANGLE = Constants.get<float>("FRONT_ANGLE");
-            ERROR_ANGLE = Constants.get<float>("ERROR_ANGLE");
-            DIST_SHORT_SQ = Constants.get<float>("DIST_SHORT_SQ");
+            FRONT_ANGLE = Constants.get<float>("vision", "FRONT_ANGLE");
+            ERROR_ANGLE = Constants.get<float>("vision", "ERROR_ANGLE");
+            DIST_SHORT_SQ = Constants.get<float>("vision", "DIST_SHORT_SQ");
 
-            AREA_BALL = Constants.get<float>("AREA_BALL");
-            ERROR_BALL = Constants.get<float>("ERROR_BALL");
-            
-            AREA_CYAN_DOT = Constants.get<float>("AREA_CYAN_DOT");
-            AREA_PINK_DOT = Constants.get<float>("AREA_PINK_DOT");
-            AREA_GREEN_DOT = Constants.get<float>("AREA_GREEN_DOT");
+            AREA_BALL = Constants.get<float>("vision", "AREA_BALL");
+            ERROR_BALL = Constants.get<float>("vision", "ERROR_BALL");
 
-            ERROR_CYAN_DOT = Constants.get<float>("ERROR_CYAN_DOT");
-            ERROR_PINK_DOT = Constants.get<float>("ERROR_PINK_DOT");
-            ERROR_GREEN_DOT = Constants.get<float>("ERROR_GREEN_DOT");
-          
+            AREA_CYAN_DOT = Constants.get<float>("vision", "AREA_CYAN_DOT");
+            AREA_PINK_DOT = Constants.get<float>("vision", "AREA_PINK_DOT");
+            AREA_GREEN_DOT = Constants.get<float>("vision", "AREA_GREEN_DOT");
 
-            if (Constants.get<string>("OUR_TEAM_COLOR").ToUpper() == "BLUE")
+            ERROR_CYAN_DOT = Constants.get<float>("vision", "ERROR_CYAN_DOT");
+            ERROR_PINK_DOT = Constants.get<float>("vision", "ERROR_PINK_DOT");
+            ERROR_GREEN_DOT = Constants.get<float>("vision", "ERROR_GREEN_DOT");
+
+
+            if (Constants.get<string>("vision", "OUR_TEAM_COLOR").ToUpper() == "BLUE")
             {
-                AREA_OUR_CENTER_DOT = Constants.get<float>("AREA_BLUE_CENTER_DOT");
-                AREA_THEIR_CENTER_DOT = Constants.get<float>("AREA_YELLOW_CENTER_DOT");
-                ERROR_OUR_CENTER_DOT = Constants.get<float>("ERROR_BLUE_CENTER_DOT");
-                ERROR_THEIR_CENTER_DOT = Constants.get<float>("ERROR_YELLOW_CENTER_DOT");
+                AREA_OUR_CENTER_DOT = Constants.get<float>("vision", "AREA_BLUE_CENTER_DOT");
+                AREA_THEIR_CENTER_DOT = Constants.get<float>("vision", "AREA_YELLOW_CENTER_DOT");
+                ERROR_OUR_CENTER_DOT = Constants.get<float>("vision", "ERROR_BLUE_CENTER_DOT");
+                ERROR_THEIR_CENTER_DOT = Constants.get<float>("vision", "ERROR_YELLOW_CENTER_DOT");
             }
             else
             {
-                AREA_THEIR_CENTER_DOT = Constants.get<float>("AREA_BLUE_CENTER_DOT");
-                AREA_OUR_CENTER_DOT = Constants.get<float>("AREA_YELLOW_CENTER_DOT");
-                ERROR_THEIR_CENTER_DOT = Constants.get<float>("ERROR_BLUE_CENTER_DOT");
-                ERROR_OUR_CENTER_DOT = Constants.get<float>("ERROR_YELLOW_CENTER_DOT");
+                AREA_THEIR_CENTER_DOT = Constants.get<float>("vision", "AREA_BLUE_CENTER_DOT");
+                AREA_OUR_CENTER_DOT = Constants.get<float>("vision", "AREA_YELLOW_CENTER_DOT");
+                ERROR_THEIR_CENTER_DOT = Constants.get<float>("vision", "ERROR_BLUE_CENTER_DOT");
+                ERROR_OUR_CENTER_DOT = Constants.get<float>("vision", "ERROR_YELLOW_CENTER_DOT");
             }
 
-            THEIR_ID_OFFSET = Constants.get<int>("THEIR_ID_OFFSET_" + System.Windows.Forms.SystemInformation.ComputerName);
+            THEIR_ID_OFFSET = Constants.get<int>("vision", "THEIR_ID_OFFSET_" + System.Windows.Forms.SystemInformation.ComputerName);
 
-            BALL_HEIGHT_TSAI = Constants.get<float>("BALL_HEIGHT_TSAI");
+            BALL_HEIGHT_TSAI = Constants.get<float>("vision", "BALL_HEIGHT_TSAI");
         }
         
         static private double distanceSq(double x1, double y1, double x2, double y2) {

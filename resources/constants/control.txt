@@ -1,0 +1,11 @@
+float ANGLE_PID_KP 35
+float ANGLE_PID_KI 5
+float ANGLE_PID_KD 10
+float ANGLE_PID_MAX 35
+float ANGLE_PID_RESET .3
+
+float MOVE_PID_KP 300
+float MOVE_PID_KI 30
+float MOVE_PID_KD 70
+float MOVE_PID_MAX 90
+float MOVE_PID_RESET .1

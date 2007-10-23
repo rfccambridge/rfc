@@ -69,10 +69,10 @@ namespace Robotics.ControlPanel
             for (int i = 0; i < 9; i++)
             {
                 bool hasTag;
-                bool worked = Constants.nondestructiveGet<bool>("ROBOT_HAS_KICKER_" + i, out hasTag);
+                bool worked = Constants.nondestructiveGet<bool>("default", "ROBOT_HAS_KICKER_" + i, out hasTag);
                 if (worked && hasTag)
                     haskicker = true;
-                worked = Constants.nondestructiveGet<bool>("ROBOT_IS_GOALIE_" + i, out hasTag);
+                worked = Constants.nondestructiveGet<bool>("default", "ROBOT_IS_GOALIE_" + i, out hasTag);
                 if (worked && hasTag)
                     hasgoalie = true;
             }
@@ -82,7 +82,7 @@ namespace Robotics.ControlPanel
                 System.Windows.Forms.MessageBox.Show("warning: no robots have kickers");
 
             //rfcsystem.registerPredictor(new TesterPredictor());
-            rfcsystem.setSleepTime(Constants.get<int>("UPDATE_SLEEP_TIME"));
+            rfcsystem.setSleepTime(Constants.get<int>("default", "UPDATE_SLEEP_TIME"));
 
         }
 
@@ -177,17 +177,17 @@ namespace Robotics.ControlPanel
 
         public void sendMove(int ID, int leftFront, int rightFront, int leftBack, int rightBack)
         {
-            bool usBlue = Constants.get<string>("OUR_TEAM_COLOR") == "BLUE";
+            bool usBlue = Constants.get<string>("default", "OUR_TEAM_COLOR") == "BLUE";
         }
 
 
         private void addTags(RobotInfo info)
         {
             bool hasTag;
-            bool worked = Constants.nondestructiveGet<bool>("ROBOT_HAS_KICKER_" + info.ID, out hasTag);
+            bool worked = Constants.nondestructiveGet<bool>("default", "ROBOT_HAS_KICKER_" + info.ID, out hasTag);
             if (worked && hasTag)
                 info.Tags.Add("kicker");
-            worked = Constants.nondestructiveGet<bool>("ROBOT_IS_GOALIE_" + info.ID, out hasTag);
+            worked = Constants.nondestructiveGet<bool>("default", "ROBOT_IS_GOALIE_" + info.ID, out hasTag);
             if (worked && hasTag)
                 info.Tags.Add("goalie");
         }

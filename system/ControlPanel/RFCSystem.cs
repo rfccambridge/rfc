@@ -51,8 +51,8 @@ namespace Robocup.CoreRobotics
         {
             initialized = false;
             running = false;
-            _sleepTime = Constants.get<int>("UPDATE_SLEEP_TIME");
-            isYellow = Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
+            _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
+            isYellow = Constants.get<string>("default", "OUR_TEAM_COLOR") == "YELLOW";
         }
 
         public void initialize()
@@ -94,7 +94,7 @@ namespace Robocup.CoreRobotics
             for (int i = 0; i < 10; i++)
             {
                 string move_model;
-                bool exists = Constants.nondestructiveGet<string>("ROBOT_" + i, out move_model);
+                bool exists = Constants.nondestructiveGet<string>("default", "ROBOT_" + i, out move_model);
                 if (!exists)
                     continue;
                 if (move_model.Equals("TWO-FLBR"))
@@ -192,8 +192,8 @@ namespace Robocup.CoreRobotics
                 if (!initialized)
                     initialize();
 
-                _sleepTime = Constants.get<int>("UPDATE_SLEEP_TIME");
-                isYellow = Constants.get<string>("OUR_TEAM_COLOR") == "YELLOW";
+                _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
+                isYellow = Constants.get<string>("default", "OUR_TEAM_COLOR") == "YELLOW";
 
                 _refbox.start();
                 t = new System.Timers.Timer(_sleepTime);
