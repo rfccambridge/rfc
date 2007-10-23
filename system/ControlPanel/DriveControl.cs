@@ -439,7 +439,7 @@ namespace Robotics.ControlPanel
 
         private void buttonUnusedConstants_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(string.Join("\n", Constants.getUnused().ToArray()));
+            //MessageBox.Show(string.Join("\n", Constants.getUnused().ToArray()));
         }
 
 

@@ -8,8 +8,11 @@ namespace Robocup.Utilities
     static public class Constants
     {
         static private Dictionary<string, object> dictionary = new Dictionary<string, object>();
-        static private List<string> used = new List<string>();
+        //static private List<string> used = new List<string>();
         static volatile private int numloading = 0;
+        /// <summary>
+        /// Reloads the constants from file.  This happens once automatically at the beginning of the program.
+        /// </summary>
         static public void Load()
         {
             Load(defaultFileName);
@@ -30,7 +33,7 @@ namespace Robocup.Utilities
                     throw new ApplicationException("Unhandled type: \"" + type + "\"");
             }
         }
-        static public void Load(string fname)
+        static private void Load(string fname)
         {
             //StringReader reader = new System.IO.StringReader(Properties.Resources.constants);
             dictionary.Clear();
@@ -62,6 +65,14 @@ namespace Robocup.Utilities
             //file.Close();
             numloading--;
         }
+        /// <summary>
+        /// Tries to get the value of a constant.  If the constant exists, returns the value,
+        /// otherwise throws an exception.
+        /// (If you don't want it to throw an exception, check nondestructiveGet)
+        /// </summary>
+        /// <typeparam name="T">The type of object to get</typeparam>
+        /// <param name="name">The name of the constant</param>
+        /// <returns>The value of the constant</returns>
         static public T get<T>(string name)
         {
             object val;
@@ -74,22 +85,21 @@ namespace Robocup.Utilities
             if (typeof(T) != val.GetType())
                 throw new ApplicationException("you asked for a different type of variable than is stored\nGiven: " + typeof(T).Name + ", Stored: " + val.GetType().Name);
 #endif
-            if (!used.Contains(name))
-                used.Add(name);
+            /*if (!used.Contains(name))
+                used.Add(name);*/
             return (T)val;
         }
-        /*static public double get(string name) {
-            /*object val = 0;
-            bool worked = dictionary.TryGetValue(name, out val);
-            if (!worked)
-                throw new ApplicationException("tried to get an unknown variable called \"" + name + "\"");
-            return (double)val;*
-            return get<double>(name);
-        }*/
+        /// <summary>
+        /// Tries to get the value of a constant; if it exists, returns true and puts the value in val, otherwise returns false.
+        /// </summary>
+        /// <typeparam name="T">The type of object to get</typeparam>
+        /// <param name="name">The name of the constant</param>
+        /// <param name="val">The variable that will have the value loaded into</param>
+        /// <returns>Whether or not the constant exists</returns>
         static public bool nondestructiveGet<T>(string name, out T val)
         {
-            if (!used.Contains(name))
-                used.Add(name);
+            /*if (!used.Contains(name))
+                used.Add(name);*/
             object getter;
             if (dictionary.TryGetValue(name, out getter))
             {
@@ -106,11 +116,16 @@ namespace Robocup.Utilities
                 return false;
             }
         }
+        /// <summary>
+        /// Gets whether or not the specified constant has been defined
+        /// </summary>
+        /// <param name="name">The name of the constant</param>
+        /// <returns>Whether or not the constant exists</returns>
         static public bool isDefined(string name)
         {
             return dictionary.ContainsKey(name);
         }
-        static public List<string> getUnused()
+        /*static public List<string> getUnused()
         {
             List<string> rtn = new List<string>();
             foreach (KeyValuePair<string, object> pair in dictionary)
@@ -119,7 +134,7 @@ namespace Robocup.Utilities
                     rtn.Add(pair.Key);
             }
             return rtn;
-        }
+        }*/
 
         static readonly private string defaultFileName = "../../resources/constants.txt";
         static Constants()
