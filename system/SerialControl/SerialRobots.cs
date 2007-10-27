@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO.Ports;
 using Robocup.Core;
+using Robocup.Utilities;
 
 namespace Robotics.Commander
 {
@@ -12,7 +13,7 @@ namespace Robotics.Commander
         string[] headsigns = { "\\Hvv", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v", "\\H7v" };
 
         string endsign = "\\E";
-        string pn = "COM4";
+        string pn = Constants.get<string>("ports", "SerialPort");
         string br = "9600";
         string pr = "None";
         string db = "8";

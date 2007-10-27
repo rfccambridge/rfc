@@ -17,7 +17,7 @@ namespace Vision {
         private const string DEFAULT_REGION_FILE = WORK_DIR + "region.txt";
         private const string IDLE_STATUS = "Ready. Press F1 for key functions.";
 
-        private const int MESSAGE_SENDER_PORT = 50001;
+        private readonly int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionData");
 
         private static HelpForm HelpForm = new HelpForm();
 
