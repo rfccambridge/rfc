@@ -8,7 +8,11 @@ namespace KalmanFilter
     {
         private const int STATE_SIZE = 4;
 
-        const double std_dev = 0.2; 
+        // Model parameters
+        private const double STD_DEV_ACCEL = 0.1;
+        private const double STD_DEV_POSITION = 0.2; 
+
+
         //public ArrayList x_hat;  //x_hat
         public CSML.Matrix x_hat;  //x_hat
        // Matrix P;      //Covariance
@@ -147,7 +151,7 @@ namespace KalmanFilter
 
 
             CSML.Matrix Q = CSML.Matrix.Identity(4);
-            Q = Q * 0.00001;
+            Q = Q * (STD_DEV_ACCEL * STD_DEV_ACCEL);
 
             return F * (P * Ft) + Q;
             
@@ -171,17 +175,27 @@ namespace KalmanFilter
 
         public static CSML.Matrix Ff(double delta_t) {
 
-            CSML.Matrix M1 = CSML.Matrix.Identity(2);
-            M1[1, 2] = new CSML.Complex(delta_t);
+            CSML.Matrix M = CSML.Matrix.Identity(2);
+            M[1, 2] = new CSML.Complex(delta_t);
 
-            CSML.Matrix M2 = CSML.Matrix.Identity(2);
-            M2[1, 2] = new CSML.Complex(delta_t);
+           // CSML.Matrix M2 = CSML.Matrix.Identity(2);
+          //  M2[1, 2] = new CSML.Complex(delta_t);
 
             // Direct sum implemented as a series of concatenations
-            CSML.Matrix topHalf = CSML.Matrix.VerticalConcat(M1, CSML.Matrix.Zeros(2));
-            CSML.Matrix bottomHalf = CSML.Matrix.VerticalConcat(CSML.Matrix.Zeros(2), M2);
+            CSML.Matrix leftHalf = CSML.Matrix.VerticalConcat(M, CSML.Matrix.Zeros(2));
+            CSML.Matrix rightHalf = CSML.Matrix.VerticalConcat(CSML.Matrix.Zeros(2), M);
 
-            return CSML.Matrix.HorizontalConcat(topHalf, bottomHalf);
+            // Get acceleration (a_k = 0 + noise)
+            Random rand = new Random();
+            double a_k = 0 + STD_DEV_ACCEL * Math.Sqrt(2) * Helpers.erfi(2.0 * rand.NextDouble() - 1.0);
+
+            CSML.Matrix halfG = new CSML.Matrix(2, 1);
+            halfG[1, 1] = new CSML.Complex(delta_t * delta_t / 2);
+            halfG[2, 1] = new CSML.Complex(delta_t);
+
+            CSML.Matrix G = CSML.Matrix.VerticalConcat(halfG, halfG) * a_k;
+
+            return CSML.Matrix.HorizontalConcat(leftHalf, rightHalf);
         }
 
        /* public static Matrix Rf()
@@ -193,11 +207,11 @@ namespace KalmanFilter
             
         }*/
         public static CSML.Matrix Rf() {
-            CSML.Matrix ret = CSML.Matrix.Identity(STATE_SIZE);
+            CSML.Matrix R = CSML.Matrix.Identity(STATE_SIZE);
 
             // Adjust strength of believe into measurements HERE
             // [the smaller the factor the stronger the belief]
-            return ret*(std_dev*std_dev);
+            return R * (STD_DEV_POSITION * STD_DEV_POSITION);
             //return ret * 0.0001;
             //return ret * 1000;
 
