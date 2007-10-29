@@ -14,11 +14,11 @@ namespace Robocup.Plays
             {
                 return new InterpreterPoint(new InterpreterBall());
             });*/
-            rtn.Add(new Function("closest", "closest", typeof(InterpreterRobotDefinition), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType) }, "the robot on ~ closest to ~", delegate(EvaluatorState state, object[] objects)
+            rtn.Add(new Function("closest", "closest", "the robot on ~ closest to ~", typeof(InterpreterRobotDefinition), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType) }, delegate(EvaluatorState state, object[] objects)
             {
                 return new InterpreterClosestDefinition(((TeamCondition)objects[0]).maybeOurs(), (Vector2)objects[1], (RobotAssignmentType)objects[2]);
             }));
-            rtn.Add(new Function("closest-with-tags", "closest-with-tags", typeof(InterpreterRobotDefinition), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType), typeof(string) }, "the robot on ~ closest to ~, with comma-separated tags ~", delegate(EvaluatorState state, object[] objects)
+            rtn.Add(new Function("closest-with-tags", "closest-with-tags", "the robot on ~ closest to ~, with comma-separated tags ~", typeof(InterpreterRobotDefinition), new Type[] { typeof(TeamCondition), typeof(Vector2), typeof(RobotAssignmentType), typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
                 List<string> tags_list = new List<string>();
                 tags_list.AddRange(((string)objects[3]).Split(','));

@@ -47,6 +47,7 @@ namespace Robocup.Utilities
                 case "string":
                     return s;
                 case "float":
+                case "double":
                     return double.Parse(s);
                 case "bool":
                     return bool.Parse(s);

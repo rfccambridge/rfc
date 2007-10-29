@@ -159,7 +159,7 @@ namespace Robocup.Plays
             this.argTypes = f.argTypes;
             this.description = f.description;
         }
-        public Function(string name, string longname, Type returnType, Type[] argTypes, string description, FunctionRunDelegate run)
+        public Function(string name, string longname, string description, Type returnType, Type[] argTypes, FunctionRunDelegate run)
         {
             this.name = name;
             this.longName = longname;
