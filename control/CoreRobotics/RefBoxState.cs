@@ -6,7 +6,7 @@ using Robocup.Core;
 
 namespace Robocup.CoreRobotics
 {
-    public class RefBoxState
+    public class RefBoxState : IReferee
     {
         bool isYellow;
 
@@ -14,17 +14,17 @@ namespace Robocup.CoreRobotics
         Vector2 markedPosition;
         PlayTypes playsToRun;
 
-        IReferee _referee;
+        IRefBoxListener _referee;
         IPredictor _predictor;
 
         int lastCmdCounter;
 
-        public RefBoxState(IReferee referee, IPredictor predictor, bool yellow)
+        public RefBoxState(IRefBoxListener referee, IPredictor predictor, bool yellow)
         {
             marking = false;
             markedPosition = new Vector2(0.0, 0.0);
             //TODO change this back so that it defaults to Halt?
-            playsToRun = PlayTypes.NormalPlay;
+            playsToRun = PlayTypes.Halt;
             
             isYellow = yellow;
 
@@ -44,7 +44,7 @@ namespace Robocup.CoreRobotics
             _referee.stop();
         }
 
-        public PlayTypes getCurrentPlayType()
+        public PlayTypes GetCurrentPlayType()
         {
             if (marking)
             {
@@ -59,30 +59,30 @@ namespace Robocup.CoreRobotics
                 lastCmdCounter = _referee.getCmdCounter();
                 switch (_referee.getLastCommand())
                 {
-                    case RefBoxListener.HALT:
+                    case MulticastRefBoxListener.HALT:
                         // stop bots completely
                         playsToRun = PlayTypes.Halt;
                         break;
-                    case RefBoxListener.START:
+                    case MulticastRefBoxListener.START:
                         playsToRun = PlayTypes.NormalPlay;
                         break;
-                    case RefBoxListener.CANCEL:
-                    case RefBoxListener.STOP:
-                    case RefBoxListener.TIMEOUT_BLUE:
-                    case RefBoxListener.TIMEOUT_YELLOW:
+                    case MulticastRefBoxListener.CANCEL:
+                    case MulticastRefBoxListener.STOP:
+                    case MulticastRefBoxListener.TIMEOUT_BLUE:
+                    case MulticastRefBoxListener.TIMEOUT_YELLOW:
                         //go to stopped/waiting state
                         playsToRun = PlayTypes.Stopped;
                         break;
-                    case RefBoxListener.TIMEOUT_END_BLUE:
-                    case RefBoxListener.TIMEOUT_END_YELLOW:
-                    case RefBoxListener.READY:
+                    case MulticastRefBoxListener.TIMEOUT_END_BLUE:
+                    case MulticastRefBoxListener.TIMEOUT_END_YELLOW:
+                    case MulticastRefBoxListener.READY:
                         if (playsToRun == PlayTypes.PenaltyKick_Ours_Setup)
                             playsToRun = PlayTypes.PenaltyKick_Ours;
                         if (playsToRun == PlayTypes.KickOff_Ours_Setup)
                             playsToRun = PlayTypes.KickOff_Ours;
                         setBallMark();
                         break;
-                    case RefBoxListener.KICKOFF_BLUE:
+                    case MulticastRefBoxListener.KICKOFF_BLUE:
                         if (isYellow)
                         {
                             playsToRun = PlayTypes.KickOff_Theirs;
@@ -92,8 +92,8 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayTypes.KickOff_Ours_Setup;
                         }
                         break;
-                    case RefBoxListener.INDIRECT_BLUE:
-                    case RefBoxListener.DIRECT_BLUE:
+                    case MulticastRefBoxListener.INDIRECT_BLUE:
+                    case MulticastRefBoxListener.DIRECT_BLUE:
                         if (isYellow)
                         {
                             playsToRun = PlayTypes.SetPlay_Theirs;
@@ -104,7 +104,7 @@ namespace Robocup.CoreRobotics
                         }
                         setBallMark();
                         break;
-                    case RefBoxListener.KICKOFF_YELLOW:
+                    case MulticastRefBoxListener.KICKOFF_YELLOW:
                         if (!isYellow)
                         {
                             playsToRun = PlayTypes.KickOff_Theirs;
@@ -114,8 +114,8 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayTypes.KickOff_Ours_Setup;
                         }
                         break;
-                    case RefBoxListener.INDIRECT_YELLOW:
-                    case RefBoxListener.DIRECT_YELLOW:
+                    case MulticastRefBoxListener.INDIRECT_YELLOW:
+                    case MulticastRefBoxListener.DIRECT_YELLOW:
                         if (!isYellow)
                         {
                             playsToRun = PlayTypes.SetPlay_Theirs;
@@ -126,7 +126,7 @@ namespace Robocup.CoreRobotics
                         }
                         setBallMark();
                         break;
-                    case RefBoxListener.PENALTY_BLUE:
+                    case MulticastRefBoxListener.PENALTY_BLUE:
                         // handle penalty
                         if (isYellow)
                         {
@@ -137,7 +137,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayTypes.PenaltyKick_Ours_Setup;
                         }
                         break;
-                    case RefBoxListener.PENALTY_YELLOW:
+                    case MulticastRefBoxListener.PENALTY_YELLOW:
                         // penalty kick
                         // handle penalty
                         if (! isYellow)

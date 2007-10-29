@@ -6,10 +6,6 @@ using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 
 namespace Robocup.Simulation
 {
-    public interface VirtualRef
-    {
-        void RunRef(PhysicsEngine physics_engine, Action<BallInfo> move_ball);
-    }
     public class PhysicsEngine : IPredictor, IRobots
     {
         List<RobotInfo> ourinfo;

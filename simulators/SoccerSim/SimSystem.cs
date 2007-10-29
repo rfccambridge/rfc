@@ -24,8 +24,8 @@ namespace SoccerSim
         }
         Interpreter _interpreter;
 
-        RefBoxState _refbox;
-        RefBoxListener _listener;
+        IReferee referee;
+        //RefBoxListener _listener;
 
         System.Timers.Timer t;
         private volatile bool running;
@@ -35,7 +35,7 @@ namespace SoccerSim
         private int _sleepTime;
         private bool isYellow;
 
-        public SimSystem(FieldDrawer view, PhysicsEngine physics_engine, RefBoxListener refbox, bool isYell)
+        public SimSystem(FieldDrawer view, PhysicsEngine physics_engine, IReferee referee, bool isYell)
         {
             _view = view;
             initialized = false;
@@ -43,8 +43,10 @@ namespace SoccerSim
             _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
             isYellow = isYell;
 
+            this.referee = referee;
+
             this.physics_engine = physics_engine;
-            _listener = refbox;
+            //_listener = refbox;
             initialize();
         }
 
@@ -92,7 +94,7 @@ namespace SoccerSim
             _controller = new RFCController(physics_engine, planners, new Navigation.Current.CurrentNavigator(), physics_engine);
 
             // refboxlistener
-            _refbox = new RefBoxState(_listener, _predictor, isYellow);
+            //referee = new RefBoxState(_listener, _predictor, isYellow);
 
             // create interpreter from file
             loadPlays("../../plays");
@@ -116,9 +118,9 @@ namespace SoccerSim
                     initialize();
 
                 _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
-                isYellow = Constants.get<string>("default", "OUR_TEAM_COLOR") == "YELLOW";
+                isYellow = Constants.get<string>("configuration", "OUR_TEAM_COLOR") == "YELLOW";
 
-                _refbox.start();
+                //referee.start();
                 t = new System.Timers.Timer(_sleepTime);
                 t.AutoReset = true;
                 t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
@@ -136,7 +138,7 @@ namespace SoccerSim
             if (running)
             {
                 running = false;
-                _refbox.stop();
+                //referee.stop();
                 t.Stop();
                 foreach (RobotInfo info in _predictor.getOurTeamInfo())
                 {
@@ -155,7 +157,7 @@ namespace SoccerSim
                 Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
             counter++;
             _controller.clearArrows();
-            interpret(_refbox.getCurrentPlayType());
+            interpret(referee.GetCurrentPlayType());
         }
 
 

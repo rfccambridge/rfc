@@ -40,6 +40,18 @@ namespace Robocup.Core {
         KickOff_Theirs
     }
 
+    public interface IReferee
+    {
+        PlayTypes GetCurrentPlayType();
+    }
+    public interface IRefBoxListener
+    {
+        void start();
+        void stop();
+        int getCmdCounter();
+        char getLastCommand();
+    }
+
 
     /** Abstraction for the command executer
      *  
@@ -132,19 +144,6 @@ namespace Robocup.Core {
         WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation);
     }
 
-    /// <summary>
-    /// An interface representing a Referee. This could be a listener for the official SSL refbox, 
-    /// or it could be an automated referee class for simulation
-    /// 
-    /// Implementations: RefBoxListener, SimReferee
-    /// </summary>
-    public interface IReferee
-    {
-        void start();
-        void stop();
-        int getCmdCounter();
-        char getLastCommand();
-    }
     /// <summary>
     /// An interface for things that convert between field coordinates
     /// (ie (0,0) is the center of the field, (1,1) is up and to the right, and units are meters)

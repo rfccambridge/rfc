@@ -81,7 +81,7 @@ namespace Robocup.CoreRobotics
                 _acceptor = new BasicPredictor();
             }
 
-            _refbox = new RefBoxState(new RefBoxListener(REFBOX_PORT), _predictor, isYellow);
+            _refbox = new RefBoxState(new MulticastRefBoxListener(REFBOX_PORT), _predictor, isYellow);
 
 
             // create helper interfaces
@@ -231,7 +231,7 @@ namespace Robocup.CoreRobotics
                 Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
             _controller.clearArrows();
             _interpreter.interpret(
-                _refbox.getCurrentPlayType()
+                _refbox.GetCurrentPlayType()
             );
             counter++;
         }

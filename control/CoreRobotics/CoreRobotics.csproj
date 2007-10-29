@@ -47,7 +47,7 @@
     <Compile Include="BasicPredictor.cs" />
     <Compile Include="FourWheeledMovement.cs" />
     <Compile Include="MovementModeler.cs" />
-    <Compile Include="RefBoxListener.cs" />
+    <Compile Include="MulticastRefBoxListener.cs" />
     <Compile Include="RefBoxState.cs" />
     <Compile Include="RFCController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

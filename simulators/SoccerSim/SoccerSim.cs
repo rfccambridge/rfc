@@ -42,10 +42,10 @@ namespace SoccerSim
             _fieldView = new FieldDrawer(physics_engine, converter);
             // TODO make configurable how many to load
 
-            RefBoxListener refbox = new RefBoxListener(10001);
+            //RefBoxListener refbox = new RefBoxListener(10001);
 
-            _player1 = new SimSystem(_fieldView, physics_engine, refbox, true);
-            _player2 = new SimSystem(_fieldView, physics_engine, refbox, false);
+            _player1 = new SimSystem(_fieldView, physics_engine, referee, true);
+            _player2 = new SimSystem(_fieldView, physics_engine, referee, false);
             _engine = new SimEngine(physics_engine, this);
         }
 
