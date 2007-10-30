@@ -9,7 +9,7 @@ using DefaultFormatter = System.Runtime.Serialization.Formatters.Binary.BinaryFo
 namespace Robocup.Utilities
 {
     [Serializable]
-    public struct LogMessage<T> : IComparable<LogMessage<T>>
+    public class LogMessage<T> : IComparable<LogMessage<T>>
     {
         public double time;
         //public string message;
@@ -27,11 +27,14 @@ namespace Robocup.Utilities
         private Stream s;
         private IFormatter f;
 
-        private LogWriter(Stream s) : this(s, new DefaultFormatter()) { }
-        private LogWriter(Stream s, IFormatter formatter)
+        /// <summary>
+        /// Creates a LogWriter from a given stream.
+        /// </summary>
+        /// <param name="s"></param>
+        public LogWriter(Stream s)
         {
             this.s = s;
-            this.f = formatter;
+            this.f = new DefaultFormatter();
         }
         public void Close()
         {
@@ -50,19 +53,44 @@ namespace Robocup.Utilities
         /// <param name="o">The object to be written.  Must be serializable.</param>
         public void LogObject(T o/*, string message*/)
         {
+            LogMessage<T> m = new LogMessage<T>();
+            m.time = HighResTimer.SecondsSinceStart();
+            m.obj = o;
+            //m.message = message;
             lock (write_lock)
             {
-                LogMessage<T> m;
-                m.time = HighResTimer.SecondsSinceStart();
-                m.obj = o;
-                //m.message = message;
                 f.Serialize(s, m);
+            }
+        }
+        /// <summary>
+        /// Logs the given object with the specified timestamp.  Designed for simulation purposes.
+        /// </summary>
+        public void SimulateTimedLog(T o, double time)
+        {
+            LogMessage<T> m = new LogMessage<T>();
+            m.time = time;
+            m.obj = o;
+            //m.message = message;
+            lock (write_lock)
+            {
+                f.Serialize(s, m);
+            }
+        }
+        /// <summary>
+        /// Adds a "break" in the logs; if you ask for the logs back later, you can say
+        /// to break the log messages up by the breaks that you insert
+        /// </summary>
+        public void InsertBreak()
+        {
+            lock (write_lock)
+            {
+                f.Serialize(s, null);
             }
         }
 
         ~LogWriter()
         {
-            Console.WriteLine("~LogWriter");
+            //Console.WriteLine("~LogWriter");
             s.Close();
         }
 
@@ -73,6 +101,10 @@ namespace Robocup.Utilities
         /// </summary>
         private static Dictionary<string, WeakReference> writers = new Dictionary<string, WeakReference>();
         public static LogWriter<T> GetLogWriter(string name)
+        {
+            return GetLogWriter(name, false);
+        }
+        public static LogWriter<T> GetLogWriter(string name, bool compress)
         {
             if (!writers.ContainsKey(name) || !writers[name].IsAlive)
             {
@@ -93,24 +125,59 @@ namespace Robocup.Utilities
         }
 
         /// <summary>
-        /// Reads in all the messages in the log, closes the stream, and returns the messages.
+        /// Reads in all the messages in the log, removes any "breaks", closes the stream, and returns the messages.
         /// </summary>
         static public List<LogMessage<T>> ReadLog(Stream s)
         {
-            return ReadLog(s, new DefaultFormatter());
-        }
-        /// <summary>
-        /// Reads in all the messages in the log, closes the stream, and returns the messages.
-        /// </summary>
-        static public List<LogMessage<T>> ReadLog(Stream s, IFormatter f)
-        {
+            IFormatter f = new DefaultFormatter();
             List<LogMessage<T>> messages = new List<LogMessage<T>>();
             while (s.Position < s.Length)
             {
-                messages.Add((LogMessage<T>)f.Deserialize(s));
+                LogMessage<T> message = (LogMessage<T>)f.Deserialize(s);
+                if (message != null)
+                    messages.Add(message);
             }
             s.Close();
             return messages;
+        }
+        /// <summary>
+        /// Reads in all the messages in the log, breaking it up by "breaks", closes the stream, and returns the messages.
+        /// </summary>
+        /// <param name="ReturnEmptySequence">If there are two adjacent "breaks", whether or not to return an empty sequence</param>
+        static public List<List<LogMessage<T>>> ReadAndBreakLog(Stream s, bool ReturnEmptySequence)
+        {
+            IFormatter f = new DefaultFormatter();
+            List<List<LogMessage<T>>> rtn = new List<List<LogMessage<T>>>();
+            List<LogMessage<T>> messages = new List<LogMessage<T>>();
+            //while (s.Position < s.Length)
+            while (s.CanRead)
+            {
+                try
+                {
+                    LogMessage<T> message = (LogMessage<T>)f.Deserialize(s);
+                    if (message != null)
+                        messages.Add(message);
+                    else if (ReturnEmptySequence || messages.Count > 0)
+                    {
+                        rtn.Add(messages);
+                        messages = new List<LogMessage<T>>();
+                    }
+                }
+                catch (SerializationException e)
+                {
+                    if (e.Message.StartsWith("End of Stream"))
+                        break;
+                    else
+                        throw e;
+                }
+            }
+            if (ReturnEmptySequence || messages.Count > 0)
+            {
+                rtn.Add(messages);
+                messages = new List<LogMessage<T>>();
+            }
+            s.Close();
+            return rtn;
         }
     }
 }

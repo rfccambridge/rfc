@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Robocup.Core
 {
+    [Serializable]
     /// <summary>
     /// A generic class for associating data with wheels of a robot.
     /// </summary>
@@ -36,6 +37,7 @@ namespace Robocup.Core
             return new WheelsInfo<double>(rhs.lf + lhs.lf, rhs.rf + lhs.rf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
         }
     }
+    [Serializable]
     /// <summary>
     /// A storage class for holding the four wheel speeds.
     /// 

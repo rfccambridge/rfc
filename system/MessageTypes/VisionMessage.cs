@@ -7,7 +7,8 @@ namespace Robocup.Core
     [Serializable]
     public class VisionMessage
     {
-        public struct RobotData
+        [Serializable]
+        public class RobotData
         {
             public RobotData(int id, bool ourTeam, Vector2 position, double orientation)
             {

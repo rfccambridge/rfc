@@ -5,10 +5,11 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BBADBEA3-3CF2-46C3-95B5-A670EF057571}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Robocup.MotionControl</RootNamespace>
     <AssemblyName>ControlCalibration</AssemblyName>
+    <StartupObject>Robocup.MotionControl.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,11 +31,21 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModelCalibrator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModelCalibrator.Designer.cs">
+      <DependentUpon>ModelCalibrator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotModelCalibrator.cs" />
+    <Compile Include="SampleCreator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\strategy\MachineLearning\MachineLearning.csproj">
@@ -57,6 +68,12 @@
       <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
       <Name>CoreRobotics</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ModelCalibrator.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ModelCalibrator.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
