@@ -16,7 +16,7 @@ namespace Robocup.MotionControl
         public ModelCalibrator()
         {
             InitializeComponent();
-            textBoxDirectory.Text = "../../resources/Control calibration data/nice.log";
+            textBoxDirectory.Text = "../../resources/Control calibration data/nice.log.zip";
         }
 
         string path = ".";
@@ -76,8 +76,15 @@ namespace Robocup.MotionControl
             });
             MessageBox.Show(logs.Count + " runs successfully loaded");
 
+            buttonStart.Enabled = true;
+
             gz.Close();
             s.Close();
+        }
+
+        private void buttonStart_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

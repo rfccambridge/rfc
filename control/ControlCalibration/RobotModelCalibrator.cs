@@ -8,12 +8,6 @@ using MachineLearning;
 
 namespace Robocup.MotionControl
 {
-    [Serializable]
-    public class VisionOrCommand
-    {
-        public VisionMessage.RobotData vision;
-        public WheelSpeeds command;
-    }
     public class RobotModelCalibrator
     {
         public MovementModeler CalibrateModel(List<List<LogMessage<VisionMessage.RobotData>>> visionData,

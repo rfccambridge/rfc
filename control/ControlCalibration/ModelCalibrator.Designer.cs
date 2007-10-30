@@ -72,6 +72,7 @@ namespace Robocup.MotionControl
             this.buttonStart.TabIndex = 3;
             this.buttonStart.Text = "Start calibration";
             this.buttonStart.UseVisualStyleBackColor = true;
+            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
             // openFileDialog1
             // 
