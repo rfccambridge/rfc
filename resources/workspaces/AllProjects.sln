@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "..\..\strategy\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationLib", "..\..\simulators\SimulationLib\SimulationLib.csproj", "{A343AA15-D817-4E28-AB24-24CD4359BDF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RRTPlanner", "..\..\control\RRTPlanner\RRTPlanner.csproj", "{6B407296-924E-4788-A8B4-5E808061889D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RRTPlanner", "..\..\control\MotionPlanning\RRTPlanner.csproj", "{6B407296-924E-4788-A8B4-5E808061889D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RRTTester", "..\..\simulators\RRTTester\RRTTester.csproj", "{07A473F5-5310-4397-BBE6-9772AA03A22D}"
 EndProject
