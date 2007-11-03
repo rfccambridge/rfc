@@ -14,7 +14,7 @@ namespace Robocup.MotionControl
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new RRTTester());
+            Application.Run(new PlannerTester());
         }
     }
 }

@@ -36,12 +36,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RRTFactory.cs" />
-    <Compile Include="RRTTester.cs">
+    <Compile Include="PlannerFactory.cs" />
+    <Compile Include="PlannerTester.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RRTTester.Designer.cs">
-      <DependentUpon>RRTTester.cs</DependentUpon>
+    <Compile Include="PlannerTester.Designer.cs">
+      <DependentUpon>PlannerTester.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -50,9 +50,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="RRTTester.resx">
+    <EmbeddedResource Include="PlannerTester.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>RRTTester.cs</DependentUpon>
+      <DependentUpon>PlannerTester.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -70,7 +70,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\control\RRTPlanner\RRTPlanner.csproj">
+    <ProjectReference Include="..\..\control\MotionPlanning\MotionPlanning.csproj">
       <Project>{6B407296-924E-4788-A8B4-5E808061889D}</Project>
       <Name>RRTPlanner</Name>
     </ProjectReference>

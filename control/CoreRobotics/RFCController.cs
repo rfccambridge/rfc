@@ -109,7 +109,7 @@ namespace Robocup.CoreRobotics
                 };
             }
 
-            WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(robotID, thisRobot, results);
+            WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(Predictor, robotID, thisRobot, results);
 
             Commander.setMotorSpeeds(robotID, motorSpeeds);
         }

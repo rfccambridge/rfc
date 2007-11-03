@@ -35,12 +35,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IMotionPlanner.cs" />
+    <Compile Include="NavigationPlanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotInfoNNFinder.cs" />
     <Compile Include="RRTPlanner.cs" />
     <Compile Include="Vector2NNFinder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\strategy\Navigation\Navigation.csproj">
+      <Project>{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}</Project>
+      <Name>Navigation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\system\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>

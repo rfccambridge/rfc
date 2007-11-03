@@ -140,8 +140,8 @@ namespace Robocup.Core {
      * 
      */
     public interface IMovement {
-        WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results);
-        WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation);
+        WheelSpeeds calculateWheelSpeeds(IPredictor predictor, int robotID, RobotInfo currentInfo, NavigationResults results);
+        WheelSpeeds calculateWheelSpeeds(IPredictor predictor, int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation);
     }
 
     /// <summary>

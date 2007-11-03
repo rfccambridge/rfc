@@ -99,11 +99,11 @@ namespace Robocup.CoreRobotics
                     continue;
                 if (move_model.Equals("TWO-FLBR"))
                 {
-                    planners[i] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
+                    planners[i] = new TwoWheeledMovement(TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
                 }
                 else if (move_model.Equals("TWO-FRBL"))
                 {
-                    planners[i] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontRightBackLeft);
+                    planners[i] = new TwoWheeledMovement(TwoWheeledMovement.WhichTwoWheels.FrontRightBackLeft);
                 }
                 /*else if (move_model.Equals("FOUR"))
                 {

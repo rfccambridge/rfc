@@ -4,7 +4,7 @@ using System.Text;
 using Robocup.Core;
 
 namespace Robocup.MotionControl {
-    public static class RRTFactory {
+    public static class PlannerFactory {
         static public IMotionPlanner createPlanner(Type navigatorType) {
             return (IMotionPlanner)Activator.CreateInstance(navigatorType);
         }

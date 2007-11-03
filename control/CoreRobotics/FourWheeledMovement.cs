@@ -8,17 +8,15 @@ namespace Robocup.CoreRobotics
 {
     public class FourWheeledMovement : IMovement
     {
-        private IPredictor predictor;
-        public FourWheeledMovement(IPredictor predictor)
+        public FourWheeledMovement()
         {
-            this.predictor = predictor;
         }
 
         #region IMovement Members
 
-        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results)
+        public WheelSpeeds calculateWheelSpeeds(IPredictor predictor, int robotID, RobotInfo currentInfo, NavigationResults results)
         {
-            return calculateWheelSpeeds(robotID, currentInfo, results, currentInfo.Orientation);
+            return calculateWheelSpeeds(predictor, robotID, currentInfo, results, currentInfo.Orientation);
         }
 
         const double MoveTol = .01;
@@ -37,7 +35,7 @@ namespace Robocup.CoreRobotics
             Constants.get<double>("control", "MOVE_PID_RESET")
             );
 
-        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation)
+        public WheelSpeeds calculateWheelSpeeds(IPredictor predictor, int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation)
         {
             Vector2 destination = results.waypoint;
             Vector2 position = currentInfo.Position;

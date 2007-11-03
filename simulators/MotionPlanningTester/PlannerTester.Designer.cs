@@ -1,6 +1,6 @@
 namespace Robocup.MotionControl
 {
-    partial class RRTTester
+    partial class PlannerTester
     {
         /// <summary>
         /// Required designer variable.

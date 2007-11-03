@@ -12,7 +12,7 @@ using Robocup.Simulation;
 
 namespace Robocup.MotionControl
 {
-    public partial class RRTTester : Form
+    public partial class PlannerTester : Form
     {
         IMotionPlanner planner;
         readonly FieldDrawer drawer;
@@ -22,7 +22,7 @@ namespace Robocup.MotionControl
 
         System.Threading.Timer t;
 
-        public RRTTester()
+        public PlannerTester()
         {
             engine = new PhysicsEngine(new SimpleReferee());
             converter = new BasicCoordinateConverter(600, 30, 50);
@@ -33,7 +33,7 @@ namespace Robocup.MotionControl
 
             InitDragAndDrop();
 
-            Type[] navigatorTypes = RRTFactory.NavigatorTypes;
+            Type[] navigatorTypes = PlannerFactory.NavigatorTypes;
             foreach (Type t in navigatorTypes)
             {
                 plannerChooseBox.Items.Add(t.Name);
@@ -169,7 +169,7 @@ namespace Robocup.MotionControl
         private void navigatorChooseBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             int i = plannerChooseBox.SelectedIndex;
-            planner = RRTFactory.createPlanner(RRTFactory.NavigatorTypes[i]);
+            planner = PlannerFactory.createPlanner(PlannerFactory.NavigatorTypes[i]);
             //navigatorChooseBox.Visible = false;
 
             restoreFocus();

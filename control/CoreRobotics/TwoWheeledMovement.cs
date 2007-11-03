@@ -13,19 +13,17 @@ namespace Robocup.CoreRobotics
             FrontLeftBackRight,
             FrontRightBackLeft
         }
-        private IPredictor predictor;
         private WhichTwoWheels whichtwowheels;
-        public TwoWheeledMovement(IPredictor predictor, WhichTwoWheels whichtwowheels)
+        public TwoWheeledMovement(WhichTwoWheels whichtwowheels)
         {
-            this.predictor = predictor;
             this.whichtwowheels = whichtwowheels;
         }
 
         #region IMovement Members
 
-        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results)
+        public WheelSpeeds calculateWheelSpeeds(IPredictor predictor, int robotID, RobotInfo currentInfo, NavigationResults results)
         {
-            return calculateWheelSpeeds(robotID, currentInfo, results, currentInfo.Orientation);
+            return calculateWheelSpeeds(predictor, robotID, currentInfo, results, currentInfo.Orientation);
         }
 
         const double MoveTol = .01;
@@ -44,7 +42,7 @@ namespace Robocup.CoreRobotics
             Constants.get<double>("default", "MOVE_PID_RESET")
             );
 
-        public WheelSpeeds calculateWheelSpeeds(int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation)
+        public WheelSpeeds calculateWheelSpeeds(IPredictor predictor, int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation)
         {
             Vector2 destination = results.waypoint;
             Vector2 position = currentInfo.Position;
