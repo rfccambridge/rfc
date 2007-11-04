@@ -15,5 +15,15 @@ namespace Robocup.MotionControl
     {
         public VisionMessage.RobotData vision;
         public WheelSpeeds command;
+        public VisionOrCommand(VisionMessage.RobotData vision)
+        {
+            this.vision = vision;
+            this.command = null;
+        }
+        public VisionOrCommand(WheelSpeeds command)
+        {
+            this.command = command;
+            this.vision = null;
+        }
     }
 }

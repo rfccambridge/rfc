@@ -13,14 +13,13 @@ namespace Robocup.MotionControl
     {
         static void WriteVisionData(RobotInfo info, LogWriter<VisionOrCommand> writer, double t)
         {
-            VisionOrCommand message = new VisionOrCommand();
-            message.vision = new VisionMessage.RobotData(info.ID, true, info.Position, info.Orientation);
+            VisionOrCommand message = new VisionOrCommand(
+                new VisionMessage.RobotData(info.ID, true, info.Position, info.Orientation));
             writer.SimulateTimedLog(message, t);
         }
         static void WriteCommand(WheelSpeeds command, LogWriter<VisionOrCommand> writer, double t)
         {
-            VisionOrCommand message = new VisionOrCommand();
-            message.command = command;
+            VisionOrCommand message = new VisionOrCommand(command);
             writer.SimulateTimedLog(message, t);
         }
         /// <summary>

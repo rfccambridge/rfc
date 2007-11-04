@@ -36,6 +36,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataCollector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DataCollector.Designer.cs">
+      <DependentUpon>DataCollector.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModelCalibrator.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -57,9 +63,17 @@
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\system\MessageSystem\MessageSystem.csproj">
+      <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
+      <Name>MessageSystem</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\system\MessageTypes\MessageTypes.csproj">
       <Project>{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}</Project>
       <Name>MessageTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\system\SerialControl\SerialControl.csproj">
+      <Project>{3CCB17A5-8943-4535-A148-7AE8D237BA32}</Project>
+      <Name>SerialControl</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
@@ -71,6 +85,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DataCollector.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DataCollector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ModelCalibrator.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ModelCalibrator.cs</DependentUpon>
