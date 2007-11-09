@@ -123,6 +123,7 @@ namespace Robocup.MotionControl
             //if there is no command before the first vision message, 
             //add a sentinal command to keep it going at its initial velocity
             //(assume that it was in a steady-state)
+            //(this is probably a bad assumption, but the effects should be small)
             if (commands[0].time > visionData[0].time)
             {
                 LogMessage<WheelSpeeds> sentinal = new LogMessage<WheelSpeeds>();
@@ -145,14 +146,15 @@ namespace Robocup.MotionControl
             double currenttime = firstNode.time;
 
             //first, break the simulation into time ranges based on commands, and for each range:
-            //  look at each vision update in the range, and model (as above) until that point (and add to path)
-            //  model until the end of the range
+            //  -look at each vision update in the range, and model (as above) until that point (and add to path)
+            //  -model until the end of the range
             for (int i = 0; i < commands.Count; i++)
             {
                 WheelSpeeds currentCommand = commands[i].obj;
 
                 //iterate over all vision messages that are under the effect of this command,
                 //ie all messages until the next command is sent (or all remaining messages if there is no next command)
+                //and for each vision message, continue modeling until that point, and add the node to the path
                 while ((j < visionData.Count) && ((i + 1 == commands.Count) || (visionData[j].time < commands[i + 1].time)))
                 {
                     currentState = model.ModelWheelSpeeds(currentState, currentCommand, visionData[j].time - currenttime);
@@ -162,7 +164,7 @@ namespace Robocup.MotionControl
                     j++;
                 }
 
-                //model until the end of the range; there is a case that the current time is after the range though
+                //model until the end of the range (if there is an end); though there is a case that the current time is after the range
                 //(if the first vision message is after the first couple command messages)
                 if (i + 1 < commands.Count && commands[i + 1].time > currenttime)
                 {
@@ -174,7 +176,7 @@ namespace Robocup.MotionControl
             return path;
         }
 
-        // Score the path I simulate
+        // Scores the simulated path against the vision data, assuming that nodes i in the vision and path correspond to each other
         private double ScorePath(SimulatedPath path, List<LogMessage<VisionMessage.RobotData>> visionData)
         {
             double answer = 0;
@@ -186,31 +188,20 @@ namespace Robocup.MotionControl
             return answer;
         }
 
-        private int RandomSign()
+        Random ran = new Random();
+        // Changes the given value by up to maxchange in either the positive or negative direction
+        private void NextValue(ref double original, double maxchange)
         {
-            Random ran = new Random();
-            double temp = ran.NextDouble();
-            if (temp < 0.5)
-                return -1;
-            else
-                return 1;
-        }
-
-        private void NextValue(ref double original)
-        // Get the next value for a constant in my model. 
-        {
-            Random ran = new Random();
-            double delta = ran.NextDouble();
-            delta *= RandomSign();
+            double delta = (ran.NextDouble() - .5) * 2 * maxchange;
             original = original + delta;
         }
 
         private MovementModeler GenerateNext(MovementModeler current, double temperature)
         {
-            NextValue(ref current.changeConstlb);
-            NextValue(ref current.changeConstlf);
-            NextValue(ref current.changeConstrb);
-            NextValue(ref current.changeConstrf);
+            NextValue(ref current.changeConstlb, 1);
+            NextValue(ref current.changeConstlf, 1);
+            NextValue(ref current.changeConstrb, 1);
+            NextValue(ref current.changeConstrf, 1);
 
             return current;
         }
