@@ -160,9 +160,9 @@ namespace MachineLearning
                         Console.WriteLine("probability: " + prob);
                 }
 
-                if (r.NextDouble() < prob)
+                if (r.NextDouble() < prob || noBest)
                 {
-                    if (nextScore < bestScore)
+                    if (nextScore < bestScore || noBest)
                     {
                         best = next;
                         bestScore = nextScore;

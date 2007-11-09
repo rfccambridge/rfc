@@ -89,6 +89,8 @@ namespace Robocup.MotionControl
             this.Controls.Add(this.buttonPickFile);
             this.Name = "ModelCalibrator";
             this.Text = "ModelCalibrator";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.ModelCalibrator_Paint);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ModelCalibrator_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

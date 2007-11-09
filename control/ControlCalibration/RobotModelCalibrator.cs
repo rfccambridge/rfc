@@ -30,7 +30,9 @@ namespace Robocup.MotionControl
                 return ScoreModel(m, visionData, commands);
             });
             optimizer.setGenFunction(GenerateNext);
-            optimizer.setTermFunction(SomeTerminationFunctions.repeatedTermClass<MovementModeler>(100));
+            optimizer.setTermFunction(SomeTerminationFunctions.repeatedTermClass<MovementModeler>(2500));
+            optimizer.setCoolingFactor(.001);
+            optimizer.setTemp(1);
             optimizer.minimize();
             return optimizer.getBest();
         }
@@ -89,7 +91,7 @@ namespace Robocup.MotionControl
         //with the vision messages corresponding to this path
         public class SimulatedPath
         {
-            public List<PathNode> route;
+            public List<PathNode> route = new List<PathNode>();
         }
 
         // Converts a PathNode to a RobotInfo
@@ -118,6 +120,8 @@ namespace Robocup.MotionControl
             firstNode.orientation = visionData[0].obj.Orientation;
             firstNode.position = visionData[0].obj.Position;
             firstNode.time = visionData[0].time;
+            firstNode.velocity = new Vector2();
+            firstNode.angularVelocity = 0;
             path.route.Add(firstNode);
 
             //if there is no command before the first vision message, 
@@ -183,7 +187,7 @@ namespace Robocup.MotionControl
             for (int i = 0; i < path.route.Count; i++)
             {
                 Vector2 temp = (path.route[i].position - visionData[i].obj.Position);
-                answer += temp.magnitudeSq();
+                answer += temp.magnitudeSq();// / (i + 3);
             }
             return answer;
         }
@@ -198,12 +202,21 @@ namespace Robocup.MotionControl
 
         private MovementModeler GenerateNext(MovementModeler current, double temperature)
         {
-            NextValue(ref current.changeConstlb, 1);
-            NextValue(ref current.changeConstlf, 1);
-            NextValue(ref current.changeConstrb, 1);
-            NextValue(ref current.changeConstrf, 1);
+            MovementModeler rtn = new MovementModeler();
+            if (current == null)
+            {
+                return rtn;
+            }
+            rtn.changeConstlb = current.changeConstlb;
+            rtn.changeConstlf = current.changeConstlf;
+            rtn.changeConstrb = current.changeConstrb;
+            rtn.changeConstrf = current.changeConstrf;
+            NextValue(ref rtn.changeConstlb, temperature / 2 + .01);
+            NextValue(ref rtn.changeConstlf, temperature / 2 + .01);
+            NextValue(ref rtn.changeConstrb, temperature / 2 + .01);
+            NextValue(ref rtn.changeConstrf, temperature / 2 + .01);
 
-            return current;
+            return rtn;
         }
     }
 }

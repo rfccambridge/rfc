@@ -6,8 +6,10 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+
 using Robocup.Utilities;
 using Robocup.Core;
+using Robocup.CoreRobotics;
 
 namespace Robocup.MotionControl
 {
@@ -15,8 +17,10 @@ namespace Robocup.MotionControl
     {
         public ModelCalibrator()
         {
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
+                ControlStyles.OptimizedDoubleBuffer, true);
             InitializeComponent();
-            textBoxDirectory.Text = "../../resources/Control calibration data/nice.log.zip";
+            textBoxDirectory.Text = "../../resources/Control calibration data/basic.log.zip";
         }
 
         string path = ".";
@@ -59,6 +63,7 @@ namespace Robocup.MotionControl
                 {
                     LogMessage<VisionMessage.RobotData> rtn = new LogMessage<VisionMessage.RobotData>();
                     rtn.obj = log.obj.vision;
+                    rtn.time = log.time;
                     return rtn;
                 });
             });
@@ -71,6 +76,7 @@ namespace Robocup.MotionControl
                 {
                     LogMessage<WheelSpeeds> rtn = new LogMessage<WheelSpeeds>();
                     rtn.obj = log.obj.command;
+                    rtn.time = log.time;
                     return rtn;
                 });
             });
@@ -80,11 +86,71 @@ namespace Robocup.MotionControl
 
             gz.Close();
             s.Close();
+
+            this.Invalidate();
         }
 
+        System.Threading.Thread t;
         private void buttonStart_Click(object sender, EventArgs e)
         {
+            RobotModelCalibrator calibrator = new RobotModelCalibrator();
+            calibrator.PathScored += delegate(Pair<List<RobotModelCalibrator.SimulatedPath>, double> pair)
+            {
+                SetDraw(pair.First[0]);
+            };
+            t = new System.Threading.Thread(delegate(object o)
+            {
+                MovementModeler model = calibrator.CalibrateModel(vision, commands);
+                MessageBox.Show(model.changeConstlb + " " + model.changeConstlf + " " + model.changeConstrb + " " + model.changeConstrf);
+            });
+            t.Start();
+        }
+        ICoordinateConverter mainScreen = new BasicCoordinateConverter(500, 30, 75);
+        RobotModelCalibrator.SimulatedPath lastpath = null;
+        void SetDraw(RobotModelCalibrator.SimulatedPath path)
+        {
+            this.lastpath = path;
+            this.Invalidate();
+        }
 
+        private void DrawVisionPath(List<LogMessage<VisionMessage.RobotData>> vision, Graphics g, ICoordinateConverter c)
+        {
+            Brush b = new SolidBrush(Color.Black);
+            foreach (LogMessage<VisionMessage.RobotData> message in vision)
+            {
+                Vector2 p = message.obj.Position;
+                p = c.fieldtopixelPoint(p);
+                g.FillRectangle(b, (float)(p.X - 1), (float)(p.Y - 1), 2, 2);
+            }
+        }
+        private void DrawSimPath(RobotModelCalibrator.SimulatedPath path, Graphics g, ICoordinateConverter c)
+        {
+            Brush b = new SolidBrush(Color.Red);
+            foreach (RobotModelCalibrator.PathNode node in path.route)
+            {
+                Vector2 p = node.position;
+                p = c.fieldtopixelPoint(p);
+                g.FillRectangle(b, (float)(p.X - 1), (float)(p.Y - 1), 2, 2);
+            }
+        }
+
+        private void ModelCalibrator_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            if (vision != null && vision.Count > 0)
+            {
+                DrawVisionPath(vision[0], g, mainScreen);
+            }
+            if (lastpath != null)
+            {
+                DrawSimPath(lastpath, g, mainScreen);
+            }
+        }
+
+        private void ModelCalibrator_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (t != null)
+                t.Abort();
         }
     }
 }

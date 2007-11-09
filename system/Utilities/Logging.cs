@@ -84,7 +84,7 @@ namespace Robocup.Utilities
         {
             lock (write_lock)
             {
-                f.Serialize(s, null);
+                f.Serialize(s, "break");
             }
         }
 
@@ -133,9 +133,12 @@ namespace Robocup.Utilities
             List<LogMessage<T>> messages = new List<LogMessage<T>>();
             while (s.Position < s.Length)
             {
-                LogMessage<T> message = (LogMessage<T>)f.Deserialize(s);
-                if (message != null)
+                object o = f.Deserialize(s);
+                if (!"break".Equals(o))
+                {
+                    LogMessage<T> message = (LogMessage<T>)o;
                     messages.Add(message);
+                }
             }
             s.Close();
             return messages;
@@ -154,9 +157,12 @@ namespace Robocup.Utilities
             {
                 try
                 {
-                    LogMessage<T> message = (LogMessage<T>)f.Deserialize(s);
-                    if (message != null)
+                    object o = f.Deserialize(s);
+                    if (!"break".Equals(o))
+                    {
+                        LogMessage<T> message = (LogMessage<T>)o;
                         messages.Add(message);
+                    }
                     else if (ReturnEmptySequence || messages.Count > 0)
                     {
                         rtn.Add(messages);
