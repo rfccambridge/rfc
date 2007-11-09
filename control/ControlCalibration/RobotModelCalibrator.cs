@@ -32,6 +32,7 @@ namespace Robocup.MotionControl
             optimizer.setGenFunction(GenerateNext);
             optimizer.setTermFunction(SomeTerminationFunctions.repeatedTermClass<MovementModeler>(2500));
             optimizer.setCoolingFactor(.001);
+            optimizer.NumThreads = Environment.ProcessorCount;
             optimizer.setTemp(1);
             optimizer.minimize();
             return optimizer.getBest();

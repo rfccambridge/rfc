@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using System.Threading;
+
 namespace MachineLearning
 {
     /// <summary>
@@ -81,7 +83,17 @@ namespace MachineLearning
         volatile bool stillRun = false;
         #endregion
 
-        public T getBest(){
+        private int numthreads = 1;
+
+        public int NumThreads
+        {
+            get { return numthreads; }
+            set { numthreads = value; }
+        }
+
+
+        public T getBest()
+        {
             return best;
         }
         public void clearBest()
@@ -107,6 +119,11 @@ namespace MachineLearning
         {
             return running;
         }
+
+        private object best_lock = new object();
+        List<Thread> workers = new List<Thread>();
+        AutoResetEvent waithandle = new AutoResetEvent(false);
+
         public override void minimize()
         {
             running = true;
@@ -140,6 +157,19 @@ namespace MachineLearning
                 iterationFinished(!stillRun, bestCand, currentCandList, rejectedList);
             }
 
+            for (int i = 0; i < numthreads; i++)
+            {
+                Thread t = new Thread(Run);
+                t.Start();
+            }
+            //Run();
+            waithandle.WaitOne();
+
+            running = false;
+        }
+
+        private void Run()
+        {
             while (stillRun)
             {
                 if (verbose)
@@ -152,53 +182,56 @@ namespace MachineLearning
                 if (verbose)
                     Console.WriteLine("next score: " + nextScore);
 
-                double prob = 1;
-                if (nextScore > currentScore)
+                lock (best_lock)
                 {
-                    prob = Math.Exp((currentScore - nextScore) / (curTemp));
-                    if (verbose)
-                        Console.WriteLine("probability: " + prob);
-                }
-
-                if (r.NextDouble() < prob || noBest)
-                {
-                    if (nextScore < bestScore || noBest)
+                    double prob = 1;
+                    if (nextScore > currentScore)
                     {
-                        best = next;
-                        bestScore = nextScore;
-                        noBest = false;
+                        prob = Math.Exp((currentScore - nextScore) / (curTemp));
+                        if (verbose)
+                            Console.WriteLine("probability: " + prob);
                     }
-                    current = next;
-                    currentScore = nextScore;
+
+                    if (r.NextDouble() < prob || noBest)
+                    {
+                        if (nextScore < bestScore || noBest)
+                        {
+                            best = next;
+                            bestScore = nextScore;
+                            noBest = false;
+                        }
+                        current = next;
+                        currentScore = nextScore;
+                        if (verbose)
+                            Console.WriteLine("accepted");
+                    }
+                    else
+                    {
+                        if (verbose)
+                            Console.WriteLine("rejected");
+                    }
                     if (verbose)
-                        Console.WriteLine("accepted");
+                        Console.WriteLine();
+
+                    curTemp *= 1 - coolingFactor;
+
+                    if (termFunction(current, currentScore))
+                        stillRun = false;
+
+                    Candidate<T> currentCand = new Candidate<T>(current, currentScore);
+                    Candidate<T> bestCand = new Candidate<T>(best, bestScore);
+                    List<Candidate<T>> currentCandList = new List<Candidate<T>>();
+                    currentCandList.Add(currentCand);
+                    List<Candidate<T>> rejectedList = new List<Candidate<T>>();
+                    if (!object.ReferenceEquals(next, current))
+                        rejectedList.Add(new Candidate<T>(next, nextScore));
+                    bool quit = !stillRun;
+                    iterationFinished(quit, bestCand, currentCandList, rejectedList);
+                    if (quit)
+                        break;
                 }
-                else
-                {
-                    if (verbose)
-                        Console.WriteLine("rejected");
-                }
-                if (verbose)
-                    Console.WriteLine();
-
-                curTemp *= 1 - coolingFactor;
-
-                if (termFunction(current, currentScore))
-                    stillRun = false;
-
-                Candidate<T> currentCand = new Candidate<T>(current, currentScore);
-                Candidate<T> bestCand = new Candidate<T>(best, bestScore);
-                List<Candidate<T>> currentCandList = new List<Candidate<T>>();
-                currentCandList.Add(currentCand);
-                List<Candidate<T>> rejectedList = new List<Candidate<T>>();
-                if (!object.ReferenceEquals(next, current))
-                    rejectedList.Add(new Candidate<T>(next, nextScore));
-                bool quit = !stillRun;
-                iterationFinished(quit, bestCand, currentCandList, rejectedList);
-                if (quit)
-                    break;
             }
-            running = false;
+            waithandle.Set();
         }
 
 

@@ -106,17 +106,24 @@ namespace Robocup.MotionControl
             };
             t = new System.Threading.Thread(delegate(object o)
             {
+                DateTime start = DateTime.Now;
                 MovementModeler model = calibrator.CalibrateModel(vision, commands);
-                MessageBox.Show(model.changeConstlb + " " + model.changeConstlf + " " + model.changeConstrb + " " + model.changeConstrf);
+                MessageBox.Show(model.changeConstlb + " " + model.changeConstlf + " " + model.changeConstrb + " " + model.changeConstrf +"\n"+
+                    DateTime.Now.Subtract(start));
             });
             t.Start();
         }
         ICoordinateConverter mainScreen = new BasicCoordinateConverter(500, 30, 75);
         RobotModelCalibrator.SimulatedPath lastpath = null;
+        DateTime last_invalidate = DateTime.Now;
         void SetDraw(RobotModelCalibrator.SimulatedPath path)
         {
             this.lastpath = path;
-            this.Invalidate();
+            if (DateTime.Now.Subtract(last_invalidate).TotalMilliseconds > 50)
+            {
+                this.Invalidate();
+                last_invalidate = DateTime.Now;
+            }
         }
 
         private void DrawVisionPath(List<LogMessage<VisionMessage.RobotData>> vision, Graphics g, ICoordinateConverter c)
