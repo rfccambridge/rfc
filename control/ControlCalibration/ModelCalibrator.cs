@@ -20,28 +20,28 @@ namespace Robocup.MotionControl
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
                 ControlStyles.OptimizedDoubleBuffer, true);
             InitializeComponent();
-            textBoxDirectory.Text = "../../resources/Control calibration data/basic.log.zip";
+            textBoxFile.Text = "../../resources/Control calibration data/basic.log.zip";
         }
 
-        string path = ".";
+        string fname = ".";
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void textBoxFile_TextChanged(object sender, EventArgs e)
         {
-            bool exists = File.Exists(textBoxDirectory.Text);
-            textBoxDirectory.ForeColor = exists ? Color.Black : Color.Red;
+            bool exists = File.Exists(textBoxFile.Text);
+            textBoxFile.ForeColor = exists ? Color.Black : Color.Red;
             buttonLoad.Enabled = exists;
             if (exists)
-                path = textBoxDirectory.Text;
+                fname = textBoxFile.Text;
         }
 
-        private void buttonPickDirectory_Click(object sender, EventArgs e)
+        private void buttonPickFile_Click(object sender, EventArgs e)
         {
-            openFileDialog1.InitialDirectory = new FileInfo(path).Directory.FullName;
+            openFileDialog1.InitialDirectory = new FileInfo(fname).Directory.FullName;
             DialogResult result = openFileDialog1.ShowDialog();
             if (result == DialogResult.OK)
             {
-                path = openFileDialog1.FileName;
-                textBoxDirectory.Text = path;
+                fname = openFileDialog1.FileName;
+                textBoxFile.Text = fname;
             }
         }
 
@@ -50,10 +50,14 @@ namespace Robocup.MotionControl
 
         private void buttonLoad_Click(object sender, EventArgs e)
         {
-            Stream s = File.Open(path, FileMode.Open);
+            Stream s = File.Open(fname, FileMode.Open);
             Stream gz = new System.IO.Compression.GZipStream(s, System.IO.Compression.CompressionMode.Decompress);
 
+            //read the logs in from the file
             List<List<LogMessage<VisionOrCommand>>> logs = LogWriter<VisionOrCommand>.ReadAndBreakLog(gz, false);
+
+            //it's logged as VisionOrCommand objects; we need to break those up into separate vision and command lists
+            //this has three steps: for each data set, only take objects that are vision/command, and convert them to vision/command
             vision = logs.ConvertAll<List<LogMessage<VisionMessage.RobotData>>>(delegate(List<LogMessage<VisionOrCommand>> lst)
             {
                 return lst.FindAll(delegate(LogMessage<VisionOrCommand> log)
@@ -90,7 +94,9 @@ namespace Robocup.MotionControl
             this.Invalidate();
         }
 
+        //the thread that will run the optimizer
         System.Threading.Thread t;
+
         private void buttonStart_Click(object sender, EventArgs e)
         {
             RobotModelCalibrator calibrator = new RobotModelCalibrator();
@@ -147,6 +153,7 @@ namespace Robocup.MotionControl
             }
         }
 
+        //make sure to kill the worker thread when the user closes the form
         private void ModelCalibrator_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (t != null)

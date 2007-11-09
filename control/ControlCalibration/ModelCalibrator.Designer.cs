@@ -29,7 +29,7 @@ namespace Robocup.MotionControl
         private void InitializeComponent()
         {
             this.buttonPickFile = new System.Windows.Forms.Button();
-            this.textBoxDirectory = new System.Windows.Forms.TextBox();
+            this.textBoxFile = new System.Windows.Forms.TextBox();
             this.buttonLoad = new System.Windows.Forms.Button();
             this.buttonStart = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -43,15 +43,15 @@ namespace Robocup.MotionControl
             this.buttonPickFile.TabIndex = 0;
             this.buttonPickFile.Text = "Choose file";
             this.buttonPickFile.UseVisualStyleBackColor = true;
-            this.buttonPickFile.Click += new System.EventHandler(this.buttonPickDirectory_Click);
+            this.buttonPickFile.Click += new System.EventHandler(this.buttonPickFile_Click);
             // 
             // textBoxDirectory
             // 
-            this.textBoxDirectory.Location = new System.Drawing.Point(144, 14);
-            this.textBoxDirectory.Name = "textBoxDirectory";
-            this.textBoxDirectory.Size = new System.Drawing.Size(184, 20);
-            this.textBoxDirectory.TabIndex = 1;
-            this.textBoxDirectory.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBoxFile.Location = new System.Drawing.Point(144, 14);
+            this.textBoxFile.Name = "textBoxDirectory";
+            this.textBoxFile.Size = new System.Drawing.Size(184, 20);
+            this.textBoxFile.TabIndex = 1;
+            this.textBoxFile.TextChanged += new System.EventHandler(this.textBoxFile_TextChanged);
             // 
             // buttonLoad
             // 
@@ -85,7 +85,7 @@ namespace Robocup.MotionControl
             this.ClientSize = new System.Drawing.Size(630, 460);
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.buttonLoad);
-            this.Controls.Add(this.textBoxDirectory);
+            this.Controls.Add(this.textBoxFile);
             this.Controls.Add(this.buttonPickFile);
             this.Name = "ModelCalibrator";
             this.Text = "ModelCalibrator";
@@ -99,7 +99,7 @@ namespace Robocup.MotionControl
         #endregion
 
         private System.Windows.Forms.Button buttonPickFile;
-        private System.Windows.Forms.TextBox textBoxDirectory;
+        private System.Windows.Forms.TextBox textBoxFile;
         private System.Windows.Forms.Button buttonLoad;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;

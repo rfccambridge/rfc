@@ -28,33 +28,43 @@ namespace Robocup.MotionControl
         void WriteNiceLog()
         {
             MovementModeler modeler = new MovementModeler();
+
+            //open the stream and the log writer
             Stream s = File.Open("../../resources/Control calibration data/nice.log.zip", FileMode.Create);
             Stream gz = new System.IO.Compression.GZipStream(s, System.IO.Compression.CompressionMode.Compress);
             LogWriter<VisionOrCommand> writer = new LogWriter<VisionOrCommand>(gz);
+
+            //initial conditions
             WheelSpeeds command = new WheelSpeeds(80, 90, 100, 70);
             RobotInfo curinfo = new RobotInfo(Vector2.ZERO, 0, 0);
+            //send initial conditions
             WriteCommand(command, writer, 0);
             WriteVisionData(curinfo, writer, 0);
+
             double lastsimtime = 0;
+
             for (double t = 0; t <= 5; t += .05)
             {
+                //model until the command is given
                 curinfo = modeler.ModelWheelSpeeds(curinfo, command, t - lastsimtime);
                 lastsimtime = t;
+                //say that we sent the command
                 WriteCommand(command, writer, t);
+                //model until the vision is sent
                 curinfo = modeler.ModelWheelSpeeds(curinfo, command, t + .001 - lastsimtime);
                 lastsimtime = t + .001;
+                //say that we received vision
                 WriteVisionData(curinfo, writer, t + .001);
             }
             gz.Close();
             s.Close();
         }
+        /// <summary>
+        /// Gets the command to be sent out at time t under the "BasicLog"
+        /// </summary>
         WheelSpeeds BasicCommands(double t)
         {
             WheelSpeeds command = new WheelSpeeds();
-            /*command.lb = (int)(Math.Sin(t) * 75);
-            command.rf = (int)(Math.Sin(t + 1) * 75);
-            command.lf = (int)(Math.Cos(t) * 75);
-            command.rb = (int)(Math.Cos(1.2 * t) * 75);*/
             if (t < 2)
             {
                 command.lb = 100;
@@ -73,14 +83,18 @@ namespace Robocup.MotionControl
         }
         void WriteBasicLog()
         {
+            //set up the modeler
             MovementModeler modeler = new MovementModeler();
             modeler.changeConstlf = 5;
             modeler.changeConstlb = 5;
             modeler.changeConstrf = 7;
             modeler.changeConstrb = 7;
+
+            //open the stream and the writer
             Stream s = File.Open("../../resources/Control calibration data/basic.log.zip", FileMode.Create);
             Stream gz = new System.IO.Compression.GZipStream(s, System.IO.Compression.CompressionMode.Compress);
             LogWriter<VisionOrCommand> writer = new LogWriter<VisionOrCommand>(gz);
+
             {
                 WheelSpeeds command = BasicCommands(0);
                 RobotInfo curinfo = new RobotInfo(Vector2.ZERO, 0, 0);
