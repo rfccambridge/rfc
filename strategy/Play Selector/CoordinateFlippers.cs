@@ -42,6 +42,11 @@ namespace Robocup.Plays
             return predictor.getTheirTeamInfo().ConvertAll<RobotInfo>(flipRobotInfo);
         }
 
+        public List<RobotInfo> getAllInfos()
+        {
+            return predictor.getAllInfos().ConvertAll<RobotInfo>(flipRobotInfo);
+        }
+
         public BallInfo getBallInfo()
         {
             BallInfo info = predictor.getBallInfo();
@@ -116,6 +121,11 @@ namespace Robocup.Plays
         public List<RobotInfo> getTheirTeamInfo()
         {
             return predictor.getOurTeamInfo();
+        }
+
+        public List<RobotInfo> getAllInfos()
+        {
+            return predictor.getAllInfos();
         }
 
         public BallInfo getBallInfo()

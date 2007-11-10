@@ -230,6 +230,14 @@ namespace Robocup.CoreRobotics
             return their_helper.getMergedInfos();
         }
 
+        public List<RobotInfo> getAllInfos()
+        {
+            List<RobotInfo> rtn = new List<RobotInfo>();
+            rtn.AddRange(our_helper.getMergedInfos());
+            rtn.AddRange(their_helper.getMergedInfos());
+            return rtn;
+        }
+
         #endregion
 
         #region IInfoAcceptor Members
@@ -239,11 +247,11 @@ namespace Robocup.CoreRobotics
             this.ballInfo = ballInfo;
         }
 
-        public void updateHalfOurRobotInfo(List<RobotInfo> newInfos, string splitName)
+        public void updatePartOurRobotInfo(List<RobotInfo> newInfos, string splitName)
         {
             our_helper.updateHalfInfos(newInfos, splitName);
         }
-        public void updateHalfTheirRobotInfo(List<RobotInfo> newInfos, string splitName)
+        public void updatePartTheirRobotInfo(List<RobotInfo> newInfos, string splitName)
         {
             their_helper.updateHalfInfos(newInfos, splitName);
         }

@@ -24,21 +24,21 @@ namespace Robocup.MotionControl
         //           plus magnitudeSq of end velocity - ideal velocity vector (scaled to end speed).
         private double distance(RobotInfo start, RobotInfo end)
         {
-            double startScale = Math.Sqrt(start.Velocity.magnitudeSq() / start.Position.distanceSq(end.Position))+1;
-            double endScale = Math.Sqrt(end.Velocity.magnitudeSq() / start.Position.distanceSq(end.Position))+1;
-            return start.Position.distanceSq(end.Position) + (startScale * (end.Position.X - start.Position.X) - start.Velocity.X) * (startScale * (end.Position.X - start.Position.X) - start.Velocity.X)
+            double startScale = (Math.Sqrt(start.Velocity.magnitudeSq() / start.Position.distanceSq(end.Position))+1)*1;
+            double endScale = (Math.Sqrt(end.Velocity.magnitudeSq() / start.Position.distanceSq(end.Position))+1)*1;
+            return start.Position.distanceSq(end.Position) /*+ (startScale * (end.Position.X - start.Position.X) - start.Velocity.X) * (startScale * (end.Position.X - start.Position.X) - start.Velocity.X)
                                                            + (startScale * (end.Position.Y - start.Position.Y) - start.Velocity.Y) * (startScale * (end.Position.Y - start.Position.Y) - start.Velocity.Y)
                                                            + (endScale * (end.Position.X - start.Position.X) - start.Velocity.X) * (endScale * (end.Position.X - start.Position.X) - start.Velocity.X)
                                                            + (endScale * (end.Position.Y - start.Position.Y) - start.Velocity.Y) * (endScale * (end.Position.Y - start.Position.Y) - start.Velocity.Y)
-                                                           ;
+                                                           */;
         }
 
         private double distance(RobotInfo start, Vector2 end)
         {
-            double startScale = Math.Sqrt(start.Velocity.magnitudeSq() / start.Position.distanceSq(end))+1;
-            return start.Position.distanceSq(end) + (startScale * (end.X - start.Position.X) - start.Velocity.X) * (startScale * (end.X - start.Position.X) - start.Velocity.X)
+            double startScale = (Math.Sqrt(start.Velocity.magnitudeSq() / start.Position.distanceSq(end))+1)*1;
+            return start.Position.distanceSq(end) /*+ (startScale * (end.X - start.Position.X) - start.Velocity.X) * (startScale * (end.X - start.Position.X) - start.Velocity.X)
                                                   + (startScale * (end.Y - start.Position.Y) - start.Velocity.Y) * (startScale * (end.Y - start.Position.Y) - start.Velocity.Y)
-                                                  ;
+                                                  */;
         }
 
         public void AddInfo(RobotInfo info)

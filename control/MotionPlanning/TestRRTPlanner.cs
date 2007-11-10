@@ -7,22 +7,8 @@ using Robocup.CoreRobotics;
 
 namespace Robocup.MotionControl
 {
-    public class RRTPlanner : IMotionPlanner
+    public class TestRRTPlanner : IMotionPlanner
     {
-        private enum ExtendResultType
-        {
-            Success, Blocked, Destination
-        }
-        private class ExtendResults<T>
-        {
-            public T extension;
-            public ExtendResultType resultType;
-            public ExtendResults(T extension, ExtendResultType type)
-            {
-                this.extension = extension;
-                this.resultType = type;
-            }
-        }
 
         private Dictionary<int, RRTIndvPlanner> planners = new Dictionary<int, RRTIndvPlanner>();
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
@@ -120,24 +106,6 @@ namespace Robocup.MotionControl
                     result = ExtendResultType.Blocked;
                 return new ExtendResults<Vector2>(next, result);
             }
-            WheelSpeeds GetWheelSpeeds(RobotInfo start, RobotInfo goal)
-            {
-                return GetWheelSpeeds(start, goal.Position);
-            }
-            WheelSpeeds GetWheelSpeeds(RobotInfo start, Vector2 goal)
-            {
-                Vector2 desiredDirection = goal - start.Position;
-                Vector2 lf = new Vector2(1, -1).rotate(start.Orientation);
-                Vector2 rf = new Vector2(1, 1).rotate(start.Orientation);
-                Vector2 lb = new Vector2(1, 1).rotate(start.Orientation);
-                Vector2 rb = new Vector2(1, -1).rotate(start.Orientation);
-                double plf = lf * desiredDirection;
-                double prf = rf * desiredDirection;
-                double plb = lb * desiredDirection;
-                double prb = rb * desiredDirection;
-                double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
-                return new WheelSpeeds((int)(127 * plf / max), (int)(127 * prf / max), (int)(127 * plb / max), (int)(127 * prb / max));
-            }
             List<Vector2> extended_to = new List<Vector2>();
             List<Vector2> extended_from = new List<Vector2>();
             ExtendResults<RRTState> Extend(RobotInfo original, RobotInfo destination)
@@ -145,7 +113,7 @@ namespace Robocup.MotionControl
                 extended_to.Add(destination.Position);
                 extended_from.Add(original.Position);
                 ExtendResultType result = ExtendResultType.Success;
-                WheelSpeeds ws = GetWheelSpeeds(original, destination);
+                WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeeds(original, destination);
                 RobotInfo newInfo = mm.ModelWheelSpeeds(original, ws, .1);
                 if (destination.Position.distanceSq(original.Position) < .1 * .1)
                 {
@@ -162,7 +130,7 @@ namespace Robocup.MotionControl
             ExtendResults<RRTState> Extend(RobotInfo original, Vector2 destination)
             {
                 ExtendResultType result = ExtendResultType.Success;
-                WheelSpeeds ws = GetWheelSpeeds(original, destination);
+                WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeeds(original, destination);
                 RobotInfo newInfo = mm.ModelWheelSpeeds(original, ws, .1);
                 //Vector2 next = original.Position + (destination - original.Position).normalizeToLength(.05);
                 if (destination.distanceSq(original.Position) < .1 * .1)

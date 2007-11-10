@@ -80,15 +80,16 @@ namespace Robocup.Core {
 
     /// <summary>
     /// An interface for things that will take and handle info about the current state,
-    /// usually to later give it back out.  More specifically, for when there are two
+    /// usually to later give it back out.  More specifically, for when there are multiple
     /// things that will be giving information (ie: two cameras).
     /// 
     /// Implementations: BasicPredictor
     /// </summary>
-    public interface ISplitInfoAcceptor : IInfoAcceptor
+    public interface ISplitInfoAcceptor
     {
-        void updateHalfOurRobotInfo(List<RobotInfo> newInfos, string splitName);
-        void updateHalfTheirRobotInfo(List<RobotInfo> newInfos, string splitName);
+        void updatePartOurRobotInfo(List<RobotInfo> newInfos, string splitName);
+        void updatePartTheirRobotInfo(List<RobotInfo> newInfos, string splitName);
+        void updateBallInfo(BallInfo ballInfo);
         //void clearTheirRobotInfo(int offset);
     }
 
@@ -106,6 +107,7 @@ namespace Robocup.Core {
         RobotInfo getCurrentInformation(int robotID);
         List<RobotInfo> getOurTeamInfo();
         List<RobotInfo> getTheirTeamInfo();
+        List<RobotInfo> getAllInfos();
         BallInfo getBallInfo();
     }
 

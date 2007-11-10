@@ -762,6 +762,12 @@ namespace InterpreterTester
         {
             return new List<RobotInfo>(theirinfo);
         }
+        public List<RobotInfo> getAllInfos()
+        {
+            List<RobotInfo> rtn = new List<RobotInfo>(theirinfo);
+            rtn.AddRange(ourinfo);
+            return rtn;
+        }
 
         public BallInfo getBallInfo()
         {

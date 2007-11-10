@@ -34,12 +34,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicRRTPlanner.cs" />
+    <Compile Include="Common.cs" />
     <Compile Include="IMotionPlanner.cs" />
     <Compile Include="NavigationPlanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotInfoNNFinder.cs" />
-    <Compile Include="RRTPlanner.cs" />
+    <Compile Include="RRTPlanners.cs" />
+    <Compile Include="SearchTree.cs" />
+    <Compile Include="TestRRTPlanner.cs" />
     <Compile Include="Vector2NNFinder.cs" />
+    <Compile Include="WheelSpeedsExtender.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\strategy\Navigation\Navigation.csproj">
