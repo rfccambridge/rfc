@@ -71,9 +71,9 @@ namespace Robocup.MotionControl
             numSavedWaypoints = 0;
         }
 
-        public List<T> Plan(T current, T goal)
+        public List<T> Plan(T current, T goal, object state)
         {
-            List<T> rtn = FindPath(current, goal);
+            List<T> rtn = FindPath(current, goal, state);
             UpdateWaypoints(rtn);
             return rtn;
         }
@@ -97,7 +97,7 @@ namespace Robocup.MotionControl
         }
 
         G lastTree = null;
-        private List<T> FindPath(T current, T goal)
+        private List<T> FindPath(T current, T goal, object state)
         {
             G tree = new G();
             tree.AddNode(current, null);
@@ -119,7 +119,7 @@ namespace Robocup.MotionControl
 
                 for (int i = 0; i < maxextends; i++)
                 {
-                    ExtendResults<T> extendresults = extender(extendFrom, extendTo);
+                    ExtendResults<T> extendresults = extender(extendFrom, extendTo, state);
                     if (extendresults.resultType == ExtendResultType.Blocked)
                         break;
                     else if (extendresults.resultType == ExtendResultType.Destination)

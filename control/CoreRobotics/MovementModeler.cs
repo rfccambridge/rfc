@@ -121,6 +121,10 @@ namespace Robocup.CoreRobotics
             Vector2 newVelocity = vwpair.First;
             Vector2 newPosition = info.Position + 0.5 * dt * (newVelocity + info.Velocity);
 
+            if ((newPosition - info.Position).magnitudeSq() > 1)
+            {
+                Console.WriteLine("CRAP");
+            }
             return new RobotInfo(newPosition, newVelocity, newAngularVelocity, angle, info.ID);
         }
     }

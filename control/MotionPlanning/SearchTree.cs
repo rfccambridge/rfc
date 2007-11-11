@@ -56,7 +56,7 @@ namespace Robocup.MotionControl
         T ClosestGoingTo(O point);
     }
 
-    public class Vector2Tree : BiSearchTree<Vector2, RobotInfo>
+    public class Vector2Tree : BiSearchTree<Vector2, RobotInfo>, BiSearchTree<Vector2, Vector2>
     {
         Vector2NNFinder nnfinder = new Vector2NNFinder();
         //maps nodes->parents
@@ -106,7 +106,7 @@ namespace Robocup.MotionControl
             return new List<Vector2>(parents.Keys);
         }
     }
-    public class RobotInfoTree : BiSearchTree<RobotInfo, Vector2>
+    public class RobotInfoTree : BiSearchTree<RobotInfo, Vector2>, BiSearchTree<RobotInfo, RobotInfo>
     {
         RobotInfoNNFinder nnfinder = new RobotInfoNNFinder();
         //maps nodes->parents

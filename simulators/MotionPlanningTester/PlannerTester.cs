@@ -61,35 +61,11 @@ namespace Robocup.MotionControl
             {
                 MotionPlanningResults results = planner.PlanMotion(0, new RobotInfo(destination, 0, 0), engine, .13);
                 engine.setMotorSpeeds(0, results.wheel_speeds);
-                engine.step(.01);
+                if (!checkBoxDisableMovement.Checked)
+                    engine.step(.01);
                 //moveObstacles();
             }
         }
-        /*void moveObstacles()
-        {
-            for (int i = 0; i < state.OurPositions.Length; i++)
-            {
-                if (state.OurWaypoints[i].Length > 1)
-                {
-                    double v = (double)Math.Sqrt(state.OurVelocities[i].magnitudeSq());
-                    while (state.OurPositions[i].distanceSq(state.currentPathWaypoint(true, i)) <= .5 * v * v)
-                        state.nextPathWaypoint(true, i);
-                    Vector2 next = state.currentPathWaypoint(true, i);
-                    state.OurPositions[i] += v * (next - state.OurPositions[i]).normalize();
-                }
-            }
-            for (int i = 0; i < state.TheirPositions.Length; i++)
-            {
-                if (state.TheirWaypoints[i].Length > 1)
-                {
-                    double v = (double)Math.Sqrt(state.TheirVelocities[i].magnitudeSq());
-                    while (state.TheirPositions[i].distanceSq(state.currentPathWaypoint(false, i)) <= .5 * v * v)
-                        state.nextPathWaypoint(false, i);
-                    Vector2 next = state.currentPathWaypoint(false, i);
-                    state.TheirPositions[i] += v * (next - state.TheirPositions[i]).normalize();
-                }
-            }
-        }*/
         volatile int numrunning = 0;
         void show(object state)
         {
@@ -170,6 +146,8 @@ namespace Robocup.MotionControl
         {
             int i = plannerChooseBox.SelectedIndex;
             planner = PlannerFactory.createPlanner(PlannerFactory.NavigatorTypes[i]);
+
+            propertyGrid1.SelectedObject = planner;
             //navigatorChooseBox.Visible = false;
 
             restoreFocus();
