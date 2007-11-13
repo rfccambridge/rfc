@@ -35,6 +35,15 @@ namespace Robocup.MotionControl
             label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(22, 15);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(35, 13);
+            label1.TabIndex = 3;
+            label1.Text = "label1";
+            // 
             // buttonStart
             // 
             this.buttonStart.Location = new System.Drawing.Point(205, 39);
@@ -61,15 +70,6 @@ namespace Robocup.MotionControl
             this.textBoxRobotID.TabIndex = 2;
             this.textBoxRobotID.Text = "0";
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(22, 15);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(35, 13);
-            label1.TabIndex = 3;
-            label1.Text = "label1";
-            // 
             // DataCollector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -81,6 +81,7 @@ namespace Robocup.MotionControl
             this.Controls.Add(this.buttonStart);
             this.Name = "DataCollector";
             this.Text = "DataCollector";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DataCollector_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

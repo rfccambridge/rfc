@@ -82,5 +82,10 @@ namespace Robocup.MotionControl
                 //TODO log the vision message
             }
         }
+
+        private void DataCollector_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            logger.Close();
+        }
     }
 }

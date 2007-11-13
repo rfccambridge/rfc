@@ -7,7 +7,7 @@ using Robocup.Core;
 namespace Robocup.MotionControl
 {
     /// <summary>
-    /// A basic RRT planner (no bidirectional)
+    /// A bidirectional RRT planner
     /// Assumes that it's only planning one robot
     /// </summary>
     public class BidirectionalRRTPlanner<T1, T2, G1, G2>
@@ -56,7 +56,6 @@ namespace Robocup.MotionControl
         Extender<T1, T2> extender12;
         Extender<T2, T2> extender22;
         Extender<T2, T1> extender21;
-        //Predicate<T> blocked;
         ValueFunction<T1> randomstate1;
         ValueFunction<T2> randomstate2;
         int numSavedWaypoints1, numSavedWaypoints2;
@@ -65,7 +64,7 @@ namespace Robocup.MotionControl
         Random r = new Random();
         /// <summary>
         /// Note: both extender2? extenders extend the T2 type -- which is the goal node;
-        /// this means that these extenders are extending BACKWARDS
+        /// this means that these extenders are extending backwards
         /// </summary>
         public BidirectionalRRTPlanner(
             Extender<T1, T1> extender11, Extender<T1, T2> extender12,
@@ -83,7 +82,11 @@ namespace Robocup.MotionControl
             numSavedWaypoints1 = 0;
             numSavedWaypoints2 = 0;
         }
-
+        /// <summary>
+        /// Finds a path from the "current" state to the "goal" state, passing the "state" object to the extenders.
+        /// The path is returned as a pair of paths, one of the first type of state starting at the start,
+        /// and one of the second type of state ending at the goal.
+        /// </summary>
         public Pair<List<T1>, List<T2>> Plan(T1 current, T2 goal, object state)
         {
             Pair<List<T1>, List<T2>> rtn = FindPath(current, goal, state);
@@ -95,6 +98,9 @@ namespace Robocup.MotionControl
             numSavedWaypoints1 = 0;
             numSavedWaypoints2 = 0;
         }
+        /// <summary>
+        /// Updates the waypoints in the cache using a generated path
+        /// </summary>
         private void UpdateWaypoints(Pair<List<T1>, List<T2>> rtn)
         {
             foreach (T1 node in rtn.First)
@@ -120,7 +126,11 @@ namespace Robocup.MotionControl
                 }
             }
         }
-
+        /// <summary>
+        /// Extends the start tree by one iteration, and extends the end tree
+        /// one iteration towards the start tree extension.
+        /// Returns null unless it connected the two trees together.
+        /// </summary>
         Pair<T1, T2> ExtendStartTree(G1 startTree, G2 endTree, object state)
         {
             T1 extendTo;
@@ -132,6 +142,7 @@ namespace Robocup.MotionControl
 
             T1 extendFrom = startTree.ClosestGoingTo(extendTo);
 
+            //extend the start tree
             for (int i = 0; i < maxextends; i++)
             {
                 ExtendResults<T1> extendresults = extender11(extendFrom, extendTo, state);
@@ -149,6 +160,7 @@ namespace Robocup.MotionControl
                 }
             }
             T2 otherExtendFrom = endTree.ClosestStartingAt(extendFrom);
+            //extend the end tree towards it
             for (int i = 0; i < maxextends; i++)
             {
                 ExtendResults<T2> extendresults = extender21(otherExtendFrom, extendFrom, state);
@@ -167,6 +179,11 @@ namespace Robocup.MotionControl
             }
             return null;
         }
+        /// <summary>
+        /// Extends the end tree by one iteration, and extends the start tree
+        /// one iteration towards the end tree extension.
+        /// Returns null unless it connected the two trees together.
+        /// </summary>
         Pair<T1, T2> ExtendEndTree(G1 startTree, G2 endTree, object state)
         {
             T2 extendTo;
@@ -178,6 +195,7 @@ namespace Robocup.MotionControl
 
             T2 extendFrom = endTree.ClosestStartingAt(extendTo);
 
+            //extend the end tree
             for (int i = 0; i < maxextends; i++)
             {
                 ExtendResults<T2> extendresults = extender22(extendFrom, extendTo, state);
@@ -195,6 +213,7 @@ namespace Robocup.MotionControl
                 }
             }
             T1 otherExtendFrom = startTree.ClosestGoingTo(extendFrom);
+            //extend the start tree towards it
             for (int i = 0; i < maxextends; i++)
             {
                 ExtendResults<T1> extendresults = extender12(otherExtendFrom, extendFrom, state);
@@ -216,6 +235,10 @@ namespace Robocup.MotionControl
 
         G1 lastTree1 = null;
         G2 lastTree2 = null;
+        /// <summary>
+        /// Attempts to find a path between the current state and the goal state,
+        /// by growing two trees, one from each end.
+        /// </summary>
         private Pair<List<T1>, List<T2>> FindPath(T1 current, T2 goal, object state)
         {
             G1 startTree = new G1();
@@ -223,6 +246,7 @@ namespace Robocup.MotionControl
             startTree.AddNode(current, null);
             endTree.AddNode(goal, null);
 
+            //iteratively grow the tree, but stop once it reaches a threshold size
             while (startTree.Size() + endTree.Size() < MaxTreeSize)
             {
                 Pair<T1, T2> connection = ExtendStartTree(startTree, endTree, state);
@@ -245,6 +269,10 @@ namespace Robocup.MotionControl
             lastTree2 = endTree;
             return GetPath(startTree, endTree, startTree.ClosestGoingTo(goal), endTree.ClosestStartingAt(current));
         }
+        /// <summary>
+        /// Given the two trees, and two nodes in the trees (the nodes which cause a conneciton)
+        /// returns the pair of paths in the trees that represents a path from the start to the end
+        /// </summary>
         private Pair<List<T1>, List<T2>> GetPath(G1 startTree, G2 endTree, T1 node1, T2 node2)
         {
             Pair<List<T1>, List<T2>> rtn = new Pair<List<T1>, List<T2>>(null, null);
@@ -255,6 +283,7 @@ namespace Robocup.MotionControl
                 rtn.First.Add(node1);
                 node1 = startTree.ParentNode(node1);
             }
+            //We've traversed the tree in the opposite order of the path, so reverse it
             rtn.First.Reverse();
             while (node2 != null)
             {
@@ -263,10 +292,16 @@ namespace Robocup.MotionControl
             }
             return rtn;
         }
+        /// <summary>
+        /// Gets the last-created start tree, for debugging/display purposes
+        /// </summary>
         public G1 LastTree1()
         {
             return lastTree1;
         }
+        /// <summary>
+        /// Gets the last-created end tree, for debugging/display purposes
+        /// </summary>
         public G2 LastTree2()
         {
             return lastTree2;
