@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Robocup.MotionControl
 {
-    static class Program
+    static class ModelCalibratorMain
     {
         /// <summary>
         /// The main entry point for the application.
@@ -15,6 +15,19 @@ namespace Robocup.MotionControl
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new ModelCalibrator());
+        }
+    }
+    static class DataCollectorMain
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new DataCollector());
         }
     }
 }
