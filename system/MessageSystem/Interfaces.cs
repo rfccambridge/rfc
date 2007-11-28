@@ -31,18 +31,34 @@ namespace Robocup.MessageSystem
         {
             return new ServerMessageSender<T>(portNum);
         }
+        /// <returns>Returns null if the connection was refused, most likely because there was no process running on the other side.</returns>
         public static MessageReceiver<T> CreateClientReceiver<T>(string hostname, int portNum)
         {
-            return new ClientMessageReceiver<T>(hostname, portNum);
+            try
+            {
+                return new ClientMessageReceiver<T>(hostname, portNum);
+            }
+            catch (ConnectionRefusedException)
+            {
+                return null;
+            }
         }
 
         public static MessageReceiver<T> CreateServerReceiver<T>(int portNum)
         {
             return new ServerMessageReceiver<T>(portNum);
         }
+        /// <returns>Returns null if the connection was refused, most likely because there was no process running on the other side.</returns>
         public static MessageSender<T> CreateClientSender<T>(string hostname, int portNum)
         {
-            return new ClientMessageSender<T>(hostname, portNum);
+            try
+            {
+                return new ClientMessageSender<T>(hostname, portNum);
+            }
+            catch (ConnectionRefusedException)
+            {
+                return null;
+            }
         }
     }
 }
