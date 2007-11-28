@@ -236,6 +236,74 @@ namespace Robocup.Plays
                 }
                 return rtn;
             });
+            addFunction("linearInterpolation", "Point, Point, Fraction - Point on the line of that fraction", "The point that is between Point ~ and Point ~ for some Fraction ~", typeof(Vector2), new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Vector2 p1 = (Vector2)objects[0];
+                Vector2 p2 = (Vector2)objects[1];
+                double fraction = (double)objects[2];
+                Vector2 v = new Vector2(fraction * (p2.X - p1.X), fraction * (p2.Y - p1.Y));
+                return new Vector2(p1.X + v.X, p1.Y + v.Y);
+            });
+            addFunction("numberOfRobotsInACircle", "Circle, Team - Number of Robots", "In a circle ~, the number of Robots of the Team ~ in it", typeof(int), new Type[] { typeof(Circle), typeof(TeamCondition) }, delegate(EvaluatorState state, object[] objects)
+            {
+                int count = 0;
+                TeamCondition condition = (TeamCondition)objects[1];
+                List<RobotInfo> allinfos = new List<RobotInfo>();
+                if (condition.maybeOurs())
+                    allinfos.AddRange(state.OurTeamInfo);
+                if (condition.maybeTheirs())
+                    allinfos.AddRange(state.TheirTeamInfo);
+                foreach (RobotInfo r in allinfos)
+                {
+                    if (((Circle)objects[0]).distanceFromCenter(r.Position) <= ((Circle)objects[0]).Radius)
+                        count++;
+                }
+                return count;
+            });
+            addFunction("angleBetweenTwoLines", "Line,Line - Angle", "The angle between line ~ and line ~", typeof(double), new Type[] { typeof(Line), typeof(Line) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Line L1 = (Line)objects[0];
+                Line L2 = (Line)objects[1];
+                Vector2 p1 = Intersections.intersect(L1, L2);
+                if (p1 == null)
+                    throw new NoIntersectionException("Lines do not intersect, No angle");
+                Vector2[] points1 = L1.getPoints();
+                Vector2[] points2 = L2.getPoints();
+                Vector2 p2 = points1[0];
+                Vector2 p3 = points2[0];
+                Vector2 v1, v2;
+                v1 = new Vector2(p1.X - p2.X, p1.Y - p2.Y);
+                v2 = new Vector2(p1.X - p3.X, p1.Y - p3.Y);
+                //p1 is the vertex of the angle
+                double dotproduct = v1.X * v2.X + v1.Y * v2.Y;
+                double angle = Math.Acos(dotproduct / Math.Sqrt((v1.X * v1.X + v1.Y * v1.Y) * (v2.X * v2.X + v2.Y * v2.Y)));
+                return angle;
+            });
+            addFunction("angleBetweenThreePoints", "Point,Point,Point - Angle", "The angle between the rays connecting Point ~ with Point ~ and Point ~", typeof(double), new Type[] { typeof(Vector2), typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Vector2 p1, p2, p3;
+                p1 = (Vector2)objects[0];
+                p2 = (Vector2)objects[1];
+                p3 = (Vector2)objects[2];
+                Vector2 v1, v2;
+                v1 = new Vector2(p1.X - p2.X, p1.Y - p2.Y);
+                v2 = new Vector2(p1.X - p3.X, p1.Y - p3.Y);
+                //p1 is the vertex of the angle
+                double dotproduct = v1.X * v2.X + v1.Y * v2.Y;
+                double angle = Math.Acos(dotproduct / Math.Sqrt((v1.X * v1.X + v1.Y * v1.Y) * (v2.X * v2.X + v2.Y * v2.Y)));
+                return angle;
+            });
+            addFunction("rotatePointAroundAnotherPoint", "Point, Point, Angle - Point", "Around a center point ~, Rotate a Point ~ for an angle ~", typeof(Vector2), new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Vector2 p1, p2;
+                p1 = (Vector2)objects[0];
+                p2 = (Vector2)objects[1];
+                double angle = (double)objects[2];
+                Vector2 v = new Vector2(p2.X - p1.X, p2.Y - p1.Y);
+                double originalAngle = v.cartesianAngle();
+                double length = Math.Sqrt(v.magnitudeSq());
+                return new Vector2(p1.X + Math.Cos(originalAngle + angle) * length, p1.Y + Math.Sin(originalAngle + angle) * length);
+            });
 
             #endregion
 
