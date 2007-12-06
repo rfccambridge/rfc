@@ -32,7 +32,14 @@ namespace Robocup.MessageSystem
 
         public void Close()
         {
-            sender.Close();
+            if (sender != null)
+                sender.Close();
+            GC.SuppressFinalize(this);
+        }
+        ~ClientMessageSender()
+        {
+            Console.WriteLine("~ClientMessageSender");
+            this.Close();
         }
     }
     class ClientMessageReceiver<T> : MessageReceiver<T>
@@ -68,7 +75,8 @@ namespace Robocup.MessageSystem
 
         public void Close()
         {
-            receiver.Close();
+            if (receiver != null)
+                receiver.Close();
             GC.SuppressFinalize(this);
         }
         ~ClientMessageReceiver()

@@ -74,6 +74,11 @@ namespace Robotics.Commander
         public void Close()
         {
             comport.Close();
+            GC.SuppressFinalize(this);
+        }
+        ~SerialRobots()
+        {
+            this.Close();
         }
 
         private void setAllMotor(int target, int source, int lf, int rf, int lb, int rb, int duration)
