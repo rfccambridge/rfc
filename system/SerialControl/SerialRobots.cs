@@ -13,17 +13,16 @@ namespace Robotics.Commander
         string[] headsigns = { "\\Hvv", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v", "\\H7v" };
 
         string endsign = "\\E";
-        string pn = Constants.get<string>("ports", "SerialPort");
+        string pn;
         string br = "9600";
         string pr = "None";
         string db = "8";
         string sb = "One";
 
-        #region construction
-        static SerialPort comport = new SerialPort();
-        #endregion
+        SerialPort comport;
+        //static SerialPort comport = new SerialPort();
 
-        #region handy functions
+        /*#region handy functions
         private byte[] ByteStringToByteArray(string s)
         {
             byte[] buffer = new byte[s.Length];
@@ -48,27 +47,35 @@ namespace Robotics.Commander
                 t1[t1.Length - 15 + i] = a[a.Length - 15 + i];
             return t1;
         }
-        #endregion
+        #endregion*/
 
         private const string fname = "..\\..\\resources\\scaling.txt";
         //private const string fname = "C:\\Debug\\scaling.txt";
 
-        public SerialRobots()
+        public SerialRobots(string port)
         {
+            this.pn = port;
+
+            comport = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
+
             comport.BaudRate = int.Parse(br);
             comport.DataBits = int.Parse(db);
             comport.StopBits = (StopBits)Enum.Parse(typeof(StopBits), sb);
             comport.Parity = (Parity)Enum.Parse(typeof(Parity), pr);
-            comport.PortName = pn;
             comport.WriteTimeout = SerialPort.InfiniteTimeout;
             comport.ReadTimeout = SerialPort.InfiniteTimeout;
 
             loadMotorScale(fname);
         }
+        public SerialRobots()
+            : this(Constants.get<string>("ports", "SerialPort"))
+        {
+        }
 
         public void Open()
         {
-            comport.Open();
+            if (!comport.IsOpen)
+                comport.Open();
         }
 
         public void Close()
@@ -86,7 +93,7 @@ namespace Robotics.Commander
             if (target >= headsigns.Length || target < 0)
                 return; //don't throw exception
 
-            Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
+            //Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
 
             int dir = 0;
             //Here we have to convert from our convention (positive values->robot forward)
@@ -103,7 +110,7 @@ namespace Robotics.Commander
             cdir = (char)dir;
             clf = (char)Math.Abs(lf);
             crf = (char)Math.Abs(rf);
-            clb = (char)Math.Abs(lb);
+            clb = (char)Math.Abs(lb % 256);
             crb = (char)Math.Abs(rb);
             sdir = Convert.ToString(cdir);
             slf = Convert.ToString(clf);
@@ -115,11 +122,21 @@ namespace Robotics.Commander
             string smsg;
             //robots expect wheel powers in this order:
             //lb lf rf rb
-            smsg = headsigns[target] + wheel + slb + slf + srf + srb + sdir + endsign;
+            //smsg = headsigns[target] + wheel + slb + slf + srf + srb + sdir + endsign;
+
+            byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+target),
+                (byte)'w',(byte)'w',(byte)Math.Abs(lb/256),
+                (byte)Math.Abs(lb%256),(byte)'\\',(byte)'E'};
+
+            /*smsg = "\\H" + target + "ww" + Convert.ToString((char)Math.Abs(lb / 256)) + slb + "\\E";
+
+            Console.WriteLine((int)Convert.ToString((char)Math.Abs(lb / 256))[0] + "\t" + (int)slb[0]);*/
+            comport.Write(msg, 0, msg.Length);
+
             //Console.WriteLine(smsg);
             #endregion
 
-            comport.Write(smsg);
+            //comport.Write(smsg);
 
         }
 
@@ -219,6 +236,13 @@ namespace Robotics.Commander
             comport.Write(smsg2);
         }
 
+        /// <summary>
+        /// Sends an arbitrary command to the port -- for debugging purposes only
+        /// </summary>
+        public void sendCommand(string command)
+        {
+            comport.Write(command);
+        }
 
         #region IRobots Members
 
@@ -228,7 +252,7 @@ namespace Robotics.Commander
 
             /////
             //process motor scalings
-            int maxspeed = 255;
+            int maxspeed = 25500000;
             if (wheelSpeeds.lf > 0)
                 frontLeft = (int)Math.Min(wheelSpeeds.lf * forwardpower[robotID].lf, maxspeed);
             else

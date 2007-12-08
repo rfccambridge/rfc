@@ -58,6 +58,8 @@ namespace Robocup.MotionControl
             this.textBoxconstI = new System.Windows.Forms.TextBox();
             this.textBoxconstD = new System.Windows.Forms.TextBox();
             this.buttonSendPIDConstants = new System.Windows.Forms.Button();
+            this.textBoxSerialCommand = new System.Windows.Forms.TextBox();
+            this.buttonSendCustomSerial = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
@@ -196,7 +198,7 @@ namespace Robocup.MotionControl
             this.textBoxRobotID.Name = "textBoxRobotID";
             this.textBoxRobotID.Size = new System.Drawing.Size(100, 20);
             this.textBoxRobotID.TabIndex = 2;
-            this.textBoxRobotID.Text = "0";
+            this.textBoxRobotID.Text = "1";
             // 
             // textBoxPeriod
             // 
@@ -303,7 +305,7 @@ namespace Robocup.MotionControl
             this.textBoxSerialPort.Name = "textBoxSerialPort";
             this.textBoxSerialPort.Size = new System.Drawing.Size(100, 20);
             this.textBoxSerialPort.TabIndex = 21;
-            this.textBoxSerialPort.Text = "COM4";
+            this.textBoxSerialPort.Text = "COM5";
             // 
             // textBoxconstP
             // 
@@ -338,11 +340,31 @@ namespace Robocup.MotionControl
             this.buttonSendPIDConstants.Text = "Send Constants";
             this.buttonSendPIDConstants.UseVisualStyleBackColor = true;
             // 
+            // textBoxSerialCommand
+            // 
+            this.textBoxSerialCommand.Location = new System.Drawing.Point(268, 398);
+            this.textBoxSerialCommand.Name = "textBoxSerialCommand";
+            this.textBoxSerialCommand.Size = new System.Drawing.Size(100, 20);
+            this.textBoxSerialCommand.TabIndex = 27;
+            this.textBoxSerialCommand.Text = "\\H11wasdf\\E";
+            // 
+            // buttonSendCustomSerial
+            // 
+            this.buttonSendCustomSerial.Location = new System.Drawing.Point(382, 396);
+            this.buttonSendCustomSerial.Name = "buttonSendCustomSerial";
+            this.buttonSendCustomSerial.Size = new System.Drawing.Size(95, 23);
+            this.buttonSendCustomSerial.TabIndex = 28;
+            this.buttonSendCustomSerial.Text = "Send Command";
+            this.buttonSendCustomSerial.UseVisualStyleBackColor = true;
+            this.buttonSendCustomSerial.Click += new System.EventHandler(this.buttonSendCustomSerial_Click);
+            // 
             // DataCollector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(711, 455);
+            this.Controls.Add(this.buttonSendCustomSerial);
+            this.Controls.Add(this.textBoxSerialCommand);
             this.Controls.Add(this.buttonSendPIDConstants);
             this.Controls.Add(this.textBoxconstD);
             this.Controls.Add(this.textBoxconstI);
@@ -402,5 +424,7 @@ namespace Robocup.MotionControl
         private System.Windows.Forms.TextBox textBoxconstI;
         private System.Windows.Forms.TextBox textBoxconstD;
         private System.Windows.Forms.Button buttonSendPIDConstants;
+        private System.Windows.Forms.TextBox textBoxSerialCommand;
+        private System.Windows.Forms.Button buttonSendCustomSerial;
     }
 }

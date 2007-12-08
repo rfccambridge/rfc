@@ -40,9 +40,12 @@ namespace Robocup.MotionControl
 
             functions.Add("Sine wave", new SineWave());
             functions.Add("Step function", new StepFunction());
+            functions.Add("Ramp function", new RampFunction());
 
             comboBoxFunctionList.Items.AddRange(new List<string>(functions.Keys).ToArray());
             comboBoxFunctionList.SelectedIndex = 0;
+
+            textBoxSerialPort.Text = Constants.get<string>("ports", "SerialPort");
 
             FileStream fs = new FileStream("collecteddata.log.zip", FileMode.Create);
             GZipStream gz = new GZipStream(fs, CompressionMode.Compress);
@@ -51,6 +54,7 @@ namespace Robocup.MotionControl
             timer = new HighResTimer();
 
             buttonStop.Enabled = false;
+            buttonSendCustomSerial.Enabled = false;
         }
 
         bool running = false;
@@ -70,6 +74,7 @@ namespace Robocup.MotionControl
                     logger.InsertBreak();
                 hasrun = true;
 
+                lastSerialData = 0;
                 thread = new Thread(Run);
                 thread.Start();
             }
@@ -109,7 +114,7 @@ namespace Robocup.MotionControl
 
             logger.LogObject(new VisionOrCommand(command));
 
-            listBoxHistory.Items.Insert(1, command.lf + "\t"+ command.rf+ '\t'+ command.lb+ '\t'+ command.rb);
+            listBoxHistory.Items.Insert(1, command.lf + "\t" + command.rf + '\t' + command.lb + '\t' + command.rb);
             if (listBoxHistory.Items.Count > 16)
                 listBoxHistory.Items.RemoveAt(16);
             if (t > double.Parse(textBoxTestDuration.Text))
@@ -125,18 +130,39 @@ namespace Robocup.MotionControl
             }
         }
 
-        private void SerialDataReceived(int value)
+        bool closing = false;
+        private void SerialValueReceived(double t, int value)
+        {
+            lock (csv)
+            {
+                if (!closing && running)
+                    csv.WriteLine(t + ", " + current.eval(t).lb + ", " + value);
+            }
+        }
+
+        private double lastSerialData = 0;
+        private void SerialDataReceived(int[] values)
         {
             timer.Stop();
             double t = timer.Duration;
-            csv.WriteLine(t + ", " + value);
+            int n = values.Length;
+            for (int i = 0; i < n; i++)
+            {
+                double thist = (t - lastSerialData) / n * (i + 1) + lastSerialData;
+                SerialValueReceived(thist, values[i]);
+            }
+            lastSerialData = t;
         }
 
         private void DataCollector_FormClosing(object sender, FormClosingEventArgs e)
         {
+            closing = true;
             logger.Close();
             if (csv != null)
-                csv.Close();
+                lock (csv)
+                {
+                    csv.Close();
+                }
             running = false;
         }
 
@@ -152,16 +178,19 @@ namespace Robocup.MotionControl
             bool check = checkBoxDoSend.Checked;
             if (check)
             {
-                serialoutput = new SerialRobots();
+                serialoutput = new SerialRobots(textBoxSerialPort.Text);
+                serialoutput.Open();
+                buttonSendCustomSerial.Enabled = true;
             }
             else
             {
                 serialoutput.Close();
                 serialoutput = null;
+                buttonSendCustomSerial.Enabled = false;
             }
         }
 
-        private void buttonConnectVision_Click(object sender, EventArgs e)
+        void CloseConnections()
         {
             if (serialinput != null)
             {
@@ -173,6 +202,10 @@ namespace Robocup.MotionControl
                 visionreceiver.Close();
                 visionreceiver = null;
             }
+        }
+        private void buttonConnectVision_Click(object sender, EventArgs e)
+        {
+            CloseConnections();
             string host = textBoxVisionHostname.Text;
             visionreceiver = Messages.CreateClientReceiver<VisionMessage>(host, Constants.get<int>("ports", "VisionDataPort"));
             if (visionreceiver != null)
@@ -187,16 +220,7 @@ namespace Robocup.MotionControl
         private void buttonListenSerial_Click(object sender, EventArgs e)
         {
             string port = textBoxSerialPort.Text;
-            if (serialinput != null)
-            {
-                serialinput.Close();
-                serialinput = null;
-            }
-            if (visionreceiver != null)
-            {
-                visionreceiver.Close();
-                visionreceiver = null;
-            }
+            CloseConnections();
             serialinput = SerialInput.CreateSerialInput(port);
 
             if (serialinput != null)
@@ -206,6 +230,7 @@ namespace Robocup.MotionControl
 
                 serialinput.ValueReceived += SerialDataReceived;
                 labelConnectedTo.Text = "serial port " + port;
+                timer.Start();
             }
             else
                 labelConnectedTo.Text = "(none)";
@@ -214,6 +239,14 @@ namespace Robocup.MotionControl
         private void buttonStop_Click(object sender, EventArgs e)
         {
             running = false;
+        }
+
+        private void buttonSendCustomSerial_Click(object sender, EventArgs e)
+        {
+            if (serialoutput != null)
+            {
+                serialoutput.sendCommand(textBoxSerialCommand.Text);
+            }
         }
     }
 
@@ -269,9 +302,41 @@ namespace Robocup.MotionControl
 
         public WheelSpeeds eval(double t)
         {
-            int speed = (int)(t>transition?finalpower:initialpower);
+            int speed = (int)(t > transition ? finalpower : initialpower);
             return new WheelSpeeds(speed, speed, speed, speed);
         }
+    }
+    public class RampFunction : Function
+    {
+        private double waittime = .5;
+
+        public double WaitTime
+        {
+            get { return waittime; }
+            set { waittime = value; }
+        }
+        private int start=0;
+
+        public int Start
+        {
+            get { return start; }
+            set { start = value; }
+        }
+        private int change=32;
+
+        public int Change
+        {
+            get { return change; }
+            set { change = value; }
+        }
+
 	
+
+        public WheelSpeeds eval(double t)
+        {
+            int num = (int)(t / waittime);
+            int speed = start + num * change;
+            return new WheelSpeeds(speed, speed, speed, speed);
+        }
     }
 }
