@@ -43,6 +43,7 @@
     <Compile Include="HighResTimer.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerialUtils.cs" />
     <Compile Include="SpecialFunctions.cs" />
   </ItemGroup>
   <ItemGroup>

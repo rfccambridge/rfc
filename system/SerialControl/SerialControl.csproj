@@ -55,7 +55,6 @@
       <DependentUpon>RemoteControl.cs</DependentUpon>
     </Compile>
     <Compile Include="RunSerial.cs" />
-    <Compile Include="SerialPortManager.cs" />
     <Compile Include="SerialRobots.cs" />
     <Compile Include="SerialTest.cs" />
   </ItemGroup>

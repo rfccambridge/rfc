@@ -9,11 +9,10 @@ namespace Robotics.Commander
 {
     public class SerialRobots : IRobots
     {
-        string wheel = "w";
-        string[] headsigns = { "\\Hvv", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v", "\\H7v" };
+        string wheel = "w" ;
+        string [] headsigns = { "\\Hvv", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v", "\\H7v" };
 
         string endsign = "\\E";
-        string pn;
         string br = "9600";
         string pr = "None";
         string db = "8";
@@ -54,10 +53,9 @@ namespace Robotics.Commander
 
         public SerialRobots(string port)
         {
-            this.pn = port;
-
             comport = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
 
+            comport.Encoding = NullEncoding.Encoding;
             comport.BaudRate = int.Parse(br);
             comport.DataBits = int.Parse(db);
             comport.StopBits = (StopBits)Enum.Parse(typeof(StopBits), sb);
