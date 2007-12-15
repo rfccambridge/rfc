@@ -38,9 +38,9 @@ namespace Robocup.MotionControl
             Form.CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
 
+            functions.Add("Ramp function", new RampFunction());
             functions.Add("Sine wave", new SineWave());
             functions.Add("Step function", new StepFunction());
-            functions.Add("Ramp function", new RampFunction());
 
             comboBoxFunctionList.Items.AddRange(new List<string>(functions.Keys).ToArray());
             comboBoxFunctionList.SelectedIndex = 0;
@@ -52,6 +52,8 @@ namespace Robocup.MotionControl
             logger = new LogWriter<VisionOrCommand>(gz);
 
             timer = new HighResTimer();
+
+            listBoxInputHistory.Items.Add(SerialInput.SerialInputMessage.ToStringHeader());
 
             buttonStop.Enabled = false;
             buttonSendCustomSerial.Enabled = false;
@@ -83,8 +85,8 @@ namespace Robocup.MotionControl
         private void Run(object state)
         {
             timer.Start();
-            listBoxHistory.Items.Clear();
-            listBoxHistory.Items.Add("lf\trf\tlb\trb");
+            listBoxCommandHistory.Items.Clear();
+            listBoxCommandHistory.Items.Add("lf\trf\tlb\trb");
             buttonStart.Enabled = false;
             buttonStop.Enabled = true;
             while (running)
@@ -114,9 +116,9 @@ namespace Robocup.MotionControl
 
             logger.LogObject(new VisionOrCommand(command));
 
-            listBoxHistory.Items.Insert(1, command.lf + "\t" + command.rf + '\t' + command.lb + '\t' + command.rb);
-            if (listBoxHistory.Items.Count > 16)
-                listBoxHistory.Items.RemoveAt(16);
+            listBoxCommandHistory.Items.Insert(1, command.lf + "\t" + command.rf + '\t' + command.lb + '\t' + command.rb);
+            if (listBoxCommandHistory.Items.Count > 16)
+                listBoxCommandHistory.Items.RemoveAt(16);
             if (t > double.Parse(textBoxTestDuration.Text))
                 running = false;
         }
@@ -131,17 +133,22 @@ namespace Robocup.MotionControl
         }
 
         bool closing = false;
-        private void SerialValueReceived(double t, int value)
+        private void SerialValueReceived(double t, SerialInput.SerialInputMessage message)
         {
             lock (csv)
             {
                 if (!closing && running)
-                    csv.WriteLine(t + ", " + current.eval(t).lb + ", " + value);
+                    csv.WriteLine(t + ", " + current.eval(t).lb + ", " +
+                        message.Encoder + ", " + message.Error + ", " + message.WheelCommand+", "+message.Extra+", "+message.Extra2);
+
+                listBoxInputHistory.Items.Insert(1, message);
+                if (listBoxInputHistory.Items.Count > 16)
+                    listBoxInputHistory.Items.RemoveAt(16);
             }
         }
 
         private double lastSerialData = 0;
-        private void SerialDataReceived(int[] values)
+        private void SerialDataReceived(SerialInput.SerialInputMessage[] values)
         {
             timer.Stop();
             double t = timer.Duration;
@@ -226,7 +233,11 @@ namespace Robocup.MotionControl
             if (serialinput != null)
             {
                 if (csv == null)
+                {
                     csv = new StreamWriter("data.csv", false);
+
+                    csv.WriteLine("time, cs command, encoder, error, ee command, extra, extra2");
+                }
 
                 serialinput.ValueReceived += SerialDataReceived;
                 labelConnectedTo.Text = "serial port " + port;
@@ -247,6 +258,12 @@ namespace Robocup.MotionControl
             {
                 serialoutput.sendCommand(textBoxSerialCommand.Text);
             }
+        }
+
+        private void buttonSendPIDConstants_Click(object sender, EventArgs e)
+        {
+            serialoutput.SetPIDConstants(int.Parse(textBoxRobotID.Text), byte.Parse(textBoxconstP.Text),
+                byte.Parse(textBoxconstI.Text), byte.Parse(textBoxconstD.Text));
         }
     }
 
@@ -308,21 +325,21 @@ namespace Robocup.MotionControl
     }
     public class RampFunction : Function
     {
-        private double waittime = .5;
+        private double waittime = .1;
 
         public double WaitTime
         {
             get { return waittime; }
             set { waittime = value; }
         }
-        private int start=0;
+        private int start = 0;
 
         public int Start
         {
             get { return start; }
             set { start = value; }
         }
-        private int change=32;
+        private int change = 0;
 
         public int Change
         {
@@ -330,7 +347,7 @@ namespace Robocup.MotionControl
             set { change = value; }
         }
 
-	
+
 
         public WheelSpeeds eval(double t)
         {

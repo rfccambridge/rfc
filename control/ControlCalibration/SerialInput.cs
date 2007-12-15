@@ -36,6 +36,56 @@ namespace Robocup.MotionControl
             this.Close();
         }
 
+        public class SerialInputMessage
+        {
+            private int encoder;
+            public int Encoder
+            {
+                get { return encoder; }
+                set { encoder = value; }
+            }
+
+            private int error;
+            public int Error
+            {
+                get { return error; }
+                set { error = value; }
+            }
+
+            private int wheelcommand;
+            public int WheelCommand
+            {
+                get { return wheelcommand; }
+                set { wheelcommand = value; }
+            }
+
+            private int extra;
+            public int Extra
+            {
+                get { return extra; }
+                set { extra = value; }
+            }
+
+            private int extra2;
+
+            public int Extra2
+            {
+                get { return extra2; }
+                set { extra2 = value; }
+            }
+
+
+
+            static public string ToStringHeader()
+            {
+                return "encoder\terror\tcommand\textra\textra2";
+            }
+            public override string ToString()
+            {
+                return encoder + "\t" + error + "\t" + wheelcommand + "\t" + extra+"\t"+extra2;
+            }
+        }
+
         void serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             while (serialport.BytesToRead > 50)
@@ -48,11 +98,15 @@ namespace Robocup.MotionControl
                     Console.Write(b + " ");
                 }
                 Console.WriteLine();
-                int[] rtn = new int[16];
-                for (int i = 0; i < 16; i++)
+                SerialInputMessage[] rtn = new SerialInputMessage[4];
+                for (int i = 0; i < 4; i++)
                 {
-                    int val = 256 * (int)(data[3 + i * 2]) + (int)(data[4 + i * 2]);
-                    rtn[i] = val;
+                    rtn[i] = new SerialInputMessage();
+                    rtn[i].Encoder = 256 * (int)(data[3 + i * 8]) + (int)(data[4 + i * 8]) - (1 << 15);
+                    rtn[i].Error = (sbyte)data[5 + i * 8];
+                    rtn[i].WheelCommand = (short)(256 * (int)(data[6 + i * 8]) + (int)(data[7 + i * 8]));
+                    rtn[i].Extra = 256 * (int)(data[8 + i * 8]) + (int)(data[9 + i * 8]);
+                    rtn[i].Extra2 = (sbyte)data[10 + i * 8];
                 }
                 ValueReceived(rtn);
             }
@@ -60,6 +114,6 @@ namespace Robocup.MotionControl
 
         /*public delegate void ValueReceivedDel(double t, int val);
         public event ValueReceivedDel ValueReceived;*/
-        public event Action<int[]> ValueReceived;
+        public event Action<SerialInputMessage[]> ValueReceived;
     }
 }

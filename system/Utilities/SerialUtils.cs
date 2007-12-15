@@ -14,6 +14,7 @@ namespace Robocup.Utilities
             if (ports.ContainsKey(port))
                 return ports[port];
             SerialPort rtn = new SerialPort(port);
+            //rtn.Encoding = NullEncoding.Encoding;
             ports.Add(port, rtn);
             return rtn;
         }

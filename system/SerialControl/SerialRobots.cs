@@ -9,8 +9,9 @@ namespace Robotics.Commander
 {
     public class SerialRobots : IRobots
     {
-        string wheel = "w" ;
-        string [] headsigns = { "\\Hvv", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v", "\\H7v" };
+        const byte wheel = (byte)'w';
+        const byte PID = (byte)'f';
+        string[] headsigns = { "\\Hvv", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v", "\\H7v" };
 
         string endsign = "\\E";
         string br = "9600";
@@ -55,7 +56,7 @@ namespace Robotics.Commander
         {
             comport = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
 
-            comport.Encoding = NullEncoding.Encoding;
+            //comport.Encoding = NullEncoding.Encoding;
             comport.BaudRate = int.Parse(br);
             comport.DataBits = int.Parse(db);
             comport.StopBits = (StopBits)Enum.Parse(typeof(StopBits), sb);
@@ -93,15 +94,12 @@ namespace Robotics.Commander
 
             //Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
 
-            int dir = 0;
             //Here we have to convert from our convention (positive values->robot forward)
             //to the EE convention (positive values->counterclockwise)
-            if (lb < 0) dir += 1;
-            if (lf < 0) dir += 2;
-            if (rf > 0) dir += 4;
-            if (rb > 0) dir += 8;
+            lf *= -1;
+            lb *= -1;
 
-            #region convert input to byte string
+            /*#region convert input to byte string
             string sdir, slf, srf, slb, srb;
 
             char cdir, clf, crf, clb, crb;
@@ -117,14 +115,13 @@ namespace Robotics.Commander
             srb = Convert.ToString(crb);
 
 
-            string smsg;
+            string smsg;*/
             //robots expect wheel powers in this order:
             //lb lf rf rb
             //smsg = headsigns[target] + wheel + slb + slf + srf + srb + sdir + endsign;
 
             byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+target),
-                (byte)'w',(byte)'w',(byte)Math.Abs(lb/256),
-                (byte)Math.Abs(lb%256),(byte)'\\',(byte)'E'};
+                (byte)'w',wheel,(byte)lb,(byte)lf, (byte)rf, (byte)rb,(byte)'\\',(byte)'E'};
 
             /*smsg = "\\H" + target + "ww" + Convert.ToString((char)Math.Abs(lb / 256)) + slb + "\\E";
 
@@ -132,7 +129,7 @@ namespace Robotics.Commander
             comport.Write(msg, 0, msg.Length);
 
             //Console.WriteLine(smsg);
-            #endregion
+            //#endregion
 
             //comport.Write(smsg);
 
@@ -177,6 +174,13 @@ namespace Robotics.Commander
             //Console.WriteLine("stopcharge:" + smsg);
             comport.Write(smsg);
             Console.WriteLine("robot " + robotID + " has stopped charging");
+        }
+
+        public void SetPIDConstants(int robotID, byte P, byte I, byte D)
+        {
+            byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+robotID),
+                (byte)'w',PID,P,I,D,(byte)'\\',(byte)'E'};
+            comport.Write(msg, 0, msg.Length);
         }
 
         public void setKick(int robotID)
@@ -272,10 +276,10 @@ namespace Robotics.Commander
                 backRight = (int)Math.Max(wheelSpeeds.rb * backwardspower[robotID].rb, -maxspeed);
 
 
-            if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 10)
+            //if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 10)
                 setAllMotor(robotID, 0, frontLeft, frontRight, backLeft, backRight, 1000);
-            else
-                setAllMotor(robotID, 0, 0, 0, 0, 0, 65535);
+            /*else
+                setAllMotor(robotID, 0, 0, 0, 0, 0, 65535);*/
         }
 
         public void kick(int robotID)
