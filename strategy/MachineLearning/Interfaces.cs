@@ -108,4 +108,15 @@ namespace MachineLearning
             return score + ", " + stdDev + " - " + args.ToString();
         }
     }
+    /// <summary>
+    /// A function to generate the next guess from a previous guess.  Should not
+    /// return the same value on multiple calls with the same arguments.
+    /// </summary>
+    /// <param name="previous">The previous guess</param>
+    /// <param name="temperature">The "temperature" of the system</param>
+    public delegate T GenerateNextArgs<T>(T previous, double temperature);
+    /// <summary>
+    /// A function that returns true when the optimization should end.
+    /// </summary>
+    public delegate bool SingleTerminationFunction<T>(T current, double score);
 }
