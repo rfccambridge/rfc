@@ -43,6 +43,7 @@
     <Compile Include="RobotInfoNNFinder.cs" />
     <Compile Include="RRTPlanners.cs" />
     <Compile Include="SearchTree.cs" />
+    <Compile Include="Smoother.cs" />
     <Compile Include="TestRRTPlanner.cs" />
     <Compile Include="Vector2NNFinder.cs" />
     <Compile Include="WheelSpeedsExtender.cs" />

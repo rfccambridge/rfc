@@ -195,4 +195,56 @@ namespace Robocup.MotionControl
             Common.DrawVector2Tree(planner.LastTree2(), Color.Green, g, c);
         }
     }
+    public class SmoothVector2BiRRTMotionPlanner : IMotionPlanner
+    {
+        public int MaxExtends
+        {
+            get { return planner.MaxExtends; }
+            set { planner.MaxExtends = value; }
+        }
+
+
+        BidirectionalRRTPlanner<Vector2, Vector2, Vector2Tree, Vector2Tree> planner;
+
+        public SmoothVector2BiRRTMotionPlanner()
+        {
+            planner = new BidirectionalRRTPlanner<Vector2, Vector2, Vector2Tree, Vector2Tree>(
+                Common.ExtendVV, Common.ExtendVV, Common.ExtendVV, Common.ExtendVV, Common.RandomStateV, Common.RandomStateV);
+        }
+
+        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        {
+            List<Obstacle> obstacles = new List<Obstacle>();
+            foreach (RobotInfo info in predictor.getAllInfos())
+            {
+                if (info.ID != id)
+                    //TODO magic number (robot radius)
+                    obstacles.Add(new Obstacle(info.Position, .2));
+            }
+            if (avoidBallRadius > 0)
+                obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
+
+            RobotInfo curinfo = predictor.getCurrentInformation(id);
+            Pair<List<Vector2>, List<Vector2>> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
+
+            List<Vector2> waypoints = path.First;
+            waypoints.AddRange(path.Second);
+            return Smoother.Smooth(curinfo, waypoints, obstacles);
+        }
+
+        Vector2 important = null;
+
+        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
+        {
+            Common.DrawVector2Tree(planner.LastTree1(), Color.Blue, g, c);
+            Common.DrawVector2Tree(planner.LastTree2(), Color.Green, g, c);
+
+            if (important != null)
+            {
+                Brush red = new SolidBrush(Color.Red);
+                g.FillRectangle(red, c.fieldtopixelX(important.X) - 2, c.fieldtopixelY(important.Y) - 2, 5, 5);
+                red.Dispose();
+            }
+        }
+    }
 }

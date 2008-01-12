@@ -5,11 +5,11 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BBADBEA3-3CF2-46C3-95B5-A670EF057571}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Robocup.MotionControl</RootNamespace>
     <AssemblyName>ControlCalibration</AssemblyName>
-    <StartupObject>Robocup.MotionControl.DataCollectorMain</StartupObject>
+    <StartupObject>Robocup.MotionControl.ModelCalibratorMain</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
