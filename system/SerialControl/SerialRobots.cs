@@ -50,13 +50,11 @@ namespace Robotics.Commander
         #endregion*/
 
         private const string fname = "..\\..\\resources\\scaling.txt";
-        //private const string fname = "C:\\Debug\\scaling.txt";
 
         public SerialRobots(string port)
         {
             comport = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
 
-            //comport.Encoding = NullEncoding.Encoding;
             comport.BaudRate = int.Parse(br);
             comport.DataBits = int.Parse(db);
             comport.StopBits = (StopBits)Enum.Parse(typeof(StopBits), sb);
@@ -99,40 +97,13 @@ namespace Robotics.Commander
             lf *= -1;
             lb *= -1;
 
-            /*#region convert input to byte string
-            string sdir, slf, srf, slb, srb;
-
-            char cdir, clf, crf, clb, crb;
-            cdir = (char)dir;
-            clf = (char)Math.Abs(lf);
-            crf = (char)Math.Abs(rf);
-            clb = (char)Math.Abs(lb % 256);
-            crb = (char)Math.Abs(rb);
-            sdir = Convert.ToString(cdir);
-            slf = Convert.ToString(clf);
-            srf = Convert.ToString(crf);
-            slb = Convert.ToString(clb);
-            srb = Convert.ToString(crb);
-
-
-            string smsg;*/
             //robots expect wheel powers in this order:
             //lb lf rf rb
-            //smsg = headsigns[target] + wheel + slb + slf + srf + srb + sdir + endsign;
 
             byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+target),
                 (byte)'w',wheel,(byte)lb,(byte)lf, (byte)rf, (byte)rb,(byte)'\\',(byte)'E'};
 
-            /*smsg = "\\H" + target + "ww" + Convert.ToString((char)Math.Abs(lb / 256)) + slb + "\\E";
-
-            Console.WriteLine((int)Convert.ToString((char)Math.Abs(lb / 256))[0] + "\t" + (int)slb[0]);*/
             comport.Write(msg, 0, msg.Length);
-
-            //Console.WriteLine(smsg);
-            //#endregion
-
-            //comport.Write(smsg);
-
         }
 
         private List<int> canKick = new List<int>();
@@ -277,7 +248,7 @@ namespace Robotics.Commander
 
 
             //if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 10)
-                setAllMotor(robotID, 0, frontLeft, frontRight, backLeft, backRight, 1000);
+            setAllMotor(robotID, 0, frontLeft, frontRight, backLeft, backRight, 1000);
             /*else
                 setAllMotor(robotID, 0, 0, 0, 0, 0, 65535);*/
         }
