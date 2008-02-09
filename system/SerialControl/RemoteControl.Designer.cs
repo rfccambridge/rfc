@@ -28,12 +28,27 @@ namespace Robotics.Commander
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.Label label1;
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.OpenCOM = new System.Windows.Forms.Button();
             this.statusLabel = new System.Windows.Forms.Label();
             this.reloadMotor = new System.Windows.Forms.Button();
             this.lblID = new System.Windows.Forms.Label();
+            this.textBoxRemoteHost = new System.Windows.Forms.TextBox();
+            this.radioButtonNone = new System.Windows.Forms.RadioButton();
+            this.radioButtonSerial = new System.Windows.Forms.RadioButton();
+            this.radioButtonRemote = new System.Windows.Forms.RadioButton();
+            label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(407, 231);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(70, 13);
+            label1.TabIndex = 47;
+            label1.Text = "Remote host:";
             // 
             // textBox1
             // 
@@ -71,7 +86,7 @@ namespace Robotics.Commander
             // 
             // reloadMotor
             // 
-            this.reloadMotor.Location = new System.Drawing.Point(410, 120);
+            this.reloadMotor.Location = new System.Drawing.Point(410, 73);
             this.reloadMotor.Name = "reloadMotor";
             this.reloadMotor.Size = new System.Drawing.Size(118, 66);
             this.reloadMotor.TabIndex = 44;
@@ -90,11 +105,58 @@ namespace Robotics.Commander
             this.lblID.TabIndex = 45;
             this.lblID.Text = "RobotID: 0";
             // 
+            // textBoxRemoteHost
+            // 
+            this.textBoxRemoteHost.Location = new System.Drawing.Point(410, 247);
+            this.textBoxRemoteHost.Name = "textBoxRemoteHost";
+            this.textBoxRemoteHost.Size = new System.Drawing.Size(100, 20);
+            this.textBoxRemoteHost.TabIndex = 46;
+            this.textBoxRemoteHost.Text = "localhost";
+            // 
+            // radioButtonNone
+            // 
+            this.radioButtonNone.AutoSize = true;
+            this.radioButtonNone.Checked = true;
+            this.radioButtonNone.Location = new System.Drawing.Point(414, 304);
+            this.radioButtonNone.Name = "radioButtonNone";
+            this.radioButtonNone.Size = new System.Drawing.Size(96, 17);
+            this.radioButtonNone.TabIndex = 48;
+            this.radioButtonNone.TabStop = true;
+            this.radioButtonNone.Text = "No Connection";
+            this.radioButtonNone.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonSerial
+            // 
+            this.radioButtonSerial.AutoSize = true;
+            this.radioButtonSerial.Location = new System.Drawing.Point(414, 327);
+            this.radioButtonSerial.Name = "radioButtonSerial";
+            this.radioButtonSerial.Size = new System.Drawing.Size(73, 17);
+            this.radioButtonSerial.TabIndex = 49;
+            this.radioButtonSerial.Text = "Serial Port";
+            this.radioButtonSerial.UseVisualStyleBackColor = true;
+            this.radioButtonSerial.CheckedChanged += new System.EventHandler(this.radioButtonSerial_CheckedChanged);
+            // 
+            // radioButtonRemote
+            // 
+            this.radioButtonRemote.AutoSize = true;
+            this.radioButtonRemote.Location = new System.Drawing.Point(414, 350);
+            this.radioButtonRemote.Name = "radioButtonRemote";
+            this.radioButtonRemote.Size = new System.Drawing.Size(138, 17);
+            this.radioButtonRemote.TabIndex = 50;
+            this.radioButtonRemote.Text = "radioButtonRemoteHost";
+            this.radioButtonRemote.UseVisualStyleBackColor = true;
+            this.radioButtonRemote.CheckedChanged += new System.EventHandler(this.radioButtonRemote_CheckedChanged);
+            // 
             // RemoteControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(568, 497);
+            this.Controls.Add(this.radioButtonRemote);
+            this.Controls.Add(this.radioButtonSerial);
+            this.Controls.Add(this.radioButtonNone);
+            this.Controls.Add(label1);
+            this.Controls.Add(this.textBoxRemoteHost);
             this.Controls.Add(this.lblID);
             this.Controls.Add(this.reloadMotor);
             this.Controls.Add(this.OpenCOM);
@@ -117,6 +179,10 @@ namespace Robotics.Commander
         public System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.Button reloadMotor;
         public System.Windows.Forms.Label lblID;
+        private System.Windows.Forms.TextBox textBoxRemoteHost;
+        private System.Windows.Forms.RadioButton radioButtonNone;
+        private System.Windows.Forms.RadioButton radioButtonSerial;
+        private System.Windows.Forms.RadioButton radioButtonRemote;
     }
 }
 

@@ -7,23 +7,25 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO.Ports;
 using Robocup.Core;
+using Robocup.MessageSystem;
+using Robocup.Utilities;
 
-namespace Robotics.Commander
-{
-    partial class RemoteControl : Form
-    {
+namespace Robotics.Commander {
+    partial class RemoteControl : Form {
         private int speed = 127;
-        public bool remotecontrol = false;
+        private bool active = false;
+        private bool sendcommands_remotehost = false;
+        private bool sendcommands_serial = false;
+        private MessageSender<WheelCommand> message_sender = null;
 
-        private SerialRobots srobots = new SerialRobots();
+        private SerialRobots srobots;
         /*public SerialRobots Serial
         {
             get { return srobots; }
         }*/
         private int curRobot;
 
-        public RemoteControl()
-        {
+        public RemoteControl() {
             InitializeComponent();
             textBox1.Text = "8 backspace ======= kill the robot" + "\r\n"
                            + "37 left =========== move left in x " + "\r\n"
@@ -54,41 +56,40 @@ namespace Robotics.Commander
             curRobot = 0;
         }
 
-        private void toggleSettings(object sender, EventArgs e)
-        {
-            remotecontrol = !remotecontrol;
-            textBox1.Enabled = !textBox1.Enabled;
+        private void toggleSettings(object sender, EventArgs e) {
+            active = !active;
+            /*textBox1.Enabled = !textBox1.Enabled;
             statusLabel.Enabled = !statusLabel.Enabled;
             OpenCOM.Enabled = !OpenCOM.Enabled;
-            reloadMotor.Enabled = !reloadMotor.Enabled;
-
-            if (remotecontrol)
-            {
-                srobots.Open();
-                //button1.Text = "Close COM";
+            reloadMotor.Enabled = !reloadMotor.Enabled;*/
+            foreach (Control c in this.Controls) {
+                c.Enabled = !active;
             }
-            else
-            {
-                srobots.Close();
-                //button1.Text = "Open COM";
-            }
-        }
 
-
-
-        public void sendMove(int id, int lf, int rf, int lb, int rb)
-        {
-            if (remotecontrol)
-            {
-                srobots.setMotorSpeeds(id, new WheelSpeeds(lf, rf, lb, rb));
-                statusLabel.Text = "computercmd";
+            if (sendcommands_serial) {
+                if (active) {
+                    srobots.Open();
+                } else {
+                    srobots.Close();
+                }
             }
         }
-        public void sendMove(int id, WheelSpeeds speeds)
-        {
-            if (remotecontrol)
-            {
-                srobots.setMotorSpeeds(id, speeds);
+
+
+
+
+        private void setMotorSpeeds(int lf, int rf, int lb, int rb) {
+            sendMove(curRobot, new WheelSpeeds(lf, rf, lb, rb));
+        }
+        public void sendMove(int id, int lf, int rf, int lb, int rb) {
+            sendMove(id, new WheelSpeeds(lf, rf, lb, rb));
+        }
+        public void sendMove(int id, WheelSpeeds speeds) {
+            if (active) {
+                if (sendcommands_serial)
+                    srobots.setMotorSpeeds(id, speeds);
+                else if (sendcommands_remotehost)
+                    message_sender.Post(new WheelCommand(id, speeds));
                 statusLabel.Text = "computercmd";
             }
         }
@@ -102,10 +103,8 @@ namespace Robotics.Commander
             }
         }*/
 
-        public void kick(int id)
-        {
-            if (remotecontrol)
-            {
+        public void kick(int id) {
+            if (active) {
                 srobots.setKick(id);
                 statusLabel.Text = "kick computercmd";
             }
@@ -120,15 +119,8 @@ namespace Robotics.Commander
             }
         }*/
 
-        private void setMotorSpeeds(int lf, int rf, int lb, int rb)
-        {
-            srobots.setMotorSpeeds(curRobot, new WheelSpeeds(lf, rf, lb, rb));
-        }
-
-        private void From1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (remotecontrol)
-            {
+        private void From1_KeyDown(object sender, KeyEventArgs e) {
+            if (active) {
                 #region keys
                 /*38  up     ============= move forward in y
                 40  down   ============= move backward in y
@@ -159,8 +151,7 @@ namespace Robotics.Commander
 
                 #region keyboard control
                 //label1.Text = Convert.ToString(e.KeyValue);
-                switch (e.KeyValue)
-                {
+                switch (e.KeyValue) {
                     case 8: // backspace
                         srobots.stopAll(curRobot);
                         statusLabel.Text = "stopping everything";
@@ -256,7 +247,7 @@ namespace Robotics.Commander
                         break;
                     case 27: // exit
                         toggleSettings(null, null);
-                        statusLabel.Text = "breaking: " + remotecontrol;
+                        statusLabel.Text = "breaking: " + active;
                         break;
                     default:
                         //if(e.KeyCode==Keys.Escape)        // exit
@@ -273,10 +264,8 @@ namespace Robotics.Commander
 
         }
 
-        private void From1_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (remotecontrol)
-            {
+        private void From1_KeyUp(object sender, KeyEventArgs e) {
+            if (active) {
                 setMotorSpeeds(0, 0, 0, 0);
                 /*rcon.setAllMotor(oldcommander, curRobot, 0 //combosource
                     , 0, 0, 0, 0, 0, 65535);*/
@@ -285,17 +274,34 @@ namespace Robotics.Commander
         }
 
 
-        private void RemoteControl_Load(object sender, EventArgs e)
-        {
+        private void RemoteControl_Load(object sender, EventArgs e) {
             this.toggleSettings(sender, e);
 
             //rcom.LoadMotorScale("C:\\Microsoft Robotics Studio (1.0)\\samples\\MasterCommander\\scaling.txt");
         }
 
 
-        private void button3_Click(object sender, EventArgs e)
-        {
+        private void button3_Click(object sender, EventArgs e) {
             srobots.loadMotorScale();
+        }
+
+        private void radioButtonSerial_CheckedChanged(object sender, EventArgs e) {
+            sendcommands_serial = radioButtonSerial.Checked;
+            if (sendcommands_serial)
+                srobots = new SerialRobots();
+            else
+                srobots = null;
+        }
+
+        private void radioButtonRemote_CheckedChanged(object sender, EventArgs e) {
+            sendcommands_remotehost = radioButtonRemote.Checked;
+            if (radioButtonRemote.Checked)
+                this.message_sender = Messages.CreateClientSender<WheelCommand>(
+                    textBoxRemoteHost.Text, Constants.get<int>("ports", "RemoteControlPort"));
+            else {
+                this.message_sender.Close();
+                this.message_sender = null;
+            }
         }
 
     }
