@@ -11,6 +11,7 @@ namespace Robotics.Commander
     {
         const byte wheel = (byte)'w';
         const byte PID = (byte)'f';
+        const byte reset = (byte)'r';
         string[] headsigns = { "\\Hvv", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v", "\\H7v" };
 
         string endsign = "\\E";
@@ -93,12 +94,10 @@ namespace Robotics.Commander
             //Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
 
             //Here we have to convert from our convention (positive values->robot forward)
-            //to the EE convention (positive values->counterclockwise)
-            lf *= -1;
-            lb *= -1;
+            //to the EE convention (positive values->clockwise)
+            rf *= -1;
+            rb *= -1;
 
-            //robots expect wheel powers in this order:
-            //lb lf rf rb
             if (lb == '\\')
                 lb++;
             if (lf == '\\')
@@ -108,8 +107,10 @@ namespace Robotics.Commander
             if (rb == '\\')
                 rb++;
 
+            //robots expect wheel powers in this order:
+            //rf lf lb rb
             byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+target),
-                (byte)'w',wheel,(byte)lb,(byte)lf, (byte)rf, (byte)rb,(byte)'\\',(byte)'E'};
+                (byte)'w',wheel,(byte)rf,(byte)lf, (byte)lb, (byte)rb,(byte)'\\',(byte)'E'};
 
             comport.Write(msg, 0, msg.Length);
         }
@@ -192,6 +193,10 @@ namespace Robotics.Commander
         {
             string smsg = headsigns[target] + "d0" + endsign;
             comport.Write(smsg);
+        }
+
+        public void resetBoards(int target) {
+            comport.Write(headsigns[target] + "rr" + endsign);
         }
 
         /// <summary>

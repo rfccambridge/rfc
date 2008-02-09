@@ -26,6 +26,7 @@ namespace Robotics.Commander {
         private int curRobot;
 
         public RemoteControl() {
+            Form.CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
             textBox1.Text = "8 backspace ======= kill the robot" + "\r\n"
                            + "37 left =========== move left in x " + "\r\n"
@@ -42,6 +43,7 @@ namespace Robotics.Commander {
                            + "187 = ============= speed up" + "\r\n"
                            + "189 - ============= speed down " + "\r\n"
                            + "80 p ============== stop" + "\r\n"
+                           + "82 r ============== reset boards" + "\r\n"
                            + "48 0 ============== computer" + "\r\n"
                            + "49 1 ============== robot1" + "\r\n"
                            + "50 2 ============== robot2" + "\r\n"
@@ -193,7 +195,7 @@ namespace Robotics.Commander {
                         setMotorSpeeds(speed, -speed, speed, -speed);
                         statusLabel.Text = "clock";
                         break;
-                    case 67:        // c Convert.ToStringge kicker
+                    case 67:        // c charge kicker
                         //rcon.setOther(comboTarget.SelectedIndex, comboSource.SelectedIndex, 0);
                         srobots.setCharge(curRobot);
                         statusLabel.Text = "charging";
@@ -221,6 +223,10 @@ namespace Robotics.Commander {
                         setMotorSpeeds(0, 0, 0, 0);
                         statusLabel.Text = "zzZz";
                         break;
+                    case 'r':
+                        if (sendcommands_serial)
+                            srobots.resetBoards(curRobot);
+                        break;
                     case '=':
                     case 187:
                         speed += 10;
@@ -231,7 +237,7 @@ namespace Robotics.Commander {
                         speed -= 10;
                         statusLabel.Text = "new speed: " + speed;
                         break;
-                    case 48:        // 0 computer
+                    case 48:        // 0 robot0
                     case 49:        // 1 robot1
                     case 50:        // 2 robot2
                     case 51:        // 3 robot3
@@ -275,7 +281,7 @@ namespace Robotics.Commander {
 
 
         private void RemoteControl_Load(object sender, EventArgs e) {
-            this.toggleSettings(sender, e);
+            //this.toggleSettings(sender, e);
 
             //rcom.LoadMotorScale("C:\\Microsoft Robotics Studio (1.0)\\samples\\MasterCommander\\scaling.txt");
         }
@@ -295,10 +301,13 @@ namespace Robotics.Commander {
 
         private void radioButtonRemote_CheckedChanged(object sender, EventArgs e) {
             sendcommands_remotehost = radioButtonRemote.Checked;
-            if (radioButtonRemote.Checked)
+            if (radioButtonRemote.Checked) {
+                if (textBoxRemoteHost.Text == "localhost") {
+                    MessageBox.Show("don't create a loop like that!");
+                }
                 this.message_sender = Messages.CreateClientSender<WheelCommand>(
                     textBoxRemoteHost.Text, Constants.get<int>("ports", "RemoteControlPort"));
-            else {
+            } else {
                 this.message_sender.Close();
                 this.message_sender = null;
             }
