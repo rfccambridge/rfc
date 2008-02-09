@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialControl", "..\..\syst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\system\Core\Core.csproj", "{501CE524-9C56-4C08-B04F-69A92318872A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "..\..\system\Utilities\Utilities.csproj", "{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{501CE524-9C56-4C08-B04F-69A92318872A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{501CE524-9C56-4C08-B04F-69A92318872A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{501CE524-9C56-4C08-B04F-69A92318872A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
