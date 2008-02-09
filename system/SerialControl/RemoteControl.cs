@@ -10,12 +10,16 @@ using Robocup.Core;
 
 namespace Robotics.Commander
 {
-    public partial class RemoteControl : Form
+    partial class RemoteControl : Form
     {
         private int speed = 127;
         public bool remotecontrol = false;
 
         private SerialRobots srobots = new SerialRobots();
+        /*public SerialRobots Serial
+        {
+            get { return srobots; }
+        }*/
         private int curRobot;
 
         public RemoteControl()
@@ -28,7 +32,7 @@ namespace Robotics.Commander
                            + "40 down =========== move backward in y" + "\r\n"
                            + "188 , ============= rotate anti-clockwise" + "\r\n"
                            + "190 . ============= rotate clockwise" + "\r\n"
-                           + "67 c ============== Convert.ToStringge kicker" + "\r\n"
+                           + "67 c ============== charge kicker" + "\r\n"
                            + "32 space ========== fire kicker" + "\r\n"
                            + "75 k ============== fire chipkicker" + "\r\n"
                            + "68 d ============== dribbler on" + "\r\n"
@@ -77,6 +81,14 @@ namespace Robotics.Commander
             if (remotecontrol)
             {
                 srobots.setMotorSpeeds(id, new WheelSpeeds(lf, rf, lb, rb));
+                statusLabel.Text = "computercmd";
+            }
+        }
+        public void sendMove(int id, WheelSpeeds speeds)
+        {
+            if (remotecontrol)
+            {
+                srobots.setMotorSpeeds(id, speeds);
                 statusLabel.Text = "computercmd";
             }
         }
