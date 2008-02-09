@@ -99,6 +99,14 @@ namespace Robotics.Commander
 
             //robots expect wheel powers in this order:
             //lb lf rf rb
+            if (lb == '\\')
+                lb++;
+            if (lf == '\\')
+                lf++;
+            if (rf == '\\')
+                rf++;
+            if (rb == '\\')
+                rb++;
 
             byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+target),
                 (byte)'w',wheel,(byte)lb,(byte)lf, (byte)rf, (byte)rb,(byte)'\\',(byte)'E'};
