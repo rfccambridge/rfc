@@ -138,7 +138,7 @@ namespace VisionStatic {
     public class ColorCalibrator {
         public const int V_SLICE_DEPTH = 25;
 
-        private const string WORK_DIR = "C:/Debug/";
+        private const string WORK_DIR = "../../resources/vision/";
 
         private const string DEFAULT_HSV_TO_CC_TABLE = WORK_DIR + "hsv_to_cc_table.dat";
         private const string DEFAULT_RGB_TO_CC_TABLE = WORK_DIR + "rgb_to_cc_table.dat"; // only for quick loading time

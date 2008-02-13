@@ -13,7 +13,7 @@ using Robocup.Core;
 
 namespace Vision {
     public partial class ImageForm : Form {
-        private const string WORK_DIR = "C:/Debug/";
+        private const string WORK_DIR = "../../resources/vision/";
         private const string DEFAULT_REGION_FILE = WORK_DIR + "region.txt";
         private const string IDLE_STATUS = "Ready. Press F1 for key functions.";
 

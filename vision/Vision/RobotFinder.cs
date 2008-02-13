@@ -293,7 +293,7 @@ namespace VisionStatic {
             ERROR_GREEN_DOT = Constants.get<float>("vision", "ERROR_GREEN_DOT");
 
 
-            if (Constants.get<string>("vision", "OUR_TEAM_COLOR").ToUpper() == "BLUE")
+            if (Constants.get<string>("configuration", "OUR_TEAM_COLOR").ToUpper() == "BLUE")
             {
                 AREA_OUR_CENTER_DOT = Constants.get<float>("vision", "AREA_BLUE_CENTER_DOT");
                 AREA_THEIR_CENTER_DOT = Constants.get<float>("vision", "AREA_YELLOW_CENTER_DOT");

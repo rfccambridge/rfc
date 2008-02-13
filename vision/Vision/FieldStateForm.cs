@@ -30,7 +30,8 @@ namespace Vision {
 
 
         private Size FIELD_SIZE = new Size(340, 490);
-        private SizeF FIELD_SIZE_WORLD = new SizeF(3400, 4900);
+        //private SizeF FIELD_SIZE_WORLD = new SizeF(3400, 4900); old, jie 2/13
+        private SizeF FIELD_SIZE_WORLD = new SizeF(3.4f, 4.9f);
         private int OUT_ZONE_WIDTH = 30;
         private Color FIELD_COLOR = Color.DarkGreen;
         private Color OUR_COLOR = VisionStatic.ColorClasses.COLOR_CLASSES[VisionStatic.ColorClasses.OUR_CENTER_DOT];
@@ -48,6 +49,9 @@ namespace Vision {
             _bmpField = new Bitmap(2 * OUT_ZONE_WIDTH + FIELD_SIZE.Width, 2 * OUT_ZONE_WIDTH + FIELD_SIZE.Height);
             _gfxField = Graphics.FromImage(_bmpField);
             picField.BackgroundImage = _bmpField;
+
+            this.Width = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Width;
+            this.Height = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Height;
         }
 
         public void UpdateState(VisionMessage visionMessage) {
@@ -70,10 +74,10 @@ namespace Vision {
               //  }
             }
 
-            //if (visionMessage.Ball != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
+            if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
                 DrawBall(visionMessage.BallPosition);
                 ballsOnField++;
-           // }
+            }
 
            // if (ballsOnField == 0)
            //     Console.WriteLine("Warning: No balls on field!");
@@ -94,23 +98,29 @@ namespace Vision {
         {
             int x1, y1, x2, y2;
             int w, h;
-            ScaleLocation(3400, 4900, out x1, out y1);
+
+            // outline
+            ScaleLocation(-FIELD_SIZE_WORLD.Width/2, FIELD_SIZE_WORLD.Height/2, out x1, out y1);
             _gfxField.DrawRectangle(Pens.White, new Rectangle(x1, y1, FIELD_SIZE.Width, FIELD_SIZE.Height));
 
-            ScaleLocation(0, FIELD_SIZE_WORLD.Height / 2, out x1, out y1);
-            ScaleLocation(FIELD_SIZE_WORLD.Width, FIELD_SIZE_WORLD.Height / 2, out x2, out y2);
+            // midfield
+            ScaleLocation(-FIELD_SIZE_WORLD.Width / 2, 0, out x1, out y1);
+            ScaleLocation(FIELD_SIZE_WORLD.Width / 2, 0, out x2, out y2);
             _gfxField.DrawLine(Pens.White, new Point(x1, y1),
                                            new Point(x2, y2));
 
-            const int RADIUS = 500;
-            ScaleLocation(FIELD_SIZE_WORLD.Width / 2 + RADIUS, FIELD_SIZE_WORLD.Height / 2 + RADIUS, out x1,out  y1);
+            const float RADIUS = 0.25f;
+            // center ring
+            ScaleLocation(0 - RADIUS, 0 + RADIUS, out x1,out  y1);
             ScaleSize(RADIUS * 2, RADIUS * 2, out w, out h);
             _gfxField.DrawEllipse(Pens.White, new Rectangle(x1, y1, w, h));
 
-            ScaleLocation(FIELD_SIZE_WORLD.Width / 2 + RADIUS, 0 + RADIUS, out x1, out y1);
+            // top goal
+            ScaleLocation(0 - RADIUS, FIELD_SIZE_WORLD.Height/2 + RADIUS, out x1, out y1);
             _gfxField.DrawArc(Pens.White, new Rectangle(x1, y1, w, h), 180, 180);
 
-            ScaleLocation(FIELD_SIZE_WORLD.Width / 2 + RADIUS, FIELD_SIZE_WORLD.Height + RADIUS, out x1, out y1);
+            // bottom goal
+            ScaleLocation(0 - RADIUS, - FIELD_SIZE_WORLD.Height/2 + RADIUS, out x1, out y1);
             _gfxField.DrawArc(Pens.White, new Rectangle(x1, y1, w, h), 0, 180);
         }
         private void DrawOurRobot(VisionMessage.RobotData robot) {
@@ -125,6 +135,7 @@ namespace Vision {
             _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold), 
                                  Brushes.DarkRed, x - DIAMETER / 3, y - DIAMETER / 3);
             _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.Position.X, robot.Position.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
+            
         }
 
         private void DrawTheirRobot(VisionMessage.RobotData robot) {
@@ -152,12 +163,12 @@ namespace Vision {
 
         private void ScaleLocation(double worldX, double worldY, 
                                    out int x, out int y) {
-            double normedX = 1 - worldX / FIELD_SIZE_WORLD.Width;
-            double normedY = 1 - worldY / FIELD_SIZE_WORLD.Height;
+            double normedX = (FIELD_SIZE_WORLD.Width / 2 + worldX )/ FIELD_SIZE_WORLD.Width;
+            double normedY = (FIELD_SIZE_WORLD.Height / 2 - worldY) / FIELD_SIZE_WORLD.Height;
 
             x = Convert.ToInt32(OUT_ZONE_WIDTH + normedX * FIELD_SIZE.Width);
             y = Convert.ToInt32(OUT_ZONE_WIDTH + normedY * FIELD_SIZE.Height);
-
+            
 
         }
         private void ScaleSize(double worldWidth, double worldHeight, out int width, out int height)

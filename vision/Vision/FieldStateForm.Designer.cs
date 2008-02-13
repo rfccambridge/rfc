@@ -30,21 +30,19 @@ namespace Vision {
             // picField
             // 
             this.picField.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picField.Location = new System.Drawing.Point(4, 4);
-            this.picField.Margin = new System.Windows.Forms.Padding(4);
+            this.picField.Location = new System.Drawing.Point(3, 3);
             this.picField.Name = "picField";
-            this.picField.Size = new System.Drawing.Size(400, 550);
+            this.picField.Size = new System.Drawing.Size(300, 447);
             this.picField.TabIndex = 0;
             this.picField.TabStop = false;
             // 
             // FieldStateForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 558);
+            this.ClientSize = new System.Drawing.Size(394, 516);
             this.Controls.Add(this.picField);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FieldStateForm";
             this.Text = "Field State";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FieldStateForm_FormClosing);

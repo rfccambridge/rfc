@@ -12,7 +12,7 @@ using Robocup.Utilities;
 
 namespace Robotics.Commander {
     partial class RemoteControl : Form {
-        private int speed = 127;
+        private int speed = 17;
         private bool active = false;
         private bool sendcommands_remotehost = false;
         private bool sendcommands_serial = false;
@@ -23,6 +23,14 @@ namespace Robotics.Commander {
         {
             get { return srobots; }
         }*/
+        // lf, rf, lb, rb  forward = all positive left = - + + -
+        float[] wheel_dx = new float[] { 0.71f, -0.71f, -0.74f, 0.74f };
+        float[] wheel_dy = new float[] { 0.71f, 0.71f, 0.68f, 0.68f };
+        float[] wheel_baseline = new float[] { 3.23f, 3.23f, 3.23f, 3.23f };
+        float[] wheel_radius = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+        // takes in a (unit) vector to translate the robot by
+        float[] wheel_speeds = new float[4];
+
         private int curRobot;
 
         public RemoteControl() {
@@ -121,6 +129,19 @@ namespace Robotics.Commander {
             }
         }*/
 
+        
+        
+        private void driveInDirection(float dx, float dy) {
+            //Console.Write("speeds: ");
+            for (int i = 0; i < 4; i++ ) {
+                wheel_speeds[i] = speed*(dx * wheel_dx[i] + dy * wheel_dy[i]) / wheel_radius[i];
+                //Console.Write(" " + wheel_speeds[i]);
+            }
+            // make sure signs are appropriate
+            //Console.Write("\n");
+            setMotorSpeeds((int)wheel_speeds[0], (int)wheel_speeds[1], (int)wheel_speeds[2], (int)wheel_speeds[3]);
+        }
+
         private void From1_KeyDown(object sender, KeyEventArgs e) {
             if (active) {
                 #region keys
@@ -161,26 +182,30 @@ namespace Robotics.Commander {
                     case 'a':
                     case 37:        // left move left in x
                         //rcom.DriveStraight(oldcommander, 0, 65535);
-                        setMotorSpeeds(-speed, speed, speed, -speed);
+                        //setMotorSpeeds(-speed, speed, speed, -speed);
+                        driveInDirection(-1.0f, 0.0f);
                         statusLabel.Text = "<-x";
                         break;
                     case 'd':
                     case 39:        // right move right in x
                         //rcom.DriveStraight(oldcommander, 1, 65535);
-                        setMotorSpeeds(speed, -speed, -speed, speed);
+                        //setMotorSpeeds(speed, -speed, -speed, speed);
+                        driveInDirection(1.0f, 0.0f);
                         statusLabel.Text = "x->";
                         break;
                     case 'w':
                     case 38:        // up move forward in y
                         //rcom.DriveStraight(oldcommander, 2, 65535);
-                        setMotorSpeeds(speed, speed, speed, speed);
+                        //setMotorSpeeds(speed, speed, speed, speed);
+                        driveInDirection(0.0f, 1.0f);
                         //rcom.DriveDir(oldcommander, Int32.Parse(forwardDir.Text), 65535);
                         statusLabel.Text = "^y";
                         break;
                     case 's':
                     case 40:        // down move backward in y
                         //rcom.DriveStraight(oldcommander, 3, 65535);
-                        setMotorSpeeds(-speed, -speed, -speed, -speed);
+                        //setMotorSpeeds(-speed, -speed, -speed, -speed);
+                        driveInDirection(0.0f, -1.0f);
                         statusLabel.Text = "yv";
                         break;
                     case 'q':

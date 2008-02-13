@@ -90,6 +90,9 @@ namespace Robotics.Commander
         {
             if (target >= headsigns.Length || target < 0)
                 return; //don't throw exception
+            
+            
+            Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
 
             //Here we have to convert from our convention (positive values->robot forward)
             //to the EE convention (positive values->clockwise)
