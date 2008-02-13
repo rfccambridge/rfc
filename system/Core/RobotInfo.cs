@@ -53,6 +53,10 @@ namespace Robocup.Core
             this.orientation = orientation;
             this.idnum = id;
         }
+        public RobotInfo Clone()
+        {
+            return new RobotInfo(position, velocity, rotational_velocity, orientation, idnum);
+        }
 
         private readonly List<string> tags = new List<string>();
         /// <summary>

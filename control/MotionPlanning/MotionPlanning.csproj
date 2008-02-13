@@ -46,7 +46,6 @@
     <Compile Include="Smoother.cs" />
     <Compile Include="TestRRTPlanner.cs" />
     <Compile Include="Vector2NNFinder.cs" />
-    <Compile Include="WheelSpeedsExtender.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\strategy\Navigation\Navigation.csproj">

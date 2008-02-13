@@ -219,7 +219,7 @@ namespace Robocup.MotionControl
             {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
-                    obstacles.Add(new Obstacle(info.Position, .2));
+                    obstacles.Add(new Obstacle(info.Position, .22));
             }
             if (avoidBallRadius > 0)
                 obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
@@ -245,6 +245,8 @@ namespace Robocup.MotionControl
                 g.FillRectangle(red, c.fieldtopixelX(important.X) - 2, c.fieldtopixelY(important.Y) - 2, 5, 5);
                 red.Dispose();
             }
+
+            Smoother.DrawLast(g, c);
         }
     }
 }

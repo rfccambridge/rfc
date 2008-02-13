@@ -17,7 +17,7 @@ namespace Robocup.MotionControl
         where G2 : class, BiSearchTree<T2, T1>, new()
     {
         #region Algorithm parameters
-        private int maxtreesize = 500;
+        private int maxtreesize = 400;
         public int MaxTreeSize
         {
             get { return maxtreesize; }

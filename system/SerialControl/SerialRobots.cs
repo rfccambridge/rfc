@@ -91,12 +91,12 @@ namespace Robotics.Commander
             if (target >= headsigns.Length || target < 0)
                 return; //don't throw exception
 
-            //Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
-
             //Here we have to convert from our convention (positive values->robot forward)
             //to the EE convention (positive values->clockwise)
             rf *= -1;
             rb *= -1;
+
+            //Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
 
             if (lb == '\\')
                 lb++;
@@ -238,7 +238,7 @@ namespace Robotics.Commander
 
             /////
             //process motor scalings
-            int maxspeed = 25500000;
+            int maxspeed = 127;
             if (wheelSpeeds.lf > 0)
                 frontLeft = (int)Math.Min(wheelSpeeds.lf * forwardpower[robotID].lf, maxspeed);
             else

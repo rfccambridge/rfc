@@ -37,7 +37,8 @@ namespace Robocup.CoreRobotics
 
         public WheelSpeeds calculateWheelSpeeds(IPredictor predictor, int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation)
         {
-            Vector2 destination = results.waypoint;
+            return WheelSpeedsExtender.GetWheelSpeeds(currentInfo, results.waypoint);
+            /*Vector2 destination = results.waypoint;
             Vector2 position = currentInfo.Position;
             double distanceToMove = Math.Sqrt(position.distanceSq(destination));
             double angleToTarget = Math.Atan2(destination.Y - position.Y, destination.X - position.X);
@@ -61,7 +62,7 @@ namespace Robocup.CoreRobotics
                     angleChange -= Math.PI;
                 else if (angleChange < 0)
                     angleChange += Math.PI;
-            }*/
+            }*
 
             int anglepower = (int)(anglePID.getNext(angleChange));
             //Console.WriteLine("angle diff: " + angleChange);
@@ -81,7 +82,7 @@ namespace Robocup.CoreRobotics
                 rtn += forwardSpeeds;
             }
 
-            return rtn;
+            return rtn;*/
         }
 
         public void reloadPID()
