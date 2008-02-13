@@ -37,12 +37,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generics.cs" />
+    <Compile Include="IMotionPlanner.cs" />
     <Compile Include="INavigator.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="MovementModeler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotInfo.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="WheelSpeeds.cs" />
+    <Compile Include="WheelSpeedsExtender.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rfc.snk" />

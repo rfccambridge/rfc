@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
+using Robocup.CoreRobotics;
 
 namespace Robocup.MotionControl {
     public static class PlannerFactory {

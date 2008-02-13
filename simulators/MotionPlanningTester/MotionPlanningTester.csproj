@@ -70,6 +70,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\control\CoreRobotics\CoreRobotics.csproj">
+      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
+      <Name>CoreRobotics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\control\MotionPlanning\MotionPlanning.csproj">
       <Project>{6B407296-924E-4788-A8B4-5E808061889D}</Project>
       <Name>RRTPlanner</Name>

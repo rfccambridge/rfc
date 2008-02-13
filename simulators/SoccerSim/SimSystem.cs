@@ -84,15 +84,16 @@ namespace SoccerSim
                 _predictor = physics_engine;
             }
 
-            Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
+            /*Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
             foreach (RobotInfo info in physics_engine.getOurTeamInfo())
                 //planners.Add(info.ID, new FourWheeledMovement());
             planners.Add(info.ID, new TwoWheeledMovement( TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight));
             foreach (RobotInfo info in physics_engine.getTheirTeamInfo())
-                planners.Add(info.ID, new FourWheeledMovement());
+                planners.Add(info.ID, new FourWheeledMovement());*/
                 //planners.Add(info.ID, new TwoWheeledMovement(physics_engine, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight));
             // create controller
-            _controller = new RFCController(physics_engine, planners, new Navigation.Current.CurrentNavigator(), physics_engine);
+            //_controller = new RFCController(physics_engine, planners, new Navigation.Current.CurrentNavigator(), physics_engine);
+            _controller = new RFCController(physics_engine, new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner(), physics_engine);
 
             // refboxlistener
             //referee = new RefBoxState(_listener, _predictor, isYellow);

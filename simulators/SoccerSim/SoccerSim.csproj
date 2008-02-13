@@ -77,6 +77,10 @@
       <Name>CoreRobotics</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\control\MotionPlanning\MotionPlanning.csproj">
+      <Project>{6B407296-924E-4788-A8B4-5E808061889D}</Project>
+      <Name>MotionPlanning</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\system\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>

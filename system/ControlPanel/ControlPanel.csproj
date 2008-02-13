@@ -23,7 +23,7 @@
     </StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -123,6 +123,10 @@
     <ProjectReference Include="..\..\control\CoreRobotics\CoreRobotics.csproj">
       <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
       <Name>CoreRobotics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\control\MotionPlanning\MotionPlanning.csproj">
+      <Project>{6B407296-924E-4788-A8B4-5E808061889D}</Project>
+      <Name>MotionPlanning</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\strategy\Core Play Files\CorePlayFiles.csproj">
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>

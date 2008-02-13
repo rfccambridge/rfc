@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Robocup.Core;
 using Robocup.Utilities;
 using Robocup.Simulation;
+using Robocup.CoreRobotics;
 
 namespace Robocup.MotionControl
 {

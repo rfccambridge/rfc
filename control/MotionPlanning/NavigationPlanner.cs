@@ -34,10 +34,10 @@ namespace Robocup.MotionControl
             navigator.drawLast(g, c);
         }
     }
-    public class CurrentPlanner : NavigationPlanner
+    /*public class CurrentPlanner : NavigationPlanner
     {
         public CurrentPlanner()
             :
             base(new Navigation.Current.CurrentNavigator(), new FourWheeledMovement()) { }
-    }
+    }*/
 }

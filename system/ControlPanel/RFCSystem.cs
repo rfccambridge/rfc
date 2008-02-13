@@ -88,9 +88,10 @@ namespace Robocup.CoreRobotics
             if (_commander == null)
                 _commander = new StubRobots();
 
-            INavigator navigator = new Navigation.Examples.LookAheadBug();
+            //INavigator navigator = new Navigation.Examples.LookAheadBug();
+            IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
 
-            Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
+            /*Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
             for (int i = 0; i < 10; i++)
             {
                 string move_model;
@@ -109,18 +110,18 @@ namespace Robocup.CoreRobotics
                 {
                     //planners[i] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
                     throw new ApplicationException("Unsupported Movement Model");
-                }*/
+                }*
                 else
                 {
                     throw new ApplicationException("invalid movement model: " + move_model);
                 }
 
                 //planners[6] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
-            }
+            }*/
 
             // create controller
             _controller = new RFCController(
-                _commander, planners, navigator, _predictor
+                _commander, planner, _predictor
             );
 
             // create interpreter from file

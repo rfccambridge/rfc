@@ -17,13 +17,11 @@ namespace Robocup.CoreRobotics
     {
         public RFCController(
             IRobots commander,
-            Dictionary<int, IMovement> planners,
-            INavigator navigator,
+            IMotionPlanner planner,
             IPredictor predictor)
         {
             _commander = commander;
-            _planners = planners;
-            _navigator = navigator;
+            _planner = planner;
             _predictor = predictor;
         }
 
@@ -38,19 +36,11 @@ namespace Robocup.CoreRobotics
             set { _commander = value; }
         }
 
-        private Dictionary<int, IMovement> _planners;
-        public IMovement GetPlanner(int robotId)
+        private IMotionPlanner _planner;
+        public IMotionPlanner Planner
         {
-            if (!_planners.ContainsKey(robotId))
-                throw new ApplicationException("trying to move with a robot that doesn't have an IMovement defined");
-            return _planners[robotId];
-        }
-
-        private INavigator _navigator;
-        public INavigator Navigator
-        {
-            get { return _navigator; }
-            set { _navigator = value; }
+            get { return _planner; }
+            set { _planner = value; }
         }
 
         private IPredictor _predictor;
@@ -92,7 +82,7 @@ namespace Robocup.CoreRobotics
             RobotInfo thisRobot = Predictor.getCurrentInformation(robotID);
 
             double avoidBallDist = (avoidBall ? ballAvoidDist : 0f);
-            NavigationResults results =
+            /*NavigationResults results =
                 Navigator.navigate(robotID,
                     thisRobot.Position,
                     destination,
@@ -100,16 +90,20 @@ namespace Robocup.CoreRobotics
                     Predictor.getTheirTeamInfo().ToArray(),
                     Predictor.getBallInfo(),
                     avoidBallDist);
+             
+            WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(Predictor, robotID, thisRobot, results);
+             */
+
+            WheelSpeeds motorSpeeds = Planner.PlanMotion(robotID, new RobotInfo(destination, thisRobot.Orientation, robotID), Predictor, avoidBallDist).wheel_speeds;
 
             lock (arrows)
             {
                 arrows[robotID] = new Arrow[] {
                     new Arrow(thisRobot.Position, destination, Color.Red, .04),
-                    new Arrow(thisRobot.Position, results.waypoint, Color.Green,.04)
+                    //new Arrow(thisRobot.Position, results.waypoint, Color.Green,.04)
                 };
             }
 
-            WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(Predictor, robotID, thisRobot, results);
 
             Commander.setMotorSpeeds(robotID, motorSpeeds);
         }
