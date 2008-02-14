@@ -114,6 +114,21 @@ namespace SoccerSim
         # region Start/Stop
         public void start()
         {
+            // TODO: do goalie better
+            foreach (RobotInfo r in _predictor.getOurTeamInfo())
+            {
+                r.Tags.Clear();
+                if (isYellow)
+                {
+                    if (r.ID == 0)
+                        r.Tags.Add("goalie");
+                }
+                else
+                {
+                    if (r.ID == 5)
+                        r.Tags.Add("goalie");
+                }
+            }
             if (!running)
             {
                 if (!initialized)
@@ -166,21 +181,6 @@ namespace SoccerSim
         private void interpret(PlayTypes toRun)
         {
             //_view.clearArrows();
-            // TODO: do goalie better
-            foreach (RobotInfo r in _predictor.getOurTeamInfo())
-            {
-                r.Tags.Clear();
-                if (isYellow)
-                {
-                    if (r.ID == 0)
-                        r.Tags.Add("goalie");
-                }
-                else
-                {
-                    if (r.ID == 5)
-                        r.Tags.Add("goalie");
-                }
-            }
             _interpreter.interpret(toRun);
         }
 

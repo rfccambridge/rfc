@@ -128,7 +128,7 @@ namespace Robocup.Simulation
             }
 
             //the speed at which the ball will bounce when it hits another robot
-            const double ballbounce = .005;
+            double ballbounce = .005;
             const double collisionradius = .10;
             //the fraction of the ball velocity that it loses every second
             //well, roughly, because compounding counts, so it's off by about a factor of 2.5
@@ -138,8 +138,8 @@ namespace Robocup.Simulation
             // run one step of tester
 
             // update ball location
-            Vector2 newballlocation = ball.Position + ((double)dt) * ball.Velocity;
-            Vector2 newballvelocity = ((double)(1 - dt * balldecay)) * ball.Velocity;
+            Vector2 newballlocation = ball.Position + dt * ball.Velocity;
+            Vector2 newballvelocity = (1 - dt * balldecay) * ball.Velocity;
 
             // check for collisions ball-robot, update ball position
             bool collided = false;
@@ -149,6 +149,7 @@ namespace Robocup.Simulation
                 if (newballlocation.distanceSq(location) <= collisionradius * collisionradius)
                 {
                     collided = true;
+                    ballbounce = Math.Sqrt((ball.Velocity - r.Velocity).magnitudeSq())*.02;
                     newballvelocity = ballbounce * ((ball.Position - location).normalize());
                     newballlocation = location + (collisionradius + .005) * (ball.Position - location).normalize();
                     break;
@@ -164,6 +165,7 @@ namespace Robocup.Simulation
                     if (newballlocation.distanceSq(location) <= collisionradius * collisionradius)
                     {
                         collided = true;
+                        ballbounce = Math.Sqrt((ball.Velocity - r.Velocity).magnitudeSq()) * .02;
                         newballvelocity = ballbounce * ((ball.Position - location).normalize());
                         newballlocation = location + .13 * (ball.Position - location).normalize();
                         break;

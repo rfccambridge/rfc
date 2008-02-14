@@ -59,7 +59,7 @@ namespace Robocup.MotionControl
                     if (Common.Blocked(cur.Position, obstacles))
                         return null;
                     if (rtn == null)
-                        rtn = new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(startState, cur));
+                        rtn = new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(startState, v));
                     dist = v.distanceSq(cur.Position);
                 }
             }

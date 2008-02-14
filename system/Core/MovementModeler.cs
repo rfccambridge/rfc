@@ -17,11 +17,11 @@ namespace Robocup.CoreRobotics
     {
         static private Random r = new Random();
         const double rr = 0.09;
-        double velocityCoe = 127 * 4 / (2 * Math.Sqrt(2)); // assuming maximum velocity is 4m/s
-        public double changeConstlf = 12;//proportional constant. we set the change is proportional to the gap. 
-        public double changeConstlb = 12;
-        public double changeConstrf = 12;
-        public double changeConstrb = 12;
+        double velocityCoe = 127 * 3 / (2 * Math.Sqrt(2)); // assuming maximum velocity is 3m/s
+        public double changeConstlf = 1;//proportional constant. we set the change is proportional to the gap. 
+        public double changeConstlb = 1;
+        public double changeConstrf = 1;
+        public double changeConstrb = 1;
 
         private double GetNewVelocity(double command, double actual, double dt, double changek)
         {
