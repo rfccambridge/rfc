@@ -39,16 +39,6 @@ namespace Robocup.MotionControl
         {
             return Common.ExtendRV(start, end, new List<Obstacle>()).extension;
         }
-
-        static private bool Blocked(RobotInfo info, List<Obstacle> obstacles)
-        {
-            foreach (Obstacle o in obstacles)
-            {
-                if (o.position != null && o.position.distanceSq(info.Position) < o.size * o.size)
-                    return true;
-            }
-            return false;
-        }
         static private MotionPlanningResults SmoothWithValue(RobotInfo startState, List<Vector2> waypoints,
             List<Obstacle> obstacles, double maxDistance, bool save)
         {
@@ -66,7 +56,7 @@ namespace Robocup.MotionControl
                     smoothed.Add(cur.Position);
                     if (/*i == waypoints.Count-1 &&*/ cur.Position.distanceSq(v) > dist)
                         break;
-                    if (Blocked(cur, obstacles))
+                    if (Common.Blocked(cur.Position, obstacles))
                         return null;
                     if (rtn == null)
                         rtn = new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(startState, cur));

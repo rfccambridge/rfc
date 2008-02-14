@@ -96,12 +96,12 @@ namespace Robocup.MotionControl
             return new ExtendResults<RobotInfo>(newInfo, result);
         }
 
-        static private bool Blocked(Vector2 point, List<Obstacle> obstacles)
+        static public bool Blocked(Vector2 point, List<Obstacle> obstacles)
         {
             foreach (Obstacle o in obstacles)
             {
                 
-                if (o.position != null && o.position.distanceSq(point) < o.size * o.size)
+                if (o.position.distanceSq(point) < o.size * o.size)
                     return true;
             }
             return false;

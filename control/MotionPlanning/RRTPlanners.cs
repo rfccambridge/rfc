@@ -29,7 +29,7 @@ namespace Robocup.MotionControl
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
             }
-            if (avoidBallRadius > 0)
+            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
                 obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
 
             RobotInfo curinfo = predictor.getCurrentInformation(id);
@@ -63,7 +63,7 @@ namespace Robocup.MotionControl
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
             }
-            if (avoidBallRadius > 0)
+            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
                 obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
 
             RobotInfo curinfo = predictor.getCurrentInformation(id);
@@ -104,7 +104,7 @@ namespace Robocup.MotionControl
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
             }
-            if (avoidBallRadius > 0)
+            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
                 obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
 
             RobotInfo curinfo = predictor.getCurrentInformation(id);
@@ -172,7 +172,7 @@ namespace Robocup.MotionControl
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
             }
-            if (avoidBallRadius > 0)
+            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
                 obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
 
             RobotInfo curinfo = predictor.getCurrentInformation(id);
@@ -221,7 +221,7 @@ namespace Robocup.MotionControl
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .22));
             }
-            if (avoidBallRadius > 0)
+            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
                 obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
 
             RobotInfo curinfo = predictor.getCurrentInformation(id);
