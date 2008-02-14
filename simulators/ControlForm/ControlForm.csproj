@@ -7,8 +7,8 @@
     <ProjectGuid>{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Robocup.VisionTester</RootNamespace>
-    <AssemblyName>VisionTester</AssemblyName>
+    <RootNamespace>Robocup.ControlForm</RootNamespace>
+    <AssemblyName>ControlForm</AssemblyName>
     <StartupObject>
     </StartupObject>
   </PropertyGroup>

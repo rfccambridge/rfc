@@ -16,7 +16,7 @@ using Robocup.CoreRobotics;
 using Robocup.MotionControl;
 
 
-namespace Robocup.VisionTester
+namespace Robocup.ControlForm
 {
     // make this load/instantiate from a text file
     public class RFCSystem

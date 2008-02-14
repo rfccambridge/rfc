@@ -11,7 +11,7 @@ using Robocup.Core;
 using Robocup.CoreRobotics;
 
 using Vision;
-namespace Robocup.VisionTester {
+namespace Robocup.ControlForm {
     
 
 

@@ -51,7 +51,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageTypes", "..\..\syste
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSML", "..\..\vision\CSML\CSML.csproj", "{8CD08024-CDBD-4FDB-9B9F-EA35B513BE92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisionTester", "..\..\simulators\VisionTester\VisionTester.csproj", "{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlForm", "..\..\simulators\ControlForm\ControlForm.csproj", "{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

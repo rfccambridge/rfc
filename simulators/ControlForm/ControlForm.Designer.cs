@@ -1,4 +1,4 @@
-namespace Robocup.VisionTester {
+namespace Robocup.ControlForm {
     partial class ControlForm {
         /// <summary>
         /// Required designer variable.

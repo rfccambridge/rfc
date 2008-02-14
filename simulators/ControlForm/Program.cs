@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 
-namespace Robocup.VisionTester
+namespace Robocup.ControlForm
 {
     static class Program
     {
