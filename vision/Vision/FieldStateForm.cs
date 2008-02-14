@@ -54,6 +54,10 @@ namespace Vision {
             this.Height = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Height;
         }
 
+        public Graphics getGraphics() {
+            return _gfxField;
+        }
+
         public void UpdateState(VisionMessage visionMessage) {
             _gfxField.Clear(FIELD_COLOR);
             DrawCoords();

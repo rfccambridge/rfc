@@ -1,0 +1,127 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Robocup.VisionTester</RootNamespace>
+    <AssemblyName>VisionTester</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlForm.Designer.cs">
+      <DependentUpon>ControlForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ControlForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ControlForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="RFCSystem.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\control\CoreRobotics\CoreRobotics.csproj">
+      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
+      <Name>CoreRobotics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\control\MotionPlanning\MotionPlanning.csproj">
+      <Project>{6B407296-924E-4788-A8B4-5E808061889D}</Project>
+      <Name>MotionPlanning</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\strategy\Core Play Files\CorePlayFiles.csproj">
+      <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
+      <Name>CorePlayFiles</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\strategy\Play Selector\PlaySelector.csproj">
+      <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
+      <Name>PlaySelector</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\system\Core\Core.csproj">
+      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\system\MessageSystem\MessageSystem.csproj">
+      <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
+      <Name>MessageSystem</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\system\MessageTypes\MessageTypes.csproj">
+      <Project>{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}</Project>
+      <Name>MessageTypes</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
+      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\vision\Vision\Vision.csproj">
+      <Project>{08383292-7063-4436-ADE4-CCD3AD048D46}</Project>
+      <Name>Vision</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

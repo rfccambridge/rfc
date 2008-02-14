@@ -44,7 +44,7 @@ namespace Robocup.MotionControl
         {
             foreach (Obstacle o in obstacles)
             {
-                if (o.position.distanceSq(info.Position) < o.size * o.size)
+                if (o.position != null && o.position.distanceSq(info.Position) < o.size * o.size)
                     return true;
             }
             return false;

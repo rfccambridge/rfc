@@ -445,7 +445,7 @@ namespace VisionStatic {
             if (goBall == null)
                 ballPos = null;
             else
-                ballPos = VisionToGeneralCoords(gameObjects.Ball.X, gameObjects.Ball.Y);
+                ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
 
             VisionMessage visionMessage = new VisionMessage(ballPos);
 

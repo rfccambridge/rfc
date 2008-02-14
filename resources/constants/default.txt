@@ -6,8 +6,10 @@
 
 # RFCSystem constants
 int UPDATE_SLEEP_TIME 30
+int REFBOX_PORT 10001
+string PLAY_DIR ../../plays/Demo/Temp
 
-float DELTA_DIST_SQ_MERGE .03
+double DELTA_DIST_SQ_MERGE .03
 int MAX_ROUNDS_TO_KEEP_INFO 3
 
 # movement models "Two"-wheeled or "Four"-wheeled
