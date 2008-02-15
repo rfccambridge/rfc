@@ -101,7 +101,9 @@ namespace Robocup.Plays
                         {
                             actiondefinitions[i] = (ActionDefinition)actions[i].getValue(evaluator.Tick, evaluator.State);
                         }
-#if DEBUG
+
+//#if DEBUG <--- taken out to stop crashes
+#if false
                         //is this check weaker than the one below?
                         bool b = canUseActions(actiondefinitions, ourteaminfo);
                         if (!b)

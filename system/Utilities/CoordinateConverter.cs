@@ -120,19 +120,19 @@ namespace Robocup.Utilities
         #region ICoordinateConverter Members
 
         public int fieldtopixelX(double x) {
-            return (int)((x + 2.75) / 5.5 * width + offsetx);
+            return (int)((x + 2.0) / 4.0 * width + offsetx);
         }
 
         public int fieldtopixelY(double y) {
-            return (int)((-y + 2.0) / 4.0 * height + offsety);
+            return (int)((-y + 2.75) / 5.5 * height + offsety);
         }
 
         public double fieldtopixelDistance(double f) {
-            return f * Math.Sqrt(width * width + height * height) / Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0);
+            return f * Math.Sqrt(width * width + height * height) / Math.Sqrt(5.5 + 5.5 + 4.0 + 4.0);
         }
 
         public double pixeltofieldDistance(double f) {
-            return f / Math.Sqrt(width * width + height * height) * Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0);
+            return f / Math.Sqrt(width * width + height * height) * Math.Sqrt(5.5 + 5.5 + 4.0 + 4.0);
         }
 
         public Vector2 fieldtopixelPoint(Vector2 p) {
@@ -140,11 +140,11 @@ namespace Robocup.Utilities
         }
 
         public double pixeltofieldX(double x) {
-            return (x - offsetx) * 5.5 / width - 2.75;
+            return (x - offsetx) * 4.0 / width - 2.0;
         }
 
         public double pixeltofieldY(double y) {
-            return 2 - (y - offsety) * 4.0 / height;
+            return 2.75 - (y - offsety) * 5.5 / height;
         }
 
         public Vector2 pixeltofieldPoint(Vector2 p) {

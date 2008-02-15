@@ -60,6 +60,7 @@ namespace Robocup.MotionControl
                         return null;
                     if (rtn == null)
                         rtn = new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(startState, v));
+                        //rtn = new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(startState, cur.Position));
                     dist = v.distanceSq(cur.Position);
                 }
             }
@@ -69,7 +70,7 @@ namespace Robocup.MotionControl
         }
 
         static MotionPlanningResults last_rtn = null;
-        static public MotionPlanningResults Smooth(RobotInfo startState, List<Vector2> waypoints,
+        static public MotionPlanningResults Smooth(RobotInfo startState, RobotInfo desiredState, List<Vector2> waypoints,
             List<Obstacle> obstacles)
         {
             /*if (waypoints.Count > 5)
@@ -80,9 +81,10 @@ namespace Robocup.MotionControl
             RobotInfo start = startState;
             last_reason = 0;
             if (start.Position.distanceSq(waypoints[waypoints.Count - 1]) < .1 * .1)
-            {
+            { // going directly towards goal
                 last_reason = 1;
-                return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(start, waypoints[waypoints.Count - 1]));
+                //return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(start, waypoints[waypoints.Count - 1]));
+                return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(start, desiredState));
             }
 
             double lowerBound = .01;

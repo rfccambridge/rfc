@@ -8,11 +8,65 @@ namespace Robocup.CoreRobotics
 {
     static public class WheelSpeedsExtender
     {
+
         static public WheelSpeeds GetWheelSpeeds(RobotInfo start, RobotInfo goal)
         {
-            return GetWheelSpeeds(start, goal.Position);
+            // we have orientation and speed information 
+            // TODO orientation updating
+            
+            // break down wheelspeeds based on desired vector
+            Vector2 desiredDirection = (goal.Position - start.Position);
+
+            Console.WriteLine("going to: " + goal.Position + " " + goal.Orientation + " from: " + start.Position + " " + start.Orientation);
+            
+            Vector2 lf = new Vector2(0.71, -0.71).rotate(start.Orientation);
+            Vector2 rf = new Vector2(0.71, 0.71).rotate(start.Orientation);
+            Vector2 lb = new Vector2(0.74, 0.68).rotate(start.Orientation);
+            Vector2 rb = new Vector2(0.74, -0.68).rotate(start.Orientation);
+            double plf = lf * desiredDirection;
+            double prf = rf * desiredDirection;
+            double plb = lb * desiredDirection;
+            double prb = rb * desiredDirection;
+            double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
+            //max = Math.Max(.10, max);
+
+            // compute magnitude of wheelspeeds based on PD
+            double speed = Math.Min(40.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0 * 0.10);
+            Console.WriteLine("Old vel: " + start.Velocity.X + " " + start.Velocity.Y + " max: " + max + " magsq: " + Math.Sqrt(desiredDirection.magnitudeSq()) );
+            //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
+
+            Console.WriteLine("doing speed: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
+            return new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
+            //return GetWheelSpeeds(start, goal.Position);
         }
-        static public WheelSpeeds GetWheelSpeeds(RobotInfo start, Vector2 goal)
+        static public WheelSpeeds GetWheelSpeeds(RobotInfo start, Vector2 goal) {
+            // we have orientation and speed information 
+            // TODO orientation updating
+
+            // break down wheelspeeds based on desired vector
+            Vector2 desiredDirection = (goal - start.Position);
+
+           
+            Vector2 lf = new Vector2(0.71, -0.71).rotate(start.Orientation);
+            Vector2 rf = new Vector2(0.71, 0.71).rotate(start.Orientation);
+            Vector2 lb = new Vector2(0.74, 0.68).rotate(start.Orientation);
+            Vector2 rb = new Vector2(0.74, -0.68).rotate(start.Orientation);
+            double plf = lf * desiredDirection;
+            double prf = rf * desiredDirection;
+            double plb = lb * desiredDirection;
+            double prb = rb * desiredDirection;
+            double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
+            //max = Math.Max(.10, max);
+
+            // compute magnitude of wheelspeeds based on PD
+            double speed = Math.Min(70.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
+            //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
+
+            //Console.WriteLine("doing speed: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
+            return new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
+            //return GetWheelSpeeds(start, goal.Position);
+        }
+        /*static public WheelSpeeds GetWheelSpeeds(RobotInfo start, Vector2 goal)
         {
             Vector2 desiredDirection = goal - start.Position;
 
@@ -36,6 +90,6 @@ namespace Robocup.CoreRobotics
             double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
             max = Math.Max(.01, max);
             return new WheelSpeeds((int)(127 * plf / max), (int)(127 * prf / max), (int)(127 * plb / max), (int)(127 * prb / max));
-        }
+        }*/
     }
 }

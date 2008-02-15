@@ -86,6 +86,8 @@ namespace Robotics.Commander
             this.Close();
         }
 
+        private int last_lf = 0, last_rf = 0, last_lb = 0, last_rb = 0;
+        private Robocup.Utilities.HighResTimer timer = new HighResTimer();
         private void setAllMotor(int target, int source, int lf, int rf, int lb, int rb, int duration)
         {
             if (target >= headsigns.Length || target < 0)
@@ -98,6 +100,16 @@ namespace Robotics.Commander
             //to the EE convention (positive values->clockwise)
             rf *= -1;
             rb *= -1;
+
+
+            /*if (lf == 0 && rf == 0 && lb == 0 && rb == 0) {
+                last_lf = last_rf = last_lb = last_rb = 0;
+            } else {
+                last_lf = lf = (int)(.4 * lf + .6 * last_lf);
+                last_rf = rf = (int)(.4 * rf + .6 * last_rf);
+                last_lb = lb = (int)(.4 * lb + .6 * last_lb);
+                last_rb = rb = (int)(.4 * rb + .6 * last_rb);
+            }*/
 
             //Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
 

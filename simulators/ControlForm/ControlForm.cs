@@ -30,7 +30,7 @@ namespace Robocup.ControlForm {
         RFCSystem _system;
 
         BasicPredictor _basicPredictor;
-        ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(400,540, 0, 0);
+        ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(400,540, 5, 5);
 
         public ControlForm() {
             InitializeComponent();
@@ -39,6 +39,8 @@ namespace Robocup.ControlForm {
             _field.Show();
 
             createSystem();
+
+            this.Focus();
         }
 
         private void createSystem() {
@@ -92,7 +94,8 @@ namespace Robocup.ControlForm {
 
             _basicPredictor.updatePartOurRobotInfo(ours, "local");
             _basicPredictor.updatePartTheirRobotInfo(theirs, "local");
-            _basicPredictor.updateBallInfo(new BallInfo(msg.BallPosition));
+            if (msg.BallPosition!=null)
+                _basicPredictor.updateBallInfo(new BallInfo(msg.BallPosition));
 
             _system.drawCurrent(_field.getGraphics(), converter);
         }
@@ -152,9 +155,9 @@ namespace Robocup.ControlForm {
         }
 
         #region IRobots Members
-        const float scaling = 5.0f;
+        const float scaling = 1.0f;
         public void setMotorSpeeds(int robotID, WheelSpeeds wheelSpeeds) {
-            if (robotID < 0) return;
+            if (robotID < 0 || _serial==null) return;
             _serial.Post(new WheelCommand(robotID, new WheelSpeeds((int)(wheelSpeeds.lf / scaling), (int)(wheelSpeeds.rf / scaling), (int)(wheelSpeeds.lb / scaling), (int)(wheelSpeeds.rb / scaling))));
             Console.WriteLine("RemoteRobots::setMotorSpeeds: " + wheelSpeeds.lf / scaling + " "
                 + wheelSpeeds.rf / scaling + " " + wheelSpeeds.lb / scaling + " " + wheelSpeeds.rb / scaling + " ");

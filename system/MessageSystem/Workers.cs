@@ -76,6 +76,7 @@ namespace Robocup.MessageSystem
             this.client = client;
             stream = client.GetStream();
             thread = new Thread(Run);
+            thread.IsBackground = true;
         }
         public void Start()
         {

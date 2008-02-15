@@ -210,6 +210,7 @@ namespace Robocup.ControlForm
                 t.AutoReset = true;
                 t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
                 {
+                    Thread.CurrentThread.Name = "RFCSystem timer thread";
                     runRound();
                 };
                 t.Start();

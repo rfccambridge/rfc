@@ -56,7 +56,7 @@ namespace Robocup.CoreRobotics
 
         #endregion
 
-        double ballAvoidDist = .02;
+        double ballAvoidDist = .12;
 
         public void clearArrows()
         {

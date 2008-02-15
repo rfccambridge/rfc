@@ -450,10 +450,12 @@ namespace VisionStatic {
             VisionMessage visionMessage = new VisionMessage(ballPos);
 
             foreach (Vision.Robot goRobot in ourRobots) {
-                VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(goRobot.Id, true, 
-                                                                              VisionToGeneralCoords(goRobot.X, goRobot.Y),
-                                                                              (double)goRobot.Orientation);
-                visionMessage.OurRobots.Add(vmRobot);
+                if (goRobot.Id >= 0) {
+                    VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(goRobot.Id, true,
+                                                                                  VisionToGeneralCoords(goRobot.X, goRobot.Y),
+                                                                                  (double)goRobot.Orientation);
+                    visionMessage.OurRobots.Add(vmRobot);
+                }
             }
 
             

@@ -68,9 +68,37 @@ namespace Robocup.MessageSystem
                     throw e;
             }
         }
+        object receive_lock = new object();
+        volatile bool receiving = false;
+        List<T> buffer = new List<T>();
         private void OnMessageReceived(T t)
         {
+            lock (receive_lock) {
+                if (receiving) {
+                    buffer.Add(t);
+                    Console.WriteLine(buffer.Count+" elements in the buffer");
+                    return;
+                }
+                receiving = true;
+            }
             MessageReceived(t);
+            bool processbuffer = true;
+            while (processbuffer) {
+                T next = default(T);
+                lock (receive_lock) {
+                    if (buffer.Count > 0) {
+                        processbuffer = true;
+                        next = buffer[0];
+                        buffer.RemoveAt(0);
+                        Console.WriteLine(buffer.Count + " elements in the buffer");
+                    } else {
+                        processbuffer = false;
+                        receiving = false;
+                    }
+                }
+                if (processbuffer)
+                    MessageReceived(next);
+            }
         }
 
         public void Close()

@@ -229,7 +229,10 @@ namespace Robocup.MotionControl
 
             List<Vector2> waypoints = path.First;
             waypoints.AddRange(path.Second);
-            return Smoother.Smooth(curinfo, waypoints, obstacles);
+
+            Console.WriteLine("SMOOTHING: final orientation: " + desiredState.Orientation);
+            
+            return Smoother.Smooth(curinfo, desiredState, waypoints, obstacles);
         }
 
         Vector2 important = null;

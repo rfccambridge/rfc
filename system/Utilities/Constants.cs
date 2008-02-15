@@ -23,7 +23,8 @@ namespace Robocup.Utilities
         /// </summary>
         static public void Load()
         {
-            foreach (string category in dictionaries.Keys)
+            List<string> categories = new List<string>(dictionaries.Keys);
+            foreach (string category in categories)
                 LoadFromFile(category);
         }
         /// <summary>

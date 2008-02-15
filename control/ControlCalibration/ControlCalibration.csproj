@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Robocup.MotionControl</RootNamespace>
     <AssemblyName>ControlCalibration</AssemblyName>
-    <StartupObject>Robocup.MotionControl.DataCollectorMain</StartupObject>
+    <StartupObject>Robocup.MotionControl.ModelCalibratorMain</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
