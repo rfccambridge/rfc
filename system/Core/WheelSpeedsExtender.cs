@@ -8,14 +8,13 @@ namespace Robocup.CoreRobotics
 {
     static public class WheelSpeedsExtender
     {
-
+        
         static public WheelSpeeds GetWheelSpeeds(RobotInfo start, RobotInfo goal)
         {
-            // we have orientation and speed information 
-            // TODO orientation updating
-            
             // break down wheelspeeds based on desired vector
             Vector2 desiredDirection = (goal.Position - start.Position);
+            if (desiredDirection.magnitudeSq() < .001 * .001)
+                return new WheelSpeeds();
 
             Console.WriteLine("going to: " + goal.Position + " " + goal.Orientation + " from: " + start.Position + " " + start.Orientation);
             
@@ -31,11 +30,11 @@ namespace Robocup.CoreRobotics
             //max = Math.Max(.10, max);
 
             // compute magnitude of wheelspeeds based on PD
-            double speed = Math.Min(40.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0 * 0.10);
-            Console.WriteLine("Old vel: " + start.Velocity.X + " " + start.Velocity.Y + " max: " + max + " magsq: " + Math.Sqrt(desiredDirection.magnitudeSq()) );
+            double speed = Math.Min(15.0,
+                Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0 * 0.05/(1+5*start.Velocity.magnitudeSq()));
             //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
 
-            Console.WriteLine("doing speed: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
+            //Console.WriteLine("doing speed2: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
             return new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             //return GetWheelSpeeds(start, goal.Position);
         }
@@ -45,6 +44,8 @@ namespace Robocup.CoreRobotics
 
             // break down wheelspeeds based on desired vector
             Vector2 desiredDirection = (goal - start.Position);
+            if (desiredDirection.magnitudeSq() < .001 * .001)
+                return new WheelSpeeds();
 
            
             Vector2 lf = new Vector2(0.71, -0.71).rotate(start.Orientation);
@@ -59,10 +60,10 @@ namespace Robocup.CoreRobotics
             //max = Math.Max(.10, max);
 
             // compute magnitude of wheelspeeds based on PD
-            double speed = Math.Min(70.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
+            double speed = 45.0;// Math.Min(30.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
             //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
 
-            //Console.WriteLine("doing speed: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
+            //Console.WriteLine("doing speed1: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
             return new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             //return GetWheelSpeeds(start, goal.Position);
         }

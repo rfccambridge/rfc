@@ -94,7 +94,7 @@ namespace Robocup.CoreRobotics
             WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(Predictor, robotID, thisRobot, results);
              */
 
-            WheelSpeeds motorSpeeds = Planner.PlanMotion(robotID, new RobotInfo(destination, thisRobot.Orientation, robotID), Predictor, avoidBallDist).wheel_speeds;
+            WheelSpeeds motorSpeeds = Planner.PlanMotion(robotID, new RobotInfo(destination, orientation, robotID), Predictor, avoidBallDist).wheel_speeds;
 
             lock (arrows)
             {
@@ -142,6 +142,7 @@ namespace Robocup.CoreRobotics
                     }
                 }
             }
+            Planner.DrawLast(g, converter);
         }
 
     }

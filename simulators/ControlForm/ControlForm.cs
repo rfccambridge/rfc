@@ -94,8 +94,11 @@ namespace Robocup.ControlForm {
 
             _basicPredictor.updatePartOurRobotInfo(ours, "local");
             _basicPredictor.updatePartTheirRobotInfo(theirs, "local");
-            if (msg.BallPosition!=null)
-                _basicPredictor.updateBallInfo(new BallInfo(msg.BallPosition));
+            if (msg.BallPosition != null)
+            {
+                Vector2 ballposition = new Vector2(2+1.01*(msg.BallPosition.X-2), msg.BallPosition.Y);
+                _basicPredictor.updateBallInfo(new BallInfo(ballposition));
+            }
 
             _system.drawCurrent(_field.getGraphics(), converter);
         }
@@ -140,13 +143,13 @@ namespace Robocup.ControlForm {
 
     public class RemoteRobots : IRobots {
         int SERIAL_SENDER_PORT = Constants.get<int>("ports", "RemoteControlPort");
-        Robocup.MessageSystem.MessageSender<Robocup.Core.WheelCommand> _serial;
+        Robocup.MessageSystem.MessageSender<Robocup.Core.RobotCommand> _serial;
 
         public RemoteRobots() {
         }
 
         public bool start(String host) {
-            _serial = Robocup.MessageSystem.Messages.CreateClientSender<Robocup.Core.WheelCommand>(host, SERIAL_SENDER_PORT);
+            _serial = Robocup.MessageSystem.Messages.CreateClientSender<Robocup.Core.RobotCommand>(host, SERIAL_SENDER_PORT);
             return (_serial != null);
         }
 
@@ -158,13 +161,15 @@ namespace Robocup.ControlForm {
         const float scaling = 1.0f;
         public void setMotorSpeeds(int robotID, WheelSpeeds wheelSpeeds) {
             if (robotID < 0 || _serial==null) return;
-            _serial.Post(new WheelCommand(robotID, new WheelSpeeds((int)(wheelSpeeds.lf / scaling), (int)(wheelSpeeds.rf / scaling), (int)(wheelSpeeds.lb / scaling), (int)(wheelSpeeds.rb / scaling))));
+            _serial.Post(new RobotCommand(robotID, new WheelSpeeds((int)(wheelSpeeds.lf / scaling), (int)(wheelSpeeds.rf / scaling), (int)(wheelSpeeds.lb / scaling), (int)(wheelSpeeds.rb / scaling))));
             Console.WriteLine("RemoteRobots::setMotorSpeeds: " + wheelSpeeds.lf / scaling + " "
                 + wheelSpeeds.rf / scaling + " " + wheelSpeeds.lb / scaling + " " + wheelSpeeds.rb / scaling + " ");
         }
 
-        public void kick(int robotID) {
-            throw new Exception("The method or operation is not implemented.");
+        public void kick(int robotID)
+        {
+            if (robotID < 0 || _serial == null) return;
+            _serial.Post(new RobotCommand(robotID, RobotCommand.Command.KICK, null));
         }
 
         #endregion

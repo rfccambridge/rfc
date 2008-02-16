@@ -73,8 +73,7 @@ namespace Vision
             this.panSlice.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.panSlice.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panSlice.Controls.Add(this.lblHighlight);
-            this.panSlice.Location = new System.Drawing.Point(4, 39);
-            this.panSlice.Margin = new System.Windows.Forms.Padding(4);
+            this.panSlice.Location = new System.Drawing.Point(3, 32);
             this.panSlice.Name = "panSlice";
             this.panSlice.Size = new System.Drawing.Size(360, 100);
             this.panSlice.TabIndex = 0;
@@ -88,10 +87,9 @@ namespace Vision
             this.lblHighlight.BackColor = System.Drawing.Color.Transparent;
             this.lblHighlight.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblHighlight.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblHighlight.Location = new System.Drawing.Point(457, 98);
-            this.lblHighlight.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblHighlight.Location = new System.Drawing.Point(343, 80);
             this.lblHighlight.Name = "lblHighlight";
-            this.lblHighlight.Size = new System.Drawing.Size(13, 12);
+            this.lblHighlight.Size = new System.Drawing.Size(10, 10);
             this.lblHighlight.TabIndex = 0;
             this.lblHighlight.Visible = false;
             // 
@@ -109,7 +107,7 @@ namespace Vision
             this.toolStripSeparator2});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(530, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(512, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -196,70 +194,63 @@ namespace Vision
             // 
             // txtV
             // 
-            this.txtV.Location = new System.Drawing.Point(191, 147);
-            this.txtV.Margin = new System.Windows.Forms.Padding(4);
+            this.txtV.Location = new System.Drawing.Point(180, 140);
             this.txtV.Name = "txtV";
             this.txtV.ReadOnly = true;
-            this.txtV.Size = new System.Drawing.Size(45, 22);
+            this.txtV.Size = new System.Drawing.Size(35, 20);
             this.txtV.TabIndex = 40;
             this.txtV.TabStop = false;
             // 
             // txtS
             // 
-            this.txtS.Location = new System.Drawing.Point(115, 147);
-            this.txtS.Margin = new System.Windows.Forms.Padding(4);
+            this.txtS.Location = new System.Drawing.Point(123, 140);
             this.txtS.Name = "txtS";
             this.txtS.ReadOnly = true;
-            this.txtS.Size = new System.Drawing.Size(45, 22);
+            this.txtS.Size = new System.Drawing.Size(35, 20);
             this.txtS.TabIndex = 39;
             this.txtS.TabStop = false;
             // 
             // txtH
             // 
-            this.txtH.Location = new System.Drawing.Point(35, 147);
-            this.txtH.Margin = new System.Windows.Forms.Padding(4);
+            this.txtH.Location = new System.Drawing.Point(63, 140);
             this.txtH.Name = "txtH";
             this.txtH.ReadOnly = true;
-            this.txtH.Size = new System.Drawing.Size(51, 22);
+            this.txtH.Size = new System.Drawing.Size(39, 20);
             this.txtH.TabIndex = 38;
             this.txtH.TabStop = false;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(170, 152);
-            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label10.Location = new System.Drawing.Point(165, 145);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(21, 17);
+            this.label10.Size = new System.Drawing.Size(17, 13);
             this.label10.TabIndex = 37;
             this.label10.Text = "V:";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(92, 152);
-            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Location = new System.Drawing.Point(106, 145);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(21, 17);
+            this.label7.Size = new System.Drawing.Size(17, 13);
             this.label7.TabIndex = 36;
             this.label7.Text = "S:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 153);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(41, 145);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(22, 17);
+            this.label2.Size = new System.Drawing.Size(18, 13);
             this.label2.TabIndex = 35;
             this.label2.Text = "H:";
             // 
             // btnNextSlice
             // 
-            this.btnNextSlice.Location = new System.Drawing.Point(320, 142);
-            this.btnNextSlice.Margin = new System.Windows.Forms.Padding(4);
+            this.btnNextSlice.Location = new System.Drawing.Point(277, 138);
             this.btnNextSlice.Name = "btnNextSlice";
-            this.btnNextSlice.Size = new System.Drawing.Size(44, 28);
+            this.btnNextSlice.Size = new System.Drawing.Size(33, 23);
             this.btnNextSlice.TabIndex = 41;
             this.btnNextSlice.Text = ">>";
             this.btnNextSlice.UseVisualStyleBackColor = true;
@@ -267,10 +258,9 @@ namespace Vision
             // 
             // btnPrevSlice
             // 
-            this.btnPrevSlice.Location = new System.Drawing.Point(275, 142);
-            this.btnPrevSlice.Margin = new System.Windows.Forms.Padding(4);
+            this.btnPrevSlice.Location = new System.Drawing.Point(243, 138);
             this.btnPrevSlice.Name = "btnPrevSlice";
-            this.btnPrevSlice.Size = new System.Drawing.Size(44, 28);
+            this.btnPrevSlice.Size = new System.Drawing.Size(33, 23);
             this.btnPrevSlice.TabIndex = 42;
             this.btnPrevSlice.Text = "<<";
             this.btnPrevSlice.UseVisualStyleBackColor = true;
@@ -291,59 +281,65 @@ namespace Vision
             this.tableLayoutPanel1.Controls.Add(this.label11, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label12, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.label13, 1, 4);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(371, 39);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(373, 38);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(152, 100);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(129, 81);
             this.tableLayoutPanel1.TabIndex = 43;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Location = new System.Drawing.Point(2, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(42, 17);
+            this.label1.Size = new System.Drawing.Size(33, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Undo";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 20);
+            this.label3.Location = new System.Drawing.Point(2, 16);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(46, 17);
+            this.label3.Size = new System.Drawing.Size(36, 13);
             this.label3.TabIndex = 1;
             this.label3.Text = "Pencil";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 40);
+            this.label4.Location = new System.Drawing.Point(2, 32);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(50, 17);
+            this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 2;
             this.label4.Text = "Eraser";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 60);
+            this.label5.Location = new System.Drawing.Point(2, 48);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(63, 17);
+            this.label5.Size = new System.Drawing.Size(48, 13);
             this.label5.TabIndex = 3;
             this.label5.Text = "Highlight";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 80);
+            this.label6.Location = new System.Drawing.Point(2, 64);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(75, 20);
+            this.label6.Size = new System.Drawing.Size(63, 13);
             this.label6.TabIndex = 4;
             this.label6.Text = "Regenerate";
             // 
@@ -351,9 +347,10 @@ namespace Vision
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Courier New", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(89, 0);
+            this.label8.Location = new System.Drawing.Point(74, 0);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(56, 16);
+            this.label8.Size = new System.Drawing.Size(49, 14);
             this.label8.TabIndex = 5;
             this.label8.Text = "Ctrl+Z";
             // 
@@ -361,9 +358,10 @@ namespace Vision
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label9.Location = new System.Drawing.Point(89, 20);
+            this.label9.Location = new System.Drawing.Point(74, 16);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(19, 20);
+            this.label9.Size = new System.Drawing.Size(16, 16);
             this.label9.TabIndex = 6;
             this.label9.Text = "W";
             // 
@@ -371,9 +369,10 @@ namespace Vision
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label11.Location = new System.Drawing.Point(89, 40);
+            this.label11.Location = new System.Drawing.Point(74, 32);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(19, 20);
+            this.label11.Size = new System.Drawing.Size(16, 16);
             this.label11.TabIndex = 7;
             this.label11.Text = "E";
             // 
@@ -381,9 +380,10 @@ namespace Vision
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label12.Location = new System.Drawing.Point(89, 60);
+            this.label12.Location = new System.Drawing.Point(74, 48);
+            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(19, 20);
+            this.label12.Size = new System.Drawing.Size(16, 16);
             this.label12.TabIndex = 8;
             this.label12.Text = "H";
             // 
@@ -391,17 +391,18 @@ namespace Vision
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Courier New", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(89, 80);
+            this.label13.Location = new System.Drawing.Point(74, 64);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(56, 16);
+            this.label13.Size = new System.Drawing.Size(49, 14);
             this.label13.TabIndex = 9;
             this.label13.Text = "Ctrl+G";
             // 
             // HSVSliceForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(530, 180);
+            this.ClientSize = new System.Drawing.Size(512, 165);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.btnPrevSlice);
             this.Controls.Add(this.btnNextSlice);
@@ -415,7 +416,6 @@ namespace Vision
             this.Controls.Add(this.panSlice);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "HSVSliceForm";
             this.ShowInTaskbar = false;
             this.Text = "Editing Color Map";

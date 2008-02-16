@@ -33,15 +33,16 @@ namespace Robocup.CoreRobotics
                 return rtn;
             }
 
+            private Dictionary<int, double> lastSeen = new Dictionary<int, double>();
 
-            private Dictionary<RobotInfo, int> roundsSinceSeen = new Dictionary<RobotInfo, int>();
+            //private Dictionary<RobotInfo, int> roundsSinceSeen = new Dictionary<RobotInfo, int>();
             private void removeRobot(int id)
             {
                 foreach (RobotInfo info in lambdaInfo)
                 {
                     if (info.ID == id)
                     {
-                        roundsSinceSeen.Remove(info);
+                        //lastSeen.Remove(info.ID);
                         lambdaInfo.Remove(info);
                         break;
                     }
@@ -50,7 +51,7 @@ namespace Robocup.CoreRobotics
                 {
                     if (info.ID == id)
                     {
-                        roundsSinceSeen.Remove(info);
+                        //lastSeen.Remove(info.ID);
                         omegaInfo.Remove(info);
                         break;
                     }
@@ -60,6 +61,7 @@ namespace Robocup.CoreRobotics
             {
                 lock (object_lock)
                 {
+                    double time = HighResTimer.SecondsSinceStart();
                     bool isOmega = (computerName == "OMEGA");
                     List<RobotInfo> otherCameraInfos;
                     if (isOmega)
@@ -100,6 +102,23 @@ namespace Robocup.CoreRobotics
                         if (matched != null)
                         {
                             newInfos.Remove(matched);
+
+                            Vector2 velocity = matched.Velocity;
+                            if (matchIDs)
+                            {
+                                if (lastSeen.ContainsKey(matched.ID))
+                                {
+                                    double dt = time - lastSeen[matched.ID];
+                                    velocity = (1 / dt) * (matched.Position - oldInfo.Position);
+                                    velocity = .5 * velocity + .5 * oldInfo.Velocity;
+                                    //if (velocity.magnitudeSq()>.01)
+                                    //    Console.WriteLine(velocity);
+                                }
+                                lastSeen[matched.ID] = time;
+                            }
+                            matched = new RobotInfo(matched.Position, velocity,
+                                matched.AngularVelocity, matched.Orientation, matched.ID);
+
                             Vector2 position = matched.Position;
                             if (otherCameraInfos.Contains(oldInfo))
                             {
@@ -146,20 +165,20 @@ namespace Robocup.CoreRobotics
                         lambdaInfo = newInfoList;
                     }
 
+
                     //at this point any robots in "oldInfos" did not match any new ones
                     foreach (RobotInfo oldinfo in oldInfos)
                     {
-                        if (roundsSinceSeen.ContainsKey(oldinfo) && roundsSinceSeen[oldinfo] >=
-                            Constants.get<int>("default", "MAX_ROUNDS_TO_KEEP_INFO"))
+                        if (lastSeen.ContainsKey(oldinfo.ID) && time - lastSeen[oldinfo.ID] >=
+                            Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO"))
                         {
-                            roundsSinceSeen.Remove(oldinfo);
+                            lastSeen.Remove(oldinfo.ID);
                             //don't re-add this
                             continue;
                         }
                         newInfoList.Add(oldinfo);
-                        if (!roundsSinceSeen.ContainsKey(oldinfo))
-                            roundsSinceSeen.Add(oldinfo, 0);
-                        roundsSinceSeen[oldinfo]++;
+                        if (!lastSeen.ContainsKey(oldinfo.ID))
+                            lastSeen.Add(oldinfo.ID, time);
                     }
                 }
             }

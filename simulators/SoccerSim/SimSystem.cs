@@ -115,7 +115,7 @@ namespace SoccerSim
         public void start()
         {
             // TODO: do goalie better
-            foreach (RobotInfo r in _predictor.getOurTeamInfo())
+            /*foreach (RobotInfo r in _predictor.getOurTeamInfo())
             {
                 r.Tags.Clear();
                 if (isYellow)
@@ -128,7 +128,7 @@ namespace SoccerSim
                     if (r.ID == 5)
                         r.Tags.Add("goalie");
                 }
-            }
+            }*/
             if (!running)
             {
                 if (!initialized)

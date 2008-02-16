@@ -12,18 +12,19 @@ namespace Robotics.Commander
 {
     static class RunSerial
     {
-        static MessageReceiver<WheelCommand> receiver;
+        static MessageReceiver<RobotCommand> receiver;
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             RemoteControl form = new RemoteControl();
-            receiver = Messages.CreateServerReceiver<WheelCommand>(Constants.get<int>("ports", "RemoteControlPort"));
-            receiver.MessageReceived += delegate(WheelCommand command)
+            receiver = Messages.CreateServerReceiver<RobotCommand>(Constants.get<int>("ports", "RemoteControlPort"));
+            receiver.MessageReceived += delegate(RobotCommand command)
             {
                 //form.Serial.setMotorSpeeds(command.ID, command.speeds);
-                form.sendMove(command.ID, command.speeds);
+                form.sendCommand( command );
+                
             };
             Application.Run(form);
         }

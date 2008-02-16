@@ -38,7 +38,7 @@ namespace Robocup.MotionControl
             }
         }
 
-        private double waypointprob = .6;
+        private double waypointprob = .75;
         public double WaypointProbability
         {
             get { return waypointprob; }

@@ -63,7 +63,7 @@ namespace Robocup.MotionControl
                 MotionPlanningResults results = planner.PlanMotion(0, new RobotInfo(destination, 0, 0), engine, .13);
                 engine.setMotorSpeeds(0, results.wheel_speeds);
                 if (!checkBoxDisableMovement.Checked)
-                    engine.step(.01);
+                    engine.step(.025);
                 //moveObstacles();
             }
         }

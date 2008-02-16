@@ -10,17 +10,8 @@ int REFBOX_PORT 10001
 string PLAY_DIR ../../plays/Demo/Temp
 
 double DELTA_DIST_SQ_MERGE .03
-int MAX_ROUNDS_TO_KEEP_INFO 3
+double MAX_SECONDS_TO_KEEP_INFO 1
 
-# movement models "Two"-wheeled or "Four"-wheeled
-# "TWO-FLBR" for left-front right-back
-# "TWO-FRBL" for right-front left-back
-# "FOUR"
-string ROBOT_3 TWO-FRBL
-string ROBOT_1 TWO-FRBL
-string ROBOT_4 TWO-FRBL
-string ROBOT_2 TWO-FRBL
-string ROBOT_5 TWO-FRBL
-string ROBOT_6 TWO-FRBL
+bool ROBOT_HAS_KICKER_2 true
 
 bool ROBOT_IS_GOALIE_4 true

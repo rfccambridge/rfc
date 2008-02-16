@@ -58,7 +58,7 @@ namespace Robocup.Core
             return new RobotInfo(position, velocity, rotational_velocity, orientation, idnum);
         }
 
-        private readonly List<string> tags = new List<string>();
+        /*private readonly List<string> tags = new List<string>();
         /// <summary>
         /// The list of strings that this particular robot has been tagged with.  Ex: "goalie" if this is the goalie bot.
         /// You can add and remove tags from this.
@@ -66,7 +66,7 @@ namespace Robocup.Core
         public List<string> Tags
         {
             get { return tags; }
-        }
+        }*/
 
         private readonly Vector2 position;
         /// <summary>
@@ -109,7 +109,7 @@ namespace Robocup.Core
 
         public override string ToString()
         {
-            return idnum + ": " + position;
+            return idnum + ": " + position + " (" + orientation + ")";
         }
     }
     /// <summary>

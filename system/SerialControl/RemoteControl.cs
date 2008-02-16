@@ -16,7 +16,7 @@ namespace Robotics.Commander {
         private bool active = false;
         private bool sendcommands_remotehost = false;
         private bool sendcommands_serial = false;
-        private MessageSender<WheelCommand> message_sender = null;
+        private MessageSender<RobotCommand> message_sender = null;
 
         private SerialRobots srobots;
         /*public SerialRobots Serial
@@ -89,19 +89,36 @@ namespace Robotics.Commander {
 
 
         private void setMotorSpeeds(int lf, int rf, int lb, int rb) {
-            sendMove(curRobot, new WheelSpeeds(lf, rf, lb, rb));
+            sendCommand(curRobot, RobotCommand.Command.MOVE, new WheelSpeeds(lf, rf, lb, rb));
         }
         public void sendMove(int id, int lf, int rf, int lb, int rb) {
-            sendMove(id, new WheelSpeeds(lf, rf, lb, rb));
+            sendCommand(id, RobotCommand.Command.MOVE, new WheelSpeeds(lf, rf, lb, rb));
         }
-        public void sendMove(int id, WheelSpeeds speeds) {
-            if (active) {
+        
+        public void sendCommand(int id, RobotCommand.Command command, WheelSpeeds speeds) {
+            if (active)
+            {
                 if (sendcommands_serial)
-                    srobots.setMotorSpeeds(id, speeds);
+                {
+                    switch (command)
+                    {
+                        case RobotCommand.Command.MOVE:
+                            srobots.setMotorSpeeds(id, speeds);
+                            break;
+                        case RobotCommand.Command.KICK:
+                            srobots.kick(id);
+                            break;
+                    }
+                }
                 else if (sendcommands_remotehost)
-                    message_sender.Post(new WheelCommand(id, speeds));
+                    message_sender.Post( new RobotCommand( id, command, speeds ) );
                 statusLabel.Text = "computercmd";
             }
+        }
+
+        public void sendCommand(RobotCommand command)
+        {
+            sendCommand(command.ID, command.command, command.speeds);
         }
 
         /*public void charge(int id)
@@ -111,7 +128,7 @@ namespace Robotics.Commander {
                 srobots.setCharge(id);
                 statusLabel.Text = "charge computercmd";
             }
-        }*/
+        }
 
         public void kick(int id) {
             if (active) {
@@ -120,7 +137,7 @@ namespace Robotics.Commander {
             }
         }
 
-        /*public void stopcharge(int id)
+        public void stopcharge(int id)
         {
             if (remotecontrol)
             {
@@ -330,7 +347,7 @@ namespace Robotics.Commander {
                 if (textBoxRemoteHost.Text == "localhost") {
                     MessageBox.Show("don't create a loop like that!");
                 }
-                this.message_sender = Messages.CreateClientSender<WheelCommand>(
+                this.message_sender = Messages.CreateClientSender<RobotCommand>(
                     textBoxRemoteHost.Text, Constants.get<int>("ports", "RemoteControlPort"));
             } else {
                 this.message_sender.Close();

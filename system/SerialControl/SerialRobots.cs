@@ -86,15 +86,14 @@ namespace Robotics.Commander
             this.Close();
         }
 
-        private int last_lf = 0, last_rf = 0, last_lb = 0, last_rb = 0;
-        private Robocup.Utilities.HighResTimer timer = new HighResTimer();
+        //private int last_lf = 0, last_rf = 0, last_lb = 0, last_rb = 0;
+        //private Robocup.Utilities.HighResTimer timer = new HighResTimer();
         private void setAllMotor(int target, int source, int lf, int rf, int lb, int rb, int duration)
         {
             if (target >= headsigns.Length || target < 0)
                 return; //don't throw exception
-            
-            
-            Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
+
+
 
             //Here we have to convert from our convention (positive values->robot forward)
             //to the EE convention (positive values->clockwise)
@@ -105,13 +104,14 @@ namespace Robotics.Commander
             /*if (lf == 0 && rf == 0 && lb == 0 && rb == 0) {
                 last_lf = last_rf = last_lb = last_rb = 0;
             } else {
-                last_lf = lf = (int)(.4 * lf + .6 * last_lf);
-                last_rf = rf = (int)(.4 * rf + .6 * last_rf);
-                last_lb = lb = (int)(.4 * lb + .6 * last_lb);
-                last_rb = rb = (int)(.4 * rb + .6 * last_rb);
-            }*/
+                int inc = 3;
+                last_lf = lf = inc * Math.Sign( lf - last_lf ) + last_lf;
+                last_rf = rf = inc * Math.Sign( rf - last_rf ) + last_rf;
+                last_lb = lb = inc * Math.Sign( lb - last_lb) + last_lb;
+                last_rb = rb = inc * Math.Sign( rb - last_rb) + last_rb;
+            }
 
-            //Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);
+            Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);*/
 
             if (lb == '\\')
                 lb++;
@@ -133,6 +133,9 @@ namespace Robotics.Commander
         private List<int> canKick = new List<int>();
         private List<int> charging = new List<int>();
 
+        private Dictionary<int, double> lastCharge = new Dictionary<int, double>();
+        private Dictionary<int, System.Threading.Timer> timers = new Dictionary<int, System.Threading.Timer>();
+
         internal void setCharge(int robotID)
         {
             lock (canKick)
@@ -144,14 +147,17 @@ namespace Robotics.Commander
                 //but before sending the stopcharge command
                 canKick.Remove(robotID);
                 charging.Add(robotID);
+                lastCharge[robotID] = HighResTimer.SecondsSinceStart();
+                System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
+                {
+                    this.setStopCharge(robotID);
+                    timers.Remove(robotID);
+                }, null, 10000, System.Threading.Timeout.Infinite);
+                timers[robotID] = t;
             }
             string smsg = headsigns[robotID] + "EE" + endsign;
             //Console.WriteLine("charge:" + smsg);
             comport.Write(smsg);
-            System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
-            {
-                this.setStopCharge(robotID);
-            }, null, 10000, System.Threading.Timeout.Infinite);
             Console.WriteLine("robot " + robotID + " is now charging");
         }
 
@@ -162,6 +168,12 @@ namespace Robotics.Commander
                 if (!charging.Contains(robotID))
                     return;
 
+                try
+                {
+                    timers[robotID].Dispose();
+                    timers.Remove(robotID);
+                }
+                catch (Exception) { }
                 charging.Remove(robotID);
                 canKick.Add(robotID);
             }
@@ -180,22 +192,26 @@ namespace Robotics.Commander
 
         public void setKick(int robotID)
         {
-            //uncomment this to have the robot start charging after kicking
-            /*System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
-            {
-                this.setCharge(robotID);
-            }, null, 1000, System.Threading.Timeout.Infinite);*/
             lock (canKick)
             {
+                if (charging.Contains(robotID) && (HighResTimer.SecondsSinceStart() - lastCharge[robotID]) > 3)
+                {
+                    setStopCharge(robotID);
+                    System.Threading.Thread.Sleep(35);
+                    lastCharge[robotID] = HighResTimer.SecondsSinceStart();
+                }
                 if (!canKick.Contains(robotID))
                     return;
-
                 canKick.Remove(robotID);
+                Console.WriteLine("robot " + robotID + " is kicking!");
+                string smsg = headsigns[robotID] + "KK" + endsign;
+                //Console.WriteLine("kick:" + smsg);
+                comport.Write(smsg);
+
+                //uncomment this to have the robot start charging after kicking
+                System.Threading.Thread.Sleep(100);
+                this.setCharge(robotID);
             }
-            Console.WriteLine("robot " + robotID + " is kicking!");
-            string smsg = headsigns[robotID] + "KK" + endsign;
-            //Console.WriteLine("kick:" + smsg);
-            comport.Write(smsg);
         }
 
         public void startDribbler(int target)
@@ -210,7 +226,8 @@ namespace Robotics.Commander
             comport.Write(smsg);
         }
 
-        public void resetBoards(int target) {
+        public void resetBoards(int target)
+        {
             comport.Write(headsigns[target] + "rr" + endsign);
         }
 
@@ -283,7 +300,7 @@ namespace Robotics.Commander
 
         public void kick(int robotID)
         {
-            throw new Exception("The method or operation is not implemented.");
+            setKick(robotID);
         }
 
         #endregion

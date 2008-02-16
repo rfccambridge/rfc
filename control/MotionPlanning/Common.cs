@@ -64,7 +64,7 @@ namespace Robocup.MotionControl
 
         //TODO separate movementmodeler for each robot
         static readonly MovementModeler mm = new MovementModeler();
-        const double extendTime = .05;
+        const double extendTime = .2;
         static public ExtendResults<RobotInfo> ExtendRR(RobotInfo start, RobotInfo end, object state)
         {
             List<Obstacle> obstacles = (List<Obstacle>)state;

@@ -307,9 +307,9 @@ namespace InterpreterTester
             }
             foreach (RobotInfo r in ourinfo)
             {
-                r.Tags.Clear();
+                TagSystem.GetTags(r.ID).Clear();
                 if (r.ID == 0)
-                    r.Tags.Add("goalie");
+                    TagSystem.AddTag(r.ID, "goalie");
             }
 #if TIMING
             timer.Stop();

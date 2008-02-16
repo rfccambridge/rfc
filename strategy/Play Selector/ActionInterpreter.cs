@@ -55,8 +55,9 @@ namespace Robocup.Plays
                 avoidBall = true;
                 destination = extend(target, ball, kickDistance);
             }
-            //Move(robotID, target);
-            commander.move(robotID, avoidBall, destination);
+            
+            Move(robotID, avoidBall, destination, target);
+            //commander.move(robotID, avoidBall, destination);
         }
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace Robocup.Plays
         /// This is the distance that the robots should put themselves from the ball,
         /// when they get ready to kick it.
         /// </summary>
-        private readonly double kickDistance = .11;//.095
+        private readonly double kickDistance = .10;//.095
 
         /// <summary>
         /// This is how many ticks of ball motion you should add to the distance to lead the ball appropriately
@@ -139,14 +140,26 @@ namespace Robocup.Plays
         /// </summary>
         public void Move(int robotID, Vector2 target, Vector2 facing)
         {
-            if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01)
+            Move(robotID, true, target, facing);
+        }
+
+        /// <summary>
+        /// Has the robot move to the point target, avoiding all obstacles. takes avoidBall as second argument
+        /// </summary>
+        private void Move(int robotID, bool avoidBall, Vector2 target, Vector2 facing)
+        {
+            double orient = Math.Atan2(facing.Y - target.Y, facing.X - target.X); //hack for different coordinates
+            if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01 &&
+                Math.Abs(getOurRobotFromID(robotID).Orientation - orient) < 0.15)
                 commander.stop(robotID);
             else
-                commander.move(robotID, true, target, Math.Atan2(facing.Y - target.Y, facing.X - target.X));
+                commander.move(robotID, avoidBall, target, orient);
+            //HACK: commander.move(robotID, true, target, Math.Atan2(facing.Y - target.Y, facing.X - target.X));
         }
-        private readonly double angleTolerance = Math.PI / 10;  //18º
+
+        private readonly double angleTolerance = Math.PI / 120;  //1.5º
         //private const double angleTolerance = (Math.PI);  //180º
-        private readonly double distanceTolerance = .04;  //4d cm
+        private readonly double distanceTolerance = .035;  //4d cm
         /// <summary>
         /// Returns if this robot is close enough to the desired position and orientation
         /// (such as to decide whether or not the robot is in position to kick the ball)

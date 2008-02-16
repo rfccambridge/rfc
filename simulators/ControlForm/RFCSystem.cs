@@ -99,6 +99,15 @@ namespace Robocup.ControlForm
             //INavigator navigator = new Navigation.Examples.LookAheadBug();
             IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
 
+            for (int i = 0; i < 10; i++)
+            {
+                bool has_kicker;
+                if (Constants.nondestructiveGet("default", "ROBOT_HAS_KICKER_" + i, out has_kicker))
+                {
+                    TagSystem.AddTag(i, "kicker");
+                }
+            }
+
             /*Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
             for (int i = 0; i < 10; i++)
             {
@@ -155,8 +164,9 @@ namespace Robocup.ControlForm
                     plays.Add(p);
                     filenames.Add(p, fname);
                 }
-                catch (Exception)
+                catch (Exception)// ex)
                 {
+                    //Console.WriteLine(ex.StackTrace);
                     Console.WriteLine("error loading play \"" + fname + "\"");
                 }
             }

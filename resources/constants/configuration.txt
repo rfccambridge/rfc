@@ -2,7 +2,10 @@ string OUR_TEAM_COLOR YELLOW
 
 # robot dot patterns: FrontLeft, FrontRight, RearLeft, RearRight (P = Pink, C = Cyan, G = Green)
 
-string DOTS_R_4 PGPG
 string DOTS_R_0 GGPP
-string DOTS_R_3 PPGG
-string DOTS_R_5 GPPG
+string DOTS_R_1 PPGG
+string DOTS_R_2 GPPG
+
+string DOTS_R_3 PGPG
+string DOTS_R_4 GPGP
+string DOTS_R_5 PGGP

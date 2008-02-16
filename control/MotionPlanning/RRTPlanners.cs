@@ -112,6 +112,8 @@ namespace Robocup.MotionControl
 
             //return new MotionPlanningResults(new WheelSpeeds());
             //return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(curinfo, path.First[Math.Min(path.First.Count - 1, 5)]));
+            
+
             WheelSpeeds rtn;
             if (path.First.Count > 5)
             {
@@ -219,7 +221,7 @@ namespace Robocup.MotionControl
             {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
-                    obstacles.Add(new Obstacle(info.Position, .22));
+                    obstacles.Add(new Obstacle(info.Position, .28));
             }
             if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
                 obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
@@ -229,8 +231,6 @@ namespace Robocup.MotionControl
 
             List<Vector2> waypoints = path.First;
             waypoints.AddRange(path.Second);
-
-            Console.WriteLine("SMOOTHING: final orientation: " + desiredState.Orientation);
             
             return Smoother.Smooth(curinfo, desiredState, waypoints, obstacles);
         }
