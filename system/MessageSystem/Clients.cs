@@ -73,7 +73,11 @@ namespace Robocup.MessageSystem
         List<T> buffer = new List<T>();
         private void OnMessageReceived(T t)
         {
+            //The receiver will put incoming messages in a buffer, so that it will never call
+            //the listeners concurrently
             lock (receive_lock) {
+
+                //If we are currently processing receive requests, put this one into the buffer
                 if (receiving) {
                     buffer.Add(t);
                     Console.WriteLine(buffer.Count+" elements in the buffer");
@@ -85,6 +89,8 @@ namespace Robocup.MessageSystem
             bool processbuffer = true;
             while (processbuffer) {
                 T next = default(T);
+                //TODO this could probably be sped up by making a copy of the entire buffer,
+                //to avoid having to acquired the lock on every iteration.
                 lock (receive_lock) {
                     if (buffer.Count > 0) {
                         processbuffer = true;

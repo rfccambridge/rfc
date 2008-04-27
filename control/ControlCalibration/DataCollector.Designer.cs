@@ -61,6 +61,7 @@ namespace Robocup.MotionControl
             this.textBoxSerialCommand = new System.Windows.Forms.TextBox();
             this.buttonSendCustomSerial = new System.Windows.Forms.Button();
             this.listBoxInputHistory = new System.Windows.Forms.ListBox();
+            this.checkBoxLimitCommands = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
@@ -368,11 +369,23 @@ namespace Robocup.MotionControl
             this.listBoxInputHistory.Size = new System.Drawing.Size(274, 238);
             this.listBoxInputHistory.TabIndex = 29;
             // 
+            // checkBoxLimitCommands
+            // 
+            this.checkBoxLimitCommands.AutoSize = true;
+            this.checkBoxLimitCommands.Location = new System.Drawing.Point(476, 143);
+            this.checkBoxLimitCommands.Name = "checkBoxLimitCommands";
+            this.checkBoxLimitCommands.Size = new System.Drawing.Size(142, 17);
+            this.checkBoxLimitCommands.TabIndex = 30;
+            this.checkBoxLimitCommands.Text = "Limit Command Changes";
+            this.checkBoxLimitCommands.UseVisualStyleBackColor = true;
+            this.checkBoxLimitCommands.CheckedChanged += new System.EventHandler(this.checkBoxLimitCommands_CheckedChanged);
+            // 
             // DataCollector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 434);
+            this.Controls.Add(this.checkBoxLimitCommands);
             this.Controls.Add(this.listBoxInputHistory);
             this.Controls.Add(this.buttonSendCustomSerial);
             this.Controls.Add(this.textBoxSerialCommand);
@@ -438,5 +451,6 @@ namespace Robocup.MotionControl
         private System.Windows.Forms.TextBox textBoxSerialCommand;
         private System.Windows.Forms.Button buttonSendCustomSerial;
         private System.Windows.Forms.ListBox listBoxInputHistory;
+        private System.Windows.Forms.CheckBox checkBoxLimitCommands;
     }
 }

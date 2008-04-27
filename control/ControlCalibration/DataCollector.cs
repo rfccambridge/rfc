@@ -265,6 +265,25 @@ namespace Robocup.MotionControl
             serialoutput.SetPIDConstants(int.Parse(textBoxRobotID.Text), byte.Parse(textBoxconstP.Text),
                 byte.Parse(textBoxconstI.Text), byte.Parse(textBoxconstD.Text));
         }
+
+        private void checkBoxLimitCommands_CheckedChanged(object sender, EventArgs e)
+        {
+
+            if (serialoutput != null)
+            {
+                //sets whether or not the serial controller will do any rate limiting on the commands
+                if (checkBoxLimitCommands.Checked)
+                {
+                    serialoutput.MaxAcceleration = 50;
+                    serialoutput.MaxVelocityStep = 20;
+                }
+                else
+                {
+                    serialoutput.MaxAcceleration = int.MaxValue;
+                    serialoutput.MaxVelocityStep = int.MaxValue;
+                }
+            }
+        }
     }
 
     interface Function

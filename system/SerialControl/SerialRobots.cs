@@ -86,19 +86,74 @@ namespace Robotics.Commander
             this.Close();
         }
 
+        private int maxAcceleration = 50;
+        /// <summary>
+        /// This is the maximum change, per second, that can be made to any of the wheel speeds.
+        /// (In the same units that commands are given in, ie max 127)
+        /// </summary>
+        public int MaxAcceleration
+        {
+            get { return maxAcceleration; }
+            set { maxAcceleration = value; }
+        }
+        private int maxStep = 20;
+        /// <summary>
+        /// The maximum that the velocity can be changed with one command.
+        /// </summary>
+        public int MaxVelocityStep
+        {
+            get { return maxStep; }
+            set { maxStep = value; }
+        }
+
+
+        /*private double MinTimeBetweenCommands
+        {
+            get { return 1 / MaxAcceleration; }
+        }*/
+
+
+        Dictionary<int, WheelSpeeds> lastSpeeds = new Dictionary<int, WheelSpeeds>();
+        Dictionary<int, double> lastTime = new Dictionary<int, double>();
+
+        private int ChangeUpTo(int start, int end, int maxChange)
+        {
+            if (end > start)
+                return start + Math.Min(maxChange, end - start);
+            else
+                return start - Math.Min(maxChange, start - end);
+        }
         //private int last_lf = 0, last_rf = 0, last_lb = 0, last_rb = 0;
         //private Robocup.Utilities.HighResTimer timer = new HighResTimer();
-        private void setAllMotor(int target, int source, int lf, int rf, int lb, int rb, int duration)
+        private void setAllMotor(int id, int source, int lf, int rf, int lb, int rb, int duration)
         {
-            if (target >= headsigns.Length || target < 0)
+            if (id >= headsigns.Length || id < 0)
                 return; //don't throw exception
-
-
 
             //Here we have to convert from our convention (positive values->robot forward)
             //to the EE convention (positive values->clockwise)
             rf *= -1;
             rb *= -1;
+
+            double time = HighResTimer.SecondsSinceStart();
+            if (!lastSpeeds.ContainsKey(id))
+            {
+                lastSpeeds[id] = new WheelSpeeds();
+                lastTime[id] = 0;
+            }
+            double dt = lastTime[id] - time;
+            int maxstep = Math.Min(MaxVelocityStep, (int)(dt * maxAcceleration + .5));
+            if (maxstep < 1)
+            {
+                return;
+            }
+            WheelSpeeds last = lastSpeeds[id];
+            lf = ChangeUpTo(last.lf, lf, maxstep);
+            rf = ChangeUpTo(last.rf, rf, maxstep);
+            lb = ChangeUpTo(last.lb, lb, maxstep);
+            rb = ChangeUpTo(last.rb, rb, maxstep);
+            lastSpeeds[id] = new WheelSpeeds(lf, rf, lb, rb);
+            lastTime[id] = time;
 
 
             /*if (lf == 0 && rf == 0 && lb == 0 && rb == 0) {
@@ -124,7 +179,7 @@ namespace Robotics.Commander
 
             //robots expect wheel powers in this order:
             //rf lf lb rb
-            byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+target),
+            byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+id),
                 (byte)'w',wheel,(byte)rf,(byte)lf, (byte)lb, (byte)rb,(byte)'\\',(byte)'E'};
 
             comport.Write(msg, 0, msg.Length);
