@@ -1,0 +1,10 @@
+# this is a comment
+
+double ROBOT_RADIUS .1
+
+double BALL_RADIUS .02
+
+double FIELD_WIDTH 4.9
+double FIELD_HEIGHT 3.4
+
+double GOAL_HEIGHT .7

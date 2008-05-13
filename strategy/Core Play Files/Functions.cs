@@ -391,6 +391,23 @@ namespace Robocup.Plays
             {
                 return state.TheirTeamInfo.Length;
             });
+
+            addFunction("const-double", "double constant", "The (double) constant ~", typeof(double), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return Utilities.Constants.get<double>("plays", (string)objects[0]);
+            });
+            addFunction("const-int", "int constant", "The (int) constant ~", typeof(int), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return Utilities.Constants.get<int>("plays", (string)objects[0]);
+            });
+            addFunction("const-bool", "bool constant", "The (bool) constant ~", typeof(bool), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return Utilities.Constants.get<bool>("plays", (string)objects[0]);
+            });
+            addFunction("const-string", "string constant", "The (string) constant ~", typeof(string), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return Utilities.Constants.get<string>("plays", (string)objects[0]);
+            });
             #endregion
 
             #region actions

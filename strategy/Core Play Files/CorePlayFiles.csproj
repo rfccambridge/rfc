@@ -64,6 +64,10 @@
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
+      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Geometry\Geometry.csproj">
       <Project>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</Project>
       <Name>Geometry</Name>

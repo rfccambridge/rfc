@@ -86,7 +86,7 @@ namespace Robocup.Plays
             }
             // This assumes that if there is a parse method, there is also a
             // parameter-less constructor:
-            else if (wantedType.GetMethod("Parse", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public, null, new Type[] { typeof(String) }, null) != null)
+            else if (wantedType == typeof(string) || wantedType.GetMethod("Parse", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public, null, new Type[] { typeof(String) }, null) != null)
             //if (wantedType.GetMethod("Parse", System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.InvokeMethod|System.Reflection.BindingFlags.Public) != null)
             {
                 label2.Visible = true;
@@ -97,7 +97,12 @@ namespace Robocup.Plays
                     //enterValueBox.Text = expression.getValue(0).ToString();
                     enterValueBox.Text = expression.StoredValue.ToString();
                 else
-                    enterValueBox.Text = ((object)Activator.CreateInstance(wantedType)).ToString();
+                {
+                    if (wantedType == typeof(string))
+                        enterValueBox.Text = "";
+                    else
+                        enterValueBox.Text = ((object)Activator.CreateInstance(wantedType)).ToString();
+                }
             }
             functionSelector.Items.Clear();
             foreach (Function f in allFunctions)
@@ -330,7 +335,11 @@ namespace Robocup.Plays
                 try
                 {
                     //use reflection to call the Class.Parse() method on the string entered
-                    object o = wantedType.InvokeMember("Parse", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static, null, null, new object[] { enterValueBox.Text });
+                    object o;
+                    if (wantedType==typeof(string))
+                        o = enterValueBox.Text;
+                    else
+                        o = wantedType.InvokeMember("Parse", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static, null, null, new object[] { enterValueBox.Text });
                     bool acceptable = returnDelegate(new DesignerExpression(o));
                     if (acceptable)
                         this.Close();
