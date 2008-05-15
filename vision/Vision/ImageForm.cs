@@ -384,13 +384,13 @@ namespace Vision {
                         _viewMode = ViewMode.COLOR_CLASS;
                     }
                     break;
-              /*  case 't': // show/hide tsai points
+                case 't': // show/hide tsai points
                     if (_tsaiCalibrator == null) {
                         MessageBox.Show("TsaiCalibrator not loaded!");
                         return;
                     }
                     _tsaiCalibrator.ToggleTsaiPoints();
-                    break;*/
+                    break;
                 case 'y': // generate tsai image to world lookup table
                     if (_tsaiCalibrator == null) {
                         MessageBox.Show("TsaiCalibrator not loaded!");
@@ -473,7 +473,7 @@ namespace Vision {
                                   totalObjects.ToString() + " objects.");
 
                     break;
-                case 't': // detect tsai points
+                case 'k': // detect tsai points
                      if (_blobber == null) {
                         MessageBox.Show("Blobber not loaded!");
                         return;
