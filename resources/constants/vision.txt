@@ -42,6 +42,15 @@ int THEIR_ID_OFFSET_OMEGA 10
 int THEIR_ID_OFFSET_MARDUK 0
 int THEIR_ID_OFFSET_STRATEGIST 10
 
+# Tsai Point finder
+# in mm
+double GRID_UNIT 100
+# deviation in image Y-coordinate of the blob to be considered in same row of tsai points
+int ROW_Y_THRES 20
+# in pixels
+int TSAIPT_MIN_AREA 200
+int TSAIPT_MAX_AREA 600
+
 
 
 

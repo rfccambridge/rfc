@@ -81,6 +81,43 @@ namespace Vision {
             RGBtoBGR();
 
         }
+        public RAWImage(string filename) {
+            if (Path.GetExtension(filename) != ".bmp")
+                throw new Exception("Supported formats for RAWImage constructor are: 'bmp'");
+
+            PixelFormat format = PixelFormat.Format24bppRgb;
+            BitmapData bitmapData;
+
+            imgBitmap = new Bitmap(filename);
+            if (imgBitmap.PixelFormat != format)
+                imgBitmap = ConvertTo24bppRgb(imgBitmap);
+                           
+
+            width = imgBitmap.Width;
+            height = imgBitmap.Height;
+
+            rawDataLength = imgBitmap.Width * imgBitmap.Height * 3;
+            rawData = new byte[rawDataLength];
+
+            // copy the raw data
+            bitmapData = imgBitmap.LockBits(new Rectangle(0, 0, imgBitmap.Width, imgBitmap.Height),
+                                          ImageLockMode.WriteOnly, format);
+            IntPtr ptrBitmapData = bitmapData.Scan0;
+            Marshal.Copy(ptrBitmapData, rawData, 0, rawDataLength);
+
+            imgBitmap.UnlockBits(bitmapData);
+
+            
+        }
+
+        /* Private Methods */
+        private Bitmap ConvertTo24bppRgb(Bitmap bmp) {
+            Bitmap convBmp = new Bitmap(bmp.Width, bmp.Height, PixelFormat.Format24bppRgb);
+            Graphics gfx = Graphics.FromImage(convBmp);
+            gfx.DrawImage(bmp, 0, 0, bmp.Width, bmp.Height);
+            gfx.Dispose();
+            return convBmp;
+        }
 
         RAWImage rawClone;
         public RAWImage Clone() {
@@ -127,6 +164,7 @@ namespace Vision {
 
             return imgBitmap;
         }
+
         public void showInPictureBox(PictureBox picBox) {
             this.toBitmap();
 

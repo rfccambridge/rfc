@@ -10,6 +10,7 @@ using Robocup.Utilities;
 using System.IO;
 using System.Drawing.Drawing2D;
 using Robocup.Core;
+using System.Text.RegularExpressions;
 
 namespace Vision {
     public partial class ImageForm : Form {
@@ -41,6 +42,10 @@ namespace Vision {
         private List<SelectionBox.SelectionBox> _highlights;
 
         private Bitmap _normalBitmap; //used to save the orig, when displaying color-class
+
+        // frame sequence stuff
+        private string _sequence = ""; // path and filename without numbers and extension
+        private int _frame = -1; // current frame number
 
         /* CONSTRUCTORS */
 
@@ -108,6 +113,7 @@ namespace Vision {
         public void LoadImage(RAWImage rawImage) {
             _rawImage = rawImage;
             _bitmap = rawImage.toBitmap();
+            _normalBitmap = rawImage.toBitmap();
             _viewMode = ViewMode.NORMAL;
             RedrawImage();
         }
@@ -123,6 +129,12 @@ namespace Vision {
             imagePicBox.Width = _bitmap.Width;
             imagePicBox.Height = _bitmap.Height;
             imagePicBox.BackgroundImage = _bitmap;
+
+            // move the selection box if it ended up outside of bounds
+            Rectangle region = GetRegion();
+            if (region.Right >= imagePicBox.Width - 10 || region.Bottom >= imagePicBox.Height - 10)
+                SetRegion(new Rectangle(new Point(0, 0), new Size(imagePicBox.Width, imagePicBox.Height)));
+            
         }
 
         public Rectangle GetRegion() {
@@ -211,6 +223,36 @@ namespace Vision {
                 
             _highlights.Clear();
         }
+
+        // Returns: true on success, false otherwise
+        public bool LoadNextFrame() {
+            _frame++;
+            string nextFrameFile = _sequence + _frame.ToString() + ".bmp";
+            if (!File.Exists(nextFrameFile)) {
+                _frame--;
+                return false;
+            }
+            RAWImage image = new RAWImage(nextFrameFile);
+            LoadImage(image);
+            return true;
+        }
+        // Returns: true on success, false otherwise
+        public bool LoadPrevFrame() {
+            if (_frame == 0)
+                return false;
+
+            _frame--;
+            string prevFrameFile = _sequence + _frame.ToString() + ".bmp";
+            if (!File.Exists(prevFrameFile)) {
+                _frame++;
+                return false;
+            }
+            RAWImage image = new RAWImage(prevFrameFile);
+            LoadImage(image);
+            return true;
+        }
+
+
         
 
         /* PRIVATE METHODS */
@@ -258,6 +300,59 @@ namespace Vision {
                     LoadImage(image);
                     ChangeStatus("Frame captured.");
                     break;
+                case 'l': //load image from bitmap file
+                    if (_blobber != null && _blobber.Blobbing)
+                        return;
+                    ClearHighlights();
+                    
+                    OpenFileDialog openDlg = new OpenFileDialog();
+                    openDlg.Filter = "Bitmap images (*.bmp)|*.bmp";
+                    openDlg.CheckFileExists = openDlg.CheckPathExists = true;
+                    openDlg.InitialDirectory = WORK_DIR;
+                    openDlg.RestoreDirectory = true;
+                    openDlg.FileOk += new CancelEventHandler(delegate(Object s, CancelEventArgs e1) {
+                        if (!e1.Cancel) {
+                            image = new RAWImage(openDlg.FileName);
+                            LoadImage(image);
+                            // see if file is part of a sequence
+                            Regex pattern = new Regex(@"([0-9]+)\.bmp$");
+                            Match match = pattern.Match(Path.GetFileName(openDlg.FileName));
+                            if (match.Success) {
+                                _sequence = openDlg.FileName.Substring(0, openDlg.FileName.Length - match.Groups[1].Length - 4);
+                                _frame = int.Parse(match.Groups[1].Value);
+                                ChangeStatus("Frame " + _frame.ToString() + " loaded from sequence " + Path.GetFileName(_sequence));
+                            } else {
+                                _sequence = "";
+                                _frame = -1;
+                                ChangeStatus("Image loaded from " + Path.GetFileName(openDlg.FileName));
+                            }
+                            
+                        }
+                    });
+                    openDlg.ShowDialog();
+                    
+                    break;
+                case 's': //load image from bitmap file
+                    if (_rawImage == null) {
+                        MessageBox.Show("No image to save!");
+                        return;
+                    }
+                    if (_blobber != null && _blobber.Blobbing)
+                        return;
+
+                    SaveFileDialog saveDlg = new SaveFileDialog();
+                    saveDlg.Filter = "Bitmap image (*.bmp)|*.bmp";
+                    saveDlg.InitialDirectory = WORK_DIR;
+                    saveDlg.RestoreDirectory = true;
+                    saveDlg.FileOk += new CancelEventHandler(delegate(Object s, CancelEventArgs e1) {
+                        if (!e1.Cancel) {
+                            _normalBitmap.Save(saveDlg.FileName, System.Drawing.Imaging.ImageFormat.Bmp);
+                            ChangeStatus("Image saved to " + Path.GetFileName(saveDlg.FileName));
+                        }
+                    });
+                    saveDlg.ShowDialog();
+
+                    break;
                 case '=': //zoom in
                     _zoomFactor *= 2;
                     _bitmap = ZoomBitmap(_bitmap, 2);
@@ -289,13 +384,13 @@ namespace Vision {
                         _viewMode = ViewMode.COLOR_CLASS;
                     }
                     break;
-                case 't': // show/hide tsai points
+              /*  case 't': // show/hide tsai points
                     if (_tsaiCalibrator == null) {
                         MessageBox.Show("TsaiCalibrator not loaded!");
                         return;
                     }
                     _tsaiCalibrator.ToggleTsaiPoints();
-                    break;
+                    break;*/
                 case 'y': // generate tsai image to world lookup table
                     if (_tsaiCalibrator == null) {
                         MessageBox.Show("TsaiCalibrator not loaded!");
@@ -378,6 +473,28 @@ namespace Vision {
                                   totalObjects.ToString() + " objects.");
 
                     break;
+                case 't': // detect tsai points
+                     if (_blobber == null) {
+                        MessageBox.Show("Blobber not loaded!");
+                        return;
+                    }
+                    if (_blobber.Blobbing)
+                        return;
+                    if (_blobber.totalBlobs <= 0) {
+                        MessageBox.Show("Must blob first!");
+                        return;
+                    }
+
+                    TsaiPtFinder finder = new TsaiPtFinder();
+                    finder.LoadImage(_rawImage);
+                    List<Pair<Point, DPoint>> pairs = finder.orderSquares(_blobber.blobs);
+
+                    Graphics gfx = imagePicBox.CreateGraphics();
+                    foreach (Pair<Point, DPoint> pair in pairs) {
+                        gfx.FillRectangle(Brushes.Aqua, new Rectangle(pair.First, new Size(5, 5)));
+                    }
+                    gfx.Dispose();
+                        break;
                 case 'h':
                     ClearHighlights();
                     ChangeStatus("Highlights removed.");
@@ -431,6 +548,26 @@ namespace Vision {
                         _blobber.Stop();
                         ChangeStatus(IDLE_STATUS);
                     }
+                    break;
+                case '.': // go to next (saved) frame
+                    if (_frame < 0) {
+                        MessageBox.Show("A file that is part of a sequence must be loaded (filename ends in digits)");
+                        return;
+                    }
+                    if (LoadNextFrame())
+                        ChangeStatus("Frame " + _frame.ToString() + " loaded from sequence " + Path.GetFileName(_sequence));
+                    else
+                        ChangeStatus("End of sequence reached.");
+                    break;
+                case ',': // go to previous (saved) frame
+                    if (_frame < 0) {
+                        MessageBox.Show("A file that is part of a sequence must be loaded (filename ends in digits)");
+                        return;
+                    }
+                    if (LoadPrevFrame())
+                        ChangeStatus("Frame " + _frame.ToString() + " loaded from sequence " + Path.GetFileName(_sequence));
+                    else
+                        ChangeStatus("Beginning of sequence reached.");
                     break;
                 case 'f': // show Field State form
                     if (FieldState.Form.Visible == true)

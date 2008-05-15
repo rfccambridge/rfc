@@ -726,7 +726,6 @@ namespace Vision {
                 return 1;
             }
 
-
             double sa, ca, sb, cb, sg, cg;
 
             cp.Ncx = Convert.ToDouble(ccal_fo.StandardOutput.ReadLine());
