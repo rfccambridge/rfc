@@ -3,39 +3,49 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
-
-
-public struct RGBQUAD {
-    public byte rgbBlue;
-    public byte rgbGreen;
-    public byte rgbRed;
-    public byte rgbReserved;
-}
-
-public struct BITMAPINFOHEADER {
-    public int biSize;
-    public int biWidth;
-    public int biHeight;
-    public short biPlanes;
-    public short biBitCount;
-    public int biCompression;
-    public int biSizeImage;
-    public int biXPelsPerMeter;
-    public int biYPelsPerMeter;
-    public int biClrUsed;
-    public int biClrImportant;
-}
-
-public struct BITMAPINFO {
-    public BITMAPINFOHEADER bmiHeader;
-    public RGBQUAD bmiColors;
-}
-
+using System.IO;
 
 namespace VisionCamera {
-    public unsafe class Camera {
-        //dll imports
+    public interface ICamera
+    {
+        int startCapture();
+        int stopCapture();
+        int getOneImage(out Vision.RAWImage image);
+        int getFrame(out Vision.RAWImage image);
+    }
 
+    
+    public unsafe class PGRCamera : ICamera{
+        public struct RGBQUAD
+        {
+            public byte rgbBlue;
+            public byte rgbGreen;
+            public byte rgbRed;
+            public byte rgbReserved;
+        }
+
+        public struct BITMAPINFOHEADER
+        {
+            public int biSize;
+            public int biWidth;
+            public int biHeight;
+            public short biPlanes;
+            public short biBitCount;
+            public int biCompression;
+            public int biSizeImage;
+            public int biXPelsPerMeter;
+            public int biYPelsPerMeter;
+            public int biClrUsed;
+            public int biClrImportant;
+        }
+
+        public struct BITMAPINFO
+        {
+            public BITMAPINFOHEADER bmiHeader;
+            public RGBQUAD bmiColors;
+        }
+
+        #region DLL Imports
         [DllImport("pgrflycapture.dll")]
         public static extern int flycaptureCreateContext(int* flycapcontext);
 
@@ -78,8 +88,9 @@ namespace VisionCamera {
         public static extern int CreateDIBSection(int* hDC,
             ref BITMAPINFO pBitmapInfo, int un, ref byte* lplpVoid,
             int handle, int dw);
+        #endregion
 
-
+        #region Constants
         // Bitmap constant
         public const short DIB_RGB_COLORS = 0;
 
@@ -95,13 +106,13 @@ namespace VisionCamera {
         public const int COLS = 1024;
         public const int ROWS = 768;
         public const int FORMAT_FACTOR = 3;
-
+        #endregion
 
 
         int flycapContext;
         int ret;
         FlyCaptureInfo flycapInfo;
-        FlyCaptureImage image;
+        FlyCaptureImage pgrImage;
         FlyCaptureImage flycapRGBImage;
         Boolean started;
         byte[] rawData;
@@ -109,10 +120,10 @@ namespace VisionCamera {
 
         Vision.RAWImage cameraImage;
 
-        public Camera() {
+        public PGRCamera() {
 
             flycapInfo = new FlyCaptureInfo();
-            image = new FlyCaptureImage();
+            pgrImage = new FlyCaptureImage();
             flycapRGBImage = new FlyCaptureImage();
             nBytes = ROWS * COLS * FORMAT_FACTOR;	// for R,G,B
             rawData = new byte[nBytes];
@@ -154,7 +165,7 @@ namespace VisionCamera {
             started = false;
         }
 
-        ~Camera() {
+        ~PGRCamera() {
             // Destroy the context.
             ret = flycaptureDestroyContext(flycapContext);
             if (ret != 0) {
@@ -167,7 +178,7 @@ namespace VisionCamera {
             Console.Read();
         }
 
-        public void startCapture() {
+        public int startCapture() {
             /**/
             // Start FlyCapture.
             if (!started) {
@@ -177,26 +188,105 @@ namespace VisionCamera {
                     FlyCaptureFrameRate.FLYCAPTURE_FRAMERATE_ANY);
                 if (ret != 0) {
                     reportError(ret, "flycaptureStart");
-                    return;
+                    return 1;
                 }
                 started = true;
             }
+            return 0;
         }
 
-        public void stopCapture() {
+        public int stopCapture() {
             if (started) {
                 // Stop FlyCapture.
                 ret = flycaptureStop(flycapContext);
                 if (ret != 0) {
                     reportError(ret, "flycaptureStop");
-                    return;
+                    return 1;
                 }
                 started = false;
             }
+            return 0;
         }
 
-        public void InitBitmapStructure(int nRows, int nCols,
-            ref FlyCaptureImage flycapRGBImage) {
+        public int getOneImage(out Vision.RAWImage image) {
+            bool startedOld = started;
+
+            int rc;
+            if (!started)
+                if ((rc = startCapture()) > 0)
+                {
+                    image = null;
+                    return rc;
+                }
+
+            if ((rc = getFrame(out image)) > 0)
+            {
+                image = null;
+                return rc;
+            }
+
+            if (!startedOld)
+                if ((rc = stopCapture()) > 0)
+                {
+                    image = null;
+                    return rc;
+                }
+
+            return 0;
+        }
+
+        public int getFrame(out Vision.RAWImage image)
+        {
+            // check to make sure initialized
+            if (!started)
+            {
+                image = null;
+                return 1;
+            }
+
+           // Console.Write("\nGrabbing Images ");
+            ret = flycaptureGrabImage2(flycapContext, ref pgrImage);
+            if (ret != 0) {
+                reportError(ret, "flycaptureGrabImage2");
+                image = null;
+                return 1;
+            }
+           // Console.Write(".");
+
+            // Convert the image.
+
+            ret = flycaptureConvertImage(flycapContext, ref pgrImage,
+                ref flycapRGBImage);
+            if (ret != 0) {
+                reportError(ret, "flycaptureConvertImage");
+                image = null;
+                return 1;
+            }
+
+            Marshal.Copy((IntPtr)flycapRGBImage.pData, rawData, 0, nBytes);
+
+            //return new RAWImage(rawData, image.iCols, image.iRows, 1);
+            image = cameraImage;
+            return 0;
+
+
+            /*// Save the image.
+            Console.Write("\nSaving Last Image ");
+            ret = flycaptureSaveImage(flycapContext, ref flycapRGBImage, "raw.bmp",
+                FlyCaptureImageFileFormat.FLYCAPTURE_FILEFORMAT_BMP);
+            if (ret != 0)
+            {
+                reportError(ret, "flycaptureSaveImage");
+                return;
+            }
+            else
+                System.Diagnostics.Process.Start("mspaint.exe", "raw.bmp");*/
+
+        }
+
+        private void InitBitmapStructure(int nRows, int nCols,
+            ref FlyCaptureImage flycapRGBImage)
+        {
 
             BITMAPINFO bmi = new BITMAPINFO();	// bitmap header
             byte* pvBits = null; //	pointer	to DIB section
@@ -217,7 +307,8 @@ namespace VisionCamera {
             flycapRGBImage.pData = pvBits;
         }
 
-        public void reportError(int ret, string fname) {
+        private void reportError(int ret, string fname)
+        {
             /*
             Console.Write(fname + " error: " + flycaptureErrorToString(ret) + "\n");
             Console.Write("\nPress Enter");
@@ -225,61 +316,87 @@ namespace VisionCamera {
             throw new ApplicationException(fname + " error: " + flycaptureErrorToString(ret) + "\n");
             //return;
         }
+    }
 
-        public Vision.RAWImage getOneImage() {
-            bool startedOld = started;
-            
-            if (!started)
-                startCapture();
-            
-            Vision.RAWImage image = getFrame();
-            
-            if (!startedOld)
-                stopCapture();
+    public class SeqCamera : ICamera
+    {
+        private string _sequence = "";
+        private int _frame = -1;
+        private int _startFrame = -1;
+        private bool _repeat = false;
+        private int _sleepTime = 0; // in ms;
 
-            return image;
+        // Properties
+        public bool Repeat
+        {
+            get { return _repeat; }
+            set { _repeat = value; }
+        }
+        public int Frame
+        {
+            get { return _frame; }
+            set { _frame = value; }
+        }
+        public int StartFrame
+        {
+            get { return _startFrame; }
+            set { _startFrame = value; }
+        }
+        public string Sequence
+        {
+            get { return _sequence; }
+            set { _sequence = value; }
+        }
+        public int SleepTime
+        {
+            get { return _sleepTime; }
+            set { _sleepTime = value; }
         }
 
-        public Vision.RAWImage getFrame()
+        // Methods
+        public int startCapture()
         {
-            // check to make sure initialized
-            if (!started) return null;
-
-           // Console.Write("\nGrabbing Images ");
-            ret = flycaptureGrabImage2(flycapContext, ref image);
-            if (ret != 0) {
-                reportError(ret, "flycaptureGrabImage2");
-                return null;
-            }
-           // Console.Write(".");
-
-            // Convert the image.
-
-            ret = flycaptureConvertImage(flycapContext, ref image,
-                ref flycapRGBImage);
-            if (ret != 0) {
-                reportError(ret, "flycaptureConvertImage");
-                return null;
-            }
-
-            Marshal.Copy((IntPtr)flycapRGBImage.pData, rawData, 0, nBytes);
-
-            //return new RAWImage(rawData, image.iCols, image.iRows, 1);
-            return cameraImage;
-
-
-            /*// Save the image.
-            Console.Write("\nSaving Last Image ");
-            ret = flycaptureSaveImage(flycapContext, ref flycapRGBImage, "raw.bmp",
-                FlyCaptureImageFileFormat.FLYCAPTURE_FILEFORMAT_BMP);
-            if (ret != 0)
+            if (_frame < 0)
+                return 1;
+            return 0;
+        }
+        public int stopCapture()
+        {
+            // nothing to be done
+            return 0;
+        }
+        public int getOneImage(out Vision.RAWImage image)
+        {
+            return getFrame(out image);
+        }
+        public int getFrame(out Vision.RAWImage image)
+        {
+            return getFrame(out image, 1);
+        }
+        public int getFrame(out Vision.RAWImage image, int increment)
+        {
+            if (_frame < 0)
             {
-                reportError(ret, "flycaptureSaveImage");
-                return;
+                image = null;
+                return 1;
             }
-            else
-                System.Diagnostics.Process.Start("mspaint.exe", "raw.bmp");*/
+            Thread.Sleep(_sleepTime);
 
+            _frame += increment;
+            string nextFrameFile = _sequence + _frame.ToString() + ".bmp";
+            if (!File.Exists(nextFrameFile))
+            {
+                if (_repeat) {
+                    _frame = _startFrame;
+                    nextFrameFile = _sequence + _frame.ToString() + ".bmp";
+                } else {
+                    _frame -= increment;
+                    image = null;
+                    return 2;
+                }
+            }
+            image = new Vision.RAWImage(nextFrameFile);
+            return 0;
         }
     }
 }

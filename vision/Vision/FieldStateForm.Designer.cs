@@ -43,6 +43,7 @@ namespace Vision {
             this.ClientSize = new System.Drawing.Size(394, 516);
             this.Controls.Add(this.picField);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.MinimizeBox = false;
             this.Name = "FieldStateForm";
             this.Text = "Field State";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FieldStateForm_FormClosing);

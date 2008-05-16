@@ -435,6 +435,7 @@ namespace Vision {
             this.ClientSize = new System.Drawing.Size(307, 339);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.MaximizeBox = false;
             this.Name = "HelpForm";
             this.Text = "Help";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HelpForm_FormClosing);

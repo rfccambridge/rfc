@@ -294,12 +294,20 @@ namespace Vision {
         public TsaiPoint[] tsaiPoints;
         public bool _tsaiPointsVisible = false;
 
+        private System.Drawing.Size _imageSize;
+
         camera_parameters cp;
         calibration_constants cc;
 
         public DPoint[] imgToWorldLookup;
 
         private frmWorld frmWorldObj;
+
+        public System.Drawing.Size ImageSize
+        {
+            get { return _imageSize; }
+            set { _imageSize = value; }
+        }
 
         public TsaiCalibrator(int cameraID) {
             _cameraID = cameraID;
@@ -309,6 +317,9 @@ namespace Vision {
             tsaiPoints = new TsaiPoint[TSAI_ROWS * TSAI_COLS];
             // only when calibrating corners only
             //tsaiPoints = new TsaiPoint[TSAI_ROWS * TSAI_COLS * 4];
+
+            // default
+            _imageSize = new System.Drawing.Size(1024, 768);
 
             CreateDefaultTsaiPoints();
         }
@@ -370,8 +381,8 @@ namespace Vision {
             const int PADDING = 100;
 
 
-            interval_w = (VisionStatic.Field.WIDTH - 2 * PADDING) / (TSAI_COLS - 1);
-            interval_h = (VisionStatic.Field.HEIGHT - 2 * PADDING) / (TSAI_ROWS - 1);
+            interval_w = (_imageSize.Width - 2 * PADDING) / (TSAI_COLS - 1);
+            interval_h = (_imageSize.Height - 2 * PADDING) / (TSAI_ROWS - 1);
 
             w_interval_w = -TSAIWIDTH / (TSAI_COLS - 1);
             w_interval_l = -TSAIHEIGHT / (2 * (TSAI_ROWS - 1));
@@ -424,8 +435,8 @@ namespace Vision {
             const int PADDING = 100;
 
             
-            interval_w = (VisionStatic.Field.WIDTH - 2 * PADDING) / (TSAI_COLS - 1);
-            interval_h = (VisionStatic.Field.HEIGHT - 2 * PADDING) / (TSAI_ROWS - 1);
+            interval_w = (_imageSize.Width - 2 * PADDING) / (TSAI_COLS - 1);
+            interval_h = (_imageSize.Height - 2 * PADDING) / (TSAI_ROWS - 1);
 
             w_interval_w = -TSAIWIDTH / (TSAI_COLS - 1);
             w_interval_l = -TSAIHEIGHT / (2 * (TSAI_ROWS - 1));
@@ -486,8 +497,8 @@ namespace Vision {
             {
                 case 1:
                 case 2:
-                    interval_w = (VisionStatic.Field.WIDTH / 2 - 2 * PADDING) / (TSAI_COLS - 1);
-                    interval_h = (VisionStatic.Field.HEIGHT / 2 - 2 * PADDING) / (TSAI_ROWS - 1);
+                    interval_w = (_imageSize.Width / 2 - 2 * PADDING) / (TSAI_COLS - 1);
+                    interval_h = (_imageSize.Height / 2 - 2 * PADDING) / (TSAI_ROWS - 1);
 
                     wx_start = TSAIWIDTH / 2;
                     wy_start = TSAIHEIGHT / 2;
@@ -527,7 +538,7 @@ namespace Vision {
                     iy = 100;
                     for (i = 0; i < TSAI_ROWS; i++)
                     {
-                        ix = VisionStatic.Field.WIDTH - 100;
+                        ix = _imageSize.Width - 100;
                         wx = wx_start;
                         for (j = 0; j < TSAI_COLS; j++)
                         {
@@ -549,7 +560,7 @@ namespace Vision {
                     w_interval_l = 100;
 
                     wy = wy_start;
-                    iy = VisionStatic.Field.HEIGHT - 100;
+                    iy = _imageSize.Height - 100;
                     for (i = 0; i < TSAI_ROWS; i++)
                     {
                         ix = 100;
@@ -574,10 +585,10 @@ namespace Vision {
                     w_interval_l = 100;
 
                     wy = wy_start;
-                    iy = VisionStatic.Field.HEIGHT - 100;
+                    iy = _imageSize.Height - 100;
                     for (i = 0; i < TSAI_ROWS; i++)
                     {
-                        ix = VisionStatic.Field.WIDTH - 100;
+                        ix = _imageSize.Width - 100;
                         wx = wx_start;
                         for (j = 0; j < TSAI_COLS; j++)
                         {
@@ -851,16 +862,16 @@ namespace Vision {
                 return;
             }
 
-            float ROBOT_HEIGHT_TSAI = Constants.get<float>("vision", "ROBOT_HEIGHT_TSAI");
+            float ROBOT_Height_TSAI = Constants.get<float>("vision", "ROBOT_Height_TSAI");
 
-            imgToWorldLookup = new DPoint[VisionStatic.Field.WIDTH * VisionStatic.Field.HEIGHT];
+            imgToWorldLookup = new DPoint[_imageSize.Width * _imageSize.Height];
             
             k = 0;
-            for (iy = 0; iy < VisionStatic.Field.HEIGHT; iy++)
+            for (iy = 0; iy < _imageSize.Height; iy++)
             {
-                for (ix = 0; ix < VisionStatic.Field.WIDTH; ix++)
+                for (ix = 0; ix < _imageSize.Width; ix++)
                 {
-                    ImageCoordToWorldCoord(ix, iy, ROBOT_HEIGHT_TSAI, out wx, out wy);
+                    ImageCoordToWorldCoord(ix, iy, ROBOT_Height_TSAI, out wx, out wy);
                     imgToWorldLookup[k++] = new DPoint(wx, wy);
                 }
             }    
@@ -878,7 +889,7 @@ namespace Vision {
 
 
         public void LoadImageToWorldTable(string filename) {
-            imgToWorldLookup = new DPoint[VisionStatic.Field.WIDTH * VisionStatic.Field.HEIGHT];
+            imgToWorldLookup = new DPoint[_imageSize.Width * _imageSize.Height];
 
             int k = 0;
             int ix, iy;
@@ -886,8 +897,10 @@ namespace Vision {
             FileStream fStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
             BinaryReader binReader = new BinaryReader(fStream);
 
-            for (iy = 0; iy < VisionStatic.Field.HEIGHT; iy++) {
-                for (ix = 0; ix < VisionStatic.Field.WIDTH; ix++) {
+            for (iy = 0; iy < _imageSize.Height; iy++)
+            {
+                for (ix = 0; ix < _imageSize.Width; ix++)
+                {
                     wx = binReader.ReadDouble();
                     wy = binReader.ReadDouble();
                     imgToWorldLookup[k++] = new DPoint(wx, wy);
@@ -904,9 +917,11 @@ namespace Vision {
             BinaryWriter binWriter = new BinaryWriter(fStream);
             DPoint point;
 
-            for (iy = 0; iy < VisionStatic.Field.HEIGHT; iy++) {
-                for (ix = 0; ix < VisionStatic.Field.WIDTH; ix++) {
-                    point = imgToWorldLookup[iy * VisionStatic.Field.WIDTH + ix];
+            for (iy = 0; iy < _imageSize.Height; iy++)
+            {
+                for (ix = 0; ix < _imageSize.Width; ix++)
+                {
+                    point = imgToWorldLookup[iy * _imageSize.Width + ix];
                     binWriter.Write(point.wx);
                     binWriter.Write(point.wy);
                 }
@@ -925,14 +940,14 @@ namespace Vision {
                 ix = 1;
             if (y == 0)
                 iy = 1;
-            if (x == VisionStatic.Field.WIDTH - 1)
+            if (x == _imageSize.Width - 1)
                 ix = x - 1;
-            if (y == VisionStatic.Field.HEIGHT - 1)
+            if (y == _imageSize.Height - 1)
                 iy = y - 1;
             
-            DPoint w1 = imgToWorldLookup[(iy - 1) * VisionStatic.Field.WIDTH + (ix - 1)];
-            DPoint w2 = imgToWorldLookup[(iy - 1) * VisionStatic.Field.WIDTH + (ix + 1)];
-            DPoint w3 = imgToWorldLookup[(iy + 1) * VisionStatic.Field.WIDTH + (ix - 1)];
+            DPoint w1 = imgToWorldLookup[(iy - 1) * _imageSize.Width + (ix - 1)];
+            DPoint w2 = imgToWorldLookup[(iy - 1) * _imageSize.Width + (ix + 1)];
+            DPoint w3 = imgToWorldLookup[(iy + 1) * _imageSize.Width + (ix - 1)];
     
 
             Vector v1 = new Vector(w3.wx - w1.wx, w3.wy - w1.wy);

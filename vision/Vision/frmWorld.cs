@@ -40,8 +40,8 @@ namespace Vision {
 
          
             i = 0;
-            for (row = 0; row < VisionStatic.Field.HEIGHT; row++) {
-                for (col = 0; col < VisionStatic.Field.WIDTH; col++) {
+            for (row = 0; row < rawImage.Height; row++) {
+                for (col = 0; col < rawImage.Width; col++) {
                     _tsaiCalibObj.ImageCoordToWorldCoord(col, row, 0, out wx, out wy);
                     pixWX = Convert.ToInt32(wx);
                     pixWY = Convert.ToInt32(wy);

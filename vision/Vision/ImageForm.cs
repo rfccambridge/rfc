@@ -11,9 +11,12 @@ using System.IO;
 using System.Drawing.Drawing2D;
 using Robocup.Core;
 using System.Text.RegularExpressions;
+using VisionCamera;
 
-namespace Vision {
-    public partial class ImageForm : Form {
+namespace Vision
+{
+    public partial class ImageForm : Form
+    {
         private const string WORK_DIR = "../../resources/vision/";
         private const string DEFAULT_REGION_FILE = WORK_DIR + "region.txt";
         private const string IDLE_STATUS = "Ready. Press F1 for key functions.";
@@ -21,12 +24,17 @@ namespace Vision {
         private readonly int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
 
         private static HelpForm HelpForm = new HelpForm();
+        private static Form SeqCameraForm = null; // setup upon first request
 
         /* PRIVATE MEMBERS */
 
         private enum ViewMode { NORMAL, COLOR_CLASS };
 
-        private VisionCamera.Camera _camera;
+        // avoid creating camera objects every time
+        private static PGRCamera _PGRCamera = new PGRCamera();
+        private static SeqCamera _seqCamera = new SeqCamera();
+
+        private VisionCamera.ICamera _camera;
         private ColorCalibrator _colorCalibrator;
         private TsaiCalibrator _tsaiCalibrator;
         private Blobber _blobber;
@@ -43,13 +51,10 @@ namespace Vision {
 
         private Bitmap _normalBitmap; //used to save the orig, when displaying color-class
 
-        // frame sequence stuff
-        private string _sequence = ""; // path and filename without numbers and extension
-        private int _frame = -1; // current frame number
-
         /* CONSTRUCTORS */
 
-        public ImageForm() {
+        public ImageForm()
+        {
             InitializeComponent();
 
             Size = new Size(1024 + 20, 768 + 40 + 20);
@@ -57,18 +62,24 @@ namespace Vision {
             imagePicBox.Size = new Size(1024, 768);
             regionSelBox.RegionLocation = new Point(0, 0);
             regionSelBox.RegionSize = new Size(1024, 768);
+            btnPGRCamera.Checked = true;
 
             _highlights = new List<SelectionBox.SelectionBox>(100);
 
             // camera ID depends on which computer this is running on
             // get computer name
             string compName = SystemInformation.ComputerName.ToUpper();
-           int CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID_" + compName);
+            int CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID_" + compName);
 
-            _camera = new VisionCamera.Camera();
+            _camera = _PGRCamera;
             _tsaiCalibrator = new TsaiCalibrator(CAMERA_ID);
             _colorCalibrator = new ColorCalibrator();
-            _blobber = new Blobber(_colorCalibrator, _tsaiCalibrator, _camera, this);
+            _blobber = new Blobber(_colorCalibrator, _tsaiCalibrator, this,
+                delegate()
+                {
+                    ChangeStatus("Blobber stopped.");
+                });
+            _blobber.SetCamera(_camera);
             _blobber.ReloadParameters();
             _fieldState = new FieldState();
 
@@ -77,26 +88,30 @@ namespace Vision {
             ChangeStatus(IDLE_STATUS);
         }
 
-        private void ImageForm_FormClosing(object sender, FormClosingEventArgs e) {
+        private void ImageForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
             DefaultEndSequence();
         }
 
-        private void DefaultInitSequence() {
+        private void DefaultInitSequence()
+        {
 
             if (File.Exists(DEFAULT_REGION_FILE))
                 LoadRegion(DEFAULT_REGION_FILE);
 
-            _colorCalibrator.DefaultInitSequence();   
+            _colorCalibrator.DefaultInitSequence();
             _tsaiCalibrator.DefaultInitSequence();
 
             _tsaiCalibrator.CreateLabels(imagePicBox);
 
             _messageSender = Robocup.MessageSystem.Messages.CreateServerSender<VisionMessage>(MESSAGE_SENDER_PORT);
 
+
             FieldState.Form.Show();
         }
 
-        private void DefaultEndSequence() {
+        private void DefaultEndSequence()
+        {
             SaveRegion(DEFAULT_REGION_FILE);
             _tsaiCalibrator.DefaultEndSequence();
             _colorCalibrator.DefaultEndSequence();
@@ -104,13 +119,17 @@ namespace Vision {
 
         /* PUBLIC METHODS */
 
-        public void LoadImage(Bitmap bitmap) {
+        public void LoadImage(Bitmap bitmap)
+        {
+            ClearHighlights();
             _bitmap = bitmap;
             _viewMode = ViewMode.NORMAL;
             RedrawImage();
         }
 
-        public void LoadImage(RAWImage rawImage) {
+        public void LoadImage(RAWImage rawImage)
+        {
+            ClearHighlights();
             _rawImage = rawImage;
             _bitmap = rawImage.toBitmap();
             _normalBitmap = rawImage.toBitmap();
@@ -118,14 +137,17 @@ namespace Vision {
             RedrawImage();
         }
 
-        public RAWImage CaptureImage() {
-            RAWImage image = _camera.getOneImage();
+        public RAWImage CaptureImage()
+        {
+            RAWImage image;
+            _camera.getOneImage(out image);
             if (image == null)
-                throw new System.ApplicationException("CaptureImage: got invalid image from camera!");            
+                throw new System.ApplicationException("CaptureImage: got invalid image from camera!");
             return image;
         }
 
-        public void RedrawImage() {
+        public void RedrawImage()
+        {
             imagePicBox.Width = _bitmap.Width;
             imagePicBox.Height = _bitmap.Height;
             imagePicBox.BackgroundImage = _bitmap;
@@ -134,17 +156,20 @@ namespace Vision {
             Rectangle region = GetRegion();
             if (region.Right >= imagePicBox.Width - 10 || region.Bottom >= imagePicBox.Height - 10)
                 SetRegion(new Rectangle(new Point(0, 0), new Size(imagePicBox.Width, imagePicBox.Height)));
-            
+
         }
 
-        public Rectangle GetRegion() {
-            return new Rectangle(regionSelBox.RegionLocation, regionSelBox.RegionSize); 
+        public Rectangle GetRegion()
+        {
+            return new Rectangle(regionSelBox.RegionLocation, regionSelBox.RegionSize);
         }
-        public void SetRegion(Rectangle rect) {
+        public void SetRegion(Rectangle rect)
+        {
             regionSelBox.RegionLocation = rect.Location;
             regionSelBox.RegionSize = rect.Size;
         }
-        private void LoadRegion(string filename) {
+        private void LoadRegion(string filename)
+        {
             TextReader tr = new StreamReader(filename);
 
             string line = tr.ReadLine();
@@ -152,16 +177,18 @@ namespace Vision {
 
             string[] dims = line.Split(new char[] { ' ' }, 4);
             SetRegion(new Rectangle(Convert.ToInt32(dims[0]), Convert.ToInt32(dims[1]),
-                                    Convert.ToInt32(dims[2]), Convert.ToInt32(dims[3])));           
+                                    Convert.ToInt32(dims[2]), Convert.ToInt32(dims[3])));
         }
-        private void SaveRegion(string filename) {
+        private void SaveRegion(string filename)
+        {
             TextWriter tw = new StreamWriter(filename);
             Rectangle region = GetRegion();
             tw.WriteLine("{0} {1} {2} {3}", region.Left, region.Top, region.Width, region.Height);
             tw.Close();
         }
 
-        public SelectionBox.SelectionBox HighlightBlob(Blob blob) {
+        public SelectionBox.SelectionBox HighlightBlob(Blob blob)
+        {
             Color color = Color.FromArgb(255, 0, 255); // pinkish
             Color hoverColor = Color.FromArgb(255, 150, 255); // lighter pinkish
 
@@ -173,7 +200,8 @@ namespace Vision {
             selBox.Resizable = false;
 
             Size blobSize = new Size(blob.Right - blob.Left, blob.Bottom - blob.Top);
-            string caption = "Blob #" + blob.BlobID.ToString() + 
+            string caption = "Blob #" + blob.BlobID.ToString() +
+                "\nColorClass: " + blob.ColorClass.ToString() +
                 "\nArea: " + blob.Area.ToString() +
                 "\nScaled Area: " + String.Format("{0:0.00}", blob.AreaScaled) +
                 "\nCenter: (" + blob.CenterX + ", " + blob.CenterY + ")" +
@@ -185,17 +213,20 @@ namespace Vision {
             blobInfo.InitialDelay = 0;
             blobInfo.AutoPopDelay = int.MaxValue;
 
-            selBox.MouseEnter += new EventHandler(delegate {
+            selBox.MouseEnter += new EventHandler(delegate
+            {
                 selBox.Color = hoverColor;
                 selBox.Invalidate();
             });
-            selBox.MouseLeave += new EventHandler(delegate {
+            selBox.MouseLeave += new EventHandler(delegate
+            {
                 selBox.Color = color;
                 selBox.Invalidate();
             });
 
             // right click = hides it (forever, but we won't dispose() of the object)
-            selBox.MouseClick += new MouseEventHandler(delegate(object sender, MouseEventArgs e) {
+            selBox.MouseClick += new MouseEventHandler(delegate(object sender, MouseEventArgs e)
+            {
                 if (e.Button != MouseButtons.Right)
                     return;
 
@@ -207,57 +238,47 @@ namespace Vision {
             //imagePicBox.Controls.Add(blobInfo);
             imagePicBox.Controls.Add(selBox);
             selBox.Show();
-            
+
             return selBox;
         }
 
 
-        public void ClearHighlights() {
+        public void ClearHighlights()
+        {
             if (_highlights.Count <= 0)
                 return;
 
-            foreach (SelectionBox.SelectionBox selBox in _highlights) {
+            foreach (SelectionBox.SelectionBox selBox in _highlights)
+            {
                 //imagePicBox.Controls.Remove(((Label)selBox.Tag));
                 imagePicBox.Controls.Remove(selBox);
             }
-                
+
             _highlights.Clear();
         }
 
-        // Returns: true on success, false otherwise
-        public bool LoadNextFrame() {
-            _frame++;
-            string nextFrameFile = _sequence + _frame.ToString() + ".bmp";
-            if (!File.Exists(nextFrameFile)) {
-                _frame--;
-                return false;
+        public void AdvanceFrame(int increment)
+        {
+            RAWImage image;
+            int rc = _seqCamera.getFrame(out image, increment);
+            switch (rc)
+            {
+                case 0:
+                    LoadImage(image);
+                    ChangeStatus("Frame " + _seqCamera.Frame.ToString() +
+                        " loaded from sequence " + Path.GetFileName(_seqCamera.Sequence));
+                    break;
+                case 1: ChangeStatus("Beginning of sequence reached."); break;
+                case 2: ChangeStatus("End of sequence reached."); break;
+                default: ChangeStatus("Error when advancing frame."); break;
             }
-            RAWImage image = new RAWImage(nextFrameFile);
-            LoadImage(image);
-            return true;
-        }
-        // Returns: true on success, false otherwise
-        public bool LoadPrevFrame() {
-            if (_frame == 0)
-                return false;
-
-            _frame--;
-            string prevFrameFile = _sequence + _frame.ToString() + ".bmp";
-            if (!File.Exists(prevFrameFile)) {
-                _frame++;
-                return false;
-            }
-            RAWImage image = new RAWImage(prevFrameFile);
-            LoadImage(image);
-            return true;
         }
 
-
-        
 
         /* PRIVATE METHODS */
 
-        private Bitmap ZoomBitmap(Bitmap original, float factor) {
+        private Bitmap ZoomBitmap(Bitmap original, float factor)
+        {
             Bitmap zoomed = new Bitmap((int)(original.Width * factor), (int)(original.Height * factor));
             Graphics gfx = Graphics.FromImage(zoomed);
             Rectangle srcRect = new Rectangle(0, 0, original.Width, original.Height);
@@ -266,13 +287,66 @@ namespace Vision {
 
             return zoomed;
         }
-        private void ChangeStatus(string status) {
+        private void ChangeStatus(string status)
+        {
             lblStatus.Text = status;
         }
 
+        private void BuildSeqCameraForm()
+        {
+            SeqCameraForm = new Form();
+            SeqCameraForm.Text = "BMP Sequence Camera";
+            SeqCameraForm.Size = new Size(200, 130);
+            SeqCameraForm.MaximizeBox = false;
+            SeqCameraForm.StartPosition = FormStartPosition.CenterParent;
+            SeqCameraForm.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            SeqCameraForm.DialogResult = DialogResult.Cancel;            
+
+            Label lblSleepTime = new Label();
+            lblSleepTime.Text = "Sleep time (ms): ";
+            lblSleepTime.Location = new Point(10, 20);
+
+            TextBox txtSleepTime = new TextBox();
+            txtSleepTime.Size = new Size(40, 10);
+            txtSleepTime.Location = new Point(lblSleepTime.Right + 5, lblSleepTime.Top);
+            txtSleepTime.Text = _seqCamera.SleepTime.ToString();
+
+            CheckBox chkRepeat = new CheckBox();
+            chkRepeat.Text = "Repeat";
+            chkRepeat.Location = new Point(lblSleepTime.Left, lblSleepTime.Bottom + 5);
+            chkRepeat.Checked = _seqCamera.Repeat;
+
+            Button btnSet = new Button();
+            btnSet.Text = "Apply";
+            btnSet.Location = new Point(chkRepeat.Left, chkRepeat.Bottom + 5);
+            btnSet.Click += new EventHandler(delegate(object s, EventArgs ea)
+            {
+                try
+                {
+                    _seqCamera.SleepTime = int.Parse(txtSleepTime.Text);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Failed to parse Sleep Time (integer, milliseconds)!");
+                    return;
+                }
+                _seqCamera.Repeat = chkRepeat.Checked;
+                _camera = _seqCamera;
+                _blobber.SetCamera(_camera);
+                SeqCameraForm.DialogResult = DialogResult.OK;
+            });
+
+            SeqCameraForm.Controls.Add(lblSleepTime);
+            SeqCameraForm.Controls.Add(txtSleepTime);
+            SeqCameraForm.Controls.Add(chkRepeat);
+            SeqCameraForm.Controls.Add(btnSet);
+        }
+
         /* EVENT HANDLERS */
-        protected override bool ProcessDialogKey(Keys keyData) {
-            if (keyData == Keys.F1) {
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            if (keyData == Keys.F1)
+            {
                 if (HelpForm.Visible)
                     HelpForm.BringToFront();
                 else
@@ -281,9 +355,11 @@ namespace Vision {
 
             return base.ProcessDialogKey(keyData);
         }
-        private void ImageForm_KeyPress(object sender, KeyPressEventArgs e) {
+        private void ImageForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
             RAWImage image = null;
-            switch (Char.ToLower(e.KeyChar)) {
+            switch (Char.ToLower(e.KeyChar))
+            {
                 case 'c': //capture image
                     if (_blobber != null && _blobber.Blobbing)
                         return;
@@ -304,36 +380,41 @@ namespace Vision {
                     if (_blobber != null && _blobber.Blobbing)
                         return;
                     ClearHighlights();
-                    
+
                     OpenFileDialog openDlg = new OpenFileDialog();
                     openDlg.Filter = "Bitmap images (*.bmp)|*.bmp";
                     openDlg.CheckFileExists = openDlg.CheckPathExists = true;
                     openDlg.InitialDirectory = WORK_DIR;
                     openDlg.RestoreDirectory = true;
-                    openDlg.FileOk += new CancelEventHandler(delegate(Object s, CancelEventArgs e1) {
-                        if (!e1.Cancel) {
+                    openDlg.FileOk += new CancelEventHandler(delegate(Object s, CancelEventArgs e1)
+                    {
+                        if (!e1.Cancel)
+                        {
                             image = new RAWImage(openDlg.FileName);
                             LoadImage(image);
                             // see if file is part of a sequence
                             Regex pattern = new Regex(@"([0-9]+)\.bmp$");
                             Match match = pattern.Match(Path.GetFileName(openDlg.FileName));
-                            if (match.Success) {
-                                _sequence = openDlg.FileName.Substring(0, openDlg.FileName.Length - match.Groups[1].Length - 4);
-                                _frame = int.Parse(match.Groups[1].Value);
-                                ChangeStatus("Frame " + _frame.ToString() + " loaded from sequence " + Path.GetFileName(_sequence));
-                            } else {
-                                _sequence = "";
-                                _frame = -1;
+                            if (match.Success)
+                            {
+                                _seqCamera.Sequence = openDlg.FileName.Substring(0, openDlg.FileName.Length - match.Groups[1].Length - 4);
+                                _seqCamera.StartFrame = _seqCamera.Frame = int.Parse(match.Groups[1].Value);
+                                ChangeStatus("Frame " + _seqCamera.Frame.ToString() +
+                                    " loaded from sequence " + Path.GetFileName(_seqCamera.Sequence));
+                            }
+                            else
+                            {
                                 ChangeStatus("Image loaded from " + Path.GetFileName(openDlg.FileName));
                             }
-                            
+
                         }
                     });
                     openDlg.ShowDialog();
-                    
+
                     break;
                 case 's': //load image from bitmap file
-                    if (_rawImage == null) {
+                    if (_rawImage == null)
+                    {
                         MessageBox.Show("No image to save!");
                         return;
                     }
@@ -344,8 +425,10 @@ namespace Vision {
                     saveDlg.Filter = "Bitmap image (*.bmp)|*.bmp";
                     saveDlg.InitialDirectory = WORK_DIR;
                     saveDlg.RestoreDirectory = true;
-                    saveDlg.FileOk += new CancelEventHandler(delegate(Object s, CancelEventArgs e1) {
-                        if (!e1.Cancel) {
+                    saveDlg.FileOk += new CancelEventHandler(delegate(Object s, CancelEventArgs e1)
+                    {
+                        if (!e1.Cancel)
+                        {
                             _normalBitmap.Save(saveDlg.FileName, System.Drawing.Imaging.ImageFormat.Bmp);
                             ChangeStatus("Image saved to " + Path.GetFileName(saveDlg.FileName));
                         }
@@ -359,93 +442,108 @@ namespace Vision {
                     RedrawImage();
                     break;
                 case '-': //zoom out
-                    if (_zoomFactor > 1) {
+                    if (_zoomFactor > 1)
+                    {
                         _zoomFactor *= 0.5f;
                         _bitmap = ZoomBitmap(_bitmap, 0.5f);
                         RedrawImage();
                     }
                     break;
                 case 'v': // change view mode
-                    if (_colorCalibrator == null) {
+                    if (_colorCalibrator == null)
+                    {
                         MessageBox.Show("ColorCalibrator not loaded!");
                         return;
                     }
                     if (_bitmap == null)
                         return;
 
-                    if (_viewMode == ViewMode.COLOR_CLASS) {
+                    if (_viewMode == ViewMode.COLOR_CLASS)
+                    {
                         LoadImage(_normalBitmap);
                         _normalBitmap = null;
                         _viewMode = ViewMode.NORMAL;
                     }
-                    else {
+                    else
+                    {
                         _normalBitmap = _bitmap;
                         LoadImage(_colorCalibrator.ConvertToColorClass(_bitmap));
                         _viewMode = ViewMode.COLOR_CLASS;
                     }
                     break;
                 case 't': // show/hide tsai points
-                    if (_tsaiCalibrator == null) {
+                    if (_tsaiCalibrator == null)
+                    {
                         MessageBox.Show("TsaiCalibrator not loaded!");
                         return;
                     }
                     _tsaiCalibrator.ToggleTsaiPoints();
                     break;
                 case 'y': // generate tsai image to world lookup table
-                    if (_tsaiCalibrator == null) {
+                    if (_tsaiCalibrator == null)
+                    {
                         MessageBox.Show("TsaiCalibrator not loaded!");
                         return;
                     }
-                    try {
+                    try
+                    {
                         _tsaiCalibrator.GenerateImageToWorldTable();
                     }
-                    catch {
+                    catch
+                    {
                         MessageBox.Show("Failed to generate Image to World Lookup table!");
                         return;
                     }
                     ChangeStatus("Tsai image->world coord lookup table generated.");
                     break;
                 case 'p': // load pixels into the color calibrator
-                    if (_colorCalibrator == null) {
+                    if (_colorCalibrator == null)
+                    {
                         MessageBox.Show("ColorCalibrator not loaded!");
                         return;
                     }
                     if (_bitmap == null)
                         return;
-                        
-                    
+
+
 
                     // need to clone, because two things try to lock this same bitmap object
                     _colorCalibrator.LoadPixels((Bitmap)_bitmap.Clone(), GetRegion());
                     ChangeStatus("Pixels plotted.");
                     break;
                 case 'b': // blob and resolve objects for current image
-                    if (_blobber == null) {
+                    if (_blobber == null)
+                    {
                         MessageBox.Show("Blobber not loaded!");
                         return;
                     }
                     if (_blobber.Blobbing)
                         return;
 
-                    if (_colorCalibrator == null) {
+                    if (_colorCalibrator == null)
+                    {
                         MessageBox.Show("Color Calibrator not loaded!");
                         return;
                     }
-                    if (_colorCalibrator.RGBtoCCTable == null) {
+                    if (_colorCalibrator.RGBtoCCTable == null)
+                    {
                         MessageBox.Show("RGB to CC Table not generated!");
                         return;
                     }
-                    if (_tsaiCalibrator == null) {
+                    if (_tsaiCalibrator == null)
+                    {
                         MessageBox.Show("Tsai Calibrator not loaded!");
                         return;
                     }
-                    if (_tsaiCalibrator.imgToWorldLookup == null) {
+                    if (_tsaiCalibrator.imgToWorldLookup == null)
+                    {
                         MessageBox.Show("Tsai Image to World lookup table not generated!");
                         return;
                     }
                     Console.WriteLine("---- Blob ----");
 
-                    if (_rawImage == null) {
+                    if (_rawImage == null)
+                    {
                         image = CaptureImage();
                         ClearHighlights();
                         LoadImage(image);
@@ -454,8 +552,9 @@ namespace Vision {
                     {
                         _blobber.doBlob(_rawImage, GetRegion());
                     }
-                    catch (Exception)
+                    catch (Exception exc)
                     {
+                        Console.WriteLine("Exception occured in doBlob(): " + exc.Message);
                         return;
                     }
                     //GameObjects gameObjs = VisionStatic.RobotFinder.findGameObjects(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
@@ -464,23 +563,26 @@ namespace Vision {
                     _fieldState.Update(visionMessageLocal);
 
                     ClearHighlights();
-                    for (int i = 0; i < _blobber.totalBlobs; i++) {
+                    for (int i = 0; i < _blobber.totalBlobs; i++)
+                    {
                         _highlights.Add(HighlightBlob(_blobber.blobs[i]));
                     }
 
                     int totalObjects = 1 + visionMessageLocal.OurRobots.Count + visionMessageLocal.TheirRobots.Count; // 1 for ball
-                    ChangeStatus("Frame processed. Found " + _blobber.totalBlobs.ToString() + " blobs and " + 
+                    ChangeStatus("Frame processed. Found " + _blobber.totalBlobs.ToString() + " blobs and " +
                                   totalObjects.ToString() + " objects.");
 
                     break;
                 case 'k': // detect tsai points
-                     if (_blobber == null) {
+                    if (_blobber == null)
+                    {
                         MessageBox.Show("Blobber not loaded!");
                         return;
                     }
                     if (_blobber.Blobbing)
                         return;
-                    if (_blobber.totalBlobs <= 0) {
+                    if (_blobber.totalBlobs <= 0)
+                    {
                         MessageBox.Show("Must blob first!");
                         return;
                     }
@@ -490,84 +592,87 @@ namespace Vision {
                     List<Pair<Point, DPoint>> pairs = finder.orderSquares(_blobber.blobs);
 
                     Graphics gfx = imagePicBox.CreateGraphics();
-                    foreach (Pair<Point, DPoint> pair in pairs) {
+                    foreach (Pair<Point, DPoint> pair in pairs)
+                    {
                         gfx.FillRectangle(Brushes.Aqua, new Rectangle(pair.First, new Size(5, 5)));
                     }
                     gfx.Dispose();
-                        break;
+                    break;
                 case 'h':
                     ClearHighlights();
                     ChangeStatus("Highlights removed.");
                     break;
                 case 'a': // start live blobbing
-                    if (_blobber == null) {
+                    if (_blobber == null)
+                    {
                         MessageBox.Show("Blobber not loaded!");
                         return;
                     }
-                    if (_colorCalibrator == null) {
+                    if (_colorCalibrator == null)
+                    {
                         MessageBox.Show("Color Calibrator not loaded!");
                         return;
                     }
-                    if (_colorCalibrator.RGBtoCCTable == null) {
+                    if (_colorCalibrator.RGBtoCCTable == null)
+                    {
                         MessageBox.Show("RGB to CC Table not generated!");
                         return;
                     }
-                    if (_tsaiCalibrator == null) {
+                    if (_tsaiCalibrator == null)
+                    {
                         MessageBox.Show("Tsai Calibrator not loaded!");
                         return;
                     }
-                    if (_tsaiCalibrator.imgToWorldLookup == null) {
+                    if (_tsaiCalibrator.imgToWorldLookup == null)
+                    {
                         MessageBox.Show("Tsai Image to World lookup table not generated!");
                         return;
                     }
-                    
-                    
+
+
 
                     if (!_blobber.Blobbing)
-         
+
+
                         //_blobber.Start(new OnNewStateReady(delegate(GameObjects gameObjects) {
-                        _blobber.Start(new OnNewStateReady(delegate(VisionMessage visionMessage) {
-                            
+                        try
+                        {
+                            Console.WriteLine("Starting vision stream...");
+                            _blobber.Start(new OnNewStateReady(delegate(VisionMessage visionMessage)
+                            {
+                                //gameObjects.Source = SystemInformation.ComputerName;
 
-                            //gameObjects.Source = SystemInformation.ComputerName;
+                                _fieldState.Update(visionMessage);
 
-                            _fieldState.Update(visionMessage);
+                                //_messageSender.Post(gameObjects);
+                                //Console.WriteLine("Posting vision message.");
+                                _messageSender.Post(visionMessage);
 
-                            //_messageSender.Post(gameObjects);
-                            _messageSender.Post(visionMessage);
-
-                        }));
+                            }));
+                        }
+                        catch (Exception exc)
+                        {
+                            MessageBox.Show("Failed while blobbing: " + exc.Message);
+                            return;
+                        }
 
                     ChangeStatus("Running...");
                     break;
                 case 'z': // stop live blobbing
-                    if (_blobber == null)                         
+                    if (_blobber == null)
                         return;
 
-                    if (_blobber.Blobbing) {
+                    if (_blobber.Blobbing)
+                    {
                         _blobber.Stop();
                         ChangeStatus(IDLE_STATUS);
                     }
                     break;
                 case '.': // go to next (saved) frame
-                    if (_frame < 0) {
-                        MessageBox.Show("A file that is part of a sequence must be loaded (filename ends in digits)");
-                        return;
-                    }
-                    if (LoadNextFrame())
-                        ChangeStatus("Frame " + _frame.ToString() + " loaded from sequence " + Path.GetFileName(_sequence));
-                    else
-                        ChangeStatus("End of sequence reached.");
+                    AdvanceFrame(1);
                     break;
                 case ',': // go to previous (saved) frame
-                    if (_frame < 0) {
-                        MessageBox.Show("A file that is part of a sequence must be loaded (filename ends in digits)");
-                        return;
-                    }
-                    if (LoadPrevFrame())
-                        ChangeStatus("Frame " + _frame.ToString() + " loaded from sequence " + Path.GetFileName(_sequence));
-                    else
-                        ChangeStatus("Beginning of sequence reached.");
+                    AdvanceFrame(-1);
                     break;
                 case 'f': // show Field State form
                     if (FieldState.Form.Visible == true)
@@ -584,10 +689,18 @@ namespace Vision {
                     ChangeStatus("Constants reloaded.");
                     break;
             }
-            
+
         }
 
-        private void imagePicBox_MouseClick(object sender, MouseEventArgs e) {
+        private void CheckMenuItem(ToolStripItemCollection items, ToolStripMenuItem itemToCheck)
+        {
+            foreach (ToolStripMenuItem item in items)
+                item.Checked = false;
+            itemToCheck.Checked = true;
+        }
+
+        private void imagePicBox_MouseClick(object sender, MouseEventArgs e)
+        {
             if (_colorCalibrator == null || _bitmap == null)
                 return;
 
@@ -599,7 +712,28 @@ namespace Vision {
 
             _colorCalibrator.LocatePixel(pixColor);
 
-           
+
         }
+
+        private void btnPGRCamera_Click(object sender, EventArgs e)
+        {
+            CheckMenuItem(btnCamera.DropDownItems, (ToolStripMenuItem)sender);
+
+            _camera = _PGRCamera;
+            _blobber.SetCamera(_camera);
+        }
+
+        private void btnBMPSeqCamera_Click(object sender, EventArgs e)
+        {
+            if (SeqCameraForm == null)
+                BuildSeqCameraForm();
+            DialogResult dlgRes = SeqCameraForm.ShowDialog();
+
+            if (dlgRes == DialogResult.OK)
+                CheckMenuItem(btnCamera.DropDownItems, (ToolStripMenuItem)sender);
+
+        }
+
     }
 }
+    

@@ -11,18 +11,11 @@ using System.Threading;
 using Robocup.Utilities;
 using Robocup.Core;
 
-namespace VisionStatic {
-
-   public static class Field {
-        public const int WIDTH = 1024;
-        public const int HEIGHT = 768;
-    }
-
-}
 namespace Vision
 {
     //public delegate void OnNewStateReady(GameObjects gameObjects);
     public delegate void OnNewStateReady(VisionMessage visionMessage);
+    public delegate void VoidDelegate();
 
     public class Run {
 
@@ -68,9 +61,9 @@ namespace Vision
         private int _centerXSum, _centerYSum;
 
         public Blob(byte _colorClass) {
-            Left = VisionStatic.Field.WIDTH * 3;
+            Left = 1024 * 3; // just need a maximum value, it's ok for image to be of different dimesions
             Right = 0;
-            Top = VisionStatic.Field.HEIGHT;
+            Top = 768 * 3;
             Bottom = 0;
             Area = 0;
             ColorClass = _colorClass;
@@ -148,7 +141,7 @@ namespace Vision
 
         private TsaiCalibrator _tsaiCalibrator;
         private ColorCalibrator _colorCalibrator;
-        private Camera _camera;
+        private ICamera _camera;
 
         private ImageForm _imageForm;
         
@@ -159,12 +152,16 @@ namespace Vision
 
         private OnNewStateReady _onNewStateReady;
 
-        private delegate void VisionLoopDelegate();
+        
         //private delegate void ProcessFrameDelegate(RAWImage frame, Rectangle region, out GameObjects gameObjects);
         private delegate void ProcessFrameDelegate(RAWImage frame, Rectangle region, out VisionMessage visionMessage);
-
-        private VisionLoopDelegate _visionLoopDelegate;
+        
+        private VoidDelegate _visionLoopDelegate;
+        private AsyncCallback _errorHandler;
+        private VoidDelegate _userErrorHandler;
         private IAsyncResult _visionLoopHandle;
+
+        
         
 
         public bool Blobbing {
@@ -172,21 +169,29 @@ namespace Vision
         }
 
         public Blobber(ColorCalibrator colorCalibrator, TsaiCalibrator tsaiCalibrator, 
-            Camera camera, ImageForm imageForm) {
+            ImageForm imageForm, VoidDelegate userErrorHandler) {
             
             _tsaiCalibrator = tsaiCalibrator;
             _colorCalibrator = colorCalibrator;
-            _camera = camera;
+            _userErrorHandler = userErrorHandler;
 
             _imageForm = imageForm;
 
             blobComparer = new BlobComparer();
 
-            _visionLoopDelegate = new VisionLoopDelegate(VisionLoop);
+            _visionLoopDelegate = new VoidDelegate(VisionLoop);
+            _errorHandler = new AsyncCallback(ErrorHandler);
+          
+            // this is not size of current image, this is the MAXIMUM size of the images
+            // that the application would ever process, just making sure to allocate enough memory
+            runs = new Run[1024 * 768];
+            blobs = new Blob[1024 * 768];
+            numRunsInRow = new int[768]; 
+        }
 
-            runs = new Run[VisionStatic.Field.HEIGHT * VisionStatic.Field.WIDTH];
-            blobs = new Blob[VisionStatic.Field.HEIGHT * VisionStatic.Field.WIDTH];
-            numRunsInRow = new int[VisionStatic.Field.HEIGHT]; 
+        public void SetCamera(ICamera camera)
+        {
+            _camera = camera;
         }
 
         public void ReloadParameters()
@@ -203,11 +208,20 @@ namespace Vision
 
             _blobbing = true;
             
-            _camera.startCapture();
+            int rc;
+            if ((rc = _camera.startCapture()) > 0)
+            {
+                _blobbing = false;
+                throw new Exception("Failed to prepare camera for capturing: " +
+                                    "startCapture() returned " + rc.ToString());
+            }
+            
 
-            // go into the blobbing loop on a separate thread
-            _visionLoopHandle = _visionLoopDelegate.BeginInvoke(null, null);
+            // go into the blobbing loop on a separate thread 
+            // the visionloop thread should not finish by itself, so if it does
+            _visionLoopHandle = _visionLoopDelegate.BeginInvoke(_errorHandler, null);
         }
+        
         public void Stop() {
             _blobbing = false;
 
@@ -240,7 +254,9 @@ namespace Vision
 
             while (_blobbing) {
                 //Console.WriteLine("Getting image...");
-                rawImage = _camera.getFrame();
+                int rc = _camera.getFrame(out rawImage);
+                if (rc > 0)
+                    break; // should stop the thread on error
                 //Console.WriteLine("Got image...");
 
                 //make sure blobbing finished
@@ -282,6 +298,13 @@ namespace Vision
             }
         }
 
+        private void ErrorHandler(IAsyncResult res)
+        {
+            _blobbing = false;
+            _camera.stopCapture();
+            _userErrorHandler.BeginInvoke(null, null);
+        }
+
 
         private void CleanContainers() {
             int i = 0;
@@ -300,7 +323,7 @@ namespace Vision
             do {
                 numRunsInRow[i] = 0;
                 i++;
-            } while (i < VisionStatic.Field.HEIGHT);
+            } while (i < 768); // see constructor for explication of 768
         }
 
         public void doBlob(RAWImage rawImage, Rectangle region) {
@@ -342,7 +365,7 @@ namespace Vision
                 totalRuns = 0;
                 i = 0;
 
-                //for (row = 0; row < VisionStatic.Field.HEIGHT; row++) {
+                //for (row = 0; row < rawImage.Height; row++) {
 
 
                 //row = rawImage.region_top;
@@ -352,11 +375,11 @@ namespace Vision
 
                     numRunsInRow[row] = 0;
 
-                    //for (col = 0; col < VisionStatic.Field.WIDTH - 1; col++) {
+                    //for (col = 0; col < rawImage.Width - 1; col++) {
                     //col = rawImage.region_left;
                     col = region.Left;
 
-                    i = row * VisionStatic.Field.WIDTH * 3 + col * 3;
+                    i = row * rawImage.Width * 3 + col * 3;
 
                     avgColorR = data[i + 2];
                     avgColorG = data[i + 1];
@@ -565,7 +588,7 @@ namespace Vision
 
                         blobs[i].AreaScaled = _tsaiCalibrator.GetAreaScalingCoeff(blobs[i].CenterX, blobs[i].CenterY) * blobs[i].Area;
                     
-                        centerWorld = _tsaiCalibrator.imgToWorldLookup[blobs[i].CenterY * VisionStatic.Field.WIDTH + blobs[i].CenterX];
+                        centerWorld = _tsaiCalibrator.imgToWorldLookup[blobs[i].CenterY * rawImage.Width + blobs[i].CenterX];
                         blobs[i].CenterWorldX = centerWorld.wx;
                         blobs[i].CenterWorldY = centerWorld.wy;
 
