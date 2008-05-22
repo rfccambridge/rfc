@@ -111,8 +111,10 @@ namespace Robotics.Commander {
                     }
                 }
                 else if (sendcommands_remotehost)
-                    message_sender.Post( new RobotCommand( id, command, speeds ) );
-                statusLabel.Text = "computercmd";
+                {
+                    message_sender.Post(new RobotCommand(id, command, speeds));
+                    statusLabel.Text = "computercmd";
+                }
             }
         }
 
@@ -149,13 +151,13 @@ namespace Robotics.Commander {
         
         
         private void driveInDirection(float dx, float dy) {
-            //Console.Write("speeds: ");
+            Console.Write("speeds: ");
             for (int i = 0; i < 4; i++ ) {
                 wheel_speeds[i] = speed*(dx * wheel_dx[i] + dy * wheel_dy[i]) / wheel_radius[i];
-                //Console.Write(" " + wheel_speeds[i]);
+                Console.Write(" " + wheel_speeds[i]);
             }
             // make sure signs are appropriate
-            //Console.Write("\n");
+            Console.Write("\n");
             setMotorSpeeds((int)wheel_speeds[0], (int)wheel_speeds[1], (int)wheel_speeds[2], (int)wheel_speeds[3]);
         }
 

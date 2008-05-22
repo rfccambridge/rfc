@@ -86,7 +86,7 @@ namespace Robotics.Commander
             this.Close();
         }
 
-        private int maxAcceleration = 50;
+        private int maxAcceleration = 127;
         /// <summary>
         /// This is the maximum change, per second, that can be made to any of the wheel speeds.
         /// (In the same units that commands are given in, ie max 127)
@@ -128,7 +128,10 @@ namespace Robotics.Commander
         private void setAllMotor(int id, int source, int lf, int rf, int lb, int rb, int duration)
         {
             if (id >= headsigns.Length || id < 0)
+            {
+                Console.WriteLine("ids not in headsigns");
                 return; //don't throw exception
+            }
 
             //Here we have to convert from our convention (positive values->robot forward)
             //to the EE convention (positive values->clockwise)
@@ -141,10 +144,11 @@ namespace Robotics.Commander
                 lastSpeeds[id] = new WheelSpeeds();
                 lastTime[id] = 0;
             }
-            double dt = lastTime[id] - time;
+            double dt = time - lastTime[id];
             int maxstep = Math.Min(MaxVelocityStep, (int)(dt * maxAcceleration + .5));
             if (maxstep < 1)
             {
+                Console.WriteLine("maxstep too small: "+maxstep);
                 return;
             }
             WheelSpeeds last = lastSpeeds[id];
@@ -168,6 +172,7 @@ namespace Robotics.Commander
 
             Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);*/
 
+            // board bugs out if we send an escaped slash
             if (lb == '\\')
                 lb++;
             if (lf == '\\')
@@ -181,7 +186,7 @@ namespace Robotics.Commander
             //rf lf lb rb
             byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+id),
                 (byte)'w',wheel,(byte)rf,(byte)lf, (byte)lb, (byte)rb,(byte)'\\',(byte)'E'};
-
+            
             comport.Write(msg, 0, msg.Length);
         }
 
