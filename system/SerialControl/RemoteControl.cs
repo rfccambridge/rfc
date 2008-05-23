@@ -299,6 +299,16 @@ namespace Robotics.Commander {
                         toggleSettings(null, null);
                         statusLabel.Text = "breaking: " + active;
                         break;
+                    case 79:
+                    case 'o':
+                        driveInDirection(-1.0f, -1.0f);
+                        statusLabel.Text = "o /";
+                        break;
+                    case 76:
+                    case 'l':
+                        driveInDirection(1.0f, 1.0f);
+                        statusLabel.Text = "l /";
+                        break;
                     default:
                         //if(e.KeyCode==Keys.Escape)        // exit
                         //    toggleSettings();

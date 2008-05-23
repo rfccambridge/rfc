@@ -86,7 +86,7 @@ namespace Robotics.Commander
             this.Close();
         }
 
-        private int maxAcceleration = 127;
+        private int maxAcceleration = Constants.get<int>("control","MAX_ACCELERATION");
         /// <summary>
         /// This is the maximum change, per second, that can be made to any of the wheel speeds.
         /// (In the same units that commands are given in, ie max 127)
@@ -96,7 +96,7 @@ namespace Robotics.Commander
             get { return maxAcceleration; }
             set { maxAcceleration = value; }
         }
-        private int maxStep = 20;
+        private int maxStep = Constants.get<int>("control","MAX_STEP");
         /// <summary>
         /// The maximum that the velocity can be changed with one command.
         /// </summary>
