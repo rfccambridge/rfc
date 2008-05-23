@@ -119,6 +119,7 @@ namespace Robocup.ControlForm {
                     visionConnected = false;
                 }
             } catch (Exception except) {
+                Console.WriteLine("Problem connecting to vision: " + except.ToString());
                 Console.WriteLine(except.StackTrace);
             }
             

@@ -38,8 +38,9 @@ namespace Robocup.MessageSystem
             {
                 return new ClientMessageReceiver<T>(hostname, portNum);
             }
-            catch (ConnectionRefusedException)
+            catch (ConnectionRefusedException cre)
             {
+                Console.WriteLine("Connection Refused: " + cre.ToString());
                 return null;
             }
         }

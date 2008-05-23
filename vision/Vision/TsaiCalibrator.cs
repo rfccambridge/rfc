@@ -279,8 +279,8 @@ namespace Vision {
         private const string DEFAULT_IMAGE_TO_WORLD_TABLE = WORK_DIR + "image_to_world_table.dat";
 
 
-        private const int TSAI_COLS = 15;
-        private const int TSAI_ROWS = 11;
+        private const int TSAI_COLS = 5;
+        private const int TSAI_ROWS = 3;
 
         public const double TSAIHEIGHT = 4900;
         public const double TSAIWIDTH = 3400;
@@ -862,7 +862,7 @@ namespace Vision {
                 return;
             }
 
-            float ROBOT_Height_TSAI = Constants.get<float>("vision", "ROBOT_Height_TSAI");
+            float ROBOT_Height_TSAI = Constants.get<float>("vision", "ROBOT_HEIGHT_TSAI");
 
             imgToWorldLookup = new DPoint[_imageSize.Width * _imageSize.Height];
             

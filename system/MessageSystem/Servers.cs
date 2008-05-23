@@ -86,8 +86,7 @@ namespace Robocup.MessageSystem
         public ServerMessageSender(int portNum)
         {
             Console.Write("creating new MessageSender...");
-
-            listener = new TcpListener(System.Net.IPAddress.Parse("127.0.0.1"), portNum);
+            listener = new TcpListener(System.Net.IPAddress.Any, portNum);
             listener.Start();
 
             Console.WriteLine("created!");
