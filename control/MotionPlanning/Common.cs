@@ -65,11 +65,11 @@ namespace Robocup.MotionControl
         //TODO separate movementmodeler for each robot
         static readonly MovementModeler mm = new MovementModeler();
         const double extendTime = .2;
-        static public ExtendResults<RobotInfo> ExtendRR(RobotInfo start, RobotInfo end, object state)
+        static public ExtendResults<RobotInfo> ExtendRRThrough(RobotInfo start, RobotInfo end, object state)
         {
             List<Obstacle> obstacles = (List<Obstacle>)state;
             ExtendResultType result = ExtendResultType.Success;
-            WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeeds(start, end);
+            WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeedsThrough(start, end);
             RobotInfo newInfo = mm.ModelWheelSpeeds(start, ws, extendTime);
             if (end.Position.distanceSq(start.Position) < .1 * .1)
             {
@@ -80,11 +80,11 @@ namespace Robocup.MotionControl
                 result = ExtendResultType.Blocked;
             return new ExtendResults<RobotInfo>(newInfo, result);
         }
-        static public ExtendResults<RobotInfo> ExtendRV(RobotInfo start, Vector2 end, object state)
+        static public ExtendResults<RobotInfo> ExtendRVThrough(RobotInfo start, Vector2 end, object state)
         {
             List<Obstacle> obstacles = (List<Obstacle>)state;
             ExtendResultType result = ExtendResultType.Success;
-            WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeeds(start, end);
+            WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeedsThrough(start, end);
             RobotInfo newInfo = mm.ModelWheelSpeeds(start, ws, extendTime);
             if (end.distanceSq(start.Position) < .1 * .1)
             {

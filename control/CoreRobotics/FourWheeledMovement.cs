@@ -4,6 +4,7 @@ using System.Text;
 using Robocup.Core;
 using Robocup.Utilities;
 
+#if false
 namespace Robocup.CoreRobotics
 {
     public class FourWheeledMovement : IMovement
@@ -106,3 +107,4 @@ namespace Robocup.CoreRobotics
         #endregion
     }
 }
+#endif

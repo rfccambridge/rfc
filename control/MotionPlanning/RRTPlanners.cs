@@ -9,6 +9,7 @@ using System.Drawing;
 
 namespace Robocup.MotionControl
 {
+#if false
     public class BasicRRTMotionPlanner : IMotionPlanner
     {
         BasicRRTPlanner<Vector2, Vector2Tree> planner;
@@ -36,7 +37,7 @@ namespace Robocup.MotionControl
             List<Vector2> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
             lastpath = path;
 
-            return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(curinfo, path[Math.Min(path.Count - 1, 5)]));
+            return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, path[Math.Min(path.Count - 1, 5)]));
         }
 
         public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
@@ -70,7 +71,7 @@ namespace Robocup.MotionControl
             List<RobotInfo> path = planner.Plan(curinfo, desiredState, obstacles);
             lastpath = path;
 
-            return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(curinfo, path[Math.Min(path.Count - 1, 5)]));
+            return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, path[Math.Min(path.Count - 1, 5)]));
         }
 
         public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
@@ -117,17 +118,17 @@ namespace Robocup.MotionControl
             WheelSpeeds rtn;
             if (path.First.Count > 5)
             {
-                rtn = WheelSpeedsExtender.GetWheelSpeeds(curinfo, path.First[5]);
+                rtn = WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, path.First[5]);
                 important = path.First[5];
             }
             else if (path.First.Count + path.Second.Count > 5)
             {
-                rtn = WheelSpeedsExtender.GetWheelSpeeds(curinfo, path.Second[5 - path.First.Count]);
+                rtn = WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, path.Second[5 - path.First.Count]);
                 important = path.Second[5 - path.First.Count];
             }
             else
             {
-                rtn = WheelSpeedsExtender.GetWheelSpeeds(curinfo, desiredState);
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
                 important = desiredState.Position;
             }
             return new MotionPlanningResults(rtn);
@@ -148,6 +149,7 @@ namespace Robocup.MotionControl
             }
         }
     }
+#endif
     public class MixedBiRRTMotionPlanner : IMotionPlanner
     {
         public int MaxExtends
@@ -162,7 +164,7 @@ namespace Robocup.MotionControl
         public MixedBiRRTMotionPlanner()
         {
             planner = new BidirectionalRRTPlanner<RobotInfo, Vector2, RobotInfoTree, Vector2Tree>(
-                Common.ExtendRR, Common.ExtendRV, Common.ExtendVR, Common.ExtendVV, Common.RandomStateR, Common.RandomStateV);
+                Common.ExtendRRThrough, Common.ExtendRVThrough, Common.ExtendVR, Common.ExtendVV, Common.RandomStateR, Common.RandomStateV);
         }
 
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
@@ -183,11 +185,17 @@ namespace Robocup.MotionControl
             //return new MotionPlanningResults(new WheelSpeeds());
             WheelSpeeds rtn;
             if (path.First.Count > 5)
-                rtn = WheelSpeedsExtender.GetWheelSpeeds(curinfo, path.First[5]);
-            else if (path.First.Count + path.Second.Count > 5)
-                rtn = WheelSpeedsExtender.GetWheelSpeeds(curinfo, path.Second[5 - path.First.Count]);
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[5]);
+            else if (path.First.Count + path.Second.Count < 5)
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
             else
-                rtn = WheelSpeedsExtender.GetWheelSpeeds(curinfo, desiredState);
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[path.First.Count-1]);
+            /*if (path.First.Count > 5)
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[5]);
+            else if (path.First.Count + path.Second.Count > 5)
+                rtn = WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, path.Second[5 - path.First.Count]);
+            else
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);*/
             return new MotionPlanningResults(rtn);
         }
 
@@ -231,7 +239,7 @@ namespace Robocup.MotionControl
 
             List<Vector2> waypoints = path.First;
             waypoints.AddRange(path.Second);
-            
+
             return Smoother.Smooth(curinfo, desiredState, waypoints, obstacles);
         }
 

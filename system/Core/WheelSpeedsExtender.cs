@@ -8,37 +8,12 @@ namespace Robocup.CoreRobotics
 {
     static public class WheelSpeedsExtender
     {
-        
-        static public WheelSpeeds GetWheelSpeeds(RobotInfo start, RobotInfo goal)
+        static public WheelSpeeds GetWheelSpeedsThrough(RobotInfo start, RobotInfo goal)
         {
-            // break down wheelspeeds based on desired vector
-            Vector2 desiredDirection = (goal.Position - start.Position);
-            if (desiredDirection.magnitudeSq() < .001 * .001)
-                return new WheelSpeeds();
-
-            Console.WriteLine("going to: " + goal.Position + " " + goal.Orientation + " from: " + start.Position + " " + start.Orientation);
-            
-            Vector2 lf = new Vector2(0.71, -0.71).rotate(start.Orientation);
-            Vector2 rf = new Vector2(0.71, 0.71).rotate(start.Orientation);
-            Vector2 lb = new Vector2(0.74, 0.68).rotate(start.Orientation);
-            Vector2 rb = new Vector2(0.74, -0.68).rotate(start.Orientation);
-            double plf = lf * desiredDirection;
-            double prf = rf * desiredDirection;
-            double plb = lb * desiredDirection;
-            double prb = rb * desiredDirection;
-            double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
-            //max = Math.Max(.10, max);
-
-            // compute magnitude of wheelspeeds based on PD
-            double speed = Math.Min(15.0,
-                Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0 * 0.05/(1+5*start.Velocity.magnitudeSq()));
-            //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
-
-            //Console.WriteLine("doing speed2: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
-            return new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
-            //return GetWheelSpeeds(start, goal.Position);
+            return GetWheelSpeedsThrough(start, goal.Position);
         }
-        static public WheelSpeeds GetWheelSpeeds(RobotInfo start, Vector2 goal) {
+        static public WheelSpeeds GetWheelSpeedsThrough(RobotInfo start, Vector2 goal)
+        {
             // we have orientation and speed information 
             // TODO orientation updating
 
@@ -47,7 +22,7 @@ namespace Robocup.CoreRobotics
             if (desiredDirection.magnitudeSq() < .001 * .001)
                 return new WheelSpeeds();
 
-           
+
             Vector2 lf = new Vector2(0.71, -0.71).rotate(start.Orientation);
             Vector2 rf = new Vector2(0.71, 0.71).rotate(start.Orientation);
             Vector2 lb = new Vector2(0.74, 0.68).rotate(start.Orientation);
@@ -67,6 +42,62 @@ namespace Robocup.CoreRobotics
             return new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             //return GetWheelSpeeds(start, goal.Position);
         }
+
+        static public WheelSpeeds GetWheelSpeedsTo(RobotInfo start, RobotInfo goal)
+        {
+            double vprop = Math.Sqrt(start.Velocity.distanceSq(goal.Velocity))/start.Position.distanceSq(goal.Position)/3;
+            double dprop = 1;
+            double iprop = goal.Velocity.magnitudeSq() / 10;
+                Vector2 lf = new Vector2(0.71, -0.71).rotate(start.Orientation);
+                Vector2 rf = new Vector2(0.71, 0.71).rotate(start.Orientation);
+                Vector2 lb = new Vector2(0.74, 0.68).rotate(start.Orientation);
+                Vector2 rb = new Vector2(0.74, -0.68).rotate(start.Orientation);
+            WheelSpeeds dwheels, vwheels;
+            {
+                Vector2 deltaV = (goal.Velocity - start.Velocity);
+                double plf = lf * deltaV;
+                double prf = rf * deltaV;
+                double plb = lb * deltaV;
+                double prb = rb * deltaV;
+                double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
+
+                // compute magnitude of wheelspeeds based on PD
+                double speed = 30;
+
+                vwheels = new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
+            }
+            {
+                // break down wheelspeeds based on desired vector
+                Vector2 desiredDirection = (goal.Position - start.Position);
+                if (desiredDirection.magnitudeSq() < .001 * .001)
+                    return new WheelSpeeds();
+
+                Console.WriteLine("going to: " + goal.Position + " " + goal.Orientation + " from: " + start.Position + " " + start.Orientation);
+
+                double plf = lf * desiredDirection;
+                double prf = rf * desiredDirection;
+                double plb = lb * desiredDirection;
+                double prb = rb * desiredDirection;
+                double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
+
+                // compute magnitude of wheelspeeds based on PD
+                double speed = Math.Min(45.0,
+                    Math.Sqrt(desiredDirection.magnitudeSq()) * 500.0);
+
+                dwheels = new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
+            }
+            return (WheelSpeeds)WheelsInfo<double>.Times(1/(dprop + vprop),(WheelsInfo<double>.Add(dprop * dwheels,vprop * vwheels)));
+        }
+        //static public WheelSpeeds GetWheelSpeedsTo(RobotInfo start, Vector2 end)
+        //{
+        //}
+
+        //static public WheelSpeeds GetWheelSpeeds(RobotInfo start, RobotInfo goal)
+        //{
+        //}
+        //static public WheelSpeeds GetWheelSpeeds(RobotInfo start, Vector2 goal)
+        //{
+        //}
         /*static public WheelSpeeds GetWheelSpeeds(RobotInfo start, Vector2 goal)
         {
             Vector2 desiredDirection = goal - start.Position;

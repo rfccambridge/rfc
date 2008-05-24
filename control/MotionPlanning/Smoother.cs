@@ -35,9 +35,9 @@ namespace Robocup.MotionControl
             b.Dispose();
         }
 
-        static private RobotInfo Extend(RobotInfo start, Vector2 end)
+        static private RobotInfo ExtendThrough(RobotInfo start, Vector2 end)
         {
-            return Common.ExtendRV(start, end, new List<Obstacle>()).extension;
+            return Common.ExtendRVThrough(start, end, new List<Obstacle>()).extension;
         }
         static private WheelSpeeds SmoothWithValue(RobotInfo startState, List<Vector2> waypoints,
             List<Obstacle> obstacles, double maxDistance, bool save)
@@ -52,14 +52,14 @@ namespace Robocup.MotionControl
                 double dist = v.distanceSq(cur.Position);
                 while (dist > maxDistance * maxDistance || (i == waypoints.Count - 1 && dist > .01 * .01))
                 {
-                    cur = Extend(cur, v);
+                    cur = ExtendThrough(cur, v);
                     smoothed.Add(cur.Position);
                     if (/*i == waypoints.Count-1 &&*/ cur.Position.distanceSq(v) > dist)
                         break;
                     if (Common.Blocked(cur.Position, obstacles))
                         return null;
                     if (rtn == null)
-                        rtn = WheelSpeedsExtender.GetWheelSpeeds(startState, v);
+                        rtn = WheelSpeedsExtender.GetWheelSpeedsThrough(startState, v);
                         //rtn = new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(startState, cur.Position));
                     dist = v.distanceSq(cur.Position);
                 }
@@ -87,7 +87,7 @@ namespace Robocup.MotionControl
                 last_reason = 1;
                 //return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeeds(start, waypoints[waypoints.Count - 1]));
                 return new MotionPlanningResults(addOrientation( startState.Orientation, desiredState.Orientation,
-                    WheelSpeedsExtender.GetWheelSpeeds(start, desiredState)));
+                    WheelSpeedsExtender.GetWheelSpeedsTo(start, desiredState)));
             }
 
             double lowerBound = .01;
@@ -136,7 +136,7 @@ namespace Robocup.MotionControl
                 }
                 last_reason = 3;
                 return new MotionPlanningResults(addOrientation(startState.Orientation, desiredState.Orientation, 
-                    WheelSpeedsExtender.GetWheelSpeeds(start, waypoints[Math.Min(5, waypoints.Count - 1)])));
+                    WheelSpeedsExtender.GetWheelSpeedsThrough(start, waypoints[Math.Min(5, waypoints.Count - 1)])));
             }
             rtn = new MotionPlanningResults(addOrientation(startState.Orientation, desiredState.Orientation, 
                 tempSpeeds));

@@ -113,7 +113,7 @@ namespace Robocup.MotionControl
                 extended_to.Add(destination.Position);
                 extended_from.Add(original.Position);
                 ExtendResultType result = ExtendResultType.Success;
-                WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeeds(original, destination);
+                WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeedsThrough(original, destination);
                 RobotInfo newInfo = mm.ModelWheelSpeeds(original, ws, .1);
                 if (destination.Position.distanceSq(original.Position) < .1 * .1)
                 {
@@ -130,7 +130,7 @@ namespace Robocup.MotionControl
             ExtendResults<RRTState> Extend(RobotInfo original, Vector2 destination)
             {
                 ExtendResultType result = ExtendResultType.Success;
-                WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeeds(original, destination);
+                WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeedsThrough(original, destination);
                 RobotInfo newInfo = mm.ModelWheelSpeeds(original, ws, .1);
                 //Vector2 next = original.Position + (destination - original.Position).normalizeToLength(.05);
                 if (destination.distanceSq(original.Position) < .1 * .1)
