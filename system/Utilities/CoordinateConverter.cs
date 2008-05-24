@@ -10,6 +10,10 @@ namespace Robocup.Utilities
     /// </summary>
     public class BasicCoordinateConverter : ICoordinateConverter
     {
+        static double FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+        static double FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+        static double FIELD_BUFFER = Constants.get<double>("plays", "FIELD_BUFFER");
+        static double NORM_DIST = Math.Sqrt(FIELD_HEIGHT * FIELD_HEIGHT + FIELD_WIDTH * FIELD_WIDTH);
         int width, height;
         int offsetx, offsety;
         /// <summary>Creates a new coordinate converter; automatically picks a height to create the right ratio of width / height.</summary>
@@ -19,7 +23,7 @@ namespace Robocup.Utilities
         public BasicCoordinateConverter(int width, int offsetx, int offsety)
         {
             this.width = width;
-            this.height = (int)(width * 2.0 / 2.75 + .5);
+            this.height = (int)(width * (FIELD_HEIGHT/2) / (FIELD_WIDTH/2) + FIELD_BUFFER*2);
             this.offsetx = offsetx;
             this.offsety = offsety;
         }
@@ -39,22 +43,22 @@ namespace Robocup.Utilities
 
         public int fieldtopixelX(double x)
         {
-            return (int)((x + 2.75) / 5.5 * width + offsetx);
+            return (int)((x + FIELD_WIDTH/2) / FIELD_WIDTH * width + offsetx);
         }
 
         public int fieldtopixelY(double y)
         {
-            return (int)((-y + 2.0) / 4.0 * height + offsety);
+            return (int)((-y + FIELD_HEIGHT/2) / FIELD_HEIGHT * height + offsety);
         }
 
         public double fieldtopixelDistance(double f)
         {
-            return f * Math.Sqrt(width * width + height * height) / Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0);
+            return f * Math.Sqrt(width * width + height * height) / NORM_DIST;
         }
 
         public double pixeltofieldDistance(double f)
         {
-            return f / Math.Sqrt(width * width + height * height) * Math.Sqrt(5.5 * 5.5 + 4.0 * 4.0);
+            return f / Math.Sqrt(width * width + height * height) * NORM_DIST;
         }
 
         public Vector2 fieldtopixelPoint(Vector2 p)
@@ -64,12 +68,12 @@ namespace Robocup.Utilities
 
         public double pixeltofieldX(double x)
         {
-            return (x - offsetx) * 5.5 / width - 2.75;
+            return (x - offsetx) * FIELD_HEIGHT / width - FIELD_HEIGHT/2;
         }
 
         public double pixeltofieldY(double y)
         {
-            return 2 - (y - offsety) * 4.0 / height;
+            return FIELD_WIDTH/2 - (y - offsety) * FIELD_WIDTH / height;
         }
 
         public Vector2 pixeltofieldPoint(Vector2 p)
@@ -85,6 +89,11 @@ namespace Robocup.Utilities
     /// ICoordinateConverter implementation for ControlForm.
     /// </summary>
     public class ControlFormConverter : ICoordinateConverter {
+        static double FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+        static double FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+        static double FIELD_BUFFER = Constants.get<double>("plays", "FIELD_BUFFER");
+        static double NORM_DIST = Math.Sqrt(FIELD_HEIGHT * FIELD_HEIGHT + FIELD_WIDTH * FIELD_WIDTH);
+
         int width, height;
         int offsetx, offsety;
         
@@ -120,19 +129,19 @@ namespace Robocup.Utilities
         #region ICoordinateConverter Members
 
         public int fieldtopixelX(double x) {
-            return (int)((x + 2.0) / 4.0 * width + offsetx);
+            return (int)((x + FIELD_WIDTH/2) / FIELD_WIDTH * width + offsetx);
         }
 
         public int fieldtopixelY(double y) {
-            return (int)((-y + 2.75) / 5.5 * height + offsety);
+            return (int)((-y + FIELD_HEIGHT/2) / FIELD_HEIGHT * height + offsety);
         }
 
         public double fieldtopixelDistance(double f) {
-            return f * Math.Sqrt(width * width + height * height) / Math.Sqrt(5.5 + 5.5 + 4.0 + 4.0);
+            return f * Math.Sqrt(width * width + height * height) / NORM_DIST;
         }
 
         public double pixeltofieldDistance(double f) {
-            return f / Math.Sqrt(width * width + height * height) * Math.Sqrt(5.5 + 5.5 + 4.0 + 4.0);
+            return f / Math.Sqrt(width * width + height * height) * NORM_DIST;
         }
 
         public Vector2 fieldtopixelPoint(Vector2 p) {
@@ -140,11 +149,11 @@ namespace Robocup.Utilities
         }
 
         public double pixeltofieldX(double x) {
-            return (x - offsetx) * 4.0 / width - 2.0;
+            return (x - offsetx) * FIELD_WIDTH / width - FIELD_WIDTH/2;
         }
 
         public double pixeltofieldY(double y) {
-            return 2.75 - (y - offsety) * 5.5 / height;
+            return FIELD_HEIGHT/2 - (y - offsety) * FIELD_HEIGHT / height;
         }
 
         public Vector2 pixeltofieldPoint(Vector2 p) {
