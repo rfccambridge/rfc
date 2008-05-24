@@ -696,7 +696,7 @@ namespace Vision {
 
             Process ccal_fo = new Process();
             ccal_fo.StartInfo.FileName = "cmd.exe";
-            ccal_fo.StartInfo.Arguments = "/c " + Path.GetFullPath(WORK_DIR) + "ccal_fo.exe";
+            ccal_fo.StartInfo.Arguments = "/c \"" + Path.GetFullPath(WORK_DIR) + "ccal_fo.exe\"";
             ccal_fo.StartInfo.UseShellExecute = false;
 
             ccal_fo.StartInfo.RedirectStandardInput = true;
