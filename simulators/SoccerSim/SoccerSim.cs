@@ -29,6 +29,7 @@ namespace SoccerSim
         }
 
         FieldDrawer _fieldView;
+        PhysicsEngine _physics_engine;
         SimSystem _player1;
         SimSystem _player2;
         SimEngine _engine;
@@ -38,15 +39,17 @@ namespace SoccerSim
         private void init()
         {
             referee = new SimpleReferee();
-            PhysicsEngine physics_engine = new PhysicsEngine(referee);
-            _fieldView = new FieldDrawer(physics_engine, converter);
+            _physics_engine = new PhysicsEngine(referee);
+            _fieldView = new FieldDrawer(_physics_engine, converter);
             // TODO make configurable how many to load
 
             //RefBoxListener refbox = new RefBoxListener(10001);
 
-            _player1 = new SimSystem(_fieldView, physics_engine, referee, true);
-            _player2 = new SimSystem(_fieldView, physics_engine, referee, false);
-            _engine = new SimEngine(physics_engine, this);
+            _player1 = new SimSystem(_fieldView, _physics_engine, referee, true);
+            _player2 = new SimSystem(_fieldView, _physics_engine, referee, false);
+            _engine = new SimEngine(_physics_engine, this);
+
+            InitDragAndDrop();
         }
 
 
@@ -67,6 +70,26 @@ namespace SoccerSim
         }
 
         #region User Input
+
+        private DragAndDropper draganddrop = new DragAndDropper();
+        void InitDragAndDrop()
+        {
+            draganddrop.AddDragandDrop(delegate() { return _physics_engine.getBallInfo().Position; }, .05, delegate(Vector2 v) { _physics_engine.MoveBall(v); });
+            foreach (RobotInfo info in _physics_engine.getAllInfos())
+            {
+                int id = info.ID;
+                draganddrop.AddDragandDrop(delegate() { return _physics_engine.getCurrentInformation(id).Position; }, .1,
+                    delegate(Vector2 v)
+                    {
+                        RobotInfo inf = _physics_engine.getCurrentInformation(id);
+                        _physics_engine.MoveRobot(id, new RobotInfo(v, inf.Orientation, id));
+                    }
+                );
+            }
+        }
+        
+        
+
         bool berunning = false;
 
         private void SoccerSim_KeyPress(object sender, KeyPressEventArgs e)
@@ -141,28 +164,22 @@ namespace SoccerSim
             this.Invalidate();
             numrunning--;
         }*/
-        private void SoccerSim_MouseClick(object sender, MouseEventArgs e)
+
+        private void SoccerSim_MouseDown(object sender, MouseEventArgs e)
         {
-            /*if (e.Button == MouseButtons.Left)
-            {
-                RobotInfo prev = ourinfo[0];
-                ourinfo[0] = new RobotInfo(pixeltofieldPoint((Vector2)e.Location), prev.Orientation, 0);
-                this.Invalidate();
-            }
-            else if (e.Button == MouseButtons.Right)
-            {
-                RobotInfo prev = theirinfo[0];
-                theirinfo[0] = new RobotInfo(pixeltofieldPoint((Vector2)e.Location), prev.Orientation, TEAMSIZE);
-                this.Invalidate();
-            }
-            else */
-            /*if (e.Button == MouseButtons.Middle)
-            {
-                state.BallVx = ballvy = 0;
-                ballinfo = new BallInfo(pixeltofieldPoint((Vector2)e.Location), 0, 0);
-                this.Invalidate();
-            }*/
+            draganddrop.MouseDown(converter.pixeltofieldPoint((Vector2)e.Location));
         }
+        private void SoccerSim_MouseMove(object sender, MouseEventArgs e)
+        {
+            bool moved = draganddrop.MouseMove(converter.pixeltofieldPoint((Vector2)e.Location));
+            if (moved) this.Invalidate();
+        }
+
+        private void SoccerSim_MouseUp(object sender, MouseEventArgs e)
+        {
+            draganddrop.MouseUp();
+        }
+        
         #endregion
 
         private void SoccerSim_FormClosing(object sender, FormClosingEventArgs e)
