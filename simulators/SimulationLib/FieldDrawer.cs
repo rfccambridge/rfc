@@ -20,12 +20,14 @@ namespace Robocup.Simulation
         const double innerradius = 7;
         const double outerradius = 11;
         // field drawing
-        const double FIELD_XMIN = -2.45;
-        const double FIELD_XMAX = 2.45;
-        const double FIELD_YMIN = -1.7;
-        const double FIELD_YMAX = 1.7;
-        const double GOAL_WIDTH = 0.18;
-        const double GOAL_HEIGHT = 0.7;
+        static double FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+        static double FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+        static double FIELD_XMIN = -FIELD_WIDTH / 2;
+        static double FIELD_XMAX = FIELD_WIDTH / 2;
+        static double FIELD_YMIN = -FIELD_HEIGHT / 2;
+        static double FIELD_YMAX = FIELD_HEIGHT/2;
+        static double GOAL_WIDTH = Constants.get<double>("plays","GOAL_WIDTH");
+        static double GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
 
 
         IPredictor predictor;
