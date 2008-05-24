@@ -20,9 +20,12 @@ namespace Robocup.ControlForm {
         bool serialConnected = false;
         RemoteRobots _serial;
 
-        bool visionConnected = false;
+        bool visionTopConnected = false;
+        bool visionBottomConnected = false;
+
         int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
-        Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _vision;
+        Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionTop;
+        Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionBottom;
 
         FieldStateForm _field;
 
@@ -32,11 +35,23 @@ namespace Robocup.ControlForm {
         BasicPredictor _basicPredictor;
         ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(400,540, 5, 5);
 
+
+        static bool isOmegaTop = (Constants.get<int>("vision", "CAMERA_ID_OMEGA") == 1);
+        String TOP_CAMERA = isOmegaTop ? "OMEGA" : "LAMBDA";
+        String BOTTOM_CAMERA = !isOmegaTop ? "OMEGA" : "LAMBDA";
+        String DEFAULT_TOP = isOmegaTop ? "omega" : "lambda";
+        String DEFAULT_BOTTOM = !isOmegaTop ? "omega" : "lambda";
+
+
+
         public ControlForm() {
             InitializeComponent();
 
             _field = new FieldStateForm();
             _field.Show();
+
+            visionTopHost.Text = DEFAULT_TOP;
+            visionBottomHost.Text = DEFAULT_BOTTOM;
 
             createSystem();
 
@@ -79,44 +94,68 @@ namespace Robocup.ControlForm {
 
         }
 
-        private void handleVisionUpdate(VisionMessage msg) {
-            _field.UpdateState(msg);
-            List<RobotInfo> ours = new List<RobotInfo>();
+
+        private void handleVisionUpdateTop(VisionMessage msg)
+        {
+            handleVisionUpdate(msg, TOP_CAMERA);
+        }
+        private void handleVisionUpdateBottom(VisionMessage msg)
+        {
+            handleVisionUpdate(msg, BOTTOM_CAMERA);
+        }
+
+        object field_lock = new object();
+        object predictor_lock = new object();
+        private void handleVisionUpdate(VisionMessage msg, String cameraName) {
+            lock (field_lock)
+            {
+                _field.UpdateState(msg);
+            }
             
-            foreach (VisionMessage.RobotData robot in msg.OurRobots) {
+            List<RobotInfo> ours = new List<RobotInfo>();
+
+            foreach (VisionMessage.RobotData robot in msg.OurRobots)
+            {
                 ours.Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
             }
 
             List<RobotInfo> theirs = new List<RobotInfo>();
-            foreach (VisionMessage.RobotData robot in msg.TheirRobots) {
+            foreach (VisionMessage.RobotData robot in msg.TheirRobots)
+            {
                 theirs.Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
             }
 
-            _basicPredictor.updatePartOurRobotInfo(ours, "local");
-            _basicPredictor.updatePartTheirRobotInfo(theirs, "local");
-            if (msg.BallPosition != null)
+            lock (predictor_lock)
             {
-                Vector2 ballposition = new Vector2(2+1.01*(msg.BallPosition.X-2), msg.BallPosition.Y);
-                _basicPredictor.updateBallInfo(new BallInfo(ballposition));
+                _basicPredictor.updatePartOurRobotInfo(ours, cameraName);
+                _basicPredictor.updatePartTheirRobotInfo(theirs, cameraName);
+                if (msg.BallPosition != null)
+                {
+                    Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);
+                    _basicPredictor.updateBallInfo(new BallInfo(ballposition));
+                }
             }
 
-            _system.drawCurrent(_field.getGraphics(), converter);
+            lock (field_lock)
+            {
+                _system.drawCurrent(_field.getGraphics(), converter);
+            }
         }
 
         private void visionConnect_Click(object sender, EventArgs e) {
             try {
-                if (!visionConnected) {
-                    _vision = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionHost.Text, MESSAGE_SENDER_PORT);
-                    _vision.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdate);
+                if (!visionTopConnected) {
+                    _visionTop = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionTopHost.Text, MESSAGE_SENDER_PORT);
+                    _visionTop.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateTop);
 
-                    visionStatus.BackColor = Color.Green;
-                    visionConnect.Text = "Disconnect";
-                    visionConnected = true;      
+                    visionTopStatus.BackColor = Color.Green;
+                    visionTopConnect.Text = "Disconnect";
+                    visionTopConnected = true;      
                 } else {
-                    _vision.Close();
-                    visionStatus.BackColor = Color.Red;
-                    visionConnect.Text = "Connect";
-                    visionConnected = false;
+                    _visionTop.Close();
+                    visionTopStatus.BackColor = Color.Red;
+                    visionTopConnect.Text = "Connect";
+                    visionTopConnected = false;
                 }
             } catch (Exception except) {
                 Console.WriteLine("Problem connecting to vision: " + except.ToString());
@@ -136,6 +175,39 @@ namespace Robocup.ControlForm {
                 rfcStatus.BackColor = Color.Red;
                 rfcStart.Text = "Start";
                 systemStarted = false;
+            }
+        }
+
+        private void ControlForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void visionBottomConnect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!visionBottomConnected)
+                {
+                    _visionBottom = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionBottomHost.Text, MESSAGE_SENDER_PORT);
+                    _visionBottom.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateBottom);
+
+                    visionBottomStatus.BackColor = Color.Green;
+                    visionBottomConnect.Text = "Disconnect";
+                    visionBottomConnected = true;
+                }
+                else
+                {
+                    _visionBottom.Close();
+                    visionBottomStatus.BackColor = Color.Red;
+                    visionBottomConnect.Text = "Connect";
+                    visionBottomConnected = false;
+                }
+            }
+            catch (Exception except)
+            {
+                Console.WriteLine("Problem connecting to vision: " + except.ToString());
+                Console.WriteLine(except.StackTrace);
             }
         }
 
