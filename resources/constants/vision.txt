@@ -1,6 +1,10 @@
-# =================
-# Color Calibration
-# =================
+# camera 1 for top, camera 2 for bottom
+# only CAMERA_ID_OMEGA is currently used by the code
+int CAMERA_ID_LAMBDA 1
+int CAMERA_ID_OMEGA 2
+int CAMERA_ID_MARDUK 2
+int CAMERA_ID_STRATEGIST 1
+int CAMERA_ID_THINKPAD 1
 
 # areas and errors are in sq. mm
 
