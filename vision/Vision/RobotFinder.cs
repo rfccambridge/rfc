@@ -453,7 +453,7 @@ namespace VisionStatic {
                 if (goRobot.Id >= 0) {
                     VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(goRobot.Id, true,
                                                                                   VisionToGeneralCoords(goRobot.X, goRobot.Y),
-                                                                                  (double)goRobot.Orientation-Math.PI/2);
+                                                                                  (double)goRobot.Orientation);
                     visionMessage.OurRobots.Add(vmRobot);
                 }
             }
@@ -462,7 +462,7 @@ namespace VisionStatic {
             foreach (Vision.Robot goRobot in theirRobots) {
                 VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(goRobot.Id, false,
                                                                               VisionToGeneralCoords(goRobot.X, goRobot.Y),
-                                                                              (double)goRobot.Orientation-Math.PI/2);
+                                                                              (double)goRobot.Orientation);
                 visionMessage.TheirRobots.Add(vmRobot);
             }
 

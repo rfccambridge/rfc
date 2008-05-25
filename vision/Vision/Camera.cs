@@ -309,12 +309,12 @@ namespace VisionCamera {
 
         private void reportError(int ret, string fname)
         {
-            /*
+            
             Console.Write(fname + " error: " + flycaptureErrorToString(ret) + "\n");
-            Console.Write("\nPress Enter");
-            Console.Read(); */
-            throw new ApplicationException(fname + " error: " + flycaptureErrorToString(ret) + "\n");
-            //return;
+            //Console.Write("\nPress Enter");
+            //Console.Read(); 
+            //throw new ApplicationException(fname + " error: " + flycaptureErrorToString(ret) + "\n");
+            
         }
     }
 

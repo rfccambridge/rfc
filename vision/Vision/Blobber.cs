@@ -225,8 +225,11 @@ namespace Vision
         public void Stop() {
             _blobbing = false;
 
-            while (!_visionLoopHandle.IsCompleted) {
+            const int TIMEOUT = 10;
+            int time = 0;
+            while (!_visionLoopHandle.IsCompleted && time < TIMEOUT) {
                 Thread.Sleep(10);
+                time++;
             }
 
             _camera.stopCapture();
