@@ -1,0 +1,27 @@
+Metadata:
+type KickOff_Ours
+score 1001162
+Objects:
+ourgoal (point -2.53 0)
+robot0 (closest-with-tags friendly ourgoal loose goalie)
+robot2 (closest enemy ourgoal loose)
+point10 (pointof ball)
+robot4 (closest enemy point10 loose)
+topLeftCorner (point -2.45 1.7)
+bottomLeftCorner (point -2.45 -1.7)
+bottomRightCorner (point 2.45 -1.7)
+topRightCorner (point 2.45 1.7)
+theirgoal (point 2.53 0)
+point1 (pointof robot0)
+point3 (pointof robot2)
+line4 (line point3 ourgoal)
+circle5 (circle ourgoal 0.6)
+point6 (linecircleintersection line4 circle5 0)
+point11 (pointof robot4)
+circle6 (circle ourgoal 0.6)
+line5 (line point11 ourgoal)
+point12 (linecircleintersection line5 circle6 0)
+Conditions:
+Actions:
+(if_Action (< (pointpointdistance point10 ourgoal) 1) (robotpointmove robot0 point12) (robotpointmove robot0 point6))
+

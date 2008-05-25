@@ -1,0 +1,21 @@
+Metadata:
+type SetPlay_Theirs
+score 100
+Objects:
+ourgoal (point -2.53 0)
+robot0 (closest-with-tags friendly ourgoal loose goalie)
+robot2 (closest enemy ourgoal loose)
+topLeftCorner (point -2.45 1.7)
+bottomLeftCorner (point -2.45 -1.7)
+bottomRightCorner (point 2.45 -1.7)
+topRightCorner (point 2.45 1.7)
+theirgoal (point 2.53 0)
+point1 (pointof robot0)
+point3 (pointof robot2)
+line4 (line point3 ourgoal)
+circle5 (circle ourgoal 0.6)
+point6 (linecircleintersection line4 circle5 0)
+Conditions:
+Actions:
+(robotpointmove robot0 point6)
+
