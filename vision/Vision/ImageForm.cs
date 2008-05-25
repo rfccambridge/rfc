@@ -31,8 +31,8 @@ namespace Vision
         private enum ViewMode { NORMAL, COLOR_CLASS };
 
         // avoid creating camera objects every time
-        //private static PGRCamera _PGRCamera = new PGRCamera();
-        private static PGRCamera _PGRCamera = null;
+        private static PGRCamera _PGRCamera = new PGRCamera();
+        //private static PGRCamera _PGRCamera = null;
         private static SeqCamera _seqCamera = new SeqCamera();
 
         private VisionCamera.ICamera _camera;
@@ -74,8 +74,8 @@ namespace Vision
             string compName = SystemInformation.ComputerName.ToUpper();
             int CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID_" + compName);
 
-            //_camera = _PGRCamera;
-            _camera = _seqCamera;
+            _camera = _PGRCamera;
+            //_camera = _seqCamera;
             _tsaiCalibrator = new TsaiCalibrator(CAMERA_ID);
             _colorCalibrator = new ColorCalibrator();
             _blobber = new Blobber(_colorCalibrator, _tsaiCalibrator, this,
