@@ -50,8 +50,6 @@ namespace Vision
         private ViewMode _viewMode = ViewMode.NORMAL;
         private List<SelectionBox.SelectionBox> _highlights;
 
-        private double _leftQtrXend = -1;
-
         private Bitmap _normalBitmap; //used to save the orig, when displaying color-class
 
         /* CONSTRUCTORS */
@@ -71,12 +69,12 @@ namespace Vision
 
             // camera ID depends on which computer this is running on
             // get computer name
-            string compName = SystemInformation.ComputerName.ToUpper();
-            int CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID_" + compName);
+            //string compName = SystemInformation.ComputerName.ToUpper();
+            //int CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID_" + compName);
 
             _camera = _PGRCamera;
             //_camera = _seqCamera;
-            _tsaiCalibrator = new TsaiCalibrator(CAMERA_ID);
+            _tsaiCalibrator = new TsaiCalibrator();
             _colorCalibrator = new ColorCalibrator();
             _blobber = new Blobber(_colorCalibrator, _tsaiCalibrator, this,
                 delegate()
@@ -357,8 +355,22 @@ namespace Vision
 
             return base.ProcessDialogKey(keyData);
         }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // save Tsai points
+            if (keyData == (Keys.Control | Keys.S))
+                _tsaiCalibrator.SaveTsaiPointsDlg();
+            
+                
+            if (keyData == (Keys.Alt | Keys.F4))
+                this.Close();
+
+            return false;
+        }
         private void ImageForm_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (e.Handled) return;
+
             RAWImage image = null;
             switch (Char.ToLower(e.KeyChar))
             {
@@ -414,7 +426,8 @@ namespace Vision
                     openDlg.ShowDialog();
 
                     break;
-                case 's': //load image from bitmap file
+                case 's': //save image to bitmap file
+                     
                     if (_rawImage == null)
                     {
                         MessageBox.Show("No image to save!");
@@ -589,31 +602,18 @@ namespace Vision
                     }
 
                     TsaiPtFinder.LoadImage(_rawImage);
-                        List<Point>[] edges; Point pos; double[][] models; 
                     List<Pair<Point, DPoint>> pairs;
-                    DialogResult dlgResult = MessageBox.Show("Left quater (as opposed to right quater)?", 
-                        "Quater selection", MessageBoxButtons.YesNo);
-                    if (dlgResult == DialogResult.Yes) {
 
-                        //TsaiPtFinder.LoadImage(_rawImage.toColorClass(_colorCalibrator));
-                        _tsaiCalibrator.ClearTsaiPoints();
-                        pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, 0,
-                            out edges, out pos, out models, out _leftQtrXend);
-                        
-                    } else {
-                        double _rightQtrXend;
-                        if (_leftQtrXend != -1)
-                        {
-                            pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, _leftQtrXend,
-                                out edges, out pos, out models, out _rightQtrXend);
-                            _tsaiCalibrator.AppendTsaiPoints(pairs);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Need to calibrate left quater first.");
-                            return;
-                        }
-                    }
+                    string compName = SystemInformation.ComputerName.ToUpper();
+                    DPoint offset = new DPoint(Constants.get<double>("vision", "TSAI_OFFSET_X_" + compName),
+                                             Constants.get<double>("vision", "TSAI_OFFSET_Y_" + compName));
+                    
+                    pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, offset);
+
+                    _tsaiCalibrator.AppendTsaiPoints(pairs);
+                    _tsaiCalibrator.CreateLabels(imagePicBox);
+                    _tsaiCalibrator.showTsaiPoints();
+
 
 
                    // Graphics gfx = imagePicBox.CreateGraphics();
@@ -643,9 +643,7 @@ namespace Vision
 
                     }*/
 
-                    _tsaiCalibrator.AppendTsaiPoints(pairs);
-                    _tsaiCalibrator.CreateLabels(imagePicBox);
-                    _tsaiCalibrator.showTsaiPoints();
+            
                    /* foreach (Pair<Point, DPoint> pair in pairs)
                     {
                         gfx.FillRectangle(Brushes.Aqua, new Rectangle((int)pair.First.X,(int)pair.First.Y, 5, 5));
@@ -657,6 +655,7 @@ namespace Vision
                     break;
                 case 'k':
                     _tsaiCalibrator.ClearTsaiPoints();
+                    ChangeStatus("Tsai points cleared.");
                     break;
                 case 'h':
                     ClearHighlights();

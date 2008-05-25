@@ -18,6 +18,8 @@ namespace Vision {
             _tsaiCalibObj = tsaiCalibObj;
         }
 
+        private double TSAIWIDTH = 6100;
+        private double TSAIHEIGHT = 4200;
 
         public void loadWorld() {
             int row, col, i, j;
@@ -45,8 +47,8 @@ namespace Vision {
                     _tsaiCalibObj.ImageCoordToWorldCoord(col, row, 0, out wx, out wy);
                     pixWX = Convert.ToInt32(wx);
                     pixWY = Convert.ToInt32(wy);
-                    pixWX = picWorld.Width - (int)(picWorld.Width * ((float)pixWX / TsaiCalibrator.TSAIWIDTH));
-                    pixWY = picWorld.Height - (int)(picWorld.Height * ((float)(pixWY - TsaiCalibrator.TSAIHEIGHT/2)/ (TsaiCalibrator.TSAIHEIGHT/2)));
+                    pixWX = picWorld.Width - (int)(picWorld.Width * ((float)pixWX / TSAIWIDTH));
+                    pixWY = picWorld.Height - (int)(picWorld.Height * ((float)(pixWY - TSAIHEIGHT/2)/ (TSAIHEIGHT/2)));
                     index = coordsToIndex(pixWX, pixWY, picWorld.Width);
                     if (pixWX >= 0 && pixWX < picWorld.Width && pixWY >= 0 && pixWY < picWorld.Height) {
                         //bitmap.SetPixel(pixWX, pixWY, Color.FromArgb(rawImage.RawData[i + 2], rawImage.RawData[i + 1], rawImage.RawData[i]));
@@ -62,8 +64,8 @@ namespace Vision {
             foreach (TsaiPoint tP in _tsaiCalibObj.tsaiPoints) {
                 pixWX = Convert.ToInt32(tP.wx);
                 pixWY = Convert.ToInt32(tP.wy);
-                pixWX = (int)(picWorld.Width - picWorld.Width * ((float)pixWX / TsaiCalibrator.TSAIWIDTH));
-                pixWY = (int)(picWorld.Height * ((float)(pixWY - TsaiCalibrator.TSAIHEIGHT / 2) / (TsaiCalibrator.TSAIHEIGHT / 2)));
+                pixWX = (int)(picWorld.Width - picWorld.Width * ((float)pixWX / TSAIWIDTH));
+                pixWY = (int)(picWorld.Height * ((float)(pixWY - TSAIHEIGHT / 2) / (TSAIHEIGHT / 2)));
                 for (i = pixWY - 5; i < pixWY + 5; i++) {
                     for (j = pixWX - 5; j < pixWX + 5; j++) {
                         if (j >= 0 && j < picWorld.Width && i >= 0 && i < picWorld.Height) {

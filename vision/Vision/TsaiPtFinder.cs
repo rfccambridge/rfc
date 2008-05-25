@@ -18,7 +18,7 @@ namespace Vision
         {
             public int Compare(Blob b1, Blob b2)
             {
-                return b1.CenterX.CompareTo(b2.CenterX);
+                return b2.CenterX.CompareTo(b1.CenterX);
             }
         }
 
@@ -26,7 +26,7 @@ namespace Vision
         {
             public int Compare(Blob b1, Blob b2)
             {
-                return b2.CenterY.CompareTo(b1.CenterY);
+                return b1.CenterY.CompareTo(b2.CenterY);
             }
         }
 
@@ -50,6 +50,7 @@ namespace Vision
         private static Color CALIB_SQ_COLOR;
         private static double RANSAC_T, RANSAC_D;
         private static int RANSAC_K, RANSAC_N;
+        private static int TSAI_COLS, TSAI_SKIP;
 
         private static RAWImage _origImg;
 
@@ -61,6 +62,8 @@ namespace Vision
         public static void LoadParameters()
         {
             GRID_UNIT = Constants.get<double>("vision", "GRID_UNIT");
+            TSAI_COLS = Constants.get<int>("vision", "TSAI_COLS");
+            TSAI_SKIP = Constants.get<int>("vision", "TSAI_SKIP");
             ROW_Y_THRES = Constants.get<int>("vision", "ROW_Y_THRES");
             TSAIPT_MIN_AREA = Constants.get<int>("vision", "TSAIPT_MIN_AREA");
             TSAIPT_MAX_AREA = Constants.get<int>("vision", "TSAIPT_MAX_AREA");
@@ -74,6 +77,8 @@ namespace Vision
             RANSAC_D = Constants.get<double>("vision", "RANSAC_D");
             RANSAC_K = Constants.get<int>("vision", "RANSAC_K");
             RANSAC_N = Constants.get<int>("vision", "RANSAC_N");
+
+
         }
 
         public static void LoadImage(RAWImage img)
@@ -81,12 +86,8 @@ namespace Vision
             _origImg = img;
         }
 
-        public static List<Pair<Point, DPoint>> FindTsaiPts(Blob[] blobs, double qtrXbegin,
-            out List<Point>[] edges, out Point pos, out double[][] models, out double qtrXend)
+        public static List<Pair<Point, DPoint>> FindTsaiPts(Blob[] blobs, DPoint offset)
         {
-            edges = null;
-            pos = new Point(0, 0);
-            models = null;
             
             // will hold tsai points: image <-> world
             List<Pair<Point, DPoint>> tsaiPoints = new List<Pair<Point, DPoint>>();
@@ -113,18 +114,24 @@ namespace Vision
                 // extract row
                 row.Add(lstSquares[lstSquares.Count - 1]);
                 lstSquares.RemoveAt(lstSquares.Count - 1);
-                double rowAvgY = row[0].CenterY;
-                while (lstSquares.Count > 0 && Math.Abs(lstSquares[lstSquares.Count - 1].CenterY - rowAvgY) < ROW_Y_THRES)
+                while (row.Count < TSAI_COLS && lstSquares.Count > 0) 
                 {
-                    row.Add(lstSquares[lstSquares.Count - 1]);
+                    Blob b = lstSquares[lstSquares.Count - 1];
+                    row.Add(b);
                     lstSquares.RemoveAt(lstSquares.Count - 1);
+                }
+
+                if (i % TSAI_SKIP != 0)
+                {
+                    i++;
+                    continue; // cut down on number of tsai points
                 }
 
                 // sort row by X coordinate
                 row.Sort(_blobComparerX);
 
                 int j; // column counter
-                for (j = 0; j < row.Count; j++)
+                for (j = 0; j < row.Count; j+=TSAI_SKIP)
                 {
 
                     // location of the calibration square in the image
@@ -134,7 +141,6 @@ namespace Vision
                                                   Math.Min(row[j].Bottom + CALIB_SQ_MARGIN, _origImg.Height));
                     Rectangle square = new Rectangle(sqTopLeft, new Size(sqBottRight.X - sqTopLeft.X, sqBottRight.Y - sqTopLeft.Y));
 
-                    pos = sqTopLeft;
                     
                     // prepare bitmap with one individual square
                     byte[] rawData = new byte[square.Height * square.Width * 3];
@@ -150,7 +156,7 @@ namespace Vision
                     }
                     RAWImage sqImg = new RAWImage(rawData, square.Width, square.Height, 1);
 
-                    Point[] corners = detectCorners(sqImg, out edges, out models);
+                    Point[] corners = detectCorners(sqImg);
                     
                     // find real-world coords for each corner
                     Pair<Point, DPoint> tsaiPt;
@@ -162,7 +168,7 @@ namespace Vision
                     }
                     tsaiPt = new Pair<Point, DPoint>(
                                         new Point(square.Left + corners[TOP_LEFT].Y, square.Top + corners[TOP_LEFT].X),
-                                        new DPoint(qtrXbegin + j * 2 * GRID_UNIT, i * 2 * GRID_UNIT));
+                                        new DPoint(offset.wx + j * 2 * GRID_UNIT + GRID_UNIT, offset.wy + i * 2 * GRID_UNIT + GRID_UNIT));
                         tsaiPoints.Add(tsaiPt);
 
                         if (corners[TOP_RIGHT] == new Point(-1, -1))
@@ -173,7 +179,7 @@ namespace Vision
                         }
                         tsaiPt = new Pair<Point, DPoint>(
                                         new Point(square.Left + corners[TOP_RIGHT].Y, square.Top + corners[TOP_RIGHT].X),
-                                        new DPoint(qtrXbegin + j * 2 * GRID_UNIT + GRID_UNIT, i * 2 * GRID_UNIT));
+                                        new DPoint(offset.wx + j * 2 * GRID_UNIT, offset.wy + i * 2 * GRID_UNIT + GRID_UNIT));
                         tsaiPoints.Add(tsaiPt);
 
                         if (corners[BOTTOM_LEFT] == new Point(-1, -1))
@@ -184,7 +190,7 @@ namespace Vision
                         }
                         tsaiPt = new Pair<Point, DPoint>(
                                         new Point(square.Left + corners[BOTTOM_LEFT].Y, square.Top + corners[BOTTOM_LEFT].X),
-                                        new DPoint(qtrXbegin + j * 2 * GRID_UNIT, i * 2 * GRID_UNIT + GRID_UNIT));
+                                        new DPoint(offset.wx + j * 2 * GRID_UNIT + GRID_UNIT, offset.wy + i * 2 * GRID_UNIT));
                         tsaiPoints.Add(tsaiPt);
                     
                     if (corners[BOTTOM_RIGHT] == new Point(-1, -1))
@@ -195,7 +201,7 @@ namespace Vision
                     }
                         tsaiPt = new Pair<Point, DPoint>(
                                         new Point(square.Left + corners[BOTTOM_RIGHT].Y, square.Top + corners[BOTTOM_RIGHT].X),
-                                        new DPoint(qtrXbegin + j * 2 * GRID_UNIT + GRID_UNIT, i * 2 * GRID_UNIT + GRID_UNIT));
+                                        new DPoint(offset.wx + j * 2 * GRID_UNIT, offset.wy + i * 2 * GRID_UNIT));
                         tsaiPoints.Add(tsaiPt);
                     
                                                 
@@ -204,14 +210,11 @@ namespace Vision
                 i++;
             }
 
-            qtrXend = row.Count * GRID_UNIT*2;
             return tsaiPoints;
         }
 
-        private static Point[] detectCorners(RAWImage img, out List<Point>[] edges, out double[][] models)
+        private static Point[] detectCorners(RAWImage img)
         {
-            
-            
 
             // TODO: get rid of this step
             // for convenience copy image into a 2D color array
@@ -223,7 +226,7 @@ namespace Vision
                                                img.RawData[i * (img.Width * 3) + j * 3]);    // B              
 
             // will hold edge pixels
-            edges = new List<Point>[4];
+            List<Point>[] edges = new List<Point>[4];
             for (int i = 0; i < 4; i++)
                 edges[i] = new List<Point>();
 
@@ -339,34 +342,21 @@ namespace Vision
                 
             }
 
-            StreamWriter fout = new StreamWriter("log.txt");
-
-            models = new double[4][];
-            for (int e = 0; e < 4; e++)
-            {
-                int d;
-                models[e] = RANSAC(edges[e], RANSAC_T, RANSAC_D, RANSAC_K, RANSAC_N, out d);
-
-                if (models[e] != null)
-                    fout.WriteLine("Edge " + e.ToString() + ": " +
-                        models[e][0].ToString() + "x + " + models[e][1].ToString() + "y + " + models[e][2].ToString() + " = 0");
-                else
-                    fout.WriteLine("Edge " + e.ToString() + ": closest d = " + d.ToString());
-
-                // todo: get rid of name-changing here
-            }
-
-         //   fout.WriteLine("Edge " + e.ToString() + ": " +
-          //          gammas[e].ToString() + "y + " + betas[e].ToString() + "x + " + alphas[e].ToString() + " = 0"); 
-        
-            fout.Close();
-            
-           
 
             // corners stored here:
             Point[] corners = new Point[4];
             for (int e = 0; e < 4; e++)
                 corners[e] = new Point(-1, -1);
+
+            // weird blobs get detected with no edge pixels
+            for (int e = 0; e < 4; e++)
+                if (edges[e].Count <= 0 || edges[e].Count <= RANSAC_N)
+                    return corners;
+
+            double[][] models = new double[4][];
+            for (int e = 0; e < 4; e++)
+                models[e] = RANSAC(edges[e], RANSAC_T, RANSAC_D, RANSAC_K, RANSAC_N);
+           
             
             // find intersections
             double x, y;
@@ -462,7 +452,7 @@ namespace Vision
         // n: size of random subset
         // t: the fit error for a point to qualify into the consensus set
         // d: number of points fit better than t out of all points for a model to qualify
-        private static double[] RANSAC(List<Point> data, double t, double d, int k, int n, out int max_d) {
+        private static double[] RANSAC(List<Point> data, double t, double d, int k, int n) {
             int iter = 0;
             double[] best_model = new double[3];
             bool best_model_set = false;
@@ -470,7 +460,6 @@ namespace Vision
             double best_error = double.MaxValue;
             
             Random rand = new Random();
-            max_d = 0; // for debugging only
             while (iter < k)  {
                 List<Point> inliers = new List<Point>();
                 bool[] chosen = new bool[data.Count];
@@ -496,9 +485,7 @@ namespace Vision
                     }
                 }
 
-               if (consensus_set.Count > max_d)
-                   max_d = consensus_set.Count;
-
+              
                 if (consensus_set.Count > (int)(RANSAC_D*data.Count)) {
                     double[] better_model = fitModel(consensus_set);
                     double error = 0;

@@ -23,6 +23,7 @@ namespace Vision {
 
     public class TsaiPoint {
         public Label labelControl;
+        public ToolTip toolTip;
         public Label lblCaption;
 
         private Control _hostControl;
@@ -59,10 +60,11 @@ namespace Vision {
             labelControl.Font = new System.Drawing.Font("Courier New", 6.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             labelControl.ForeColor = System.Drawing.Color.Black;
             //labelControl.Text = index.ToString();
-            ToolTip toolTip = new ToolTip();
+            toolTip = new ToolTip();
             toolTip.SetToolTip(labelControl, this.wx.ToString() + "," + this.wy.ToString());
-            toolTip.AutoPopDelay = int.MaxValue;
+            toolTip.AutoPopDelay = 300;
             toolTip.InitialDelay = 0;
+            
             labelControl.Tag = "TsaiPointLabel";
 
             labelControl.AutoSize = true;
@@ -117,7 +119,14 @@ namespace Vision {
 
 
         private void labelControl_MouseDown(object sender, MouseEventArgs e) {
-            isDragging = true;
+            if (e.Button == MouseButtons.Left)
+            {
+                isDragging = true;
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                toolTip.Show(toolTip.GetToolTip(labelControl), labelControl);
+            }
         }
 
         private void labelControl_MouseMove(object sender, MouseEventArgs e) {
@@ -163,6 +172,7 @@ namespace Vision {
         }
         private void labelControl_MouseUp(object sender, MouseEventArgs e) {
             isDragging = false;
+
             //Console.WriteLine(ix.ToString() + ", " + iy.ToString());
         }
     }
@@ -283,17 +293,11 @@ namespace Vision {
         private const string DEFAULT_TSAI_POINTS_FILE = WORK_DIR + "tsai_points.txt";
         private const string DEFAULT_IMAGE_TO_WORLD_TABLE = WORK_DIR + "image_to_world_table.dat";
 
-        public const int TSAI_COLS = 32;
-        public const int TSAI_ROWS = 25;
-
-        public const double TSAIHEIGHT = 6100;
-        public const double TSAIWIDTH = 4200;
-
         public const double ORIGIN_OFFSET_X = 11000;
         public const double ORIGIN_OFFSET_Y = 12000;
 
         //private Control hostControl;
-        private int _cameraID;
+        //private int _cameraID;
 
         public TsaiPoint[] tsaiPoints;
         public bool _tsaiPointsVisible = false;
@@ -313,8 +317,8 @@ namespace Vision {
             set { _imageSize = value; }
         }
 
-        public TsaiCalibrator(int cameraID) {
-            _cameraID = cameraID;
+        public TsaiCalibrator() {
+            //_cameraID = cameraID;
 
             //frmWorldObj = new frmWorld(this);
 
@@ -372,7 +376,7 @@ namespace Vision {
                 saveDlg.ShowDialog();
             }
         }
-
+        /*
         public void CreateDefaultTsaiPoints()
         {
             int i, j;
@@ -426,7 +430,7 @@ namespace Vision {
                 iy += interval_h;
             }
         } 
-
+        */
 #if false
         public void CreateDefaultTsaiPoints() {
             int i, j;
@@ -662,6 +666,18 @@ namespace Vision {
                 showTsaiPoints();
         }
 
+        public void SaveTsaiPointsDlg() {
+            SaveFileDialog saveDlg = new SaveFileDialog();
+            saveDlg.RestoreDirectory = true;
+            saveDlg.InitialDirectory = WORK_DIR;
+                saveDlg.Title = "Save Tsai Points...";
+                saveDlg.Filter = "Tsai Points (*.txt)|*.txt";
+                saveDlg.FileName = Path.GetFileName(DEFAULT_TSAI_POINTS_FILE);
+                saveDlg.FileOk += new System.ComponentModel.CancelEventHandler(delegate
+                {
+                    SaveTsaiPoints(saveDlg.FileName);
+                });
+         }
         public void SaveTsaiPoints(string filename) {
             StreamWriter fout = new StreamWriter(filename);
             foreach (TsaiPoint tP in tsaiPoints)

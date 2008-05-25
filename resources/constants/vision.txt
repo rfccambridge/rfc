@@ -1,10 +1,6 @@
-# camera 1 for top, camera 2 for bottom
-# only CAMERA_ID_OMEGA is currently used by the code
-int CAMERA_ID_LAMBDA 2
-int CAMERA_ID_OMEGA 1
-int CAMERA_ID_MARDUK 2
-int CAMERA_ID_STRATEGIST 1
-int CAMERA_ID_THINKPAD 1
+# =================
+# Color Calibration
+# =================
 
 # areas and errors are in sq. mm
 
@@ -45,13 +41,68 @@ int THEIR_ID_OFFSET_MARDUK 0
 int THEIR_ID_OFFSET_STRATEGIST 10
 int THEIR_ID_OFFSET_THINKPAD 0
 
-# Tsai Point finder
+
+# ================
+# Tsai Calibration
+# ================
+
+# --------------------------------
+# |(4200, 6100)        (0, 6100) |
+# |                              |
+# |           TOP                |
+# |           CAM                |
+# |                              |
+# |                              |
+# |------------------------------|
+# |                              |
+# |            BOTTOM            |
+# |            CAM               |
+# |                              |
+# |(4200, 0)                (0,0)|
+# --------------------------------
+
+# Uncomment only the quater which you wish to calibrate
+
+# Laptops
+
+#    Lambda
+
+# Right Quater
+double TSAI_OFFSET_X_LAMBDA 0
+double TSAI_OFFSET_Y_LAMBDA 0
+# Left Quater
+#double TSAI_OFFSET_X_LAMBDA 2300
+#double TSAI_OFFSET_Y_LAMBDA 0
+
+#     Omega
+
+# Right Quater
+double TSAI_OFFSET_X_OMEGA 0
+double TSAI_OFFSET_Y_OMEGA 3050
+# Left Quater
+#double TSAI_OFFSET_X_OMEGA 2300
+#double TSAI_OFFSET_Y_OMEGA 3050
+
+# Desktops
+double TSAI_OFFSET_X_MARDUK 0
+double TSAI_OFFSET_Y_MARDUK 0
+
+double TSAI_OFFSET_X_STRATEGIST 0
+double TSAI_OFFSET_Y_STRATEGIST 3050
+
+# Alexei's laptop
+double TSAI_OFFSET_X_THINKPAD 0
+double TSAI_OFFSET_Y_THINKPAD 2300
+
+# Tsai point finder
 # in mm
 double GRID_UNIT 100
+int TSAI_COLS 11
+int TSAI_SKIP 2
 # deviation in image Y-coordinate of the blob to be considered in same row of tsai points
-int ROW_Y_THRES 20
+int ROW_Y_THRES 3
 # in pixels
-int TSAIPT_MIN_AREA 200
+int TSAIPT_MIN_AREA 250
 int TSAIPT_MAX_AREA 700
 
 double Y_X_VERTICALITY_THRES 1
