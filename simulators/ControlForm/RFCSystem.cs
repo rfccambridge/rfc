@@ -172,7 +172,7 @@ namespace Robocup.ControlForm
                 }
             }
 
-            _interpreter = new Interpreter(false, plays.ToArray(), _predictor, _controller);
+            _interpreter = new Interpreter((Constants.get<int>("plays","IS_OUR_GOAL_LEFT")!=1), plays.ToArray(), _predictor, _controller);
 
             running = false;
             if (wasRunning)

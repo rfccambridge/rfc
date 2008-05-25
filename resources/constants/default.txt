@@ -6,6 +6,7 @@
 
 # RFCSystem constants
 int UPDATE_SLEEP_TIME 30
+int REBOOT_TIME 15000
 int REFBOX_PORT 10001
 
 # testing directory

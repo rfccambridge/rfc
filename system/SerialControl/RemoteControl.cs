@@ -66,6 +66,11 @@ namespace Robotics.Commander {
             curRobot = 0;
         }
 
+        // HACK REBOOT WORKAROUND
+        // for managing reboots
+        int _rebootTime;
+        System.Timers.Timer t;
+
         private void toggleSettings(object sender, EventArgs e) {
             active = !active;
             /*textBox1.Enabled = !textBox1.Enabled;
@@ -79,7 +84,25 @@ namespace Robotics.Commander {
             if (sendcommands_serial) {
                 if (active) {
                     srobots.Open();
+
+
+                    _rebootTime = Constants.get<int>("default", "REBOOT_TIME");
+                    t = new System.Timers.Timer(_rebootTime);
+                    t.AutoReset = true;
+                    t.Elapsed += delegate(object s, System.Timers.ElapsedEventArgs eea)
+                    {
+                        
+                        for (int i = 0; i < 6; i++)
+                        {
+                            Console.WriteLine("Rebooting robot: "+i);
+                            srobots.resetBoards(i);
+                        }
+                    };
+                    t.Start();
+                    Console.WriteLine("Reboot timer started");
                 } else {
+                    t.Enabled = false;
+                    Console.WriteLine("Reboot timer disabled");
                     srobots.Close();
                 }
             }
