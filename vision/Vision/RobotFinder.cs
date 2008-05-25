@@ -640,7 +640,7 @@ namespace VisionStatic {
 
         // Vision coord system  (units: mm)
         /* --------------------------------
-         * |(3400, 4900)        (0, 4900) |
+         * |(5000, 6100)        (0, 6100) |
          * |                              |
          * |           TOP                |
          * |           CAM 1              |
@@ -651,33 +651,39 @@ namespace VisionStatic {
          * |            BOTTOM            |
          * |            CAM 2             |
          * |                              |
-         * |(3400, 0)                (0,0)|
+         * |(5000, 0)                (0,0)|
          * --------------------------------
          */
 
         // General coord system (units: m)
-        /* --------------------------------
-        * |(-1.7, 2.45)    |      (1.7, 2.45)|
-        * |                 |                |
-        * |                TOP               |
-        * |               CAM 1              |
-        * |                 |                |
-        * |                 |                |
-        * |---------------(0, 0)-------------|
-        * |                 |                |
-        * |               BOTTOM             |
-        * |               CAM 2              |
-        * |                 |                |
-        * |(-1.7, -2.45)    |    (1.7, -2.45)|
-        * ------------------------------------
+        /* -----------------------------------------
+        * |(-3.05, 2.5)        |        (3.05, 2.5)|
+        * |                    |                   |
+        * |                    |                   |
+        * |                    |                   |
+        * |                    |                   |
+        * |                    |                   |
+        * |    Bottom Cam    (0, 0)     Top Cam    |
+        * |                    |                   |
+        * |                  BOTTOM                |
+        * |                  CAM 2                 |
+        * |                    |                   |
+        * |(-3.05, -2.5)       |       (3.05, -2.5)|
+        * ------------------------------------------
         */
+        static double G_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+        static double G_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+        static double MM_TO_M_FACTOR = 1000;
+        static double V_HEIGHT = G_WIDTH * MM_TO_M_FACTOR;
+        static double V_WIDTH = G_HEIGHT * MM_TO_M_FACTOR;
         private static Vector2 VisionToGeneralCoords(double x, double y) {
-            const double V_HEIGHT = 4900;
-            const double V_WIDTH = 3400;
-            const double MM_TO_M_FACTOR = 1000;
+            //these are for the general coords
 
-            return new Vector2((-(x - V_WIDTH / 2)) / MM_TO_M_FACTOR, 
-                               (y - V_HEIGHT / 2) / MM_TO_M_FACTOR);
+            return new Vector2((y - V_HEIGHT / 2) / V_HEIGHT * G_WIDTH,
+                -(x - V_WIDTH / 2) / V_WIDTH * G_HEIGHT);
+
+            //return new Vector2((-(x - V_WIDTH / 2)) / MM_TO_M_FACTOR, 
+            //                   (y - V_HEIGHT / 2) / MM_TO_M_FACTOR);
         }
     }
 }
