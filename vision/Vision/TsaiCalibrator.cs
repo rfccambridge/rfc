@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using Robocup.Utilities;
 using System.Windows;
+using Robocup.Core;
 
 namespace Vision {
     public class DPoint
@@ -57,13 +58,17 @@ namespace Vision {
             labelControl.Image = Vision.Properties.Resources.point;
             labelControl.Font = new System.Drawing.Font("Courier New", 6.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             labelControl.ForeColor = System.Drawing.Color.Black;
-            // labelControl.Text = index.ToString();
+            //labelControl.Text = index.ToString();
+            ToolTip toolTip = new ToolTip();
+            toolTip.SetToolTip(labelControl, this.wx.ToString() + "," + this.wy.ToString());
+            toolTip.AutoPopDelay = int.MaxValue;
+            toolTip.InitialDelay = 0;
             labelControl.Tag = "TsaiPointLabel";
 
             labelControl.AutoSize = true;
-            labelControl.Size = new System.Drawing.Size(10, 10);
-            labelControl.MaximumSize = new System.Drawing.Size(15, 10);
-            labelControl.MinimumSize = new System.Drawing.Size(10, 10);
+            labelControl.Size = new System.Drawing.Size(5, 5);
+            labelControl.MaximumSize = new System.Drawing.Size(5, 5);
+            labelControl.MinimumSize = new System.Drawing.Size(5, 5);
 
             labelControl.MouseDown += new MouseEventHandler(labelControl_MouseDown);
             labelControl.MouseMove += new MouseEventHandler(labelControl_MouseMove);
@@ -74,7 +79,7 @@ namespace Vision {
 
             //caption with world coords
 
-            lblCaption = new Label();
+            /*lblCaption = new Label();
             //lblCaption.Enabled = false;
             lblCaption.Visible = false;
             lblCaption.Anchor = AnchorStyles.None;
@@ -88,16 +93,16 @@ namespace Vision {
 
             lblCaption.Tag = "TsaiPointCaption";
 
-            lblCaption.AutoSize = true;
+            lblCaption.AutoSize = true;*/
 
 
-            placeCaption();
+            //placeCaption();
 
             _hostControl.Controls.Add(labelControl);
-            _hostControl.Controls.Add(lblCaption);
+            //_hostControl.Controls.Add(lblCaption);
 
             labelControl.BringToFront();
-            lblCaption.BringToFront();
+           // lblCaption.BringToFront();
 
         }
 
@@ -153,7 +158,7 @@ namespace Vision {
                 ix = labelControl.Left + labelControl.Width / 2;
                 iy = labelControl.Top + labelControl.Height / 2;
 
-                placeCaption();
+                //placeCaption();
             }
         }
         private void labelControl_MouseUp(object sender, MouseEventArgs e) {
@@ -278,12 +283,11 @@ namespace Vision {
         private const string DEFAULT_TSAI_POINTS_FILE = WORK_DIR + "tsai_points.txt";
         private const string DEFAULT_IMAGE_TO_WORLD_TABLE = WORK_DIR + "image_to_world_table.dat";
 
+        public const int TSAI_COLS = 32;
+        public const int TSAI_ROWS = 25;
 
-        private const int TSAI_COLS = 5;
-        private const int TSAI_ROWS = 3;
-
-        public const double TSAIHEIGHT = 4900;
-        public const double TSAIWIDTH = 3400;
+        public const double TSAIHEIGHT = 6100;
+        public const double TSAIWIDTH = 4200;
 
         public const double ORIGIN_OFFSET_X = 11000;
         public const double ORIGIN_OFFSET_Y = 12000;
@@ -301,7 +305,7 @@ namespace Vision {
 
         public DPoint[] imgToWorldLookup;
 
-        private frmWorld frmWorldObj;
+        //private frmWorld frmWorldObj;
 
         public System.Drawing.Size ImageSize
         {
@@ -312,24 +316,25 @@ namespace Vision {
         public TsaiCalibrator(int cameraID) {
             _cameraID = cameraID;
 
-            frmWorldObj = new frmWorld(this);
+            //frmWorldObj = new frmWorld(this);
 
-            tsaiPoints = new TsaiPoint[TSAI_ROWS * TSAI_COLS];
+            //tsaiPoints = new TsaiPoint[TSAI_ROWS * TSAI_COLS];
             // only when calibrating corners only
             //tsaiPoints = new TsaiPoint[TSAI_ROWS * TSAI_COLS * 4];
 
             // default
             _imageSize = new System.Drawing.Size(1024, 768);
 
-            CreateDefaultTsaiPoints();
+            //CreateDefaultTsaiPoints();
         }
 
-        public void DefaultInitSequence() {
+        public void DefaultInitSequence(Control hostControl) {
             
             // if tsaipoint file is not found, it's ok, default locations were generated in contructor
             if (File.Exists(DEFAULT_TSAI_POINTS_FILE))
             {
                 LoadTsaiPoints(DEFAULT_TSAI_POINTS_FILE);
+                CreateLabels(hostControl);
                 getCalibrationConstants();
             }
 
@@ -627,21 +632,24 @@ namespace Vision {
         }
 
         public void showTsaiPoints() {
+            if (tsaiPoints == null) return;
+
             foreach (TsaiPoint tsaiPoint in tsaiPoints) {
                 tsaiPoint.placeControl();
                 tsaiPoint.labelControl.Visible = true;
 
-                tsaiPoint.placeCaption();
-                tsaiPoint.lblCaption.Visible = true;
+                //tsaiPoint.placeCaption();
+                //tsaiPoint.lblCaption.Visible = true;
             }
 
             _tsaiPointsVisible = true;
         }
 
         public void hideTsaiPoints() {
+            if (tsaiPoints == null) return;
             foreach (TsaiPoint tsaiPoint in tsaiPoints) {
                 tsaiPoint.labelControl.Visible = false;
-                tsaiPoint.lblCaption.Visible = false;
+                //tsaiPoint.lblCaption.Visible = false;
             }
 
             _tsaiPointsVisible = false;
@@ -657,21 +665,49 @@ namespace Vision {
         public void SaveTsaiPoints(string filename) {
             StreamWriter fout = new StreamWriter(filename);
             foreach (TsaiPoint tP in tsaiPoints)
-                fout.WriteLine(String.Format("{0:G} {1:G}", tP.ix, tP.iy));
+                fout.WriteLine(String.Format("{0:G} {1:G} {2} {3} {4}", tP.ix, tP.iy, tP.wx, tP.wy, tP.wz));
             fout.Close();
         }
 
         public void LoadTsaiPoints(string filename) {
             string[] line;
             StreamReader fin = new StreamReader(filename);
-
-            foreach (TsaiPoint tP in tsaiPoints) {
+            List<TsaiPoint> tPs = new List<TsaiPoint>();
+            int k = 0;
+            while (!fin.EndOfStream) {
                     line = fin.ReadLine().Split(new char[] { ' ' });
-                    tP.ix = Convert.ToInt32(line[0]);
-                    tP.iy = Convert.ToInt32(line[1]);
+                    TsaiPoint tP = new TsaiPoint(k++, Convert.ToDouble(line[2]), Convert.ToDouble(line[3]), Convert.ToDouble(line[4]),
+
+                        Convert.ToInt32(line[0]), Convert.ToInt32(line[1]));
+                    tPs.Add(tP);
             }
+            tsaiPoints = new TsaiPoint[tPs.Count];
+            tPs.CopyTo(tsaiPoints);
             
             fin.Close();
+        }
+        public void AppendTsaiPoints(List<Pair<System.Drawing.Point, DPoint>> points)
+        {
+            int k = (tsaiPoints == null ? 0 : tsaiPoints.Length);
+            TsaiPoint[] newTsaiPoints = new TsaiPoint[k + points.Count];
+            
+            if (k > 0)
+                tsaiPoints.CopyTo(newTsaiPoints, 0);
+            foreach (Pair<System.Drawing.Point, DPoint> pt in points)
+            {
+                newTsaiPoints[k++] = new TsaiPoint(k, pt.Second.wx, pt.Second.wy, 0, pt.First.X, pt.First.Y);
+            }
+            ClearTsaiPoints();
+            tsaiPoints = newTsaiPoints;
+        }
+
+        public void ClearTsaiPoints()
+        {
+            if (tsaiPoints == null) return;
+            foreach (TsaiPoint tp in tsaiPoints)
+                if (tp.labelControl != null)
+                    tp.labelControl.Dispose();
+            tsaiPoints = null;
         }
 
 
