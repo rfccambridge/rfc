@@ -2,13 +2,13 @@ Metadata:
 type PenaltyKick_Ours
 score 100
 Objects:
-theirgoal (point 2.53 0)
+theirgoal (point 3.13 0)
 robot0 (closest friendly theirgoal loose)
-topLeftCorner (point -2.45 1.7)
-bottomLeftCorner (point -2.45 -1.7)
-bottomRightCorner (point 2.45 -1.7)
-topRightCorner (point 2.45 1.7)
-ourgoal (point -2.53 0)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.13 0)
 point1 (pointof robot0)
 point2 (point 2.62 0.34)
 point3 (pointof ball)

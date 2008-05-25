@@ -4,12 +4,12 @@ score 1.002615
 Objects:
 point2 (pointof ball)
 robot0 (closest friendly point2 loose)
-topLeftCorner (point -2.45 1.7)
-bottomLeftCorner (point -2.45 -1.7)
-bottomRightCorner (point 2.45 -1.7)
-topRightCorner (point 2.45 1.7)
-ourgoal (point -2.53 0)
-theirgoal (point 2.53 0)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.13 0)
+theirgoal (point 3.13 0)
 point1 (pointof robot0)
 Conditions:
 (< 0.6 (pointpointdistance point1 ourgoal))

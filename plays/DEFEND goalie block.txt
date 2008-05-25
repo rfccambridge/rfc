@@ -2,16 +2,16 @@ Metadata:
 type NormalPlay
 score 102
 Objects:
-ourgoal (point -2.53 0)
+ourgoal (point -3.13 0)
 robot0 (closest-with-tags friendly ourgoal loose goalie)
 robot2 (closest enemy ourgoal loose)
 point6 (pointof ball)
 robot4 (closest enemy point6 loose)
-topLeftCorner (point -2.45 1.7)
-bottomLeftCorner (point -2.45 -1.7)
-bottomRightCorner (point 2.45 -1.7)
-topRightCorner (point 2.45 1.7)
-theirgoal (point 2.53 0)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+theirgoal (point 3.13 0)
 point1 (pointof robot0)
 point3 (pointof robot2)
 point5 (pointof robot4)
