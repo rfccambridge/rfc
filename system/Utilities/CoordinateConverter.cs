@@ -23,7 +23,7 @@ namespace Robocup.Utilities
         public BasicCoordinateConverter(int width, int offsetx, int offsety)
         {
             this.width = width;
-            this.height = (int)(width * (FIELD_HEIGHT/2) / (FIELD_WIDTH/2) + FIELD_BUFFER*2);
+            this.height = (int)(width * (FIELD_HEIGHT / 2 + FIELD_BUFFER * 2) / (FIELD_WIDTH / 2+FIELD_BUFFER*2));
             this.offsetx = offsetx;
             this.offsety = offsety;
         }
@@ -68,12 +68,12 @@ namespace Robocup.Utilities
 
         public double pixeltofieldX(double x)
         {
-            return (x - offsetx) * FIELD_HEIGHT / width - FIELD_HEIGHT/2;
+            return (x - offsetx) * FIELD_WIDTH / width - FIELD_WIDTH/2;
         }
 
         public double pixeltofieldY(double y)
         {
-            return FIELD_WIDTH/2 - (y - offsety) * FIELD_WIDTH / height;
+            return FIELD_HEIGHT/2 - (y - offsety) * FIELD_HEIGHT / height;
         }
 
         public Vector2 pixeltofieldPoint(Vector2 p)

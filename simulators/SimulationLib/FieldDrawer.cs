@@ -61,8 +61,8 @@ namespace Robocup.Simulation
         {
             // goal dots
             Brush b0 = new SolidBrush(Color.YellowGreen);
-            g.FillEllipse(b0, converter.fieldtopixelX(-2.53) - GOAL_DOT_SIZE / 2, converter.fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
-            g.FillEllipse(b0, converter.fieldtopixelX(+2.53) - GOAL_DOT_SIZE / 2, converter.fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
+            g.FillEllipse(b0, converter.fieldtopixelX(FIELD_XMIN - GOAL_WIDTH) - GOAL_DOT_SIZE / 2, converter.fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
+            g.FillEllipse(b0, converter.fieldtopixelX(FIELD_XMAX + GOAL_WIDTH) - GOAL_DOT_SIZE / 2, converter.fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
             b0.Dispose();
 
             Pen p = new Pen(Color.Black, 3);

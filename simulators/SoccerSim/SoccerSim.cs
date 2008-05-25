@@ -33,8 +33,11 @@ namespace SoccerSim
         SimSystem _player1;
         SimSystem _player2;
         SimEngine _engine;
+        SimVision _vision;
         VirtualRef referee;
         ICoordinateConverter converter = new Robocup.Utilities.BasicCoordinateConverter(650, 30, 50);
+
+        
 
         private void init()
         {
@@ -48,6 +51,8 @@ namespace SoccerSim
             _player1 = new SimSystem(_fieldView, _physics_engine, referee, true);
             _player2 = new SimSystem(_fieldView, _physics_engine, referee, false);
             _engine = new SimEngine(_physics_engine, this);
+
+            _vision = new SimVision(_physics_engine, this);
 
             InitDragAndDrop();
         }
@@ -91,6 +96,7 @@ namespace SoccerSim
         
 
         bool berunning = false;
+        bool visionRunning = false;
 
         private void SoccerSim_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -116,6 +122,7 @@ namespace SoccerSim
                 sb.AppendLine("r  \t sets it to run continuously");
                 sb.AppendLine("a  \t toggles arrow drawing");
                 sb.AppendLine("p  \t reloads all the plays");
+                sb.AppendLine("v  \t starts vision service running on localhost");
                 MessageBox.Show(sb.ToString());
             }
             else if (c == 's')
@@ -125,6 +132,16 @@ namespace SoccerSim
             else if (c == 'a')
             {
                 drawArrows = !drawArrows;
+                if (drawArrows)
+                {
+                    arrowStatus.BackColor = Color.Green;
+                    arrowStatus.Text = "Arrows";
+                }
+                else
+                {
+                    arrowStatus.BackColor = Color.Red;
+                    arrowStatus.Text = "No Arrows";
+                }
                 this.Invalidate();
             }
             else if (c == 'r')
@@ -133,6 +150,8 @@ namespace SoccerSim
                 berunning = !berunning;
                 if (berunning)
                 {
+                    runningStatus.BackColor = Color.Green;
+                    runningStatus.Text = "Running";
                     _player1.start();
                     _player2.start();
                     _engine.start();
@@ -142,6 +161,30 @@ namespace SoccerSim
                     _engine.stop();
                     _player2.stop();
                     _player1.stop();
+                    runningStatus.BackColor = Color.Red;
+                    runningStatus.Text = "Not Running";
+                }
+
+            }
+            else if (c == 'q')
+            {
+                _physics_engine.resetPositions();
+            }
+            else if (c == 'v')
+            {
+
+                visionRunning = !visionRunning;
+                if (visionRunning)
+                {
+                    visionStatus.BackColor = Color.Green;
+                    visionStatus.Text = "Vision";
+                    _vision.start();
+                }
+                else
+                {
+                    visionStatus.BackColor = Color.Red;
+                    visionStatus.Text = "No Vision";
+                    _vision.stop();
                 }
 
             }

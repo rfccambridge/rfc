@@ -38,6 +38,16 @@ namespace Robocup.Simulation
 
         public PhysicsEngine(VirtualRef referee)
         {
+            resetPositions();
+            this.referee = referee;
+            foreach (RobotInfo info in ourinfo)
+                movement_modelers.Add(info.ID, new MovementModeler());
+            foreach (RobotInfo info in theirinfo)
+                movement_modelers.Add(info.ID, new MovementModeler());
+        }
+
+        public void resetPositions()
+        {
             ourinfo = new List<RobotInfo>(new RobotInfo[]{
                 new RobotInfo(new Vector2(-1.0, -1), 3, 0),
                 new RobotInfo(new Vector2(-1.0, 0), 3, 1),
@@ -54,11 +64,6 @@ namespace Robocup.Simulation
                 new RobotInfo(new Vector2(2f, 1), 3, 9)
             });
             ball_info = new BallInfo(Vector2.ZERO);
-            this.referee = referee;
-            foreach (RobotInfo info in ourinfo)
-                movement_modelers.Add(info.ID, new MovementModeler());
-            foreach (RobotInfo info in theirinfo)
-                movement_modelers.Add(info.ID, new MovementModeler());
         }
 
         #region IPredictor Members

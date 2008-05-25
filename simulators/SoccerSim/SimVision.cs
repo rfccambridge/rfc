@@ -13,9 +13,8 @@ using Robocup.Simulation;
 namespace SoccerSim
 {
     // make this load/instantiate from a text file
-    class SimEngine
+    class SimVision
     {
-
         const int TEAMSIZE = 5;
 
         PhysicsEngine physics_engine;
@@ -27,10 +26,15 @@ namespace SoccerSim
 
         SoccerSim _parent;
 
-        public SimEngine(PhysicsEngine physics_engine, SoccerSim parent)
+        private Robocup.MessageSystem.MessageSender<Robocup.Core.VisionMessage> _messageSender;
+        private int MESSAGE_SENDER_PORT = Robocup.Utilities.Constants.get<int>("ports", "VisionDataPort");
+
+        public SimVision(PhysicsEngine physics_engine, SoccerSim parent)
         {
             this._parent = parent;
+
             this.physics_engine = physics_engine;
+            _messageSender = Robocup.MessageSystem.Messages.CreateServerSender<VisionMessage>(MESSAGE_SENDER_PORT);
         }
 
         #region Simulation
@@ -43,7 +47,7 @@ namespace SoccerSim
             {
                 //if (!initialized)
                 //    initialize();
-                _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME") / 2;
+                _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
                 t = new System.Timers.Timer(_sleepTime);
                 t.AutoReset = true;
                 t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
@@ -75,12 +79,25 @@ namespace SoccerSim
 
         # endregion
 
+        VisionMessage vm;
+        List<RobotInfo> bots;
         public void run()
         {
             if (counter % 100 == 0)
                 Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
 
-            step(_sleepTime / 1000.0);
+            vm = new VisionMessage(new Vector2(-physics_engine.getBallInfo().Position.Y,physics_engine.getBallInfo().Position.X));
+            bots = physics_engine.getOurTeamInfo();
+            foreach (RobotInfo ourRobot in bots)
+            {
+                vm.OurRobots.Add(new VisionMessage.RobotData(ourRobot.ID, true, new Vector2(-ourRobot.Position.Y, ourRobot.Position.X), ourRobot.Orientation));
+            }
+            bots = physics_engine.getTheirTeamInfo();
+            foreach (RobotInfo theirRobot in bots)
+            {
+                vm.TheirRobots.Add(new VisionMessage.RobotData(theirRobot.ID, false, new Vector2(-theirRobot.Position.Y, theirRobot.Position.X), theirRobot.Orientation));
+            }
+            _messageSender.Post(vm);
             _parent.Invalidate();
 
             counter++;
