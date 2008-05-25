@@ -31,7 +31,8 @@ namespace Vision
         private enum ViewMode { NORMAL, COLOR_CLASS };
 
         // avoid creating camera objects every time
-        private static PGRCamera _PGRCamera = new PGRCamera();
+        //private static PGRCamera _PGRCamera = new PGRCamera();
+        private static PGRCamera _PGRCamera = null;
         private static SeqCamera _seqCamera = new SeqCamera();
 
         private VisionCamera.ICamera _camera;
@@ -48,6 +49,8 @@ namespace Vision
         private float _zoomFactor = 1;
         private ViewMode _viewMode = ViewMode.NORMAL;
         private List<SelectionBox.SelectionBox> _highlights;
+
+        private double _leftQtrXend = -1;
 
         private Bitmap _normalBitmap; //used to save the orig, when displaying color-class
 
@@ -71,7 +74,8 @@ namespace Vision
             string compName = SystemInformation.ComputerName.ToUpper();
             int CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID_" + compName);
 
-            _camera = _PGRCamera;
+            //_camera = _PGRCamera;
+            _camera = _seqCamera;
             _tsaiCalibrator = new TsaiCalibrator(CAMERA_ID);
             _colorCalibrator = new ColorCalibrator();
             _blobber = new Blobber(_colorCalibrator, _tsaiCalibrator, this,
@@ -100,9 +104,7 @@ namespace Vision
                 LoadRegion(DEFAULT_REGION_FILE);
 
             _colorCalibrator.DefaultInitSequence();
-            _tsaiCalibrator.DefaultInitSequence();
-
-            _tsaiCalibrator.CreateLabels(imagePicBox);
+            _tsaiCalibrator.DefaultInitSequence(imagePicBox);           
 
             _messageSender = Robocup.MessageSystem.Messages.CreateServerSender<VisionMessage>(MESSAGE_SENDER_PORT);
 
@@ -540,7 +542,6 @@ namespace Vision
                         MessageBox.Show("Tsai Image to World lookup table not generated!");
                         return;
                     }
-                    Console.WriteLine("---- Blob ----");
 
                     if (_rawImage == null)
                     {
@@ -573,7 +574,7 @@ namespace Vision
                                   totalObjects.ToString() + " objects.");
 
                     break;
-                case 'k': // detect tsai points
+                case 'd': // detect tsai points
                     if (_blobber == null)
                     {
                         MessageBox.Show("Blobber not loaded!");
@@ -587,16 +588,75 @@ namespace Vision
                         return;
                     }
 
-                    TsaiPtFinder finder = new TsaiPtFinder();
-                    finder.LoadImage(_rawImage);
-                    List<Pair<Point, DPoint>> pairs = finder.orderSquares(_blobber.blobs);
+                    TsaiPtFinder.LoadImage(_rawImage);
+                        List<Point>[] edges; Point pos; double[][] models; 
+                    List<Pair<Point, DPoint>> pairs;
+                    DialogResult dlgResult = MessageBox.Show("Left quater (as opposed to right quater)?", 
+                        "Quater selection", MessageBoxButtons.YesNo);
+                    if (dlgResult == DialogResult.Yes) {
 
-                    Graphics gfx = imagePicBox.CreateGraphics();
-                    foreach (Pair<Point, DPoint> pair in pairs)
-                    {
-                        gfx.FillRectangle(Brushes.Aqua, new Rectangle(pair.First, new Size(5, 5)));
+                        //TsaiPtFinder.LoadImage(_rawImage.toColorClass(_colorCalibrator));
+                        _tsaiCalibrator.ClearTsaiPoints();
+                        pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, 0,
+                            out edges, out pos, out models, out _leftQtrXend);
+                        
+                    } else {
+                        double _rightQtrXend;
+                        if (_leftQtrXend != -1)
+                        {
+                            pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, _leftQtrXend,
+                                out edges, out pos, out models, out _rightQtrXend);
+                            _tsaiCalibrator.AppendTsaiPoints(pairs);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Need to calibrate left quater first.");
+                            return;
+                        }
                     }
-                    gfx.Dispose();
+
+
+                   // Graphics gfx = imagePicBox.CreateGraphics();
+                   /* Pen[] pens = new Pen[] { Pens.Aqua, Pens.Red, Pens.Green, Pens.Gold };
+                    for (int i = 0; i < 4; i++)
+                    {
+                      
+
+                            if (models[i] == null) continue;
+                            Point x1, x2;
+                            if (models[i][1] != 0)
+                            {
+                               // x1 = new Point(pos.X + 0, pos.Y + (int)(-models[i][2] / models[i][1]));
+                               // x2 = new Point(pos.X + 30, pos.Y + (int)((-models[i][0] * 30 - models[i][2]) / models[i][1]));
+                                x1 = new Point(pos.X + (int)(-models[i][2] / models[i][1]), pos.Y + 0);
+                                x2 = new Point(pos.X + (int)((-models[i][0] * 30 - models[i][2]) / models[i][1]), pos.Y + 30);
+                            }
+                            else
+                            {
+                                //x1 = new Point(pos.X + (int)(-models[i][2]), pos.Y);
+                                //x2 = new Point(pos.X + (int)(-models[i][2]), pos.Y + 30);
+                                x1 = new Point(pos.X, pos.Y + (int)(-models[i][2]));
+                                x2 = new Point(pos.X +30 , pos.Y + (int)(-models[i][2]));
+                            }
+                            gfx.DrawLine(pens[i], x1, x2);
+                        
+
+                    }*/
+
+                    _tsaiCalibrator.AppendTsaiPoints(pairs);
+                    _tsaiCalibrator.CreateLabels(imagePicBox);
+                    _tsaiCalibrator.showTsaiPoints();
+                   /* foreach (Pair<Point, DPoint> pair in pairs)
+                    {
+                        gfx.FillRectangle(Brushes.Aqua, new Rectangle((int)pair.First.X,(int)pair.First.Y, 5, 5));
+                    }*/
+                    
+                   // gfx.Dispose();
+
+                    ChangeStatus("Tsai point detection finished.");
+                    break;
+                case 'k':
+                    _tsaiCalibrator.ClearTsaiPoints();
                     break;
                 case 'h':
                     ClearHighlights();
@@ -684,6 +744,7 @@ namespace Vision
                     Constants.Load();
                     RobotFinder.LoadParameters();
                     ColorClasses.LoadParameters();
+                    TsaiPtFinder.LoadParameters();
                     if (_blobber != null)
                         _blobber.ReloadParameters();
                     ChangeStatus("Constants reloaded.");

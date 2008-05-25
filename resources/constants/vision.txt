@@ -4,6 +4,7 @@ int CAMERA_ID_LAMBDA 2
 int CAMERA_ID_OMEGA 1
 int CAMERA_ID_MARDUK 2
 int CAMERA_ID_STRATEGIST 1
+int CAMERA_ID_THINKPAD 1
 
 # areas and errors are in sq. mm
 
@@ -42,6 +43,7 @@ int THEIR_ID_OFFSET_LAMBDA 0
 int THEIR_ID_OFFSET_OMEGA 10
 int THEIR_ID_OFFSET_MARDUK 0
 int THEIR_ID_OFFSET_STRATEGIST 10
+int THEIR_ID_OFFSET_THINKPAD 0
 
 # Tsai Point finder
 # in mm
@@ -50,8 +52,17 @@ double GRID_UNIT 100
 int ROW_Y_THRES 20
 # in pixels
 int TSAIPT_MIN_AREA 200
-int TSAIPT_MAX_AREA 600
+int TSAIPT_MAX_AREA 700
 
+double Y_X_VERTICALITY_THRES 1
+int CALIB_SQ_MARGIN 5
+int EDGE_NEIGHBOR_DIST 9 
+# 32-bit color of the calibration square; currently BLACK
+int CALIB_SQ_COLOR -16777216
 
-
+#RANSAC
+double RANSAC_T 1
+double RANSAC_D 0.7
+int RANSAC_K 100
+int RANSAC_N 5
 
