@@ -34,9 +34,6 @@ namespace Robocup.ControlForm {
             this.rfcStart = new System.Windows.Forms.Button();
             this.rfcStatus = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.refboxConnect = new System.Windows.Forms.Button();
-            this.refboxStatus = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.visionBottomConnect = new System.Windows.Forms.Button();
             this.visionBottomStatus = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -119,7 +116,7 @@ namespace Robocup.ControlForm {
             // 
             // rfcStart
             // 
-            this.rfcStart.Location = new System.Drawing.Point(105, 223);
+            this.rfcStart.Location = new System.Drawing.Point(105, 174);
             this.rfcStart.Name = "rfcStart";
             this.rfcStart.Size = new System.Drawing.Size(78, 21);
             this.rfcStart.TabIndex = 7;
@@ -131,7 +128,7 @@ namespace Robocup.ControlForm {
             // 
             this.rfcStatus.AutoSize = true;
             this.rfcStatus.BackColor = System.Drawing.Color.Red;
-            this.rfcStatus.Location = new System.Drawing.Point(110, 206);
+            this.rfcStatus.Location = new System.Drawing.Point(110, 157);
             this.rfcStatus.Name = "rfcStatus";
             this.rfcStatus.Size = new System.Drawing.Size(70, 13);
             this.rfcStatus.TabIndex = 29;
@@ -140,40 +137,11 @@ namespace Robocup.ControlForm {
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(18, 206);
+            this.label4.Location = new System.Drawing.Point(18, 157);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(62, 13);
             this.label4.TabIndex = 28;
             this.label4.Text = "RFCSystem";
-            // 
-            // refboxConnect
-            // 
-            this.refboxConnect.Location = new System.Drawing.Point(105, 171);
-            this.refboxConnect.Name = "refboxConnect";
-            this.refboxConnect.Size = new System.Drawing.Size(78, 21);
-            this.refboxConnect.TabIndex = 6;
-            this.refboxConnect.Text = "Connect";
-            this.refboxConnect.UseVisualStyleBackColor = true;
-            this.refboxConnect.Click += new System.EventHandler(this.refboxConnect_Click);
-            // 
-            // refboxStatus
-            // 
-            this.refboxStatus.AutoSize = true;
-            this.refboxStatus.BackColor = System.Drawing.Color.Red;
-            this.refboxStatus.Location = new System.Drawing.Point(110, 154);
-            this.refboxStatus.Name = "refboxStatus";
-            this.refboxStatus.Size = new System.Drawing.Size(70, 13);
-            this.refboxStatus.TabIndex = 27;
-            this.refboxStatus.Text = "                     ";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(18, 154);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(42, 13);
-            this.label6.TabIndex = 26;
-            this.label6.Text = "RefBox";
             // 
             // visionBottomConnect
             // 
@@ -216,14 +184,11 @@ namespace Robocup.ControlForm {
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(198, 284);
+            this.ClientSize = new System.Drawing.Size(199, 211);
             this.Controls.Add(this.visionBottomConnect);
             this.Controls.Add(this.visionBottomStatus);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.visionBottomHost);
-            this.Controls.Add(this.refboxConnect);
-            this.Controls.Add(this.refboxStatus);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.rfcStart);
             this.Controls.Add(this.rfcStatus);
             this.Controls.Add(this.label4);
@@ -256,9 +221,6 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Button rfcStart;
         private System.Windows.Forms.Label rfcStatus;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button refboxConnect;
-        private System.Windows.Forms.Label refboxStatus;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button visionBottomConnect;
         private System.Windows.Forms.Label visionBottomStatus;
         private System.Windows.Forms.Label label5;
