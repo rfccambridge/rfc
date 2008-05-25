@@ -842,6 +842,8 @@ namespace Vision {
         {
             double worldX, worldY;
             imageCoordToWorldCoord(x, y, wz, out worldX, out worldY);
+            //xw = worldX;
+            //yw = worldY;
             TranslateCoords(worldX, worldY, out xw, out yw);
         }
 

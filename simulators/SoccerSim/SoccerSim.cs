@@ -14,6 +14,7 @@ using Robocup.Plays;
 using Robocup.Core;
 using Navigator = Navigation.Examples.DumbNavigator;
 using Robocup.Simulation;
+using Robocup.Utilities;
 
 namespace SoccerSim
 {

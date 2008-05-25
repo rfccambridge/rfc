@@ -81,11 +81,11 @@ double TSAI_OFFSET_Y_LAMBDA 0
 #     Omega
 
 # Right Quater
-double TSAI_OFFSET_X_OMEGA 0
-double TSAI_OFFSET_Y_OMEGA 3050
+#double TSAI_OFFSET_X_OMEGA 0
+#double TSAI_OFFSET_Y_OMEGA 0
 # Left Quater
-#double TSAI_OFFSET_X_OMEGA 2300
-#double TSAI_OFFSET_Y_OMEGA 3050
+double TSAI_OFFSET_X_OMEGA 2300
+double TSAI_OFFSET_Y_OMEGA 0
 
 # Desktops
 double TSAI_OFFSET_X_MARDUK 0
@@ -106,7 +106,7 @@ int TSAI_SKIP 2
 # deviation in image Y-coordinate of the blob to be considered in same row of tsai points
 int ROW_Y_THRES 3
 # in pixels
-int TSAIPT_MIN_AREA 250
+int TSAIPT_MIN_AREA 300
 int TSAIPT_MAX_AREA 700
 
 double Y_X_VERTICALITY_THRES 1

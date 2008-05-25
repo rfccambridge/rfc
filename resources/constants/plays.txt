@@ -5,7 +5,7 @@ double ROBOT_RADIUS .1
 double BALL_RADIUS .02
 
 double FIELD_WIDTH 6.1
-double FIELD_HEIGHT 5.0
+double FIELD_HEIGHT 4.2
 double FIELD_BUFFER 0.3
 
 double GOAL_WIDTH .18

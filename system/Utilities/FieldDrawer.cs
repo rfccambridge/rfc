@@ -4,9 +4,8 @@ using System.Text;
 using System.Drawing;
 
 using Robocup.Core;
-using Robocup.Utilities;
 
-namespace Robocup.Simulation
+namespace Robocup.Utilities
 {
     public class FieldDrawer
     {

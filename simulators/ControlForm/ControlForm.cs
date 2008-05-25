@@ -13,9 +13,6 @@ using Robocup.CoreRobotics;
 using Vision;
 namespace Robocup.ControlForm {
     
-
-
-
     public partial class ControlForm : Form{
         bool serialConnected = false;
         RemoteRobots _serial;
@@ -27,7 +24,8 @@ namespace Robocup.ControlForm {
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionTop;
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionBottom;
 
-        FieldStateForm _field;
+        //FieldStateForm _field;
+        FieldDrawerForm drawer;
 
         bool systemStarted = false;
         RFCSystem _system;
@@ -36,19 +34,19 @@ namespace Robocup.ControlForm {
         ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(400,540, 5, 5);
 
 
-        static bool isOmegaTop = (Constants.get<int>("vision", "CAMERA_ID_OMEGA") == 1);
-        String TOP_CAMERA = isOmegaTop ? "OMEGA" : "LAMBDA";
-        String BOTTOM_CAMERA = !isOmegaTop ? "OMEGA" : "LAMBDA";
-        String DEFAULT_TOP = isOmegaTop ? "omega" : "lambda";
-        String DEFAULT_BOTTOM = !isOmegaTop ? "omega" : "lambda";
+        //static bool isOmegaTop = (Constants.get<int>("vision", "CAMERA_ID_OMEGA") == 1);
+        String TOP_CAMERA = "top_cam";
+        String BOTTOM_CAMERA = "bottom_cam";
+        String DEFAULT_TOP = "lambda";
+        String DEFAULT_BOTTOM = "omega";
 
 
 
         public ControlForm() {
             InitializeComponent();
 
-            _field = new FieldStateForm();
-            _field.Show();
+            //_field = new FieldStateForm();
+            //_field.Show();
 
             visionTopHost.Text = DEFAULT_TOP;
             visionBottomHost.Text = DEFAULT_BOTTOM;
@@ -66,6 +64,11 @@ namespace Robocup.ControlForm {
             // add vision predictor hooked up to vision
             _system.registerAcceptor(_basicPredictor);
             _system.registerPredictor(_basicPredictor);
+
+            if (drawer != null)
+                drawer.Close();
+            drawer = new FieldDrawerForm(_basicPredictor);
+            drawer.Show();
             
             // add serial commander
             _system.registerCommander(_serial);
@@ -107,10 +110,10 @@ namespace Robocup.ControlForm {
         object field_lock = new object();
         object predictor_lock = new object();
         private void handleVisionUpdate(VisionMessage msg, String cameraName) {
-            lock (field_lock)
-            {
-                _field.UpdateState(msg);
-            }
+            //lock (field_lock)
+            //{
+            //    _field.UpdateState(msg);
+            //}
             
             List<RobotInfo> ours = new List<RobotInfo>();
 
@@ -135,10 +138,12 @@ namespace Robocup.ControlForm {
                     _basicPredictor.updateBallInfo(new BallInfo(ballposition));
                 }
             }
+            drawer.Invalidate();
 
             lock (field_lock)
             {
-                _system.drawCurrent(_field.getGraphics(), converter);
+                //_system.drawCurrent(_field.getGraphics(), converter);
+                _system.drawCurrent(drawer.CreateGraphics(), converter);
             }
         }
 

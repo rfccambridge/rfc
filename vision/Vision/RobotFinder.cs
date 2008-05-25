@@ -453,7 +453,7 @@ namespace VisionStatic {
                 if (goRobot.Id >= 0) {
                     VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(goRobot.Id, true,
                                                                                   VisionToGeneralCoords(goRobot.X, goRobot.Y),
-                                                                                  (double)goRobot.Orientation);
+                                                                                  (double)goRobot.Orientation-Math.PI/2);
                     visionMessage.OurRobots.Add(vmRobot);
                 }
             }
@@ -462,7 +462,7 @@ namespace VisionStatic {
             foreach (Vision.Robot goRobot in theirRobots) {
                 VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(goRobot.Id, false,
                                                                               VisionToGeneralCoords(goRobot.X, goRobot.Y),
-                                                                              (double)goRobot.Orientation);
+                                                                              (double)goRobot.Orientation-Math.PI/2);
                 visionMessage.TheirRobots.Add(vmRobot);
             }
 
@@ -680,7 +680,7 @@ namespace VisionStatic {
             //these are for the general coords
 
             return new Vector2((y - V_HEIGHT / 2) / V_HEIGHT * G_WIDTH,
-                -(x - V_WIDTH / 2) / V_WIDTH * G_HEIGHT);
+                (x - V_WIDTH / 2) / V_WIDTH * G_HEIGHT);
 
             //return new Vector2((-(x - V_WIDTH / 2)) / MM_TO_M_FACTOR, 
             //                   (y - V_HEIGHT / 2) / MM_TO_M_FACTOR);

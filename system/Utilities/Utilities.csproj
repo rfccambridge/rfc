@@ -33,12 +33,20 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arrow.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="CoordinateConverter.cs" />
+    <Compile Include="FieldDrawer.cs" />
+    <Compile Include="FieldDrawerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FieldDrawerForm.Designer.cs">
+      <DependentUpon>FieldDrawerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GeneralPID.cs" />
     <Compile Include="HighResTimer.cs" />
     <Compile Include="Logging.cs" />

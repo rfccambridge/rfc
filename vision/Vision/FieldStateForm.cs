@@ -29,7 +29,7 @@ namespace Vision {
          */
 
 
-        private Size FIELD_SIZE = new Size(340, 490);
+        private Size FIELD_SIZE = new Size(420, 610);
         //private SizeF FIELD_SIZE_WORLD = new SizeF(3400, 4900); old, jie 2/13
         private SizeF FIELD_SIZE_WORLD = new SizeF(3.4f, 4.9f);
         private int OUT_ZONE_WIDTH = 30;
@@ -130,12 +130,12 @@ namespace Vision {
         private void DrawOurRobot(VisionMessage.RobotData robot) {
             const int DIAMETER = 20;
             int x, y;
-            ScaleLocation(robot.Position.X, robot.Position.Y, out x, out y);
+            StandardToPixelScale(robot.Position.X, robot.Position.Y, out x, out y);
             Brush brush = new SolidBrush(OUR_COLOR);
             Font font = new Font(FontFamily.GenericSansSerif, 6);
             _gfxField.FillEllipse(brush, new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
             _gfxField.DrawLine(new Pen(OUR_COLOR, 3), new PointF(x, y), 
-                               new PointF(x + DIAMETER * (float)Math.Cos(robot.Orientation), y - DIAMETER * (float)Math.Sin(robot.Orientation)));
+                               new PointF(x + DIAMETER * (float)Math.Cos(robot.Orientation+Math.PI/2), y - DIAMETER * (float)Math.Sin(robot.Orientation+Math.PI/2)));
             _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold), 
                                  Brushes.DarkRed, x - DIAMETER / 3, y - DIAMETER / 3);
             _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.Position.X, robot.Position.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
@@ -146,7 +146,7 @@ namespace Vision {
             const int DIAMETER = 20;
             int x, y;
             Font font = new Font(FontFamily.GenericSansSerif, 6);
-            ScaleLocation(robot.Position.X, robot.Position.Y, out x, out y);
+            StandardToPixelScale(robot.Position.X, robot.Position.Y, out x, out y);
             Brush brush = new SolidBrush(THEIR_COLOR);
             _gfxField.FillEllipse(brush, new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
             _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold),
@@ -172,8 +172,14 @@ namespace Vision {
 
             x = Convert.ToInt32(OUT_ZONE_WIDTH + normedX * FIELD_SIZE.Width);
             y = Convert.ToInt32(OUT_ZONE_WIDTH + normedY * FIELD_SIZE.Height);
-            
+        }
+        private void StandardToPixelScale(double worldX, double worldY, out int x, out int y)
+        {
+            double normedX = (FIELD_SIZE_WORLD.Width / 2 - worldY) / FIELD_SIZE_WORLD.Width;
+            double normedY = (FIELD_SIZE_WORLD.Height / 2 - worldX) / FIELD_SIZE_WORLD.Height;
 
+            x = Convert.ToInt32(OUT_ZONE_WIDTH + normedX * FIELD_SIZE.Width);
+            y = Convert.ToInt32(OUT_ZONE_WIDTH + normedY * FIELD_SIZE.Height);
         }
         private void ScaleSize(double worldWidth, double worldHeight, out int width, out int height)
         {
