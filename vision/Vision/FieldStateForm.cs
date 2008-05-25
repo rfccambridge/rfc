@@ -31,7 +31,7 @@ namespace Vision {
 
         private Size FIELD_SIZE = new Size(420, 610);
         //private SizeF FIELD_SIZE_WORLD = new SizeF(3400, 4900); old, jie 2/13
-        private SizeF FIELD_SIZE_WORLD = new SizeF(3.4f, 4.9f);
+        private SizeF FIELD_SIZE_WORLD = new SizeF(4.2f, 6.1f);
         private int OUT_ZONE_WIDTH = 30;
         private Color FIELD_COLOR = Color.DarkGreen;
         private Color OUR_COLOR = VisionStatic.ColorClasses.COLOR_CLASSES[VisionStatic.ColorClasses.OUR_CENTER_DOT];
