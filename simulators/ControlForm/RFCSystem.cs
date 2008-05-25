@@ -97,7 +97,8 @@ namespace Robocup.ControlForm
                 _commander = new StubRobots();
 
             //INavigator navigator = new Navigation.Examples.LookAheadBug();
-            IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
+            IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
 
             for (int i = 0; i < 10; i++)
             {

@@ -86,7 +86,7 @@ namespace Robotics.Commander
             this.Close();
         }
 
-        private int maxAcceleration = Constants.get<int>("control","MAX_ACCELERATION");
+        private int maxAcceleration = Constants.get<int>("control", "MAX_ACCELERATION");
         /// <summary>
         /// This is the maximum change, per second, that can be made to any of the wheel speeds.
         /// (In the same units that commands are given in, ie max 127)
@@ -96,7 +96,7 @@ namespace Robotics.Commander
             get { return maxAcceleration; }
             set { maxAcceleration = value; }
         }
-        private int maxStep = Constants.get<int>("control","MAX_STEP");
+        private int maxStep = Constants.get<int>("control", "MAX_STEP");
         /// <summary>
         /// The maximum that the velocity can be changed with one command.
         /// </summary>
@@ -104,6 +104,12 @@ namespace Robotics.Commander
         {
             get { return maxStep; }
             set { maxStep = value; }
+        }
+
+        public void ReloadConstants()
+        {
+            maxAcceleration = Constants.get<int>("control", "MAX_ACCELERATION");
+            maxStep = Constants.get<int>("control", "MAX_STEP");
         }
 
 
@@ -138,41 +144,7 @@ namespace Robotics.Commander
             rf *= -1;
             rb *= -1;
 
-            double time = HighResTimer.SecondsSinceStart();
-            if (!lastSpeeds.ContainsKey(id))
-            {
-                lastSpeeds[id] = new WheelSpeeds();
-                lastTime[id] = 0;
-            }
-            double dt = time - lastTime[id];
-            int maxstep = Math.Min(MaxVelocityStep, (int)(dt * maxAcceleration + .5));
-            if (maxstep < 1)
-            {
-                Console.WriteLine("maxstep too small: "+maxstep);
-                return;
-            }
-            WheelSpeeds last = lastSpeeds[id];
-            lf = ChangeUpTo(last.lf, lf, maxstep);
-            rf = ChangeUpTo(last.rf, rf, maxstep);
-            lb = ChangeUpTo(last.lb, lb, maxstep);
-            rb = ChangeUpTo(last.rb, rb, maxstep);
-            lastSpeeds[id] = new WheelSpeeds(lf, rf, lb, rb);
-            lastTime[id] = time;
-
-
-            /*if (lf == 0 && rf == 0 && lb == 0 && rb == 0) {
-                last_lf = last_rf = last_lb = last_rb = 0;
-            } else {
-                int inc = 3;
-                last_lf = lf = inc * Math.Sign( lf - last_lf ) + last_lf;
-                last_rf = rf = inc * Math.Sign( rf - last_rf ) + last_rf;
-                last_lb = lb = inc * Math.Sign( lb - last_lb) + last_lb;
-                last_rb = rb = inc * Math.Sign( rb - last_rb) + last_rb;
-            }
-
-            Console.WriteLine(target + ": lf rf lb rb: " + lf + " " + rf + " " + lb + " " + rb);*/
-
-            // board bugs out if we send an escaped slash
+            // board bugs out if we send an unescaped slash
             if (lb == '\\')
                 lb++;
             if (lf == '\\')
@@ -182,11 +154,13 @@ namespace Robotics.Commander
             if (rb == '\\')
                 rb++;
 
+            Console.WriteLine("setting speeds to: " + new WheelSpeeds(lf,rf,lb,rb).ToString());
+
             //robots expect wheel powers in this order:
             //rf lf lb rb
             byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+id),
                 (byte)'w',wheel,(byte)rf,(byte)lf, (byte)lb, (byte)rb,(byte)'\\',(byte)'E'};
-            
+
             comport.Write(msg, 0, msg.Length);
         }
 
@@ -324,36 +298,62 @@ namespace Robotics.Commander
 
         #region IRobots Members
 
-        public void setMotorSpeeds(int robotID, WheelSpeeds wheelSpeeds)
+        public void setMotorSpeeds(int id, WheelSpeeds wheelSpeeds)
         {
-            int frontLeft, frontRight, backLeft, backRight;
+            int lf=wheelSpeeds.lf, rf=wheelSpeeds.rf, lb=wheelSpeeds.lb, rb=wheelSpeeds.rb;
+
+
+
+            double time = HighResTimer.SecondsSinceStart();
+            if (!lastSpeeds.ContainsKey(id))
+            {
+                lastSpeeds[id] = new WheelSpeeds();
+                lastTime[id] = 0;
+            }
+            if (lf != 0 || rf != 0 || lb != 0 || rb != 0)
+            {
+                double dt = time - lastTime[id];
+                int maxstep = Math.Min(MaxVelocityStep, (int)(dt * maxAcceleration + .5));
+                if (maxstep < 1)
+                {
+                    Console.WriteLine("maxstep too small: " + maxstep);
+                    return;
+                }
+                WheelSpeeds last = lastSpeeds[id];
+                lf = ChangeUpTo(last.lf, lf, maxstep);
+                rf = ChangeUpTo(last.rf, rf, maxstep);
+                lb = ChangeUpTo(last.lb, lb, maxstep);
+                rb = ChangeUpTo(last.rb, rb, maxstep);
+            }
+            lastSpeeds[id] = new WheelSpeeds(lf, rf, lb, rb);
+            lastTime[id] = time;
 
             /////
             //process motor scalings
             int maxspeed = 127;
             if (wheelSpeeds.lf > 0)
-                frontLeft = (int)Math.Min(wheelSpeeds.lf * forwardpower[robotID].lf, maxspeed);
+                lf = (int)Math.Min(lf * forwardpower[id].lf, maxspeed);
             else
-                frontLeft = (int)Math.Max(wheelSpeeds.lf * backwardspower[robotID].lf, -maxspeed);
+                lf = (int)Math.Max(lf * backwardspower[id].lf, -maxspeed);
 
             if (wheelSpeeds.rf > 0)
-                frontRight = (int)Math.Min(wheelSpeeds.rf * forwardpower[robotID].rf, maxspeed);
+                rf = (int)Math.Min(rf * forwardpower[id].rf, maxspeed);
             else
-                frontRight = (int)Math.Max(wheelSpeeds.rf * backwardspower[robotID].rf, -maxspeed);
+                rf = (int)Math.Max(rf * backwardspower[id].rf, -maxspeed);
 
             if (wheelSpeeds.lb > 0)
-                backLeft = (int)Math.Min(wheelSpeeds.lb * forwardpower[robotID].lb, maxspeed);
+                lb = (int)Math.Min(lb * forwardpower[id].lb, maxspeed);
             else
-                backLeft = (int)Math.Max(wheelSpeeds.lb * backwardspower[robotID].lb, -maxspeed);
+                lb = (int)Math.Max(lb * backwardspower[id].lb, -maxspeed);
 
             if (wheelSpeeds.rb > 0)
-                backRight = (int)Math.Min(wheelSpeeds.rb * forwardpower[robotID].rb, maxspeed);
+                rb = (int)Math.Min(rb * forwardpower[id].rb, maxspeed);
             else
-                backRight = (int)Math.Max(wheelSpeeds.rb * backwardspower[robotID].rb, -maxspeed);
+                rb = (int)Math.Max(rb * backwardspower[id].rb, -maxspeed);
 
 
             //if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 10)
-            setAllMotor(robotID, 0, frontLeft, frontRight, backLeft, backRight, 1000);
+            setAllMotor(id, 0, lf, rf, lb, rb, 1000);
             /*else
                 setAllMotor(robotID, 0, 0, 0, 0, 0, 65535);*/
         }
