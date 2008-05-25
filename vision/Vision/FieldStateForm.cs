@@ -159,7 +159,7 @@ namespace Vision {
             const int DIAMETER = 8;
             int x, y;
             Font font = new Font(FontFamily.GenericSansSerif, 6);
-            ScaleLocation(ballPos.X, ballPos.Y, out x, out y);
+            StandardToPixelScale(ballPos.X, ballPos.Y, out x, out y);
             _gfxField.FillEllipse(new SolidBrush(BALL_COLOR), 
                                   new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
             _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", ballPos.X, ballPos.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
