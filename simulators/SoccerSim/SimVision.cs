@@ -27,7 +27,7 @@ namespace SoccerSim
         SoccerSim _parent;
 
         private Robocup.MessageSystem.MessageSender<Robocup.Core.VisionMessage> _messageSender;
-        private int MESSAGE_SENDER_PORT = Robocup.Utilities.Constants.get<int>("ports", "VisionDataPort");
+        private int MESSAGE_SENDER_PORT = Robocup.Core.Constants.get<int>("ports", "VisionDataPort");
 
         public SimVision(PhysicsEngine physics_engine, SoccerSim parent)
         {

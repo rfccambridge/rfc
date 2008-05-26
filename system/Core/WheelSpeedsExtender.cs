@@ -35,10 +35,10 @@ namespace Robocup.CoreRobotics
             //max = Math.Max(.10, max);
 
             // compute magnitude of wheelspeeds based on PD
-            double speed = 20.0;// Math.Min(30.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
+            double speed = Constants.get<double>("control", "MOVE_PID_MAX_SPEED") ;// Math.Min(30.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
             //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
 
-            //Console.WriteLine("doing speed1: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
+            Console.WriteLine("doing speed1: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
             return new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             //return GetWheelSpeeds(start, goal.Position);
         }
@@ -88,7 +88,9 @@ namespace Robocup.CoreRobotics
 
                 dwheels = new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             }
-            return (WheelSpeeds)WheelsInfo<double>.Times(1/(dprop + vprop),(WheelsInfo<double>.Add(dprop * dwheels,vprop * vwheels)));
+            WheelSpeeds toRet = (WheelSpeeds)WheelsInfo<double>.Times(1/(dprop + vprop),(WheelsInfo<double>.Add(dprop * dwheels,vprop * vwheels)));
+            Console.WriteLine("sending speeds: " + toRet.ToString());
+            return toRet;
              
         }
         //static public WheelSpeeds GetWheelSpeedsTo(RobotInfo start, Vector2 end)

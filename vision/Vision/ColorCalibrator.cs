@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using System.IO;
 using Vision;
-using Robocup.Utilities;
+using Robocup.Core;
 
 
 namespace VisionStatic {

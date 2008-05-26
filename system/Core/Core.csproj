@@ -36,6 +36,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="Generics.cs" />
     <Compile Include="IMotionPlanner.cs" />
     <Compile Include="INavigator.cs" />

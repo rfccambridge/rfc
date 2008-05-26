@@ -82,5 +82,10 @@ namespace Robocup.Core
         {
             return new WheelsInfo<double>(ws.lf, ws.rf, ws.lb, ws.rb);
         }
+
+        public String toString()
+        {
+            return "WheelSpeeds <lf>: " + lf + " <rf>: " + rf + " <lb>: " + lb + " <rb>: " + rb;
+        }
     }
 }
