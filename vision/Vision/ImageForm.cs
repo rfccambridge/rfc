@@ -154,7 +154,7 @@ namespace Vision
 
             // move the selection box if it ended up outside of bounds
             Rectangle region = GetRegion();
-            if (region.Right >= imagePicBox.Width - 10 || region.Bottom >= imagePicBox.Height - 10)
+            if (region.Right >= imagePicBox.Width - 1 || region.Bottom >= imagePicBox.Height -1 )
                 SetRegion(new Rectangle(new Point(0, 0), new Size(imagePicBox.Width, imagePicBox.Height)));
 
         }
