@@ -113,7 +113,15 @@ namespace Robocup.Plays
             //do each action
             foreach (ActionInfo action in results.Actions)
             {
-                action.Definition.runAction(actioninterpreter);
+                try
+                {
+                    action.Definition.runAction(actioninterpreter);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception in action.runAction:");
+                    Console.WriteLine(e.ToString());
+                }
                 foreach (int robot in action.RobotsInvolved)
                 {
                     if (!nowactive.Contains(robot))

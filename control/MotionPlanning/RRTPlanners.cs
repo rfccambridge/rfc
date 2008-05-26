@@ -184,12 +184,15 @@ namespace Robocup.MotionControl
 
             //return new MotionPlanningResults(new WheelSpeeds());
             WheelSpeeds rtn;
-            if (path.First.Count > 5)
-                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[5]);
+            if (desiredState.Position.distanceSq(curinfo.Position) < .15 * .15)
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
             else if (path.First.Count + path.Second.Count < 5)
                 rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
+            else if (path.First.Count > 5)
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[5]);
             else
-                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[path.First.Count-1]);
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
+                //rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[path.First.Count-1]);
             /*if (path.First.Count > 5)
                 rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[5]);
             else if (path.First.Count + path.Second.Count > 5)

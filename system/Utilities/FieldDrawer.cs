@@ -42,6 +42,7 @@ namespace Robocup.Utilities
             Brush b = new SolidBrush(c);
             Vector2 center = converter.fieldtopixelPoint(r.Position);
             g.FillEllipse(b, (float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2), (float)(ROBOT_SIZE), (float)(ROBOT_SIZE));
+            new Arrow(r.Position, r.Position + r.Velocity, Color.Blue, .03).drawConvertToPixels(g, converter);
 
             // draw kicker
             PointF[] corners = new PointF[4];

@@ -13,13 +13,14 @@ namespace Robocup.Utilities
     public partial class FieldDrawerForm : Form
     {
         FieldDrawer drawer;
+        ICoordinateConverter converter = new BasicCoordinateConverter(500, 30, 30);
         public FieldDrawerForm(IPredictor predictor)
         {
             InitializeComponent();
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
 
-            drawer = new FieldDrawer(predictor, new BasicCoordinateConverter(500, 30, 30));
+            drawer = new FieldDrawer(predictor, converter);
             this.Size = new Size(560, 500);
         }
 
@@ -30,6 +31,10 @@ namespace Robocup.Utilities
             drawer.paintField(e.Graphics);
         }
 
+        public ICoordinateConverter Converter
+        {
+            get { return converter; }
+        }
         //public void GetGraphics() {
         //    return this.cr
     }

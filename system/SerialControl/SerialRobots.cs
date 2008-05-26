@@ -12,7 +12,7 @@ namespace Robotics.Commander
         const byte wheel = (byte)'w';
         const byte PID = (byte)'f';
         const byte reset = (byte)'r';
-        string[] headsigns = { "\\Hvv", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v", "\\H7v" };
+        string[] headsigns = { "\\H0v", "\\H1v", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v" };
 
         string endsign = "\\E";
         string br = "9600";
@@ -189,7 +189,7 @@ namespace Robotics.Commander
                 }, null, 10000, System.Threading.Timeout.Infinite);
                 timers[robotID] = t;
             }
-            string smsg = headsigns[robotID] + "EE" + endsign;
+            string smsg = headsigns[robotID] + "E" + endsign;
             //Console.WriteLine("charge:" + smsg);
             comport.Write(smsg);
             Console.WriteLine("robot " + robotID + " is now charging");
@@ -211,7 +211,7 @@ namespace Robotics.Commander
                 charging.Remove(robotID);
                 canKick.Add(robotID);
             }
-            string smsg = headsigns[robotID] + "DD" + endsign;
+            string smsg = headsigns[robotID] + "D" + endsign;
             //Console.WriteLine("stopcharge:" + smsg);
             comport.Write(smsg);
             Console.WriteLine("robot " + robotID + " has stopped charging");
@@ -238,7 +238,7 @@ namespace Robotics.Commander
                     return;
                 canKick.Remove(robotID);
                 Console.WriteLine("robot " + robotID + " is kicking!");
-                string smsg = headsigns[robotID] + "KK" + endsign;
+                string smsg = headsigns[robotID] + "K" + endsign;
                 //Console.WriteLine("kick:" + smsg);
                 comport.Write(smsg);
 

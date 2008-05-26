@@ -78,7 +78,7 @@ namespace Robocup.MotionControl
 
             static public string ToStringHeader()
             {
-                return "encoder\terror\tcommand\textra\textra2";
+                return "encoder\terror\tduty\tcommand\tencoder";
             }
             public override string ToString()
             {
@@ -91,15 +91,21 @@ namespace Robocup.MotionControl
             while (serialport.BytesToRead > 50)
             {
                 string s = serialport.ReadTo("\\H");
-                byte[] data = new byte[35];
-                serialport.Read(data, 0, 35);
+                int numgroups = 4;
+                byte[] data = new byte[3+8*numgroups];
+                serialport.Read(data, 0, 3+8*numgroups);
                 foreach (byte b in data)
                 {
                     Console.Write(b + " ");
                 }
                 Console.WriteLine();
-                SerialInputMessage[] rtn = new SerialInputMessage[4];
-                for (int i = 0; i < 4; i++)
+                //foreach (byte b in data)
+                //{
+                //    Console.Write((char)b);
+                //}
+                //Console.WriteLine();
+                SerialInputMessage[] rtn = new SerialInputMessage[numgroups];
+                for (int i = 0; i < numgroups; i++)
                 {
                     rtn[i] = new SerialInputMessage();
                     rtn[i].Encoder = 256 * (int)(data[3 + i * 8]) + (int)(data[4 + i * 8]) - (1 << 15);

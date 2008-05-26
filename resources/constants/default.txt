@@ -17,6 +17,11 @@ string PLAY_DIR ../../plays
 double DELTA_DIST_SQ_MERGE .03
 double MAX_SECONDS_TO_KEEP_INFO 1
 
-bool ROBOT_HAS_KICKER_2 true
 
-bool ROBOT_IS_GOALIE_4 true
+bool ROBOT_HAS_KICKER_0 true
+bool ROBOT_HAS_KICKER_1 true
+bool ROBOT_HAS_KICKER_2 true
+bool ROBOT_HAS_KICKER_3 true
+bool ROBOT_HAS_KICKER_4 true
+
+bool ROBOT_IS_GOALIE_2 true

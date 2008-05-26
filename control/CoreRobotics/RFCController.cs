@@ -129,7 +129,6 @@ namespace Robocup.CoreRobotics
             }
             return ret;
         }
-
         public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter)
         {
             lock (arrows)

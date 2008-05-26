@@ -4,10 +4,11 @@ string OUR_TEAM_COLOR YELLOW
 
 #string DOTS_R_0 GGPP
 #string DOTS_R_1 PPGG
-string DOTS_R_0 GGPP
-string DOTS_R_1 PPGG
-string DOTS_R_2 GPPG
+#string DOTS_R_0 GGPP
+string DOTS_R_1 PGGP
+string DOTS_R_2 PPGG
 
 string DOTS_R_3 PGPG
-string DOTS_R_4 GPGP
-string DOTS_R_5 PGGP
+string DOTS_R_4 GGPP
+#string DOTS_R_5 GPPG
+string DOTS_R_0 GPPG

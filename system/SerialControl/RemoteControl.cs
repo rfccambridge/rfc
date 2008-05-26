@@ -11,7 +11,7 @@ using Robocup.MessageSystem;
 using Robocup.Utilities;
 
 namespace Robotics.Commander {
-    partial class RemoteControl : Form {
+    public partial class RemoteControl : Form {
         private int speed = 17;
         private bool active = false;
         private bool sendcommands_remotehost = false;
@@ -347,9 +347,15 @@ namespace Robotics.Commander {
 
         }
 
+        System.Threading.Thread thread;
         private void From1_KeyUp(object sender, KeyEventArgs e) {
             if (active) {
                 setMotorSpeeds(0, 0, 0, 0);
+                (thread = new System.Threading.Thread(delegate()
+                {
+                    System.Threading.Thread.Sleep(100);
+                    setMotorSpeeds(0, 0, 0, 0);
+                })).Start();
                 /*rcon.setAllMotor(oldcommander, curRobot, 0 //combosource
                     , 0, 0, 0, 0, 0, 65535);*/
                 statusLabel.Text = "zzZz";

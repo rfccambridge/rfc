@@ -33,10 +33,15 @@ namespace Robocup.MotionControl
 
         StreamWriter csv;
 
+        Robotics.Commander.RemoteControl remoteControl;
+
         public DataCollector()
         {
             Form.CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
+
+            remoteControl = new RemoteControl();
+            remoteControl.Show();
 
             functions.Add("Ramp function", new RampFunction());
             functions.Add("Sine wave", new SineWave());
@@ -52,6 +57,7 @@ namespace Robocup.MotionControl
             logger = new LogWriter<VisionOrCommand>(gz);
 
             timer = new HighResTimer();
+            timer.Start();
 
             listBoxInputHistory.Items.Add(SerialInput.SerialInputMessage.ToStringHeader());
 
@@ -104,12 +110,12 @@ namespace Robocup.MotionControl
             if (idtext == null)
                 return;
             int id = int.Parse(idtext);
+
             timer.Stop();
             double t = timer.Duration;
+            labelTime.Text = "t = " + t;
 
             WheelSpeeds command = current.eval(t);
-
-            labelTime.Text = "t = " + t;
 
             if (checkBoxDoSend.Checked)
                 serialoutput.setMotorSpeeds(id, command);
@@ -137,9 +143,12 @@ namespace Robocup.MotionControl
         {
             lock (csv)
             {
-                if (!closing && running)
+                if (!closing /*&& running*/)
+                {
                     csv.WriteLine(t + ", " + current.eval(t).lb + ", " +
-                        message.Encoder + ", " + message.Error + ", " + message.WheelCommand+", "+message.Extra+", "+message.Extra2);
+                        message.Encoder + ", " + message.Error + ", " + message.WheelCommand + ", " + message.Extra + ", " + message.Extra2);
+                    labelTime.Text = "t = " + t;
+                }
 
                 listBoxInputHistory.Items.Insert(1, message);
                 if (listBoxInputHistory.Items.Count > 16)

@@ -31,7 +31,8 @@ namespace Robocup.ControlForm {
         RFCSystem _system;
 
         BasicPredictor _basicPredictor;
-        ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(400,540, 5, 5);
+        //ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(420,610, 5, 5);
+        ICoordinateConverter converter;
 
 
         //static bool isOmegaTop = (Constants.get<int>("vision", "CAMERA_ID_OMEGA") == 1);
@@ -68,6 +69,7 @@ namespace Robocup.ControlForm {
             if (drawer != null)
                 drawer.Close();
             drawer = new FieldDrawerForm(_basicPredictor);
+            converter = drawer.Converter;
             drawer.Show();
             
             // add serial commander

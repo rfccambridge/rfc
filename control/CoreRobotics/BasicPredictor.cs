@@ -111,20 +111,19 @@ namespace Robocup.CoreRobotics
                                     double dt = time - lastSeen[matched.ID];
                                     velocity = (1 / dt) * (matched.Position - oldInfo.Position);
                                     velocity = .5 * velocity + .5 * oldInfo.Velocity;
+                                    Console.WriteLine("velocity of robot " + matched.ID + " is " + velocity.ToString());
                                     //if (velocity.magnitudeSq()>.01)
                                     //    Console.WriteLine(velocity);
                                 }
                                 lastSeen[matched.ID] = time;
                             }
-                            matched = new RobotInfo(matched.Position, velocity,
-                                matched.AngularVelocity, matched.Orientation, matched.ID);
 
                             Vector2 position = matched.Position;
                             if (otherCameraInfos.Contains(oldInfo))
                             {
-                                position = .5 * (position + 1f * oldInfo.Position);
+                                position = .5 * (position + 1f * matched.Position);
                             }
-                            newInfoList.Add(new RobotInfo(position, matched.Orientation, oldInfo.ID));
+                            newInfoList.Add(new RobotInfo(position, velocity, matched.AngularVelocity, matched.Orientation, oldInfo.ID));
                         }
                     }
                     foreach (RobotInfo info in newInfoList)

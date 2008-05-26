@@ -119,10 +119,10 @@ namespace Robocup.Plays
                                     {
                                         if (id == ourteaminfo[i].ID)
                                         {
-#if DEBUG
-                                            if (ourteaminfo[i].State != RobotStates.Free)
-                                                throw new ApplicationException("this should never happen -- an action was assigned to a robot that wasn't free");
-#endif
+//#if DEBUG
+//                                            if (ourteaminfo[i].State != RobotStates.Free)
+//                                                throw new ApplicationException("this should never happen -- an action was assigned to a robot that wasn't free");
+//#endif
                                             numOurRobotsAvailable--;
                                             ourteaminfo[i].State = RobotStates.Busy;
                                             break;
