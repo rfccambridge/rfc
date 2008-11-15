@@ -12,7 +12,7 @@ int REFBOX_PORT 10001
 # testing directory
 #string PLAY_DIR ../../plays/Demo/Temp
 # competition directory
-string PLAY_DIR ../../plays
+string PLAY_DIR ../../plays/testing
 
 double DELTA_DIST_SQ_MERGE .03
 double MAX_SECONDS_TO_KEEP_INFO 1
