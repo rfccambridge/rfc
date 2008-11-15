@@ -130,7 +130,8 @@ namespace Vision
         private int MIN_BLOB_WIDTH;
         private int MAX_BLOB_HEIGHT;
         private int MAX_BLOB_WIDTH;
-        
+
+        private bool _paramsLoaded = false;
 
         public Run[] runs;
 
@@ -161,8 +162,10 @@ namespace Vision
         private VoidDelegate _userErrorHandler;
         private IAsyncResult _visionLoopHandle;
 
-        
-        
+
+        public bool ParamsLoaded {
+            get { return _paramsLoaded; }
+        }
 
         public bool Blobbing {
             get { return _blobbing; }
@@ -196,11 +199,15 @@ namespace Vision
 
         public void ReloadParameters()
         {
+            _paramsLoaded = false;
+
             MIN_BLOB_AREA = Constants.get<int>("vision", "MIN_BLOB_AREA");
-            MIN_BLOB_HEIGHT = Constants.get<int>("vision", "MIN_BLOB_WIDTH"); ;
-            MIN_BLOB_WIDTH = Constants.get<int>("vision", "MIN_BLOB_WIDTH"); ;
-            MAX_BLOB_HEIGHT = Constants.get<int>("vision", "MAX_BLOB_HEIGHT"); ;
-            MAX_BLOB_WIDTH = Constants.get<int>("vision", "MAX_BLOB_WIDTH"); ;
+            MIN_BLOB_HEIGHT = Constants.get<int>("vision", "MIN_BLOB_WIDTH");
+            MIN_BLOB_WIDTH = Constants.get<int>("vision", "MIN_BLOB_WIDTH");
+            MAX_BLOB_HEIGHT = Constants.get<int>("vision", "MAX_BLOB_HEIGHT");
+            MAX_BLOB_WIDTH = Constants.get<int>("vision", "MAX_BLOB_WIDTH");
+
+            _paramsLoaded = true;
         }
 
         public void Start(OnNewStateReady onNewStateReadyDelegate) {

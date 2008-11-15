@@ -52,7 +52,13 @@ namespace Vision
         private static int RANSAC_K, RANSAC_N;
         private static int TSAI_COLS, TSAI_SKIP;
 
+        private static bool _paramsLoaded = false;
+
         private static RAWImage _origImg;
+
+        public static bool ParamsLoaded {
+            get { return _paramsLoaded; }
+        }
 
         static TsaiPtFinder()
         {
@@ -61,6 +67,8 @@ namespace Vision
 
         public static void LoadParameters()
         {
+            _paramsLoaded = false;
+
             GRID_UNIT = Constants.get<double>("vision", "GRID_UNIT");
             TSAI_COLS = Constants.get<int>("vision", "TSAI_COLS");
             TSAI_SKIP = Constants.get<int>("vision", "TSAI_SKIP");
@@ -78,7 +86,7 @@ namespace Vision
             RANSAC_K = Constants.get<int>("vision", "RANSAC_K");
             RANSAC_N = Constants.get<int>("vision", "RANSAC_N");
 
-
+            _paramsLoaded = true;
         }
 
         public static void LoadImage(RAWImage img)
@@ -104,6 +112,12 @@ namespace Vision
             // sort by Y coordinate
             lstSquares.Sort(_blobComparerY);
 
+            // Debug output
+            Console.Write("Sorted by Y: ");
+            foreach (Blob sq in lstSquares)
+                Console.Write(sq.BlobID + " ");
+            Console.WriteLine();
+
             List<Blob> row = new List<Blob>();
 
             i = 0; // row counter
@@ -121,14 +135,25 @@ namespace Vision
                     lstSquares.RemoveAt(lstSquares.Count - 1);
                 }
 
+
+                // sort row by X coordinate
+                row.Sort(_blobComparerX);
+
+                // Debug output
+                Console.Write("Row {0:G} sorted by X: ", i);
+                foreach (Blob sq in row)
+                    Console.Write(sq.BlobID + " ");
+                Console.WriteLine();
+
                 if (i % TSAI_SKIP != 0)
                 {
+                    Console.WriteLine("Skipping row i = " + i.ToString());
                     i++;
                     continue; // cut down on number of tsai points
                 }
 
-                // sort row by X coordinate
-                row.Sort(_blobComparerX);
+
+            
 
                 int j; // column counter
                 for (j = 0; j < row.Count; j+=TSAI_SKIP)
@@ -168,7 +193,8 @@ namespace Vision
                     }
                     tsaiPt = new Pair<Point, DPoint>(
                                         new Point(square.Left + corners[TOP_LEFT].Y, square.Top + corners[TOP_LEFT].X),
-                                        new DPoint(offset.wx + j * 2 * GRID_UNIT + GRID_UNIT, offset.wy + i * 2 * GRID_UNIT + GRID_UNIT));
+                                        new DPoint(TsaiCalibrator.ORIGIN_OFFSET_X + offset.wx + j * 2 * GRID_UNIT + GRID_UNIT, 
+                                                   TsaiCalibrator.ORIGIN_OFFSET_Y + offset.wy + i * 2 * GRID_UNIT + GRID_UNIT));
                         tsaiPoints.Add(tsaiPt);
 
                         if (corners[TOP_RIGHT] == new Point(-1, -1))
@@ -179,7 +205,8 @@ namespace Vision
                         }
                         tsaiPt = new Pair<Point, DPoint>(
                                         new Point(square.Left + corners[TOP_RIGHT].Y, square.Top + corners[TOP_RIGHT].X),
-                                        new DPoint(offset.wx + j * 2 * GRID_UNIT, offset.wy + i * 2 * GRID_UNIT + GRID_UNIT));
+                                        new DPoint(TsaiCalibrator.ORIGIN_OFFSET_X + offset.wx + j * 2 * GRID_UNIT,
+                                                   TsaiCalibrator.ORIGIN_OFFSET_Y + offset.wy + i * 2 * GRID_UNIT + GRID_UNIT));
                         tsaiPoints.Add(tsaiPt);
 
                         if (corners[BOTTOM_LEFT] == new Point(-1, -1))
@@ -190,7 +217,8 @@ namespace Vision
                         }
                         tsaiPt = new Pair<Point, DPoint>(
                                         new Point(square.Left + corners[BOTTOM_LEFT].Y, square.Top + corners[BOTTOM_LEFT].X),
-                                        new DPoint(offset.wx + j * 2 * GRID_UNIT + GRID_UNIT, offset.wy + i * 2 * GRID_UNIT));
+                                        new DPoint(TsaiCalibrator.ORIGIN_OFFSET_X + offset.wx + j * 2 * GRID_UNIT + GRID_UNIT,
+                                                   TsaiCalibrator.ORIGIN_OFFSET_Y + offset.wy + i * 2 * GRID_UNIT));
                         tsaiPoints.Add(tsaiPt);
                     
                     if (corners[BOTTOM_RIGHT] == new Point(-1, -1))
@@ -201,7 +229,8 @@ namespace Vision
                     }
                         tsaiPt = new Pair<Point, DPoint>(
                                         new Point(square.Left + corners[BOTTOM_RIGHT].Y, square.Top + corners[BOTTOM_RIGHT].X),
-                                        new DPoint(offset.wx + j * 2 * GRID_UNIT, offset.wy + i * 2 * GRID_UNIT));
+                                        new DPoint(TsaiCalibrator.ORIGIN_OFFSET_X + offset.wx + j * 2 * GRID_UNIT,
+                                                   TsaiCalibrator.ORIGIN_OFFSET_Y + offset.wy + i * 2 * GRID_UNIT));
                         tsaiPoints.Add(tsaiPt);
                     
                                                 

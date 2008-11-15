@@ -89,8 +89,14 @@ namespace Robocup.Core
                     continue;
                 string[] strings = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 //format is:
-                //type name value
-                dict.Add(strings[1], convert(strings[0], string.Join(" ", strings, 2, strings.Length - 2)));
+                //type name value   
+                try {
+                    dict.Add(strings[1], convert(strings[0], string.Join(" ", strings, 2, strings.Length - 2)));
+                } catch (ArgumentException e) {
+                    reader.Close();
+                    numloading--;
+                    throw e;
+                }
             }
             reader.Close();
             numloading--;

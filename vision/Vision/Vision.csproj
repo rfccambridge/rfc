@@ -5,7 +5,7 @@
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{08383292-7063-4436-ADE4-CCD3AD048D46}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Vision</RootNamespace>
     <AssemblyName>Vision</AssemblyName>
@@ -142,6 +142,7 @@
     <None Include="bin\Debug\point.gif" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Resources\pencilIcon.png" />
     <None Include="Resources\point.gif" />
     <None Include="Resources\cross.gif" />

@@ -540,6 +540,10 @@ namespace Vision
                         MessageBox.Show("Color Calibrator not loaded!");
                         return;
                     }
+                    if (!ColorClasses.ParamsLoaded) {
+                        MessageBox.Show("Color Calibrator constants not loaded!");
+                        return;
+                    }
                     if (_colorCalibrator.RGBtoCCTable == null)
                     {
                         MessageBox.Show("RGB to CC Table not generated!");
@@ -553,6 +557,10 @@ namespace Vision
                     if (_tsaiCalibrator.imgToWorldLookup == null)
                     {
                         MessageBox.Show("Tsai Image to World lookup table not generated!");
+                        return;
+                    }
+                    if (!RobotFinder.ParamsLoaded) {
+                        MessageBox.Show("RobotFinder constants not loaded!");
                         return;
                     }
 
@@ -598,6 +606,10 @@ namespace Vision
                     if (_blobber.totalBlobs <= 0)
                     {
                         MessageBox.Show("Must blob first!");
+                        return;
+                    }
+                    if (!TsaiPtFinder.ParamsLoaded) {
+                        MessageBox.Show("TsaiPtFinder constants not loaded!");
                         return;
                     }
 
@@ -667,10 +679,18 @@ namespace Vision
                         MessageBox.Show("Blobber not loaded!");
                         return;
                     }
+                    if (!_blobber.ParamsLoaded) {
+                        MessageBox.Show("Blobber constants not loaded!");
+                        return;
+                    }
                     if (_colorCalibrator == null)
                     {
                         MessageBox.Show("Color Calibrator not loaded!");
                         return;
+                    }
+                    if (!ColorClasses.ParamsLoaded) {
+                        MessageBox.Show("Color Calibrator constants not loaded!");
+                        return;                       
                     }
                     if (_colorCalibrator.RGBtoCCTable == null)
                     {
@@ -681,13 +701,16 @@ namespace Vision
                     {
                         MessageBox.Show("Tsai Calibrator not loaded!");
                         return;
-                    }
+                    }                    
                     if (_tsaiCalibrator.imgToWorldLookup == null)
                     {
                         MessageBox.Show("Tsai Image to World lookup table not generated!");
                         return;
                     }
-
+                    if (!RobotFinder.ParamsLoaded) {
+                        MessageBox.Show("Robot Finder constants not loaded!");
+                        return;
+                    }
 
 
                     if (!_blobber.Blobbing)
@@ -740,13 +763,38 @@ namespace Vision
                         FieldState.Form.Show();
                     break;
                 case 'r': // reload constants from file
-                    Constants.Load();
-                    RobotFinder.LoadParameters();
-                    ColorClasses.LoadParameters();
-                    TsaiPtFinder.LoadParameters();
-                    if (_blobber != null)
-                        _blobber.ReloadParameters();
-                    ChangeStatus("Constants reloaded.");
+                    try {
+                        Constants.Load();
+                    } catch (ArgumentException exc) {
+                        // Constants file failed to load, so Constants dictionaries are corrupt
+                        // so we will NOT try to LoadParameters()
+                        MessageBox.Show("Failed to load constants files: " + exc.Message);
+                        return;
+                    }
+
+                    try {
+                        RobotFinder.LoadParameters();
+                        ColorClasses.LoadParameters();
+                        TsaiPtFinder.LoadParameters();
+                        if (_blobber != null)
+                            _blobber.ReloadParameters();
+                        ChangeStatus("Constants reloaded.");
+
+                    // This could fail if a constant is missing, for example. The ParamsLoad property of 
+                    // corresponding objects should stay "false" in case of failure and should block user 
+                    // actions. 
+                    } catch (ApplicationException exc) {
+                        MessageBox.Show("Failed to load parameters: " + exc.Message);
+                        return;
+                    } catch (TypeInitializationException exc) {
+                        MessageBox.Show("Failed to load parameters: " + exc.InnerException.Message);
+                        return;
+                    }
+                    
+                    break;
+                case '4':
+                    SaveRegion(DEFAULT_REGION_FILE);
+                    ChangeStatus("Region saved.");
                     break;
             }
 

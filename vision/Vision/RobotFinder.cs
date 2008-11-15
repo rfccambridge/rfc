@@ -269,11 +269,19 @@ namespace VisionStatic {
 
         static float BALL_HEIGHT_TSAI;
 
+        static bool _paramsLoaded = false;
+
+        public static bool ParamsLoaded {
+            get { return _paramsLoaded; }          
+        }
+
         static RobotFinder() {
             LoadParameters();
         }
 
         static public void LoadParameters() {
+
+            _paramsLoaded = false;
 
             DIST_SQ_TO_CENTER = Constants.get<float>("vision", "DIST_SQ_TO_CENTER");
 
@@ -311,6 +319,8 @@ namespace VisionStatic {
             THEIR_ID_OFFSET = Constants.get<int>("vision", "THEIR_ID_OFFSET_" + System.Windows.Forms.SystemInformation.ComputerName);
 
             BALL_HEIGHT_TSAI = Constants.get<float>("vision", "BALL_HEIGHT_TSAI");
+
+            _paramsLoaded = true;
         }
         
         static private double distanceSq(double x1, double y1, double x2, double y2) {

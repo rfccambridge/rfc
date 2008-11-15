@@ -36,7 +36,13 @@ namespace VisionStatic {
         //WHATCH the order here and in the array right bellow:
         public static int[, , ,] DOT_PATTERNS;
 
+        private static bool _paramsLoaded = false;
+
         private static Dictionary<char, int> CHAR_TO_COLOR;
+
+        public static bool ParamsLoaded {
+            get { return _paramsLoaded; }
+        }
 
         static ColorClasses() {
 
@@ -66,6 +72,8 @@ namespace VisionStatic {
 
         public static void LoadParameters()
         {
+            _paramsLoaded = false;
+
             if (Constants.get<string>("configuration", "OUR_TEAM_COLOR").ToUpper() == "BLUE")
             {
                 OUR_CENTER_DOT = COLOR_BLUE_CENTER_DOT;
@@ -97,6 +105,8 @@ namespace VisionStatic {
                 }
 
             }
+
+            _paramsLoaded = true;
         }
 
         public static string GetName(byte colorClass)
