@@ -39,6 +39,7 @@ namespace serial_test
             }
             serial.Open();
             serial.DataReceived += serial_DataReceived;
+            //Note, this might not work because there is no CRC checksum
             byte[] buffer = new byte[] { (byte)'\\', (byte)'H', (byte)'1', (byte)'2', (byte)'f', (byte)'p', (byte)'i', (byte)'d', (byte)'\\', (byte)'E' };
             while (true)
             {

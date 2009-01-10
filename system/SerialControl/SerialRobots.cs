@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO.Ports;
+using Communication.IO.Tools;
 using Robocup.Core;
 using Robocup.Utilities;
 
@@ -22,6 +23,11 @@ namespace Robotics.Commander
 
         SerialPort comport;
         //static SerialPort comport = new SerialPort();
+        private CRCTool crc = new CRCTool();
+        private byte CRC8(params byte[] bytes)
+        {
+            return (byte)crc.crctablefast(bytes);
+        }
 
         /*#region handy functions
         private byte[] ByteStringToByteArray(string s)
@@ -64,6 +70,8 @@ namespace Robotics.Commander
             comport.ReadTimeout = SerialPort.InfiniteTimeout;
 
             loadMotorScale(fname);
+
+            crc.Init(CRCTool.CRCCode.CRC8);
         }
         public SerialRobots()
             : this(Constants.get<string>("ports", "SerialPort"))
@@ -159,8 +167,8 @@ namespace Robotics.Commander
             //robots expect wheel powers in this order:
             //rf lf lb rb
             byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+id),
-                (byte)'w',wheel,(byte)rf,(byte)lf, (byte)lb, (byte)rb,(byte)'\\',(byte)'E'};
-
+                (byte)'w',wheel,(byte)rf,(byte)lf, (byte)lb, (byte)rb,
+                CRC8((byte)rf, (byte)lf,(byte)lb, (byte)rb),(byte)'\\',(byte)'E'};
             comport.Write(msg, 0, msg.Length);
         }
 
@@ -220,7 +228,7 @@ namespace Robotics.Commander
         public void SetPIDConstants(int robotID, byte P, byte I, byte D)
         {
             byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+robotID),
-                (byte)'w',PID,P,I,D,(byte)'\\',(byte)'E'};
+                (byte)'w',PID,P,I,D,CRC8(P,I,D),(byte)'\\',(byte)'E'};
             comport.Write(msg, 0, msg.Length);
         }
 

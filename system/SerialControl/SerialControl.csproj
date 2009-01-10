@@ -48,6 +48,7 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="CRCTool.cs" />
     <Compile Include="RemoteControl.cs">
       <SubType>Form</SubType>
     </Compile>
