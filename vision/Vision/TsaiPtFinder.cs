@@ -50,7 +50,7 @@ namespace Vision
         private static Color CALIB_SQ_COLOR;
         private static double RANSAC_T, RANSAC_D;
         private static int RANSAC_K, RANSAC_N;
-        private static int TSAI_COLS, TSAI_SKIP;
+        private static int TSAI_SKIP;
 
         private static bool _paramsLoaded = false;
 
@@ -70,7 +70,6 @@ namespace Vision
             _paramsLoaded = false;
 
             GRID_UNIT = Constants.get<double>("vision", "GRID_UNIT");
-            TSAI_COLS = Constants.get<int>("vision", "TSAI_COLS");
             TSAI_SKIP = Constants.get<int>("vision", "TSAI_SKIP");
             ROW_Y_THRES = Constants.get<int>("vision", "ROW_Y_THRES");
             TSAIPT_MIN_AREA = Constants.get<int>("vision", "TSAIPT_MIN_AREA");
@@ -124,16 +123,27 @@ namespace Vision
             while (lstSquares.Count > 0)
             {
                 row.Clear();
-
-                // extract row
+				bool nextRow = false;
+                
+				// extract row
                 row.Add(lstSquares[lstSquares.Count - 1]);
                 lstSquares.RemoveAt(lstSquares.Count - 1);
-                while (row.Count < TSAI_COLS && lstSquares.Count > 0) 
-                {
-                    Blob b = lstSquares[lstSquares.Count - 1];
-                    row.Add(b);
-                    lstSquares.RemoveAt(lstSquares.Count - 1);
-                }
+
+				float avgCenterY = row[0].CenterY;
+				int prevCenterY = row[0].CenterY;
+
+				while (!nextRow && lstSquares.Count > 0)
+				{
+					Blob b = lstSquares[lstSquares.Count - 1];
+					nextRow = Math.Abs(b.CenterY - avgCenterY) > ROW_Y_THRES;
+					if (!nextRow)
+					{
+						row.Add(b);
+						prevCenterY = b.CenterY;
+						avgCenterY = (b.CenterY + prevCenterY) / 2;//(avgCenterY * (row.Count - 1) + b.CenterY) / row.Count;
+						lstSquares.RemoveAt(lstSquares.Count - 1);
+					}
+				}
 
 
                 // sort row by X coordinate
@@ -141,8 +151,10 @@ namespace Vision
 
                 // Debug output
                 Console.Write("Row {0:G} sorted by X: ", i);
-                foreach (Blob sq in row)
-                    Console.Write(sq.BlobID + " ");
+				foreach (Blob sq in row)
+				{
+					Console.Write(sq.BlobID + " ");
+				}
                 Console.WriteLine();
 
                 if (i % TSAI_SKIP != 0)
