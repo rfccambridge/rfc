@@ -44,6 +44,8 @@ int THEIR_ID_OFFSET_OMEGA 10
 int THEIR_ID_OFFSET_MARDUK 0
 int THEIR_ID_OFFSET_STRATEGIST 10
 int THEIR_ID_OFFSET_THINKPAD 0
+int THEIR_ID_OFFSET_ONUFRII 0
+
 
 
 # ================
@@ -108,16 +110,22 @@ double TSAI_OFFSET_Y_STRATEGIST 3050
 double TSAI_OFFSET_X_THINKPAD 0
 double TSAI_OFFSET_Y_THINKPAD 2300
 
+# Svilen's laptop
+double TSAI_OFFSET_X_ONUFRII 0
+double TSAI_OFFSET_Y_ONUFRII 2300
+
+
+
 # Tsai point finder
 # in mm
 double GRID_UNIT 100
-int TSAI_COLS 9
 int TSAI_SKIP 2
 # deviation in image Y-coordinate of the blob to be considered in same row of tsai points
-int ROW_Y_THRES 3
+int ROW_Y_THRES 7
 # in pixels
-int TSAIPT_MIN_AREA 400
-int TSAIPT_MAX_AREA 950
+int TSAIPT_MIN_AREA 200
+int TSAIPT_MAX_AREA 500
+
 
 double Y_X_VERTICALITY_THRES 1
 int CALIB_SQ_MARGIN 5
