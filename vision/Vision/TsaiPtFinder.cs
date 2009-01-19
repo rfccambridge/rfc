@@ -140,7 +140,7 @@ namespace Vision
 					{
 						row.Add(b);
 						prevCenterY = b.CenterY;
-						avgCenterY = (b.CenterY + prevCenterY) / 2;//(avgCenterY * (row.Count - 1) + b.CenterY) / row.Count;
+						avgCenterY = (b.CenterY + prevCenterY) / 2;
 						lstSquares.RemoveAt(lstSquares.Count - 1);
 					}
 				}
