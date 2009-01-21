@@ -45,7 +45,16 @@ namespace Robocup.Plays
                         break;
                     }
                     //else
-                    r.forceDefine(lastAssignments[i]);
+                    try
+                    {
+                        r.forceDefine(lastAssignments[i]);
+                    }
+                    catch (ApplicationException)
+                    {
+                        failed = true;
+                        startat = i;
+                        break;
+                    }
                 }
                 if (failed)
                 {

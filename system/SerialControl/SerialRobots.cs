@@ -16,10 +16,6 @@ namespace Robotics.Commander
         string[] headsigns = { "\\H0v", "\\H1v", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v" };
 
         string endsign = "\\E";
-        string br = "9600";
-        string pr = "None";
-        string db = "8";
-        string sb = "One";
 
         SerialPort comport;
         //static SerialPort comport = new SerialPort();
@@ -61,13 +57,6 @@ namespace Robotics.Commander
         public SerialRobots(string port)
         {
             comport = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
-
-            comport.BaudRate = int.Parse(br);
-            comport.DataBits = int.Parse(db);
-            comport.StopBits = (StopBits)Enum.Parse(typeof(StopBits), sb);
-            comport.Parity = (Parity)Enum.Parse(typeof(Parity), pr);
-            comport.WriteTimeout = SerialPort.InfiniteTimeout;
-            comport.ReadTimeout = SerialPort.InfiniteTimeout;
 
             loadMotorScale(fname);
 
@@ -132,6 +121,8 @@ namespace Robotics.Commander
 
         private int ChangeUpTo(int start, int end, int maxChange)
         {
+            if (Math.Abs(end) < Math.Abs(start) && Math.Sign(start) == Math.Sign(end))
+                return end;
             if (end > start)
                 return start + Math.Min(maxChange, end - start);
             else

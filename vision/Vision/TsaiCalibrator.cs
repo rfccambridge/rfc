@@ -61,8 +61,7 @@ namespace Vision {
             labelControl.ForeColor = System.Drawing.Color.Black;
             //labelControl.Text = index.ToString();
             toolTip = new ToolTip();
-            toolTip.SetToolTip(labelControl, (this.wx - TsaiCalibrator.ORIGIN_OFFSET_X).ToString() + "," + 
-                                             (this.wy - TsaiCalibrator.ORIGIN_OFFSET_Y).ToString());
+            toolTip.SetToolTip(labelControl, (this.wx - TsaiCalibrator.ORIGIN_OFFSET_X).ToString() + "," + (this.wy - TsaiCalibrator.ORIGIN_OFFSET_Y).ToString());
             toolTip.AutoPopDelay = 1000;
             toolTip.InitialDelay = 0;
             
@@ -293,9 +292,9 @@ namespace Vision {
         private const string WORK_DIR = "../../resources/vision/";
         private const string DEFAULT_TSAI_POINTS_FILE = WORK_DIR + "tsai_points.txt";
         private const string DEFAULT_IMAGE_TO_WORLD_TABLE = WORK_DIR + "image_to_world_table.dat";
-
-        public static readonly double ORIGIN_OFFSET_X = 11000;
-        public static readonly double ORIGIN_OFFSET_Y = 12000;
+        
+        public const double ORIGIN_OFFSET_X = 11000;
+        public const double ORIGIN_OFFSET_Y = 12000;
 
         //private Control hostControl;
         //private int _cameraID;
@@ -309,7 +308,6 @@ namespace Vision {
         calibration_constants cc;
 
         public DPoint[] imgToWorldLookup;
-
 
         //private frmWorld frmWorldObj;
 
@@ -687,6 +685,10 @@ namespace Vision {
             fout.Close();
         }
 
+        public void LoadTsaiPoints()
+        {
+            LoadTsaiPoints(DEFAULT_TSAI_POINTS_FILE);
+        }
         public void LoadTsaiPoints(string filename) {
             string[] line;
             StreamReader fin = new StreamReader(filename);

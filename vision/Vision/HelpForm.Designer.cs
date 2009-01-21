@@ -395,44 +395,44 @@ namespace Vision {
             this.label29.AutoSize = true;
             this.label29.Location = new System.Drawing.Point(3, 220);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(151, 13);
+            this.label29.Size = new System.Drawing.Size(178, 13);
             this.label29.TabIndex = 28;
-            this.label29.Text = "Next frame in saved sequence";
+            this.label29.Text = "Prev/Next frame in saved sequence";
             // 
             // label30
             // 
             this.label30.AutoSize = true;
             this.label30.Location = new System.Drawing.Point(3, 240);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(151, 13);
+            this.label30.Size = new System.Drawing.Size(103, 13);
             this.label30.TabIndex = 29;
-            this.label30.Text = "Prev frame in saved sequence";
+            this.label30.Text = "Start/Stop recording";
             // 
             // label31
             // 
             this.label31.AutoSize = true;
-            this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label31.Location = new System.Drawing.Point(216, 220);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(34, 13);
+            this.label31.Size = new System.Drawing.Size(29, 13);
             this.label31.TabIndex = 30;
-            this.label31.Text = ". (dot)";
+            this.label31.Text = ", / .";
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label32.Location = new System.Drawing.Point(216, 240);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(53, 13);
+            this.label32.Size = new System.Drawing.Size(28, 13);
             this.label32.TabIndex = 31;
-            this.label32.Text = ", (comma)";
+            this.label32.Text = "; / \'";
             // 
             // HelpForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(307, 339);
+            this.ClientSize = new System.Drawing.Size(307, 344);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;

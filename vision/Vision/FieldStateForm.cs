@@ -12,6 +12,7 @@ using Robocup.Core;
 namespace Vision {
     public partial class FieldStateForm : Form {
         
+        // Actual field
         /* --------------------------------
          * |(3400, 4900)        (0, 4900) |
          * |                              |
@@ -27,11 +28,31 @@ namespace Vision {
          * |(3400, 0)                (0,0)|
          * --------------------------------
          */
+         // Practice MD 3rd -- 20081206
+        /* --------------------------------
+ * |(3500, 4500)        (0, 4500) |
+ * |                              |
+ * |           TOP                |
+ * |           CAM 1              |
+ * |                              |
+ * |                     (0, 2400)|
+ * |------------------------------|
+ * |                              |
+ * |            BOTTOM            |
+ * |            CAM 2             |
+ * |                              |
+ * |(3500, 0)                (0,0)|
+ * --------------------------------
+ */
 
 
-        private Size FIELD_SIZE = new Size(420, 610);
-        //private SizeF FIELD_SIZE_WORLD = new SizeF(3400, 4900); old, jie 2/13
-        private SizeF FIELD_SIZE_WORLD = new SizeF(4.2f, 6.1f);
+       // private Size FIELD_SIZE = new Size(420, 610);
+        //private SizeF FIELD_SIZE_WORLD = new SizeF(4.2f, 6.1f);
+
+        private Size FIELD_SIZE = new Size(350, 450);
+        private SizeF FIELD_SIZE_WORLD = new SizeF(3.5f, 4.5f);
+        
+
         private int OUT_ZONE_WIDTH = 30;
         private Color FIELD_COLOR = Color.DarkGreen;
         private Color OUR_COLOR = VisionStatic.ColorClasses.COLOR_CLASSES[VisionStatic.ColorClasses.OUR_CENTER_DOT];
@@ -156,6 +177,7 @@ namespace Vision {
         }
 
         private void DrawBall(Vector2 ballPos) {
+            if (double.IsNaN(ballPos.X) || double.IsNaN(ballPos.Y)) return;
             const int DIAMETER = 8;
             int x, y;
             Font font = new Font(FontFamily.GenericSansSerif, 6);

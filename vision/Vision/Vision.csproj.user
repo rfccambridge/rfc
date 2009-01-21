@@ -9,5 +9,17 @@
   </PropertyGroup>
   <PropertyGroup>
     <ReferencePath>C:\Microsoft Robotics Studio (1.0)\bin\Debug\;C:\Microsoft Robotics Studio (1.0)\bin\services\;C:\Microsoft Robotics Studio (1.0)\bin\</ReferencePath>
+    <PublishUrlHistory>publish\</PublishUrlHistory>
+    <InstallUrlHistory>
+    </InstallUrlHistory>
+    <SupportUrlHistory>
+    </SupportUrlHistory>
+    <UpdateUrlHistory>
+    </UpdateUrlHistory>
+    <BootstrapperUrlHistory>
+    </BootstrapperUrlHistory>
+    <ApplicationRevision>0</ApplicationRevision>
+    <FallbackCulture>en-US</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
 </Project>

@@ -283,7 +283,16 @@ namespace Vision
             //Console.WriteLine("Processing frame...");
             
             doBlob(frame, region);
-            visionMessage = VisionStatic.RobotFinder.findGameObjects(blobs, totalBlobs, _tsaiCalibrator);
+            visionMessage = VisionStatic.RobotFinder.findGameObjects2(blobs, totalBlobs, _tsaiCalibrator);
+
+          /*  if (visionMessage.OurRobots.Count <= 0)
+            {
+                Console.WriteLine("NO ROBOT!!!!");
+                string WORK_DIR = "../../resources/vision/";
+                TextWriter twr = new StreamWriter(WORK_DIR + "bad_frames.txt", true); // append
+                twr.WriteLine(((SeqCamera)_camera).Frame);
+                twr.Close();
+            }*/
 
             //Console.WriteLine("Frame processed. Blobs found: " + totalBlobs.ToString());
 

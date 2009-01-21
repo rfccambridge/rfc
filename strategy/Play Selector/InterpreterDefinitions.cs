@@ -48,28 +48,34 @@ namespace Robocup.Plays
         }
         public void forceDefine(int robotID)
         {
-            foreach (InterpreterRobotInfo rinf in evaluatorstate.OurTeamInfo)
+            if (Ours)
             {
-                if (rinf.ID == robotID)
+                foreach (InterpreterRobotInfo rinf in evaluatorstate.OurTeamInfo)
                 {
-                    bool failed = (rinf.Assigned && !Assignment.OkIfAssigned) ||
-                        (rinf.State == RobotStates.Busy && !Assignment.OkIfBusy);
-                    System.Diagnostics.Debug.Assert(!failed, "internal assumption failure", "you are trying to force a definition on a robot that has already been assigned to");
-                    thisrobot = rinf;
-                    thisrobot.Assigned = true;
-                    return;
+                    if (rinf.ID == robotID)
+                    {
+                        bool failed = (rinf.Assigned && !Assignment.OkIfAssigned) ||
+                            (rinf.State == RobotStates.Busy && !Assignment.OkIfBusy);
+                        System.Diagnostics.Debug.Assert(!failed, "internal assumption failure", "you are trying to force a definition on a robot that has already been assigned to");
+                        thisrobot = rinf;
+                        thisrobot.Assigned = true;
+                        return;
+                    }
                 }
             }
-            foreach (InterpreterRobotInfo rinf in evaluatorstate.TheirTeamInfo)
+            else
             {
-                if (rinf.ID == robotID)
+                foreach (InterpreterRobotInfo rinf in evaluatorstate.TheirTeamInfo)
                 {
-                    bool failed = (rinf.Assigned && !Assignment.OkIfAssigned) ||
-                        (rinf.State == RobotStates.Busy && !Assignment.OkIfBusy);
-                    System.Diagnostics.Debug.Assert(!failed, "internal assumption failure", "you are trying to force a definition on a robot that has already been assigned to");
-                    thisrobot = rinf;
-                    thisrobot.Assigned = true;
-                    return;
+                    if (rinf.ID == robotID)
+                    {
+                        bool failed = (rinf.Assigned && !Assignment.OkIfAssigned) ||
+                            (rinf.State == RobotStates.Busy && !Assignment.OkIfBusy);
+                        System.Diagnostics.Debug.Assert(!failed, "internal assumption failure", "you are trying to force a definition on a robot that has already been assigned to");
+                        thisrobot = rinf;
+                        thisrobot.Assigned = true;
+                        return;
+                    }
                 }
             }
             throw new ApplicationException("could not find the robot with ID " + robotID);

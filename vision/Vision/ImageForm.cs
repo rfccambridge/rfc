@@ -19,6 +19,7 @@ namespace Vision
     {
         private const string WORK_DIR = "../../resources/vision/";
         private const string DEFAULT_REGION_FILE = WORK_DIR + "region.txt";
+        private const string DEFAULT_TRAIN_FILE = WORK_DIR + "training.txt";
         private const string IDLE_STATUS = "Ready. Press F1 for key functions.";
 
         private readonly int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
@@ -29,6 +30,7 @@ namespace Vision
         /* PRIVATE MEMBERS */
 
         private enum ViewMode { NORMAL, COLOR_CLASS };
+        private enum Position { FRONT, REAR, LEFT, RIGHT, FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT };
 
         // avoid creating camera objects every time
         private static PGRCamera _PGRCamera = new PGRCamera();
@@ -51,6 +53,10 @@ namespace Vision
         private List<SelectionBox.SelectionBox> _highlights;
 
         private Bitmap _normalBitmap; //used to save the orig, when displaying color-class
+
+        // Recording
+        private bool _recording;
+        private string _recPath = WORK_DIR;
 
         /* CONSTRUCTORS */
 
@@ -101,6 +107,7 @@ namespace Vision
             if (File.Exists(DEFAULT_REGION_FILE))
                 LoadRegion(DEFAULT_REGION_FILE);
 
+            // UNCOMMENT THIS -- doing for faster load
             _colorCalibrator.DefaultInitSequence();
             _tsaiCalibrator.DefaultInitSequence(imagePicBox);           
 
@@ -540,10 +547,6 @@ namespace Vision
                         MessageBox.Show("Color Calibrator not loaded!");
                         return;
                     }
-                    if (!ColorClasses.ParamsLoaded) {
-                        MessageBox.Show("Color Calibrator constants not loaded!");
-                        return;
-                    }
                     if (_colorCalibrator.RGBtoCCTable == null)
                     {
                         MessageBox.Show("RGB to CC Table not generated!");
@@ -557,10 +560,6 @@ namespace Vision
                     if (_tsaiCalibrator.imgToWorldLookup == null)
                     {
                         MessageBox.Show("Tsai Image to World lookup table not generated!");
-                        return;
-                    }
-                    if (!RobotFinder.ParamsLoaded) {
-                        MessageBox.Show("RobotFinder constants not loaded!");
                         return;
                     }
 
@@ -580,7 +579,15 @@ namespace Vision
                         return;
                     }
                     //GameObjects gameObjs = VisionStatic.RobotFinder.findGameObjects(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
-                    VisionMessage visionMessageLocal = VisionStatic.RobotFinder.findGameObjects(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
+                    VisionMessage visionMessageLocal = VisionStatic.RobotFinder.findGameObjects2(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
+
+                    if (visionMessageLocal.OurRobots.Count <= 0)
+                    {
+                        Console.WriteLine("NO ROBOT!!!!");
+                        TextWriter twr = new StreamWriter(WORK_DIR + "bad_frames.txt", true); // append
+                        twr.WriteLine(_seqCamera.Frame);
+                        twr.Close();
+                    }
 
                     _fieldState.Update(visionMessageLocal);
 
@@ -590,7 +597,7 @@ namespace Vision
                         _highlights.Add(HighlightBlob(_blobber.blobs[i]));
                     }
 
-                    int totalObjects = 1 + visionMessageLocal.OurRobots.Count + visionMessageLocal.TheirRobots.Count; // 1 for ball
+                    int totalObjects = ((visionMessageLocal.BallPosition == null) ? 0 : 1) + visionMessageLocal.OurRobots.Count + visionMessageLocal.TheirRobots.Count; // 1 for ball
                     ChangeStatus("Frame processed. Found " + _blobber.totalBlobs.ToString() + " blobs and " +
                                   totalObjects.ToString() + " objects.");
 
@@ -608,10 +615,6 @@ namespace Vision
                         MessageBox.Show("Must blob first!");
                         return;
                     }
-                    if (!TsaiPtFinder.ParamsLoaded) {
-                        MessageBox.Show("TsaiPtFinder constants not loaded!");
-                        return;
-                    }
 
                     TsaiPtFinder.LoadImage(_rawImage);
                     List<Pair<Point, DPoint>> pairs;
@@ -620,9 +623,15 @@ namespace Vision
                     DPoint offset = new DPoint(Constants.get<double>("vision", "TSAI_OFFSET_X_" + compName),
                                              Constants.get<double>("vision", "TSAI_OFFSET_Y_" + compName));
                     
-                    pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, offset);
+                    pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, offset, imagePicBox);
 
+                    
+
+                    // Clear and load before appending, so that this method can be re-run
+                    _tsaiCalibrator.ClearTsaiPoints();
+                    _tsaiCalibrator.LoadTsaiPoints();
                     _tsaiCalibrator.AppendTsaiPoints(pairs);
+                    
                     _tsaiCalibrator.CreateLabels(imagePicBox);
                     _tsaiCalibrator.showTsaiPoints();
 
@@ -679,18 +688,10 @@ namespace Vision
                         MessageBox.Show("Blobber not loaded!");
                         return;
                     }
-                    if (!_blobber.ParamsLoaded) {
-                        MessageBox.Show("Blobber constants not loaded!");
-                        return;
-                    }
                     if (_colorCalibrator == null)
                     {
                         MessageBox.Show("Color Calibrator not loaded!");
                         return;
-                    }
-                    if (!ColorClasses.ParamsLoaded) {
-                        MessageBox.Show("Color Calibrator constants not loaded!");
-                        return;                       
                     }
                     if (_colorCalibrator.RGBtoCCTable == null)
                     {
@@ -701,16 +702,13 @@ namespace Vision
                     {
                         MessageBox.Show("Tsai Calibrator not loaded!");
                         return;
-                    }                    
+                    }
                     if (_tsaiCalibrator.imgToWorldLookup == null)
                     {
                         MessageBox.Show("Tsai Image to World lookup table not generated!");
                         return;
                     }
-                    if (!RobotFinder.ParamsLoaded) {
-                        MessageBox.Show("Robot Finder constants not loaded!");
-                        return;
-                    }
+
 
 
                     if (!_blobber.Blobbing)
@@ -723,6 +721,7 @@ namespace Vision
                             _blobber.Start(new OnNewStateReady(delegate(VisionMessage visionMessage)
                             {
                                 //gameObjects.Source = SystemInformation.ComputerName;
+
 
                                 _fieldState.Update(visionMessage);
 
@@ -763,41 +762,272 @@ namespace Vision
                         FieldState.Form.Show();
                     break;
                 case 'r': // reload constants from file
-                    try {
-                        Constants.Load();
-                    } catch (ArgumentException exc) {
-                        // Constants file failed to load, so Constants dictionaries are corrupt
-                        // so we will NOT try to LoadParameters()
-                        MessageBox.Show("Failed to load constants files: " + exc.Message);
-                        return;
-                    }
-
-                    try {
-                        RobotFinder.LoadParameters();
-                        ColorClasses.LoadParameters();
-                        TsaiPtFinder.LoadParameters();
-                        if (_blobber != null)
-                            _blobber.ReloadParameters();
-                        ChangeStatus("Constants reloaded.");
-
-                    // This could fail if a constant is missing, for example. The ParamsLoad property of 
-                    // corresponding objects should stay "false" in case of failure and should block user 
-                    // actions. 
-                    } catch (ApplicationException exc) {
-                        MessageBox.Show("Failed to load parameters: " + exc.Message);
-                        return;
-                    } catch (TypeInitializationException exc) {
-                        MessageBox.Show("Failed to load parameters: " + exc.InnerException.Message);
-                        return;
-                    }
-                    
+                    Constants.Load();
+                    RobotFinder.LoadParameters();
+                    ColorClasses.LoadParameters();
+                    TsaiPtFinder.LoadParameters();
+                    if (_blobber != null)
+                        _blobber.ReloadParameters();
+                    ChangeStatus("Constants reloaded.");
                     break;
-                case '4':
+
+                #region NeuralNet_NOT_IMPLEMENTED
+                    /*
+                case '2': // construct training data
+                    int robotID = 1;
+
+                    Blob[] blobs = _blobber.blobs;
+                    LinkedList<Blob> dots = new LinkedList<Blob>();   
+                    LinkedList<double> distsSq = new LinkedList<double>();                
+                    Blob centerDot = null;                    
+                    int maxDots = -1;
+                    
+
+                    // Generate training data: locations and areas of dots
+                    
+                    for (int i = 0; i < _blobber.totalBlobs; i++)
+                    {
+                        if (blobs[i].ColorClass == ColorClasses.OUR_CENTER_DOT)
+                        {
+                            // Center dot is probably useful to have separate for neural network
+                            Blob tempCenterDot = blobs[i];
+                            LinkedList<Blob> tempDots = new LinkedList<Blob>();
+                            LinkedList<double> tempDistsSq = new LinkedList<double>();
+                            double distSq;
+                            
+                            for (int j = 0; j < _blobber.totalBlobs; j++)
+                            {
+                               
+                                byte c = blobs[j].ColorClass;
+                                if (c == ColorClasses.COLOR_DOT_CYAN || c == ColorClasses.COLOR_DOT_GREEN ||
+                                    c == ColorClasses.COLOR_DOT_PINK)
+                                {
+                                    distSq = RobotFinder.distanceSq(tempCenterDot.CenterX, tempCenterDot.CenterY, blobs[j].CenterX, blobs[j].CenterY);                                    
+                                    if (distSq < RobotFinder.DIST_SQ_TO_CENTER_PIX)
+                                    {
+                                        tempDistsSq.AddLast(distSq);
+                                        tempDots.AddLast(blobs[j]);
+                                    }
+                                }
+                            }
+
+                            // if too few dots around the center were found, then we're probably not looking at a center dot
+                            if (tempDots.Count > maxDots)
+                            {
+                                centerDot = tempCenterDot;                              
+                                dots = tempDots;
+                                distsSq = tempDistsSq;
+                                maxDots = tempDots.Count;
+                            }                           
+                        }
+                    }
+
+
+                    Console.WriteLine("Center dot: " + ((centerDot == null) ? "! not found !" : centerDot.BlobID.ToString()));
+                    Console.Write("Dots found (" + dots.Count + "): ");
+                    foreach (Blob dot in dots)
+                    {
+                        Console.Write(dot.BlobID + " " + ColorClasses.GetName(dot.ColorClass) + "; ");
+                    }
+                    Console.WriteLine();
+
+                    if (centerDot == null)
+                        return;                   
+                
+                    // to do: maybe insert some out-lier detector here to filter out the false dots
+
+                    // for now just take the closest 4 if there are more
+                    Blob[] fourDots = new Blob[4];
+                    // I only know how to sort using Array.Sort()
+                    double[] distsSqAr = new double[distsSq.Count];
+                    Blob[] dotsAr = new Blob[dots.Count];
+                    distsSq.CopyTo(distsSqAr, 0);
+                    dots.CopyTo(dotsAr, 0);
+                    Array.Sort(distsSqAr, dotsAr);                    
+                    for (int i = 0; i < 4; i++)
+                        fourDots[i] = dotsAr[i];
+                    
+                    Console.Write("Four dots chosen: ");
+                    foreach (Blob dot in fourDots)
+                    {
+                        Console.Write(dot.BlobID + " " + ColorClasses.GetName(dot.ColorClass) + "; ");
+                    }
+                    Console.WriteLine();
+                   
+                    // Find the center vectors
+                    System.Windows.Vector[] centerVectors = new System.Windows.Vector[4];
+                    for (int i = 0; i < 4; i++)
+                    {
+                        centerVectors[i] = new System.Windows.Vector(fourDots[i].CenterX - centerDot.CenterX, fourDots[i].CenterY - centerDot.CenterY);
+                    }
+
+                    // Find the three vectors for each dot, and based on their length determine whether the dot a front one or a rear one
+                    System.Windows.Vector[,] vectors = new System.Windows.Vector[4, 4];
+                    double[,] lengths = new double[4, 4];
+                    for (int i = 0; i < 4; i++)
+                    {
+                        for (int j = 0; j < 4; j++)
+                        {
+                            vectors[i, j] = new System.Windows.Vector(fourDots[j].CenterX - fourDots[i].CenterX, fourDots[j].CenterY - fourDots[i].CenterY);
+                            lengths[i, j] = vectors[i, j].LengthSquared;
+                        }
+                    }
+
+                    // 
+                    int frontLeft, frontRight, rearLeft, rearRight;
+                    frontLeft = frontRight = rearLeft = rearRight = -1;
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        double[] ls = new double[4];
+                        for (int j = 0; j < 4; j++)
+                            ls[j] = lengths[i, j];
+                        Array.Sort<double>(ls);
+
+                        if (Math.Abs(ls[2] - ls[1]) < Math.Abs(ls[3] - ls[2]))
+                        {
+                            // rear
+                            if (rearLeft < 0)
+                                rearLeft = i;
+                            else if (rearRight < 0)
+                                rearRight = i;
+                            else
+                            {
+                                Console.WriteLine("Too many rear dots!");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            // front
+                            if (frontLeft < 0)
+                                frontLeft = i;
+                            else if (frontRight < 0)
+                                frontRight = i;
+                            else
+                            {
+                                Console.WriteLine("Too many front dots!");
+                                return;
+                            }
+                        }
+                    }
+
+                    //determine left/right
+                    int t;
+                    if (System.Windows.Vector.CrossProduct(centerVectors[frontLeft], centerVectors[frontRight]) < 0)
+                    {
+                        t = frontLeft;
+                        frontLeft = frontRight;
+                        frontRight = t;
+                    }
+
+                    if (System.Windows.Vector.CrossProduct(centerVectors[rearLeft], centerVectors[rearRight]) > 0)
+                    {
+                        t = rearLeft;
+                        rearLeft = rearRight;
+                        rearRight = t;
+                    }
+
+                    Console.WriteLine("Positions identified: ");
+                    Console.WriteLine(fourDots[frontLeft].BlobID + "(" + ColorClasses.GetName(fourDots[frontLeft].ColorClass) + ")        " + 
+                                      fourDots[frontRight].BlobID + "(" + ColorClasses.GetName(fourDots[frontRight].ColorClass) + ")");
+                    Console.WriteLine("  " + fourDots[rearLeft].BlobID + "(" + ColorClasses.GetName(fourDots[rearLeft].ColorClass) + ")    " + 
+                                      fourDots[rearRight].BlobID + "(" + ColorClasses.GetName(fourDots[rearRight].ColorClass) + ")");
+                    Console.WriteLine();
+
+                    break;
+
+
+                    // Save training data to file (append)
+                    TextWriter tw = new StreamWriter(DEFAULT_TRAIN_FILE, true);
+
+                    // First thing is the robot id and the count of dots
+                    tw.WriteLine("{0:G} {1:G} {2:G}", robotID, dots.Count);
+
+                    if (centerDot != null)
+                    {
+                        tw.WriteLine("{0:G} {1:E} {2:E} {3:E}", centerDot.ColorClass, 
+                                     centerDot.CenterWorldX, 
+                                     centerDot.CenterWorldY,
+                                     centerDot.AreaScaled);
+                    }
+                    foreach (Blob dot in dots)                    
+                        tw.WriteLine("{0:G} {1:E} {2:E} {3:E}", dot.ColorClass, 
+                        dot.CenterWorldX - centerDot.CenterWorldX, 
+                        dot.CenterWorldY - centerDot.CenterWorldY, 
+                        dot.AreaScaled);                    
+
+                    tw.Close();
+
+                    break;
+                     */
+                #endregion
+                
+                case 'g':
                     SaveRegion(DEFAULT_REGION_FILE);
                     ChangeStatus("Region saved.");
                     break;
+                case ';':
+                    if (_recording)
+                        return;
+
+                    // Get the folder
+                    FolderBrowserDialog dlg = new FolderBrowserDialog();
+                    dlg.Description = "Select folder to where the sequence of frames will be written.";
+                    dlg.SelectedPath = Path.GetFullPath(_recPath);
+                    dlg.ShowNewFolderButton = true;
+                    DialogResult dlgRes = dlg.ShowDialog();
+                    if (dlgRes != DialogResult.OK)
+                        return;
+                    _recPath = dlg.SelectedPath + "\\";
+
+                    // start a new thread that gets frames and writes them to files                    
+                    _recording = true;
+                    VoidDelegate recLoopDelegate = new VoidDelegate(RecLoop);
+                    AsyncCallback recErrorHandler = new AsyncCallback(RecErrorHandler);
+                    IAsyncResult recLoopHandle = recLoopDelegate.BeginInvoke(RecErrorHandler, null);
+
+                    ChangeStatus("Recording to " + Path.GetDirectoryName(_recPath) + "...");
+                    break;
+                case '\'':
+                    _recording = false;
+                    ChangeStatus(IDLE_STATUS);
+                    break;
             }
 
+        }
+
+        // Need to move these to a better place in the code
+        private void RecLoop()
+        {
+            RAWImage img;
+            Bitmap bmp;
+            string fname; 
+            int i = 0;
+
+            _camera.startCapture();
+
+            while (_recording)
+            {
+                if (_camera.getFrame(out img) != 0)
+                {
+                    Console.WriteLine("Error getting frame from camera!");
+                    return;
+                }
+                bmp = img.toBitmap();
+
+                fname = _recPath + "frame" + i.ToString() +".bmp";
+                bmp.Save(fname, System.Drawing.Imaging.ImageFormat.Bmp);
+                i++;
+            }
+
+            _camera.stopCapture();
+        }
+        private void RecErrorHandler(IAsyncResult res)
+        {
+            Console.WriteLine("RecLoop exited and error handler was called.");
+            _camera.stopCapture();
+            _recording = false;
         }
 
         private void CheckMenuItem(ToolStripItemCollection items, ToolStripMenuItem itemToCheck)

@@ -10,11 +10,11 @@ int REBOOT_TIME 15000
 int REFBOX_PORT 10001
 
 # testing directory
-#string PLAY_DIR ../../plays/Demo/Temp
+string PLAY_DIR ../../plays
 # competition directory
-string PLAY_DIR ../../plays/testing
+#string PLAY_DIR ../../plays
 
-double DELTA_DIST_SQ_MERGE .03
+double DELTA_DIST_SQ_MERGE .05
 double MAX_SECONDS_TO_KEEP_INFO 1
 
 
@@ -24,4 +24,4 @@ bool ROBOT_HAS_KICKER_2 true
 bool ROBOT_HAS_KICKER_3 true
 bool ROBOT_HAS_KICKER_4 true
 
-bool ROBOT_IS_GOALIE_2 true
+bool ROBOT_IS_GOALIE_0 true

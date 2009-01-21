@@ -43,11 +43,11 @@ namespace Robocup.Plays
         {
             return "(closest " + (Ours ? "friendly " : "enemy ") + point.ToString() + " loose)";
         }
-        public void draw(Graphics g, int tick)
+        public void draw(Graphics g, ICoordinateConverter c, int tick)
         {
             Vector2[] points = new Vector2[2];
-            points[0] = MainForm.FieldPointToPixelPoint(((DesignerRobot)robot.getValue(tick, null)).getPoint());
-            points[1] = MainForm.FieldPointToPixelPoint((Vector2)point.getValue(tick, null));
+            points[0] = c.fieldtopixelPoint(((DesignerRobot)robot.getValue(tick, null)).getPoint());
+            points[1] = c.fieldtopixelPoint((Vector2)point.getValue(tick, null));
             double ddx = points[1].X - points[0].X;
             double ddy = points[1].Y - points[0].Y;
             double dx, dy;

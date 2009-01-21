@@ -85,7 +85,7 @@ namespace Robocup.Plays
         }
         //end of interface Clickable methods
         Color c = Color.Black;
-        public void draw(Graphics g)
+        public void draw(Graphics g, ICoordinateConverter converter)
         {
             //if (center == null)
             if (center == null)
@@ -107,7 +107,7 @@ namespace Robocup.Plays
             }
             Brush myBrush = new SolidBrush(c2);
             Pen myPen = new Pen(c, 2);
-            Vector2 p = MainForm.FieldPointToPixelPoint(center);
+            Vector2 p = converter.fieldtopixelPoint(center);
             g.FillEllipse(myBrush, (float)(p.X - radius), (float)(p.Y - radius), 2 * (float)radius, 2 * (float)radius);
             g.DrawEllipse(myPen, (float)(p.X - radius), (float)(p.Y - radius), 2 * (float)radius, 2 * (float)radius);
             myBrush.Dispose();

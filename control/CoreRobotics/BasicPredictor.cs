@@ -109,20 +109,21 @@ namespace Robocup.CoreRobotics
                                 if (lastSeen.ContainsKey(matched.ID))
                                 {
                                     double dt = time - lastSeen[matched.ID];
-                                    velocity = (1 / dt) * (matched.Position - oldInfo.Position);
+                                    velocity = (1 / (dt+.01)) * (matched.Position - oldInfo.Position);
                                     velocity = .5 * velocity + .5 * oldInfo.Velocity;
-                                    Console.WriteLine("velocity of robot " + matched.ID + " is " + velocity.ToString());
                                     //if (velocity.magnitudeSq()>.01)
                                     //    Console.WriteLine(velocity);
                                 }
                                 lastSeen[matched.ID] = time;
                             }
 
-                            Vector2 position = matched.Position;
+                            Vector2 position;// = matched.Position;
                             if (otherCameraInfos.Contains(oldInfo))
                             {
-                                position = .5 * (position + 1f * matched.Position);
+                                position = .5 * oldInfo.Position + .5 * matched.Position;
                             }
+                            else
+                                position = matched.Position;
                             newInfoList.Add(new RobotInfo(position, velocity, matched.AngularVelocity, matched.Orientation, oldInfo.ID));
                         }
                     }
@@ -260,9 +261,14 @@ namespace Robocup.CoreRobotics
 
         #region IInfoAcceptor Members
 
+        double ballupdate = HighResTimer.SecondsSinceStart();
         public void updateBallInfo(BallInfo ballInfo)
         {
-            this.ballInfo = ballInfo;
+            double now = HighResTimer.SecondsSinceStart();
+            double dt = now - ballupdate;
+            ballupdate = now;
+            this.ballInfo = new BallInfo(.7 * this.ballInfo.Position + .3 * ballInfo.Position,
+                (1/(dt+.01))*(this.ballInfo.Position-ballInfo.Position));
         }
 
         public void updatePartOurRobotInfo(List<RobotInfo> newInfos, string splitName)

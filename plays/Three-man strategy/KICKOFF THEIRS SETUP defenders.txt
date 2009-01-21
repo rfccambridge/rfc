@@ -1,0 +1,29 @@
+Metadata:
+type KickOff_Theirs_Setup
+score 1.0079950456405
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.15 0)
+theirgoal (point 3.15 0)
+center (point 0 0)
+line1 (line ourgoal center)
+circle2 (circle center 0.960832971957145)
+point3 (linecircleintersection line1 circle2 0)
+circle4 (circle point3 0.15)
+point5 (circlecircleintersection circle2 circle4 1)
+point6 (circlecircleintersection circle2 circle4 -1)
+robot1 (closest friendly point6 loose)
+point7 (pointof robot1)
+robot2 (closest friendly point5 loose)
+point8 (pointof robot2)
+Conditions:
+Actions:
+(robotpointmove robot1 point6)
+(robotpointmove robot2 point5)
+DesignerData:
+robot1 <-1.31,0.42>
+robot2 <-1.33,-0.71>
+

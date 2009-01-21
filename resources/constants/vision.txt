@@ -8,6 +8,7 @@ int CAMERA_ID_THINKPAD 1
 
 # areas and errors are in sq. mm
 
+# in pixels
 int MIN_BLOB_AREA 5
 int MIN_BLOB_HEIGHT 5
 int MIN_BLOB_WIDTH 5
@@ -17,24 +18,28 @@ int MAX_BLOB_WIDTH 100
 float AREA_BALL 1400
 float ERROR_BALL 1000
 
-float AREA_BLUE_CENTER_DOT 3000
-float AREA_YELLOW_CENTER_DOT 2400
+float AREA_DOT 2500
+float ERROR_DOT 1000
 
-float ERROR_BLUE_CENTER_DOT 900
-float ERROR_YELLOW_CENTER_DOT 900
+float AREA_BLUE_CENTER_DOT 2400
+float AREA_YELLOW_CENTER_DOT 6000
 
-float AREA_CYAN_DOT 2500
-float AREA_PINK_DOT 2000
-float AREA_GREEN_DOT 1800
+float ERROR_BLUE_CENTER_DOT 1100
+float ERROR_YELLOW_CENTER_DOT 3000
 
-float ERROR_CYAN_DOT 1000
-float ERROR_PINK_DOT 1000
-float ERROR_GREEN_DOT 1000
+float AREA_CYAN_DOT 3000
+float AREA_PINK_DOT 3000
+float AREA_GREEN_DOT 3000
 
-float DIST_SQ_TO_CENTER 15000
+float ERROR_CYAN_DOT 1500
+float ERROR_PINK_DOT 1500
+float ERROR_GREEN_DOT 1500
+
+float DIST_SQ_TO_CENTER 30000
+float DIST_SQ_TO_CENTER_PIX 1000
 float FRONT_ANGLE 135
-float ERROR_ANGLE 20
-float DIST_SHORT_SQ 14000
+float ERROR_ANGLE 40
+float DIST_SHORT_SQ 17000
 
 float BALL_HEIGHT_TSAI 0
 float ROBOT_HEIGHT_TSAI 0
@@ -44,14 +49,14 @@ int THEIR_ID_OFFSET_OMEGA 10
 int THEIR_ID_OFFSET_MARDUK 0
 int THEIR_ID_OFFSET_STRATEGIST 10
 int THEIR_ID_OFFSET_THINKPAD 0
-int THEIR_ID_OFFSET_ONUFRII 0
-
 
 
 # ================
 # Tsai Calibration
 # ================
 
+#  Competition values 
+#
 # --------------------------------
 # |(4200, 6100)        (0, 6100) |
 # |                              |
@@ -67,9 +72,23 @@ int THEIR_ID_OFFSET_ONUFRII 0
 # |(4200, 0)                (0,0)|
 # --------------------------------
 
-# Practice field in MD 3rd (11/08/2008)
-# Width = 35*100 mm
-# Height = 47*100 mm
+
+#  Practice field MD3rd values 
+#
+# --------------------------------
+# |(3500, 4500)        (0, 4500) |
+# |                              |
+# |           TOP                |
+# |           CAM                |
+# |                              |
+# |                              |
+# |------------------------------|
+# |                              |
+# |            BOTTOM            |
+# |            CAM               |
+# |                              |
+# |(3500, 0)                (0,0)|
+# --------------------------------
 
 # Uncomment only the quater which you wish to calibrate
 
@@ -94,14 +113,8 @@ double TSAI_OFFSET_X_OMEGA 2300
 double TSAI_OFFSET_Y_OMEGA 0
 
 # Desktops
-# MARDUK practice field on MD 3rd (11/8/08)
-# Left Quater
-double TSAI_OFFSET_X_MARDUK 1800
-double TSAI_OFFSET_Y_MARDUK 2400
-# Right Quater
-#double TSAI_OFFSET_X_MARDUK 0
-#double TSAI_OFFSET_Y_MARDUK 2400
-
+double TSAI_OFFSET_X_MARDUK 0
+double TSAI_OFFSET_Y_MARDUK 0
 
 double TSAI_OFFSET_X_STRATEGIST 0
 double TSAI_OFFSET_Y_STRATEGIST 3050
@@ -110,22 +123,16 @@ double TSAI_OFFSET_Y_STRATEGIST 3050
 double TSAI_OFFSET_X_THINKPAD 0
 double TSAI_OFFSET_Y_THINKPAD 2300
 
-# Svilen's laptop
-double TSAI_OFFSET_X_ONUFRII 0
-double TSAI_OFFSET_Y_ONUFRII 2300
-
-
-
 # Tsai point finder
 # in mm
 double GRID_UNIT 100
-int TSAI_SKIP 2
+int TSAI_COLS 11
+int TSAI_SKIP 1
 # deviation in image Y-coordinate of the blob to be considered in same row of tsai points
-int ROW_Y_THRES 7
+int ROW_Y_THRES 3
 # in pixels
-int TSAIPT_MIN_AREA 200
-int TSAIPT_MAX_AREA 500
-
+int TSAIPT_MIN_AREA 250
+int TSAIPT_MAX_AREA 700
 
 double Y_X_VERTICALITY_THRES 1
 int CALIB_SQ_MARGIN 5

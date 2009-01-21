@@ -56,7 +56,7 @@ namespace Robocup.Plays
                 destination = extend(target, ball, kickDistance);
             }
             
-            Move(robotID, avoidBall, destination, target);
+            Move(robotID, avoidBall, destination, ball);
             //commander.move(robotID, avoidBall, destination);
         }
 

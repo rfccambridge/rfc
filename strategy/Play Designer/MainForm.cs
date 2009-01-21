@@ -16,7 +16,7 @@ namespace Robocup.Plays
     /// <summary>
     /// The main form for the Play Designer
     /// </summary>
-    partial class MainForm : Form
+    partial class MainForm : Form, ICoordinateConverter
     {
         #region Private Fields
         /// <summary>
@@ -118,20 +118,20 @@ namespace Robocup.Plays
             {
                 //DesignerPoint dp = new DesignerPoint((Vector2)o);
                 //return dp.willClick(p);
-                return UsefulFunctions.distance((Vector2)o, p) <= PixelDistanceToFieldDistance(6);
+                return UsefulFunctions.distance((Vector2)o, p) <= pixeltofieldDistance(6);
             }
             else if (o is DesignerRobot)
             {
-                return UsefulFunctions.distance(((DesignerRobot)o).getPoint(), p) <= PixelDistanceToFieldDistance(10);
+                return UsefulFunctions.distance(((DesignerRobot)o).getPoint(), p) <= pixeltofieldDistance(10);
             }
             else if (o is Line)
             {
                 //change these two lines to make it so that you have to click on the segment itself, and not on its extension
                 //return ((Line)o).distFromSegment(p) <= PixelDistanceToFieldDistance(3);
-                return ((Line)o).distFromLine(p) <= PixelDistanceToFieldDistance(3);
+                return ((Line)o).distFromLine(p) <= pixeltofieldDistance(3);
             }
             else if (o is Circle)
-                return Math.Abs(((Circle)o).distanceFromCenter(p) - ((Circle)o).Radius) <= PixelDistanceToFieldDistance(3);
+                return Math.Abs(((Circle)o).distanceFromCenter(p) - ((Circle)o).Radius) <= pixeltofieldDistance(3);
             throw new ApplicationException("Tried to see if you could click on something that's not supported yet");
             //return false;
         }
@@ -163,7 +163,8 @@ namespace Robocup.Plays
             repaint();
         }
 
-        private void init() {
+        private void init()
+        {
             InitializeComponent();
 
             //I don't know why, but if you set a combo box to be uneditable (the user can't add
@@ -193,9 +194,10 @@ namespace Robocup.Plays
             actionToolstripButtons.Add(new ToolstripButtonAndState(toolstripAddCircle, new state_AddingCircle()));
             actionToolstripButtons.Add(new ToolstripButtonAndState(toolstripEditObject, new state_EditingObject()));
 
-            double minx = PixelXToFieldX(30), maxx = PixelXToFieldX(520);
-            double miny = PixelYToFieldY(56), maxy = PixelYToFieldY(396);
-            double goalback = PixelDistanceToFieldDistance(8);// 12;
+            double minx = pixeltofieldX(30), maxx = pixeltofieldX(30 + 610);
+            double miny = pixeltofieldY(56), maxy = pixeltofieldY(56 + 420);
+            this.Size = new Size(30 + 610 + 37, 56 + 420 + 91);
+            double goalback = pixeltofieldDistance(10);// 12;
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx, miny), "topLeftCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx, maxy), "bottomLeftCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), maxx, maxy), "bottomRightCorner");
@@ -707,7 +709,7 @@ namespace Robocup.Plays
         #region FormMouseHandlers
         private void MainForm_MouseDown(object sender, MouseEventArgs e)
         {
-            Vector2 clickPoint = PixelPointToFieldPoint((Vector2)e.Location);
+            Vector2 clickPoint = pixeltofieldPoint((Vector2)e.Location);
             state.mousedown = true;
 
             this.GetType().InvokeMember(state.GetType().Name + "_MouseDown",
@@ -716,7 +718,7 @@ namespace Robocup.Plays
         }
         private void MainForm_MouseMove(object sender, MouseEventArgs e)
         {
-            Vector2 clickPoint = PixelPointToFieldPoint((Vector2)e.Location);
+            Vector2 clickPoint = pixeltofieldPoint((Vector2)e.Location);
 
             this.GetType().InvokeMember(state.GetType().Name + "_MouseMove",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Instance,
@@ -724,7 +726,7 @@ namespace Robocup.Plays
         }
         private void MainForm_MouseUp(object sender, MouseEventArgs e)
         {
-            Vector2 clickPoint = PixelPointToFieldPoint((Vector2)e.Location);
+            Vector2 clickPoint = pixeltofieldPoint((Vector2)e.Location);
             state.mousedown = false;
 
             this.GetType().InvokeMember(state.GetType().Name + "_MouseUp",
@@ -740,37 +742,37 @@ namespace Robocup.Plays
          * (for drawing the right size circles) and at the very end, when you save the play and convert all
          * the coordinates into field coordinates.
          */
-        static public double PixelXToFieldX(double x)
+        public double pixeltofieldX(double x)
         {
-            return (x - 275) / 100;
+            return (x - 30 - 305) / 100;
         }
-        static public double PixelYToFieldY(double y)
+        public double pixeltofieldY(double y)
         {
-            return -(y - 26 - 200) / 100;
+            return -(y - 56 - 210) / 100;
         }
-        static public Vector2 PixelPointToFieldPoint(Vector2 p)
+        public Vector2 pixeltofieldPoint(Vector2 p)
         {
             //return new Vector2((p.X - 275) / 100, (p.Y - 26 - 200) / 100);
-            return new Vector2(PixelXToFieldX(p.X), PixelYToFieldY(p.Y));
+            return new Vector2(pixeltofieldX(p.X), pixeltofieldY(p.Y));
         }
-        static public double FieldXToPixelX(double x)
+        public int fieldtopixelX(double x)
         {
-            return x * 100 + 275;
+            return (int)(x * 100 + 305 + 30);
         }
-        static public double FieldYToPixelY(double y)
+        public int fieldtopixelY(double y)
         {
-            return -y * 100 + 26 + 200;
+            return (int)(-y * 100 + 56 + 210);
         }
-        static public Vector2 FieldPointToPixelPoint(Vector2 p)
+        public Vector2 fieldtopixelPoint(Vector2 p)
         {
             //return new Vector2(p.X * 100 + 275, p.Y * 100 + 26 + 200);
-            return new Vector2(FieldXToPixelX(p.X), FieldYToPixelY(p.Y));
+            return new Vector2(fieldtopixelX(p.X), fieldtopixelY(p.Y));
         }
-        static public double PixelDistanceToFieldDistance(double d)
+        public double pixeltofieldDistance(double d)
         {
             return d / 100;
         }
-        static public double FieldDistanceToPixelDistance(double d)
+        public double fieldtopixelDistance(double d)
         {
             return d * 100;
         }
@@ -803,7 +805,7 @@ namespace Robocup.Plays
                 //l.draw(g);
                 try
                 {
-                    ((DesignerRobot)exp.getValue(tick, null)).draw(g);
+                    ((DesignerRobot)exp.getValue(tick, null)).draw(g, this);
                 }
                 catch (NoIntersectionException) { }
             }
@@ -811,10 +813,25 @@ namespace Robocup.Plays
             {
                 try
                 {
-                    ((DesignerRobot)r.getValue(tick, null)).draw(g);
+                    ((DesignerRobot)r.getValue(tick, null)).draw(g, this);
                 }
                 catch (NoIntersectionException) { }
             }
+            /*if (drawActionsButton.Checked)
+            {
+                foreach (DesignerExpression exp in play.Actions)
+                {
+                    if (exp.ReturnType != typeof(ActionDefinition))
+                        continue;
+                    //l.draw(g);
+                    if (exp.UsesFunction("robotpointmove"))
+                    {
+                        new Arrow(((DesignerRobot)exp.getArgument(0).getValue(tick, null)).getPoint(), (Vector2)exp.getArgument(1).getValue(tick, null)
+                            , Color.Blue, .02).drawConvertToPixels(g, this);
+                        //draw((ActionDefinition)exp.getValue(tick, null), g, exp.Highlighted);
+                    }
+                }
+            }*/
             if (drawDefinitionsButton.Checked)
             {
                 foreach (DesignerRobotDefinition rd in play.Definitions)
@@ -822,7 +839,7 @@ namespace Robocup.Plays
                     try
                     {
                         if (rd is ClosestDefinition)
-                            ((ClosestDefinition)rd).draw(g, tick);
+                            ((ClosestDefinition)rd).draw(g, this, tick);
                     }
                     catch (NoIntersectionException) { }
                 }
@@ -859,8 +876,8 @@ namespace Robocup.Plays
             if (play.Ball != null)
             {
                 Brush b = new SolidBrush(play.Ball.color);
-                Vector2 ballloc = FieldPointToPixelPoint(play.Ball.getPoint());
-                double radius = FieldDistanceToPixelDistance(DesignerBall.Radius);
+                Vector2 ballloc = fieldtopixelPoint(play.Ball.getPoint());
+                double radius = fieldtopixelDistance(DesignerBall.Radius);
                 g.FillEllipse(b, (float)(ballloc.X - radius), (float)(ballloc.Y - radius), 2 * (float)radius, 2 * (float)radius);
                 b.Dispose();
             }
@@ -908,8 +925,8 @@ namespace Robocup.Plays
                 //Vector2[] points = (Vector2[])(l.getPoints()).Clone();
                 Vector2[] points = l.getPoints();
                 Vector2[] drawpoints = new Vector2[2];
-                drawpoints[0] = FieldPointToPixelPoint(points[0]);
-                drawpoints[1] = FieldPointToPixelPoint(points[1]);
+                drawpoints[0] = fieldtopixelPoint(points[0]);
+                drawpoints[1] = fieldtopixelPoint(points[1]);
                 Pen myPen = new Pen(c, 2);
                 g.DrawLine(myPen, drawpoints[0].ToPointF(), drawpoints[1].ToPointF());
                 myPen.Dispose();
@@ -922,9 +939,9 @@ namespace Robocup.Plays
                 Pen myPen = new Pen(c);
 
                 double Radius = ((Circle)o).Radius;
-                Radius = FieldDistanceToPixelDistance(Radius);
+                Radius = fieldtopixelDistance(Radius);
                 Vector2 p = ((Circle)o).getCenter();
-                p = FieldPointToPixelPoint(p);
+                p = fieldtopixelPoint(p);
 
                 g.DrawEllipse(myPen, (float)(p.X - Radius), (float)(p.Y - Radius), (float)(2 * Radius), (float)(2 * Radius));
                 myPen.Dispose();
@@ -939,7 +956,7 @@ namespace Robocup.Plays
                 Brush myBrush = new SolidBrush(c);
 
                 Vector2 p = (Vector2)o;
-                p = FieldPointToPixelPoint(p);
+                p = fieldtopixelPoint(p);
 
                 double radius = 3;
                 g.FillEllipse(myBrush, (float)(p.X - radius), (float)(p.Y - radius), (float)(2 * radius), (float)(2 * radius));
@@ -1232,7 +1249,7 @@ namespace Robocup.Plays
         {
             get { return returningPlay; }
         }
-	
+
         private void toolstripExitReturn_Click(object sender, EventArgs e)
         {
             returningPlay = true;

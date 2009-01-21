@@ -176,10 +176,22 @@ namespace Robocup.MotionControl
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
             }
-            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
-                obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
+            //TODO goal hack
+            if (!TagSystem.GetTags(id).Contains("goalie"))
+            {
+                obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+            }
 
             RobotInfo curinfo = predictor.getCurrentInformation(id);
+            foreach (Obstacle o in obstacles)
+            {
+                if (curinfo.Position.distanceSq(o.position) < o.size * o.size)
+                {
+                    o.size = .9 * Math.Sqrt(curinfo.Position.distanceSq(o.position));
+                }
+            }
+
             Pair<List<RobotInfo>, List<Vector2>> path = planner.Plan(curinfo, desiredState.Position, obstacles);
 
             //return new MotionPlanningResults(new WheelSpeeds());
@@ -199,7 +211,9 @@ namespace Robocup.MotionControl
                 rtn = WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, path.Second[5 - path.First.Count]);
             else
                 rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);*/
-            return new MotionPlanningResults(rtn);
+
+            return new MotionPlanningResults(Common.addOrientation(curinfo.Orientation, desiredState.Orientation,
+                rtn));
         }
 
         public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
@@ -236,8 +250,22 @@ namespace Robocup.MotionControl
             }
             if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
                 obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
+            //TODO goal hack
+            if (!TagSystem.GetTags(id).Contains("goalie"))
+            {
+                obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+            }
 
             RobotInfo curinfo = predictor.getCurrentInformation(id);
+            foreach (Obstacle o in obstacles)
+            {
+                if (curinfo.Position.distanceSq(o.position) < o.size * o.size)
+                {
+                    o.size = .9 * Math.Sqrt(curinfo.Position.distanceSq(o.position));
+                }
+            }
+
             Pair<List<Vector2>, List<Vector2>> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
 
             List<Vector2> waypoints = path.First;

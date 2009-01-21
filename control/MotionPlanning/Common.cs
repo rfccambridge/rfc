@@ -64,7 +64,7 @@ namespace Robocup.MotionControl
 
         //TODO separate movementmodeler for each robot
         static readonly MovementModeler mm = new MovementModeler();
-        const double extendTime = .2;
+        const double extendTime = .5;
         static public ExtendResults<RobotInfo> ExtendRRThrough(RobotInfo start, RobotInfo end, object state)
         {
             List<Obstacle> obstacles = (List<Obstacle>)state;
@@ -130,6 +130,53 @@ namespace Robocup.MotionControl
             }
 
             b.Dispose();
+        }
+
+
+        // constrains to between [-pi, pi]
+        static private double constrainAngle(double angle)
+        {
+            while (angle > Math.PI)
+            {
+                angle -= 2 * Math.PI;
+            }
+            while (angle < -Math.PI)
+            {
+                angle += 2 * Math.PI;
+            }
+            return angle;
+        }
+
+        // return +1 if we need to turn counter-clockwise to get to goal.
+        // later make this do PID on angle?
+        const double ANGLE_THRESHOLD = 0.15;
+        static private double getTurnDirection(double startOrient, double goalOrient)
+        {
+
+            // change goalOrient to startOrient frame
+            double orientationDelta = constrainAngle(goalOrient - startOrient);
+            if (Math.Abs(orientationDelta) < ANGLE_THRESHOLD)
+                return 0.0;
+            else if (orientationDelta > 0)
+                return 1.0;
+            else
+                return -1.0;
+
+        }
+        // hack to add in orientation information: add PID here
+        static public WheelSpeeds addOrientation(double startOrientation, double goalOrientation, WheelSpeeds speeds)
+        {
+            const double turnSpeed = 3.0;
+            // we need orientation and speed information 
+            int turnIncrement = (int)(turnSpeed * getTurnDirection(startOrientation, goalOrientation));
+            //Console.WriteLine("TURNINCREMENT: " + turnIncrement);
+
+            speeds.lf += -1 * turnIncrement;
+            speeds.rf += turnIncrement;
+            speeds.lb += -1 * turnIncrement;
+            speeds.rb += turnIncrement;
+
+            return speeds;
         }
         static public void DrawRobotInfoTree(RobotInfoTree tree, Color color, Graphics g, ICoordinateConverter c)
         {

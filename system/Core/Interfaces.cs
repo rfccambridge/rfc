@@ -37,6 +37,7 @@ namespace Robocup.Core {
         PenaltyKick_Theirs,
         KickOff_Ours,
         KickOff_Ours_Setup,
+        Kickoff_Theirs_Setup,
         KickOff_Theirs
     }
 

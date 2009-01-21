@@ -98,7 +98,7 @@ namespace Robocup.ControlForm
 
             //INavigator navigator = new Navigation.Examples.LookAheadBug();
             //IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
-            IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
+            IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
 
             for (int i = 0; i < 10; i++)
             {
@@ -106,6 +106,10 @@ namespace Robocup.ControlForm
                 if (Constants.nondestructiveGet("default", "ROBOT_HAS_KICKER_" + i, out has_kicker))
                 {
                     TagSystem.AddTag(i, "kicker");
+                }
+                if (Constants.nondestructiveGet("default", "ROBOT_IS_GOALIE_" + i, out has_kicker))
+                {
+                    TagSystem.AddTag(i, "goalie");
                 }
             }
 
@@ -165,10 +169,10 @@ namespace Robocup.ControlForm
                     plays.Add(p);
                     filenames.Add(p, fname);
                 }
-                catch (Exception)// ex)
+                catch (Exception ex)
                 {
                     //Console.WriteLine(ex.StackTrace);
-                    Console.WriteLine("error loading play \"" + fname + "\"");
+                    Console.WriteLine("error loading play \"" + fname + "\": " + ex.ToString());
                 }
             }
 
@@ -247,6 +251,8 @@ namespace Robocup.ControlForm
 
         }
 
+        public event EventHandler RoundRan;
+
         private void runRound()
         {
             if (counter % 100 == 0)
@@ -255,6 +261,9 @@ namespace Robocup.ControlForm
             _interpreter.interpret(
                 _refbox.GetCurrentPlayType()
             );
+            if (RoundRan != null)
+                RoundRan(this, new EventArgs());
+            Console.WriteLine("play type is: " + _refbox.GetCurrentPlayType());
             counter++;
         }
 

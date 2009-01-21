@@ -8,12 +8,23 @@ namespace Robocup.Utilities
 {
     static public class SerialPortManager
     {
+        static readonly string br = "9600";
+        static readonly string pr = "None";
+        static readonly string db = "8";
+        static readonly string sb = "One";
         static private Dictionary<string, SerialPort> ports = new Dictionary<string, SerialPort>();
         static public SerialPort GetSerialPort(string port)
         {
             if (ports.ContainsKey(port))
                 return ports[port];
             SerialPort rtn = new SerialPort(port);
+
+            rtn.BaudRate = int.Parse(br);
+            rtn.DataBits = int.Parse(db);
+            rtn.StopBits = (StopBits)Enum.Parse(typeof(StopBits), sb);
+            rtn.Parity = (Parity)Enum.Parse(typeof(Parity), pr);
+            rtn.WriteTimeout = SerialPort.InfiniteTimeout;
+            rtn.ReadTimeout = SerialPort.InfiniteTimeout;
             //rtn.Encoding = NullEncoding.Encoding;
             ports.Add(port, rtn);
             return rtn;

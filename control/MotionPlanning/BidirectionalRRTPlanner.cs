@@ -38,7 +38,7 @@ namespace Robocup.MotionControl
             }
         }
 
-        private double waypointprob = .75;
+        private double waypointprob = .85;
         public double WaypointProbability
         {
             get { return waypointprob; }
@@ -246,8 +246,9 @@ namespace Robocup.MotionControl
             startTree.AddNode(current, null);
             endTree.AddNode(goal, null);
 
+            int iters = 0;
             //iteratively grow the tree, but stop once it reaches a threshold size
-            while (startTree.Size() + endTree.Size() < MaxTreeSize)
+            while (startTree.Size() + endTree.Size() < MaxTreeSize && iters++ < 10000)
             {
                 Pair<T1, T2> connection = ExtendStartTree(startTree, endTree, state);
                 if (connection != null)
