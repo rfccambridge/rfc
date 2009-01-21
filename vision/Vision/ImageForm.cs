@@ -12,6 +12,7 @@ using System.Drawing.Drawing2D;
 using Robocup.Core;
 using System.Text.RegularExpressions;
 using VisionCamera;
+using System.Diagnostics;
 
 namespace Vision
 {
@@ -64,11 +65,11 @@ namespace Vision
         {
             InitializeComponent();
 
-            Size = new Size(1024 + 20, 768 + 40 + 20);
-            imagePanel.Size = new Size(1024 + 4, 768 + 4);
-            imagePicBox.Size = new Size(1024, 768);
+            Size = new Size(ImageSettings.IMAGE_RES_X + 20, ImageSettings.IMAGE_RES_Y + 40 + 20);
+            imagePanel.Size = new Size(ImageSettings.IMAGE_RES_X + 4, ImageSettings.IMAGE_RES_Y + 4);
+            imagePicBox.Size = new Size(ImageSettings.IMAGE_RES_X, ImageSettings.IMAGE_RES_Y);
             regionSelBox.RegionLocation = new Point(0, 0);
-            regionSelBox.RegionSize = new Size(1024, 768);
+            regionSelBox.RegionSize = new Size(ImageSettings.IMAGE_RES_X, ImageSettings.IMAGE_RES_Y);
             btnPGRCamera.Checked = true;
 
             _highlights = new List<SelectionBox.SelectionBox>(100);
@@ -623,7 +624,7 @@ namespace Vision
                     DPoint offset = new DPoint(Constants.get<double>("vision", "TSAI_OFFSET_X_" + compName),
                                              Constants.get<double>("vision", "TSAI_OFFSET_Y_" + compName));
                     
-                    pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, offset, imagePicBox);
+                    pairs = TsaiPtFinder.FindTsaiPts(_blobber.blobs, offset);
 
                     
 
@@ -718,10 +719,24 @@ namespace Vision
                         try
                         {
                             Console.WriteLine("Starting vision stream...");
+                            Stopwatch stopWatch = new Stopwatch();
+                            stopWatch.Reset();
+                            stopWatch.Start();
                             _blobber.Start(new OnNewStateReady(delegate(VisionMessage visionMessage)
                             {
                                 //gameObjects.Source = SystemInformation.ComputerName;
-
+                                
+                                // Compute the frame rate
+                                long dt = stopWatch.ElapsedMilliseconds / 1000;
+                                if (dt > 5)
+                                {
+                                    double rate = _camera.FrameCount / dt;
+                                    ChangeStatus("Running at " + rate.ToString() + " fps...");
+                                    stopWatch.Stop();
+                                    stopWatch.Reset();                                    
+                                    _camera.resetFrameCount();
+                                    stopWatch.Start();
+                                }
 
                                 _fieldState.Update(visionMessage);
 

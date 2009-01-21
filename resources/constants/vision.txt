@@ -1,3 +1,5 @@
+string VERBOSE false
+
 # camera 1 for top, camera 2 for bottom
 # only CAMERA_ID_OMEGA is currently used by the code
 int CAMERA_ID_LAMBDA 1
@@ -18,11 +20,11 @@ int MAX_BLOB_WIDTH 100
 float AREA_BALL 1400
 float ERROR_BALL 1000
 
-float AREA_DOT 2500
+float AREA_DOT 1500
 float ERROR_DOT 1000
 
 float AREA_BLUE_CENTER_DOT 2400
-float AREA_YELLOW_CENTER_DOT 6000
+float AREA_YELLOW_CENTER_DOT 5000
 
 float ERROR_BLUE_CENTER_DOT 1100
 float ERROR_YELLOW_CENTER_DOT 3000

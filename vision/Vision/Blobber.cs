@@ -43,7 +43,8 @@ namespace Vision
         }
     }
 
-    public class Blob {
+    public class Blob {     
+
         public int Left, Right, Top, Bottom;
 
         public int CenterX, CenterY;
@@ -61,9 +62,9 @@ namespace Vision
         private int _centerXSum, _centerYSum;
 
         public Blob(byte _colorClass) {
-            Left = 1024 * 3; // just need a maximum value, it's ok for image to be of different dimesions
+            Left = ImageSettings.IMAGE_RES_X * 3; // just need a maximum value, it's ok for image to be of different dimesions
             Right = 0;
-            Top = 768 * 3;
+            Top = ImageSettings.IMAGE_RES_Y * 3;
             Bottom = 0;
             Area = 0;
             ColorClass = _colorClass;
@@ -187,9 +188,9 @@ namespace Vision
           
             // this is not size of current image, this is the MAXIMUM size of the images
             // that the application would ever process, just making sure to allocate enough memory
-            runs = new Run[1024 * 768];
-            blobs = new Blob[1024 * 768];
-            numRunsInRow = new int[768]; 
+            runs = new Run[ImageSettings.IMAGE_RES_X * ImageSettings.IMAGE_RES_Y];
+            blobs = new Blob[ImageSettings.IMAGE_RES_X * ImageSettings.IMAGE_RES_Y];
+            numRunsInRow = new int[ImageSettings.IMAGE_RES_Y]; 
         }
 
         public void SetCamera(ICamera camera)
@@ -342,7 +343,7 @@ namespace Vision
             do {
                 numRunsInRow[i] = 0;
                 i++;
-            } while (i < 768); // see constructor for explication of 768
+            } while (i < ImageSettings.IMAGE_RES_Y); // see constructor for explication of ImageSettings.IMAGE_RES_Y
         }
 
         public void doBlob(RAWImage rawImage, Rectangle region) {

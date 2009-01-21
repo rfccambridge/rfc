@@ -4,18 +4,34 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.IO;
+using VisionStatic;
+
+namespace VisionStatic
+{
+    public static class ImageSettings
+    {
+        public const int IMAGE_RES_X = 1024;
+        public const int IMAGE_RES_Y = 768;
+    }
+}
 
 namespace VisionCamera {
     public interface ICamera
-    {
+    {        
+        int FrameCount
+        {
+            get;
+        }
+
         int startCapture();
         int stopCapture();
         int getOneImage(out Vision.RAWImage image);
         int getFrame(out Vision.RAWImage image);
+        void resetFrameCount();
     }
 
     
-    public unsafe class PGRCamera : ICamera{
+    public unsafe class PGRCamera : ICamera {
         public struct RGBQUAD
         {
             public byte rgbBlue;
@@ -44,6 +60,7 @@ namespace VisionCamera {
             public BITMAPINFOHEADER bmiHeader;
             public RGBQUAD bmiColors;
         }
+      
 
         #region DLL Imports
         [DllImport("pgrflycapture.dll")]
@@ -103,8 +120,8 @@ namespace VisionCamera {
         // The number of images to grab.
         public const int _IMAGES_TO_GRAB = 10;
 
-        public const int COLS = 1024;
-        public const int ROWS = 768;
+        public const int COLS = ImageSettings.IMAGE_RES_X;
+        public const int ROWS = ImageSettings.IMAGE_RES_Y;
         public const int FORMAT_FACTOR = 3;
         #endregion
 
@@ -117,8 +134,23 @@ namespace VisionCamera {
         Boolean started;
         byte[] rawData;
         int nBytes;
+        Object _frameCountLock = new Object();
+        int _frameCount;
 
         Vision.RAWImage cameraImage;
+
+        public int FrameCount
+        {
+            get
+            {
+                int frameCount;
+                lock (_frameCountLock)
+                {
+                    frameCount = _frameCount;
+                }
+                return frameCount;
+            }
+        }
 
         public PGRCamera() {
 
@@ -162,6 +194,8 @@ namespace VisionCamera {
             InitBitmapStructure(ROWS, COLS, ref flycapRGBImage);
             flycapRGBImage.pixelFormat = FlyCapturePixelFormat.FLYCAPTURE_BGR;
 
+            resetFrameCount();
+
             started = false;
         }
 
@@ -190,6 +224,7 @@ namespace VisionCamera {
                     reportError(ret, "flycaptureStart");
                     return 1;
                 }
+                resetFrameCount();
                 started = true;
             }
             return 0;
@@ -267,6 +302,12 @@ namespace VisionCamera {
 
             //return new RAWImage(rawData, image.iCols, image.iRows, 1);
             image = cameraImage;
+
+            lock (_frameCountLock)
+            {
+                _frameCount++;
+            }
+
             return 0;
 
 
@@ -282,6 +323,12 @@ namespace VisionCamera {
             else
                 System.Diagnostics.Process.Start("mspaint.exe", "raw.bmp");*/
 
+        }
+
+        public void resetFrameCount() {
+            lock(_frameCountLock) {
+                _frameCount = 0;
+            }
         }
 
         private void InitBitmapStructure(int nRows, int nCols,
@@ -319,12 +366,15 @@ namespace VisionCamera {
     }
 
     public class SeqCamera : ICamera
-    {
+    {       
+
         private string _sequence = "";
         private int _frame = -1;
         private int _startFrame = -1;
         private bool _repeat = false;
         private int _sleepTime = 0; // in ms;
+        private int _frameCount = 0;
+        private Object _frameCountLock = new Object();
 
         // Properties
         public bool Repeat
@@ -351,6 +401,18 @@ namespace VisionCamera {
         {
             get { return _sleepTime; }
             set { _sleepTime = value; }
+        }
+        public int FrameCount
+        {
+            get
+            {
+                int frameCount;
+                lock (_frameCountLock)
+                {
+                    frameCount = _frameCount;
+                }
+                return frameCount;
+            }
         }
 
         // Methods
@@ -396,7 +458,22 @@ namespace VisionCamera {
                 }
             }
             image = new Vision.RAWImage(nextFrameFile);
+
+            lock (_frameCountLock)
+            {
+                _frameCount++;
+            }
+
             return 0;
         }
+
+        public void resetFrameCount()
+        {
+            lock (_frameCountLock)
+            {
+                _frameCount = 0;
+            }
+        }
+
     }
 }
