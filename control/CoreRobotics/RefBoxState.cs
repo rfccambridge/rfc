@@ -13,7 +13,7 @@ namespace Robocup.CoreRobotics
         bool marking;
         Vector2 markedPosition;
         PlayTypes playsToRun;
-
+        
         IRefBoxListener _referee;
         IPredictor _predictor;
 
@@ -32,6 +32,10 @@ namespace Robocup.CoreRobotics
             _referee = referee;
 
             lastCmdCounter = 0;
+        }
+
+        public void setReferee(IRefBoxListener listener) {
+            _referee = listener;
         }
 
         public void start()
@@ -57,7 +61,8 @@ namespace Robocup.CoreRobotics
             if (lastCmdCounter < _referee.getCmdCounter())
             {
                 lastCmdCounter = _referee.getCmdCounter();
-                switch (_referee.getLastCommand())
+                char lastCommand = _referee.getLastCommand();
+                switch (lastCommand)
                 {
                     case MulticastRefBoxListener.HALT:
                         // stop bots completely

@@ -1,3 +1,87 @@
+# New Feedback class
+# these should all be initialized to their tuned value, or auto tuned
+# they should also all be positive values except maybe D            
+
+##alpha should be between 0 and 1.
+
+double P_X_0 20
+double P_X_1 20
+double P_X_2 20
+double P_X_3 20
+double P_X_4 20
+
+double I_X_0 2
+double I_X_1 2
+double I_X_2 2
+double I_X_3 2
+double I_X_4 2
+
+double D_X_0 2
+double D_X_1 2
+double D_X_2 2
+double D_X_3 2
+double D_X_4 2
+
+double ALPHA_X_0 .5
+double ALPHA_X_1 .5
+double ALPHA_X_2 .5
+double ALPHA_X_3 .5
+double ALPHA_X_4 .5
+
+
+double P_Y_0 20
+double P_Y_1 20
+double P_Y_2 20
+double P_Y_3 20
+double P_Y_4 20
+
+double I_Y_0 2
+double I_Y_1 2
+double I_Y_2 2
+double I_Y_3 2
+double I_Y_4 2
+
+double D_Y_0 2
+double D_Y_1 2
+double D_Y_2 2
+double D_Y_3 2
+double D_Y_4 2
+
+double ALPHA_Y_0 .5
+double ALPHA_Y_1 .5
+double ALPHA_Y_2 .5
+double ALPHA_Y_3 .5
+double ALPHA_Y_4 .5
+
+
+double P_THETA_0 20
+double P_THETA_1 20
+double P_THETA_2 20
+double P_THETA_3 20
+double P_THETA_4 20
+
+double I_THETA_0 2
+double I_THETA_1 2
+double I_THETA_2 2
+double I_THETA_3 2
+double I_THETA_4 2
+
+double D_THETA_0 2
+double D_THETA_1 2
+double D_THETA_2 2
+double D_THETA_3 2
+double D_THETA_4 2
+
+double ALPHA_THETA_0 .5
+double ALPHA_THETA_1 .5
+double ALPHA_THETA_2 .5
+double ALPHA_THETA_3 .5
+double ALPHA_THETA_4 .5
+
+
+
+
+#OLD, but maybe used SOMEWHERE
 float ANGLE_PID_KP 35
 float ANGLE_PID_KI 5
 float ANGLE_PID_KD 10

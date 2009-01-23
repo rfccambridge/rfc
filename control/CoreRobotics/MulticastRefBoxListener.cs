@@ -89,14 +89,14 @@ namespace Robocup.CoreRobotics
         StateObject so;
         RefboxPacket packet;
 
-        public MulticastRefBoxListener(int port)
+        public MulticastRefBoxListener(string addr, int port)
         {
             packet = new RefboxPacket();
             packet.cmd = 'H';
             s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             ep = (EndPoint)new IPEndPoint(IPAddress.Any, port);
             s.Bind(ep);
-            s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse("224.5.23.1")));
+            s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
 
             so = new StateObject();
             so.sock = s;
@@ -122,16 +122,16 @@ namespace Robocup.CoreRobotics
             }
 
             if (running)
-            {
-                so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref so.ep, new AsyncCallback(ReceiveRefboxPacket), so);
+            {                
+                so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref so.ep, new AsyncCallback(ReceiveRefboxPacket), so);                
             }
         }
 
 
         public void start()
         {
-            running = true;
-            s.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref ep, new AsyncCallback(ReceiveRefboxPacket), so);
+            running = true;            
+            s.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref ep, new AsyncCallback(ReceiveRefboxPacket), so);                        
         }
 
         public void stop()

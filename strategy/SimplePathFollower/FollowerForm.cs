@@ -9,34 +9,60 @@ using Robocup.MessageSystem;
 using Robocup.Core;
 using Robocup.CoreRobotics;
 using Robocup.ControlForm;
+using Robocup.Utilities;
+using System.Diagnostics;
 
 namespace SimplePathFollower
 {
+    public delegate void VoidDelegate();
+
 	public partial class FollowerForm : Form
 	{
-		int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
+		private int MESSAGE_SENDER_PORT;
+
 		private MessageReceiver<VisionMessage> _vision;
-		private bool visionConnected;
-		private bool controlConnected;
-		private PathFollower pf;
-		private BasicPredictor predictor;
+		private bool _visionConnected;
+		private bool _controlConnected;
+		private PathFollower _pathFollower;
+		private BasicPredictor _predictor;
+        private Object _predictorLock = new Object();
+        private bool _running;
+
+        private FieldDrawerForm _fieldDrawerForm;
+        private ICoordinateConverter _converter;
+        private Object _drawingLock = new Object();
+        private Stopwatch _stopwatch = new Stopwatch();
 		
 		public FollowerForm()
 		{
 			InitializeComponent();
-			visionConnected = false;
-			controlConnected = false;
 
-			pf = new PathFollower();
-			pf.Init();
-			predictor = (BasicPredictor) pf.Predictor;
+             MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
+
+			_visionConnected = false;
+			_controlConnected = false;
+            _running = false;
+
+			_pathFollower = new PathFollower();
+			_pathFollower.Init();
+			_predictor = (BasicPredictor)_pathFollower.Predictor;
+
+            if (_fieldDrawerForm != null)
+                _fieldDrawerForm.Close();
+
+            _fieldDrawerForm = new FieldDrawerForm(_predictor);
+            _converter = _fieldDrawerForm.Converter;
+            _fieldDrawerForm.Show();
+
+            _stopwatch.Start();
+
 		}
 
 		private void BtnVision_Click(object sender, EventArgs e)
 		{
 			try
 			{
-				if (!visionConnected)
+				if (!_visionConnected)
 				{
 					_vision = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(
 						VisionHost.Text, MESSAGE_SENDER_PORT);
@@ -46,14 +72,14 @@ namespace SimplePathFollower
 
 					VisionStatus.BackColor = Color.Green;
 					BtnVision.Text = "Disconnect";
-					visionConnected = true;
+					_visionConnected = true;
 				}
 				else
 				{
 					_vision.Close();
 					VisionStatus.BackColor = Color.Red;
 					BtnVision.Text = "Connect";
-					visionConnected = false;
+					_visionConnected = false;
 				}
 			}
 			catch (Exception except)
@@ -63,7 +89,7 @@ namespace SimplePathFollower
 			}
 		}
 
-		object predictor_lock = new object();
+		
 		private void handleVisionUpdate(VisionMessage msg)
 		{
 			String cameraName = "top_cam";
@@ -81,37 +107,51 @@ namespace SimplePathFollower
 				theirs.Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
 			}
 
-			lock (predictor_lock)
+			lock (_predictorLock)
 			{
-				predictor.updatePartOurRobotInfo(ours, cameraName);
-				predictor.updatePartTheirRobotInfo(theirs, cameraName);
+				_predictor.updatePartOurRobotInfo(ours, cameraName);
+				_predictor.updatePartTheirRobotInfo(theirs, cameraName);
 				if (msg.BallPosition != null)
 				{
 					Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);
-					predictor.updateBallInfo(new BallInfo(ballposition));
+					_predictor.updateBallInfo(new BallInfo(ballposition));
 				}
 			}
+
+            if (_stopwatch.ElapsedMilliseconds > 200) {
+                _fieldDrawerForm.Invalidate();
+                _stopwatch.Start();
+                _stopwatch.Reset();
+                _stopwatch.Start();
+            }
+                lock (_drawingLock) {
+                    _pathFollower.drawCurrent(_fieldDrawerForm.CreateGraphics(), _converter);
+                    //_pathFollower.clearArrows();
+                }                
+           
 		}
+
+
 
 		private void BtnControl_Click(object sender, EventArgs e)
 		{
 			try
 			{
-				if (!controlConnected)
+				if (!_controlConnected)
 				{
-					if ((pf.Commander as RemoteRobots).start(ControlHost.Text))
+					if ((_pathFollower.Commander as RemoteRobots).start(ControlHost.Text))
 					{
 						ControlStatus.BackColor = Color.Green;
 						BtnControl.Text = "Disconnect";
-						controlConnected = true;
+						_controlConnected = true;
 					}
 				}
 				else
 				{
-					(pf.Commander as RemoteRobots).stop();
+					(_pathFollower.Commander as RemoteRobots).stop();
 					ControlStatus.BackColor = Color.Red;
 					BtnControl.Text = "Connect";
-					controlConnected = false;
+					_controlConnected = false;
 				}
 			}
 			catch (Exception except)
@@ -122,21 +162,46 @@ namespace SimplePathFollower
 
 		private void BtnStart_Click(object sender, EventArgs e)
 		{
-			List<Vector2> wpList = new List<Vector2>();
-			wpList.Add(new Vector2(-0.5, -0.5));
-			wpList.Add(new Vector2(0.5, -0.5));
-			wpList.Add(new Vector2(0.5, 0.5));
-			wpList.Add(new Vector2(-0.5, 0.5));
+            if (_running) {
+                MessageBox.Show("Already running. Press stop first.");
+                return;
+            }
+            
+            List<Vector2> wpList = new List<Vector2>();
+            wpList.Add(new Vector2(1.5, 0.5));
+            //wpList.Add(new Vector2(-0.5, -0.5));
+			//wpList.Add(new Vector2(0.5, -0.5));
+			//wpList.Add(new Vector2(0.5, 0.5));
+			//wpList.Add(new Vector2(-0.5, 0.5));
 
-			pf.RobotID = 1;
-			pf.Waypoints = wpList;
-			pf.Follow();
+			_pathFollower.RobotID = 0;
+			_pathFollower.Waypoints = wpList;
+
+            // start the path follower in a new thread 
+            _running = true;
+            VoidDelegate followLoopDelegate = new VoidDelegate(_pathFollower.Follow);
+            AsyncCallback followErrorHandler = new AsyncCallback(FollowErrorHandler);
+            IAsyncResult FollowLoopHandle = followLoopDelegate.BeginInvoke(followErrorHandler, null);			
 		}
 		
 		private void BtnStop_Click(object sender, EventArgs e)
 		{
-			pf.Stop();
+            if (!_running) {
+                MessageBox.Show("Path Follower not running. Press start first.");
+                return;
+            }
+			_pathFollower.Stop();
+            _running = false;
 		}
+
+        private void FollowErrorHandler(IAsyncResult res) {            
+            _pathFollower.Stop();
+            _running = false;
+        }
+
+        private void btnReloadPIDConstants_Click(object sender, EventArgs e) {
+            //implement chaing of methods to allow _pathFollower.reloadConstants();
+        }
 
 	}
 }

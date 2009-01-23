@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Robocup.Plays;
 using Robocup.Core;
 using Robocup.CoreRobotics;
 using Robocup.MotionControl;
@@ -65,7 +64,7 @@ namespace SimplePathFollower
 
 			commander = new Robocup.ControlForm.RemoteRobots();
 			predictor = new BasicPredictor();
-			planner = new MixedBiRRTMotionPlanner();
+			planner = new FeedbackMotionPlanner();
 			controller = new RFCController(commander, planner, predictor);
 		}
 
@@ -80,15 +79,22 @@ namespace SimplePathFollower
 
 			do
 			{
-				double wpDistanceSq = predictor.getCurrentInformation(robotID).Position.distanceSq
+                RobotInfo curinfo;
+                try {
+                     curinfo = predictor.getCurrentInformation(robotID);
+                } catch (ApplicationException e) {
+                    Console.WriteLine("Failed Predictor.getCurrentInformation(). Dumping exception\n" + e.ToString());
+                    return;
+                }
+				double wpDistanceSq = curinfo.Position.distanceSq
 					(waypoints[waypointIndex]);
-				if (wpDistanceSq < MIN_SQ_DIST_TO_WP)
+				if (wpDistanceSq > MIN_SQ_DIST_TO_WP)
 				{
 					waypointIndex = (waypointIndex + 1) % waypoints.Count;
 					controller.move(robotID, false, waypoints[waypointIndex]);
 				}
 			
-				System.Threading.Thread.Sleep(1000);
+				System.Threading.Thread.Sleep(10);
 			} while (running);
 		}
 
@@ -96,5 +102,12 @@ namespace SimplePathFollower
 		{
 			running = false;
 		}
+
+        public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter) {            
+            controller.drawCurrent(g, converter);
+        }
+        public void clearArrows() {
+            controller.clearArrows();
+        }
 	}
 }

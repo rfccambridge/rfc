@@ -37,6 +37,10 @@ namespace Robocup.Core
             return "BallInfo: " + position;
         }
     }
+
+    /// <summary>
+    /// Contains info on position, orientation and velocity of a particular robot
+    /// </summary>
     public class RobotInfo
     {
         /// <summary>

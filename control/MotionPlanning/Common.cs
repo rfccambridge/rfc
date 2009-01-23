@@ -201,5 +201,28 @@ namespace Robocup.MotionControl
             p.Dispose();
             b.Dispose();
         }
+        static public void DrawPath(Pair<List<RobotInfo>, List<Vector2>> path, Color color, Graphics g, ICoordinateConverter c) {
+            if (path == null)
+                return;
+            Brush b = new SolidBrush(color);
+            Pen p = new Pen(Color.Black);
+
+            RobotInfo prev = null;
+            foreach (RobotInfo info in path.First) {
+                Vector2 v = info.Position;
+                g.FillRectangle(b, c.fieldtopixelX(v.X) - 1, c.fieldtopixelY(v.Y) - 1, 3, 3);
+                                
+                if (prev != null) {
+                    Vector2 v2 = prev.Position;
+                    g.DrawLine(p, (float)c.fieldtopixelX(v.X), (float)c.fieldtopixelY(v.Y),
+                        (float)c.fieldtopixelX(v2.X), (float)c.fieldtopixelY(v2.Y));
+                }
+
+                prev = info;
+            }
+
+            p.Dispose();
+            b.Dispose();
+        }
     }
 }

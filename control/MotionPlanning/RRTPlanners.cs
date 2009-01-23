@@ -162,9 +162,9 @@ namespace Robocup.MotionControl
         BidirectionalRRTPlanner<RobotInfo, Vector2, RobotInfoTree, Vector2Tree> planner;
 
         public MixedBiRRTMotionPlanner()
-        {
+        {           
             planner = new BidirectionalRRTPlanner<RobotInfo, Vector2, RobotInfoTree, Vector2Tree>(
-                Common.ExtendRRThrough, Common.ExtendRVThrough, Common.ExtendVR, Common.ExtendVV, Common.RandomStateR, Common.RandomStateV);
+                Common.ExtendRRThrough, Common.ExtendRVThrough, Common.ExtendVR, Common.ExtendVV, Common.RandomStateR, Common.RandomStateV);       
         }
 
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
@@ -204,16 +204,10 @@ namespace Robocup.MotionControl
                 rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[5]);
             else
                 rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
-                //rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[path.First.Count-1]);
-            /*if (path.First.Count > 5)
-                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[5]);
-            else if (path.First.Count + path.Second.Count > 5)
-                rtn = WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, path.Second[5 - path.First.Count]);
-            else
-                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);*/
-
+            
             return new MotionPlanningResults(Common.addOrientation(curinfo.Orientation, desiredState.Orientation,
                 rtn));
+
         }
 
         public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
@@ -222,14 +216,121 @@ namespace Robocup.MotionControl
             Common.DrawVector2Tree(planner.LastTree2(), Color.Green, g, c);
         }
     }
+    public class FeedbackMotionPlanner : IMotionPlanner {
+        
+        // Each robot has a feedback object
+        private Feedback[] _feedbackObjs;
+
+        // For drawing
+        private RobotInfo _lastNearestWaypoint;
+             
+        private CirclePlanner _planner;
+
+        public FeedbackMotionPlanner() {
+            const int NUM_ROBOTS = 5;
+
+            //replaced with static testing planner
+            _planner = new CirclePlanner();
+
+            _feedbackObjs = new Feedback[NUM_ROBOTS];
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
+                _feedbackObjs[robotID] = new Feedback(robotID);
+
+        }
+        
+         
+        /// <summary>
+        /// !! Implementation only valid for testing purposes because ignores the 
+        /// Vector2 part of the path (the one that grows from the destination). Only compatible
+        /// with CircleMotionPlanner.
+        /// 
+        /// </summary>
+        /// <param name="currInfo"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public RobotInfo findNearestWaypoint(RobotInfo currInfo, Pair<List<RobotInfo>, List<Vector2>> path) {
+            // For now, brute force search.
+
+            RobotInfo closestWaypoint = path.First[0];
+            double minDistSq = double.MaxValue;
+
+            for (int i = 0; i < path.First.Count; i++) {
+                RobotInfo waypoint = path.First[i];
+                double distSq = waypoint.Position.distanceSq(currInfo.Position);
+                if (distSq < minDistSq) {
+                    closestWaypoint = waypoint;
+                    minDistSq = distSq;
+                }
+            }
+
+            return closestWaypoint;
+        }
+
+        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+            List<Obstacle> obstacles = new List<Obstacle>();
+            foreach (RobotInfo info in predictor.getAllInfos()) {
+                if (info.ID != id)
+                    //TODO magic number (robot radius)
+                    obstacles.Add(new Obstacle(info.Position, .2));
+            }
+            //TODO goal hack
+            if (!TagSystem.GetTags(id).Contains("goalie")) {
+                obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+            }
+
+            RobotInfo curinfo;
+            try {
+                 curinfo = predictor.getCurrentInformation(id);
+            } catch (ApplicationException e) {
+                throw e;
+            }
+            
+            foreach (Obstacle o in obstacles) {
+                if (curinfo.Position.distanceSq(o.position) < o.size * o.size) {
+                    o.size = .9 * Math.Sqrt(curinfo.Position.distanceSq(o.position));
+                }
+            }
+
+            Pair<List<RobotInfo>, List<Vector2>> path = _planner.Plan(curinfo, desiredState, obstacles);
+            RobotInfo nearestWayPoint = findNearestWaypoint(curinfo, path);
+            _lastNearestWaypoint = nearestWayPoint;
+
+            WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nearestWayPoint);
+            return new MotionPlanningResults(wheelSpeeds, _lastNearestWaypoint);
+
+            //return new MotionPlanningResults(new WheelSpeeds());
+            /*WheelSpeeds rtn;
+            if (desiredState.Position.distanceSq(curinfo.Position) < .15 * .15)
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
+            else if (path.First.Count + path.Second.Count < 5)
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
+            else if (path.First.Count > 5)
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, path.First[5]);
+            else
+                rtn = WheelSpeedsExtender.GetWheelSpeedsTo(curinfo, desiredState);
+            
+            return new MotionPlanningResults(Common.addOrientation(curinfo.Orientation, desiredState.Orientation,
+                rtn));*/
+
+        }
+
+        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
+            //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
+            //Common.DrawVector2Tree(_planner.LastTree2(), Color.Green, g, c);            
+            Common.DrawPath(_planner.LastPath, Color.Blue, g, c);
+        }
+    }
     public class SmoothVector2BiRRTMotionPlanner : IMotionPlanner
     {
+        // keep track of waypoints to draw
+        private List<Vector2> waypointslist = new List<Vector2>();
+
         public int MaxExtends
         {
             get { return planner.MaxExtends; }
             set { planner.MaxExtends = value; }
         }
-
 
         BidirectionalRRTPlanner<Vector2, Vector2, Vector2Tree, Vector2Tree> planner;
 
@@ -267,9 +368,11 @@ namespace Robocup.MotionControl
             }
 
             Pair<List<Vector2>, List<Vector2>> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
-
+            
             List<Vector2> waypoints = path.First;
             waypoints.AddRange(path.Second);
+
+            waypointslist = waypoints;
 
             return Smoother.Smooth(curinfo, desiredState, waypoints, obstacles);
         }
@@ -280,6 +383,15 @@ namespace Robocup.MotionControl
         {
             Common.DrawVector2Tree(planner.LastTree1(), Color.Blue, g, c);
             Common.DrawVector2Tree(planner.LastTree2(), Color.Green, g, c);
+
+            //Console.WriteLine(waypointslist.Count.ToString());
+
+            Brush blue = new SolidBrush(Color.Blue);
+
+            for (int i = 0; i < waypointslist.Count; i++) {
+                //g.FillRectangle(blue, c.fieldtopixelX(waypointslist[i].X) - 2, c.fieldtopixelY(waypointslist[i].Y) - 2, 2, 2);
+            }
+            blue.Dispose();
 
             if (important != null)
             {

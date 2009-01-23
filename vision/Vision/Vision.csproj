@@ -42,10 +42,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BrainNet.NeuralFramework, Version=1.0.3230.2259, Culture=neutral, PublicKeyToken=66359fb00c7dbe93, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\BrainNet\Framework\bin\BrainNet.NeuralFramework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />

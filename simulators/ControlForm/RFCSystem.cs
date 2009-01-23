@@ -50,17 +50,29 @@ namespace Robocup.ControlForm
         private bool isYellow;
 
         int REFBOX_PORT;
+        string REFBOX_ADDR;
         string PLAY_DIR;
 
         public RFCSystem()
         {
             initialized = false;
             running = false;
-            
+
+            reloadConstants();
+        }
+
+        public void reloadConstants() {
             REFBOX_PORT = Constants.get<int>("default","REFBOX_PORT");
+            REFBOX_ADDR = Constants.get<string>("default", "REFBOX_ADDR");
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
             _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
             isYellow = Constants.get<string>("configuration", "OUR_TEAM_COLOR") == "YELLOW";
+        }
+
+        public void setRefBoxListener() {
+            if (running) return;
+
+            _refbox.setReferee(new MulticastRefBoxListener(REFBOX_ADDR, REFBOX_PORT));
         }
 
         public void initialize()
@@ -89,7 +101,7 @@ namespace Robocup.ControlForm
                 _acceptor = new BasicPredictor();
             }
 
-            _refbox = new RefBoxState(new MulticastRefBoxListener(REFBOX_PORT), _predictor, isYellow);
+            _refbox = new RefBoxState(new MulticastRefBoxListener(REFBOX_ADDR, REFBOX_PORT), _predictor, isYellow);
 
 
             // create helper interfaces
@@ -98,7 +110,8 @@ namespace Robocup.ControlForm
 
             //INavigator navigator = new Navigation.Examples.LookAheadBug();
             //IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
-            IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
+            IMotionPlanner planner = new Robocup.MotionControl.FeedbackMotionPlanner();
 
             for (int i = 0; i < 10; i++)
             {

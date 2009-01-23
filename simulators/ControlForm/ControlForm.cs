@@ -38,9 +38,9 @@ namespace Robocup.ControlForm {
         //static bool isOmegaTop = (Constants.get<int>("vision", "CAMERA_ID_OMEGA") == 1);
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
-        String DEFAULT_TOP = "lambda";
-        String DEFAULT_BOTTOM = "omega";
-
+        String DEFAULT_TOP = "localhost";
+        String DEFAULT_BOTTOM = "rfc";
+        String DEFAULT_SERIAL = "localhost";
 
 
         public ControlForm() {
@@ -51,6 +51,7 @@ namespace Robocup.ControlForm {
 
             visionTopHost.Text = DEFAULT_TOP;
             visionBottomHost.Text = DEFAULT_BOTTOM;
+            serialHost.Text = DEFAULT_SERIAL;
 
             createSystem();
 
@@ -187,9 +188,32 @@ namespace Robocup.ControlForm {
 
         private void ControlForm_Load(object sender, EventArgs e)
         {
-
+            Console.WriteLine("test");
         }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+            // save Tsai points
+            if (keyData == (Keys.Control | Keys.R)) {
+                if (systemStarted) {
+                    MessageBox.Show("System running. Need to stop system to reload contants.");
+                    return false;
+                }
 
+                _system.reloadConstants();
+                Console.WriteLine("Constants reloaded.");
+            }
+
+            if (keyData == (Keys.Control | Keys.C)) {
+                if (systemStarted) {
+                    MessageBox.Show("System running. Need to stop system to reload contants.");
+                    return false;
+                }
+                _system.setRefBoxListener();
+                Console.WriteLine("Refbox listener set.");
+            }
+
+            return false;
+        }
+       
         private void visionBottomConnect_Click(object sender, EventArgs e)
         {
             try

@@ -93,24 +93,40 @@ namespace Robocup.CoreRobotics
              
             WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(Predictor, robotID, thisRobot, results);
              */
+            MotionPlanningResults mpResults;
+            try {
+                 mpResults = Planner.PlanMotion(robotID, new RobotInfo(destination, orientation, robotID),
+                    Predictor, avoidBallDist);
+            } catch (ApplicationException e) {
+                Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
+                return;
+            }
 
-            WheelSpeeds motorSpeeds = Planner.PlanMotion(robotID, new RobotInfo(destination, orientation, robotID), Predictor, avoidBallDist).wheel_speeds;
+            WheelSpeeds wheelSpeeds = mpResults.wheel_speeds;
 
             lock (arrows)
             {
                 arrows[robotID] = new Arrow[] {
                     new Arrow(thisRobot.Position, destination, Color.Red, .04),
-                    //new Arrow(thisRobot.Position, results.waypoint, Color.Green,.04)
-                };
+                    new Arrow(thisRobot.Position, mpResults.NearestWaypoint.Position, Color.Green,.04)
+                };                
             }
 
 
-            Commander.setMotorSpeeds(robotID, motorSpeeds);
+            Commander.setMotorSpeeds(robotID, wheelSpeeds);
         }
 
         public void move(int robotID, bool avoidBall, Vector2 destination)
+
         {
-            move(robotID, avoidBall, destination, Predictor.getCurrentInformation(robotID).Orientation); //TODO make it the current robot position
+            double orientation;
+            try {
+                orientation = Predictor.getCurrentInformation(robotID).Orientation;
+            } catch (ApplicationException e) {
+                Console.WriteLine("inside move: Predictor.getCurrentInformation() failed. Dumping exception:\n" + e.ToString());
+                return;
+            }
+            move(robotID, avoidBall, destination, orientation); //TODO make it the current robot position
         }
 
         public void stop(int robotID)
@@ -140,7 +156,7 @@ namespace Robocup.CoreRobotics
                         arrow.drawConvertToPixels(g, converter);
                     }
                 }
-            }
+            }            
             Planner.DrawLast(g, converter);
         }
 

@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="BasicRRTPlanner.cs" />
     <Compile Include="BidirectionalRRTPlanner.cs" />
+    <Compile Include="CirclePlanner.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Feedback.cs" />
     <Compile Include="NavigationPlanner.cs" />

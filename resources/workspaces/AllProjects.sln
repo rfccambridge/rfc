@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSML", "..\..\vision\CSML\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlForm", "..\..\simulators\ControlForm\ControlForm.csproj", "{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePathFollower", "..\..\strategy\SimplePathFollower\SimplePathFollower.csproj", "{86722F67-3E08-45E8-94BC-EC1173993C39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +153,10 @@ Global
 		{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86722F67-3E08-45E8-94BC-EC1173993C39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86722F67-3E08-45E8-94BC-EC1173993C39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86722F67-3E08-45E8-94BC-EC1173993C39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86722F67-3E08-45E8-94BC-EC1173993C39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

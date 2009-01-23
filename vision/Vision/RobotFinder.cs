@@ -8,7 +8,6 @@ using System.Windows;
 using Robocup.Utilities;
 using Vision;
 using Robocup.Core;
-using BrainNet.NeuralFramework;
 using System.Collections;
 
 namespace Vision {
@@ -484,11 +483,11 @@ namespace VisionStatic {
 
                                 double score = (term1 / maxTerm1 + term2 / maxTerm2 + term3 / maxTerm3 + term4 + term5 + term6 + term7 + term8 + term9) / 9;
 
-                                if (VERBOSE) {
+                                
                                     scores[k] = score;
                                     guesses[k] = new Pair<Pair<int, int>, Pair<int, int>>(new Pair<int, int>(fl, fr), new Pair<int, int>(rl, rr));
                                     k++;
-                                }
+                                
 
                                 if (score < minScore) {
                                     minScore = score;
@@ -893,7 +892,6 @@ namespace VisionStatic {
                 Console.WriteLine("Error: Undefined dot pattern");
                 return;
             }
-
 
 
             //orient

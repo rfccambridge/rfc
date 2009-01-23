@@ -23,7 +23,6 @@ namespace Robocup.ControlForm {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.visionTopHost = new System.Windows.Forms.TextBox();
             this.serialHost = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -38,15 +37,8 @@ namespace Robocup.ControlForm {
             this.visionBottomStatus = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.visionBottomHost = new System.Windows.Forms.TextBox();
+            this.visionTopHost = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-            // 
-            // visionTopHost
-            // 
-            this.visionTopHost.Location = new System.Drawing.Point(21, 34);
-            this.visionTopHost.Name = "visionTopHost";
-            this.visionTopHost.Size = new System.Drawing.Size(70, 20);
-            this.visionTopHost.TabIndex = 0;
-            this.visionTopHost.Text = "localhost";
             // 
             // serialHost
             // 
@@ -54,7 +46,6 @@ namespace Robocup.ControlForm {
             this.serialHost.Name = "serialHost";
             this.serialHost.Size = new System.Drawing.Size(70, 20);
             this.serialHost.TabIndex = 4;
-            this.serialHost.Text = "localhost";
             // 
             // label1
             // 
@@ -178,7 +169,13 @@ namespace Robocup.ControlForm {
             this.visionBottomHost.Name = "visionBottomHost";
             this.visionBottomHost.Size = new System.Drawing.Size(70, 20);
             this.visionBottomHost.TabIndex = 2;
-            this.visionBottomHost.Text = "localhost";
+            // 
+            // visionTopHost
+            // 
+            this.visionTopHost.Location = new System.Drawing.Point(21, 34);
+            this.visionTopHost.Name = "visionTopHost";
+            this.visionTopHost.Size = new System.Drawing.Size(70, 20);
+            this.visionTopHost.TabIndex = 0;
             // 
             // ControlForm
             // 
@@ -200,6 +197,7 @@ namespace Robocup.ControlForm {
             this.Controls.Add(this.label1);
             this.Controls.Add(this.serialHost);
             this.Controls.Add(this.visionTopHost);
+            this.KeyPreview = true;
             this.Name = "ControlForm";
             this.Text = "ControlForm";
             this.Load += new System.EventHandler(this.ControlForm_Load);
@@ -210,7 +208,6 @@ namespace Robocup.ControlForm {
 
         #endregion
 
-        private System.Windows.Forms.TextBox visionTopHost;
         private System.Windows.Forms.TextBox serialHost;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -225,5 +222,6 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Label visionBottomStatus;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox visionBottomHost;
+        private System.Windows.Forms.TextBox visionTopHost;
     }
 }
