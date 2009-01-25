@@ -70,6 +70,7 @@ namespace Robotics.Commander {
         // for managing reboots
         int _rebootTime;
         System.Timers.Timer t;
+       
 
         private void toggleSettings(object sender, EventArgs e) {
             active = !active;
@@ -94,8 +95,9 @@ namespace Robotics.Commander {
                         
                         for (int i = 0; i < 6; i++)
                         {
-                            Console.WriteLine("Rebooting robot: "+i);
-                            srobots.resetBoards(i);
+                            //Console.WriteLine("Rebooting robot: "+i);
+                            //HACK to stop reboot
+                            //srobots.resetBoards(i);
                         }
                     };
                     t.Start();

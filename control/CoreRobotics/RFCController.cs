@@ -94,6 +94,7 @@ namespace Robocup.CoreRobotics
             WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(Predictor, robotID, thisRobot, results);
              */
             MotionPlanningResults mpResults;
+            
             try {
                  mpResults = Planner.PlanMotion(robotID, new RobotInfo(destination, orientation, robotID),
                     Predictor, avoidBallDist);
@@ -107,7 +108,7 @@ namespace Robocup.CoreRobotics
             lock (arrows)
             {
                 arrows[robotID] = new Arrow[] {
-                    new Arrow(thisRobot.Position, destination, Color.Red, .04),
+                    //new Arrow(thisRobot.Position, destination, Color.Red, .04),
                     new Arrow(thisRobot.Position, mpResults.NearestWaypoint.Position, Color.Green,.04)
                 };                
             }
@@ -159,6 +160,5 @@ namespace Robocup.CoreRobotics
             }            
             Planner.DrawLast(g, converter);
         }
-
     }
 }

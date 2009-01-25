@@ -140,8 +140,11 @@ namespace Robotics.Commander
 
             //Here we have to convert from our convention (positive values->robot forward)
             //to the EE convention (positive values->clockwise)
-            rf *= -1;
-            rb *= -1;
+            
+            ///*******************************************
+            ///Note Changing conventions!!!!! IN the new feedback class, this isn't a problem, so commenting out the following two commands.    
+            //rf *= -1;
+            //rb *= -1;
 
             // board bugs out if we send an unescaped slash
             if (lb == '\\')
@@ -301,10 +304,10 @@ namespace Robotics.Commander
         {
             int lf=wheelSpeeds.lf, rf=wheelSpeeds.rf, lb=wheelSpeeds.lb, rb=wheelSpeeds.rb;
 
-
+            int maxspeed = 127;
 
             double time = HighResTimer.SecondsSinceStart();
-            if (!lastSpeeds.ContainsKey(id))
+            /*if (!lastSpeeds.ContainsKey(id))
             {
                 lastSpeeds[id] = new WheelSpeeds();
                 lastTime[id] = 0;
@@ -326,10 +329,12 @@ namespace Robotics.Commander
             }
             lastSpeeds[id] = new WheelSpeeds(lf, rf, lb, rb);
             lastTime[id] = time;
-
+            
             /////
+
+
             //process motor scalings
-            int maxspeed = 127;
+            
             if (wheelSpeeds.lf > 0)
                 lf = (int)Math.Min(lf * forwardpower[id].lf, maxspeed);
             else
@@ -349,6 +354,29 @@ namespace Robotics.Commander
                 rb = (int)Math.Min(rb * forwardpower[id].rb, maxspeed);
             else
                 rb = (int)Math.Max(rb * backwardspower[id].rb, -maxspeed);
+            */
+            //commenting out for new feedback stuff Feedback.cs with simple path follower
+
+            //adding 
+            if (lf > maxspeed)
+                lf = maxspeed;
+            else if (lf < -maxspeed)
+                lf = -maxspeed;
+
+            if (lb > maxspeed)
+                lb = maxspeed;
+            else if (lb < -maxspeed)
+                lb = -maxspeed;
+
+            if (rf > maxspeed)
+                rf = maxspeed;
+            else if (rf < -maxspeed)
+                rf = -maxspeed;
+
+            if (rb > maxspeed)
+                rb = maxspeed;
+            else if (rb < -maxspeed)
+                rb = -maxspeed;
 
 
             //if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 10)

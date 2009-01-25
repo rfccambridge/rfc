@@ -4,75 +4,75 @@
 
 ##alpha should be between 0 and 1.
 
-double P_X_0 20
-double P_X_1 20
-double P_X_2 20
-double P_X_3 20
-double P_X_4 20
+double P_X_0 800
+double P_X_1 6.6
+double P_X_2 6.6
+double P_X_3 6.6
+double P_X_4 6.6
 
-double I_X_0 2
-double I_X_1 2
-double I_X_2 2
-double I_X_3 2
-double I_X_4 2
+double I_X_0 0
+double I_X_1 0.66
+double I_X_2 0.66
+double I_X_3 0.66
+double I_X_4 0.66
 
-double D_X_0 2
-double D_X_1 2
-double D_X_2 2
-double D_X_3 2
-double D_X_4 2
+double D_X_0 4
+double D_X_1 0.66
+double D_X_2 0.66
+double D_X_3 0.66
+double D_X_4 0.66
 
-double ALPHA_X_0 .5
+double ALPHA_X_0 1
 double ALPHA_X_1 .5
 double ALPHA_X_2 .5
 double ALPHA_X_3 .5
 double ALPHA_X_4 .5
 
 
-double P_Y_0 20
-double P_Y_1 20
-double P_Y_2 20
-double P_Y_3 20
-double P_Y_4 20
+double P_Y_0 800
+double P_Y_1 6.6
+double P_Y_2 6.6
+double P_Y_3 6.6
+double P_Y_4 6.6
 
-double I_Y_0 2
-double I_Y_1 2
-double I_Y_2 2
-double I_Y_3 2
-double I_Y_4 2
+double I_Y_0 0
+double I_Y_1 0.66
+double I_Y_2 0.66
+double I_Y_3 0.66
+double I_Y_4 0.66
 
-double D_Y_0 2
-double D_Y_1 2
-double D_Y_2 2
-double D_Y_3 2
-double D_Y_4 2
+double D_Y_0 4
+double D_Y_1 0.66
+double D_Y_2 0.66
+double D_Y_3 0.66
+double D_Y_4 0.66
 
-double ALPHA_Y_0 .5
+double ALPHA_Y_0 1
 double ALPHA_Y_1 .5
 double ALPHA_Y_2 .5
 double ALPHA_Y_3 .5
 double ALPHA_Y_4 .5
 
 
-double P_THETA_0 20
-double P_THETA_1 20
-double P_THETA_2 20
-double P_THETA_3 20
-double P_THETA_4 20
+double P_THETA_0 0
+double P_THETA_1 6.6
+double P_THETA_2 6.6
+double P_THETA_3 6.6
+double P_THETA_4 6.6
 
-double I_THETA_0 2
-double I_THETA_1 2
-double I_THETA_2 2
-double I_THETA_3 2
-double I_THETA_4 2
+double I_THETA_0 0
+double I_THETA_1 0.66
+double I_THETA_2 0.66
+double I_THETA_3 0.66
+double I_THETA_4 0.66
 
-double D_THETA_0 2
-double D_THETA_1 2
-double D_THETA_2 2
-double D_THETA_3 2
-double D_THETA_4 2
+double D_THETA_0 0
+double D_THETA_1 0.66
+double D_THETA_2 0.66
+double D_THETA_3 0.66
+double D_THETA_4 0.66
 
-double ALPHA_THETA_0 .5
+double ALPHA_THETA_0 1
 double ALPHA_THETA_1 .5
 double ALPHA_THETA_2 .5
 double ALPHA_THETA_3 .5

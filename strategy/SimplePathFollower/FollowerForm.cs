@@ -168,7 +168,7 @@ namespace SimplePathFollower
             }
             
             List<Vector2> wpList = new List<Vector2>();
-            wpList.Add(new Vector2(1.5, 0.5));
+            wpList.Add(new Vector2(1.2, -0.5));
             //wpList.Add(new Vector2(-0.5, -0.5));
 			//wpList.Add(new Vector2(0.5, -0.5));
 			//wpList.Add(new Vector2(0.5, 0.5));
@@ -200,7 +200,8 @@ namespace SimplePathFollower
         }
 
         private void btnReloadPIDConstants_Click(object sender, EventArgs e) {
-            //implement chaing of methods to allow _pathFollower.reloadConstants();
+            //implement chain of methods to allow _pathFollower.reloadConstants();
+            _pathFollower.reloadConstants();
         }
 
 	}

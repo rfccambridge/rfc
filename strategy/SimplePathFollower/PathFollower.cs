@@ -72,7 +72,7 @@ namespace SimplePathFollower
 		public void Follow()
 		{
 			running = true;
-			const double MIN_SQ_DIST_TO_WP = .01;
+            const double MIN_SQ_DIST_TO_WP = 0;// because distances are very small .01;
 			waypointIndex = 0;
 			
 			controller.move(robotID, false, waypoints[waypointIndex]);
@@ -108,6 +108,15 @@ namespace SimplePathFollower
         }
         public void clearArrows() {
             controller.clearArrows();
+        }
+
+        //seeks to reload any constants that this class and its own objects use from files
+        //currently just PID constants, so having it call reload on the planner. Not sure if it should call controller as well or
+        //if there should be a controll.reloadConstants(); planne.reloadConstants() chain
+        public void reloadConstants() {
+            FeedbackMotionPlanner myTempPlanner = (FeedbackMotionPlanner)planner;
+            myTempPlanner.reloadConstants();
+
         }
 	}
 }

@@ -217,7 +217,11 @@ namespace Robocup.MotionControl
         }
     }
     public class FeedbackMotionPlanner : IMotionPlanner {
-        
+        //the index of the next waypoint the robots going to try and go to and an associated robotinfo
+        int nextWaypointIndex = 0;
+        RobotInfo nextWayPoint;
+
+
         // Each robot has a feedback object
         private Feedback[] _feedbackObjs;
 
@@ -226,8 +230,10 @@ namespace Robocup.MotionControl
              
         private CirclePlanner _planner;
 
+        const int NUM_ROBOTS = 5;
+
         public FeedbackMotionPlanner() {
-            const int NUM_ROBOTS = 5;
+            
 
             //replaced with static testing planner
             _planner = new CirclePlanner();
@@ -266,6 +272,24 @@ namespace Robocup.MotionControl
             return closestWaypoint;
         }
 
+        public int findNearestWaypointIndex(RobotInfo currInfo, Pair<List<RobotInfo>, List<Vector2>> path) {
+
+            // For now, brute force search.
+
+            int closestWaypointIndex = 0;
+            double minDistSq = double.MaxValue;
+
+            for (int i = 0; i < path.First.Count; i++) {
+                RobotInfo waypoint = path.First[i];
+                double distSq = waypoint.Position.distanceSq(currInfo.Position);
+                if (distSq < minDistSq) {
+                    closestWaypointIndex = i;
+                    minDistSq = distSq;
+                }
+            }
+            return closestWaypointIndex;
+        }
+
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
             List<Obstacle> obstacles = new List<Obstacle>();
             foreach (RobotInfo info in predictor.getAllInfos()) {
@@ -293,11 +317,22 @@ namespace Robocup.MotionControl
             }
 
             Pair<List<RobotInfo>, List<Vector2>> path = _planner.Plan(curinfo, desiredState, obstacles);
-            RobotInfo nearestWayPoint = findNearestWaypoint(curinfo, path);
-            _lastNearestWaypoint = nearestWayPoint;
+           
+            
+            
+            ///instead of going to nearest going to try more of a carrot on a stick approach and go to the next one.
+            ///  RobotInfo nearestWayPoint = findNearestWaypoint(curinfo, path);
+            ///_lastNearestWaypoint = nearestWayPoint;
+            ///WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nearestWayPoint);
 
-            WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nearestWayPoint);
-            return new MotionPlanningResults(wheelSpeeds, _lastNearestWaypoint);
+            nextWaypointIndex = findNearestWaypointIndex(curinfo, path);
+            if (nextWaypointIndex!=path.First.Count-1)
+                nextWaypointIndex = nextWaypointIndex+1;
+            nextWayPoint = path.First[nextWaypointIndex];
+
+            WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);
+            
+            return new MotionPlanningResults(wheelSpeeds, nextWayPoint);
 
             //return new MotionPlanningResults(new WheelSpeeds());
             /*WheelSpeeds rtn;
@@ -319,6 +354,12 @@ namespace Robocup.MotionControl
             //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
             //Common.DrawVector2Tree(_planner.LastTree2(), Color.Green, g, c);            
             Common.DrawPath(_planner.LastPath, Color.Blue, g, c);
+        }
+
+        //reload all necessary constants from files, for now just PID reload
+        public void reloadConstants() {
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
+                _feedbackObjs[robotID].reloadConstands();
         }
     }
     public class SmoothVector2BiRRTMotionPlanner : IMotionPlanner
