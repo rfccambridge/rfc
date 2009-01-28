@@ -45,6 +45,11 @@ namespace Robocup.MotionControl {
             double currentOrientation = angleCheck(currentState.Orientation);
             double desiredOrientation = angleCheck(desiredState.Orientation);
             
+            Console.WriteLine(currentState.Position.X.ToString() + " Current X|Desired: " + desiredState.Position.X.ToString());
+            //Console.WriteLine(currentState.Position.Y.ToString() + " Current Y|Desired: " + desiredState.Position.Y.ToString());
+            Console.WriteLine(xCommand.ToString() + " xCommand|yCommand: " + yCommand.ToString());
+            
+            
             double angularVCommand = thetaPID.compute(currentOrientation, desiredOrientation, currentState.AngularVelocity, desiredState.AngularVelocity);
             
             //converts from x speed, y speed and angular speed to wheel speeds
@@ -77,17 +82,21 @@ namespace Robocup.MotionControl {
             //change from the x and y of the field to forward and lateral(right is positive) used below
             double forward = Math.Cos(theta)*xCommand+Math.Sin(theta)*yCommand;
             double lateral = Math.Sin(theta)*xCommand-Math.Cos(theta)*yCommand;
+
+            Console.WriteLine(lateral.ToString() + " lateral|Forward: " + forward.ToString());
         
             //computed here to save typing, since used 4 times
-            double sing = Math.Sin(Math.PI/180* ANGLE_AXIS_TO_WHEEL);
-            double cosg = Math.Cos(Math.PI/180* ANGLE_AXIS_TO_WHEEL);
+            double sing = Math.Sin(ANGLE_AXIS_TO_WHEEL);
+            double cosg = Math.Cos(ANGLE_AXIS_TO_WHEEL);
         
             //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
-           
-            int rf = (int) (-sing*forward + cosg*lateral + wheelR*angularV);
-            int rb = (int) (sing*forward + cosg*lateral + wheelR*angularV);
-            int lb = (int) (-sing*forward - cosg*lateral + wheelR*angularV);
-            int lf = (int) (sing*forward - cosg*lateral + wheelR*angularV);
+
+
+            int lf = (int)  (sing*lateral + cosg * forward - wheelR * angularV);
+            int rf = (int)  (sing*lateral - cosg*forward - wheelR*angularV);
+            int lb = (int) (-sing*lateral + cosg*forward - wheelR*angularV);
+            int rb = (int) (-sing*lateral - cosg *forward - wheelR * angularV);
+
             return new WheelSpeeds(lf, rf, lb, rb);
             //Note somewhere we need to check and ensure that wheel speeds being 
             //sent do not exceed maximum values allowed by the protocol.

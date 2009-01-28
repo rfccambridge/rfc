@@ -27,5 +27,6 @@ namespace Robocup.CoreRobotics
     {
         MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
         void DrawLast(Graphics g, ICoordinateConverter c);
+        
     }
 }

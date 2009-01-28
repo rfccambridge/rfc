@@ -10,7 +10,7 @@ namespace Robocup.MotionControl {
     public class CirclePlanner {
 
         private const double RADIUS = 0.5; // meters?
-        private const int NUM_WAYPOINTS = 10; // designed with an even number in mind
+        private const int NUM_WAYPOINTS = 40; // designed with an even number in mind
         private const double SPEED = 1; // meters/sec
         private const double ANGULAR_V = 0; // rad/sec, 0 for now
                 
@@ -39,7 +39,7 @@ namespace Robocup.MotionControl {
 
             x_prev = center.X + RADIUS * Math.Cos(0);
             y_prev = center.Y + RADIUS * Math.Sin(0);
-            orientation = Math.PI/3;
+            orientation = 0;
 
             for (double t = ANGLE_STEP; t - 2 * Math.PI < 0.0001; t += ANGLE_STEP) {
                 x = center.X + RADIUS * Math.Cos(t);
