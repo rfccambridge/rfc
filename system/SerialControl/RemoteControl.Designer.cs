@@ -58,8 +58,8 @@ namespace Robotics.Commander
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(373, 408);
             this.textBox1.TabIndex = 0;
-            this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.From1_KeyUp);
-            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.From1_KeyDown);
+            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyDown);
+            this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyUp);
             // 
             // OpenCOM
             // 
@@ -71,8 +71,8 @@ namespace Robotics.Commander
             this.OpenCOM.Text = "Open COM";
             this.OpenCOM.UseVisualStyleBackColor = true;
             this.OpenCOM.Click += new System.EventHandler(this.toggleSettings);
-            this.OpenCOM.KeyUp += new System.Windows.Forms.KeyEventHandler(this.From1_KeyUp);
-            this.OpenCOM.KeyDown += new System.Windows.Forms.KeyEventHandler(this.From1_KeyDown);
+            this.OpenCOM.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyUp);
+            this.OpenCOM.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyDown);
             // 
             // statusLabel
             // 
@@ -141,9 +141,9 @@ namespace Robotics.Commander
             this.radioButtonRemote.AutoSize = true;
             this.radioButtonRemote.Location = new System.Drawing.Point(414, 350);
             this.radioButtonRemote.Name = "radioButtonRemote";
-            this.radioButtonRemote.Size = new System.Drawing.Size(138, 17);
+            this.radioButtonRemote.Size = new System.Drawing.Size(87, 17);
             this.radioButtonRemote.TabIndex = 50;
-            this.radioButtonRemote.Text = "radioButtonRemoteHost";
+            this.radioButtonRemote.Text = "Remote Host";
             this.radioButtonRemote.UseVisualStyleBackColor = true;
             this.radioButtonRemote.CheckedChanged += new System.EventHandler(this.radioButtonRemote_CheckedChanged);
             // 
@@ -163,10 +163,10 @@ namespace Robotics.Commander
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.textBox1);
             this.Name = "RemoteControl";
-            this.Text = "Form1";
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.From1_KeyUp);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.From1_KeyDown);
+            this.Text = "Remote Control";
             this.Load += new System.EventHandler(this.RemoteControl_Load);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyUp);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

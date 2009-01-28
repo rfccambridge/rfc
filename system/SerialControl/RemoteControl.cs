@@ -33,6 +33,15 @@ namespace Robotics.Commander {
 
         private int curRobot;
 
+        // HACK REBOOT WORKAROUND
+        // for managing reboots
+        int _rebootTime;
+        System.Timers.Timer t;
+       
+        KeyboardHook keyboardHook = new KeyboardHook();
+
+        System.Threading.Thread thread;
+
         public RemoteControl() {
             Form.CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
@@ -64,13 +73,21 @@ namespace Robotics.Commander {
                            + "57 9 ============== robot9" + "\r\n"
                            + "27 esc ============ exit";
             curRobot = 0;
+
+            // Global hotkeys
+
+            // register the event that is fired after the key press.
+            keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(backspace_GlobalHotkeyPressed);
+            // register the control + alt + F12 combination as hot key.
+            keyboardHook.RegisterHotKey(Robocup.Utilities.ModifierKeys.Control | Robocup.Utilities.ModifierKeys.Alt, Keys.Back);
         }
 
-        // HACK REBOOT WORKAROUND
-        // for managing reboots
-        int _rebootTime;
-        System.Timers.Timer t;
-       
+        private void backspace_GlobalHotkeyPressed(object sender, KeyPressedEventArgs e)
+        {
+            KeyEventArgs eventArgs = new KeyEventArgs(e.Key);
+            RemoteControl_KeyDown(sender, eventArgs);
+            RemoteControl_KeyUp(sender, eventArgs);
+        }
 
         private void toggleSettings(object sender, EventArgs e) {
             active = !active;
@@ -186,7 +203,7 @@ namespace Robotics.Commander {
             setMotorSpeeds((int)wheel_speeds[0], (int)wheel_speeds[1], (int)wheel_speeds[2], (int)wheel_speeds[3]);
         }
 
-        private void From1_KeyDown(object sender, KeyEventArgs e) {
+        private void RemoteControl_KeyDown(object sender, KeyEventArgs e) {
             if (active) {
                 #region keys
                 /*38  up     ============= move forward in y
@@ -220,8 +237,15 @@ namespace Robotics.Commander {
                 //label1.Text = Convert.ToString(e.KeyValue);
                 switch (e.KeyValue) {
                     case 8: // backspace
-                        srobots.stopAll(curRobot);
-                        statusLabel.Text = "stopping everything";
+                        if (srobots == null)
+                        {
+                            statusLabel.Text = "no registered robots";
+                        }
+                        else
+                        {
+                            srobots.stopAll(curRobot);
+                            statusLabel.Text = "stopping everything";
+                        }
                         break;
                     case 'a':
                     case 37:        // left move left in x
@@ -349,8 +373,8 @@ namespace Robotics.Commander {
 
         }
 
-        System.Threading.Thread thread;
-        private void From1_KeyUp(object sender, KeyEventArgs e) {
+        
+        private void RemoteControl_KeyUp(object sender, KeyEventArgs e) {
             if (active) {
                 setMotorSpeeds(0, 0, 0, 0);
                 (thread = new System.Threading.Thread(delegate()
