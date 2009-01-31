@@ -345,7 +345,14 @@ namespace VisionStatic {
 
             List<Pattern> patterns = new List<Pattern>();
 
-            for (int i = 0; i < totalBlobs; i++) {
+			Vision.Ball goBall = null;
+
+			double currBallAreaError;
+			double bestBallAreaError = 1000; //initally a ridiculously big number
+
+			double wx, wy;
+			
+			for (int i = 0; i < totalBlobs; i++) {
                 if (blobs[i].ColorClass == ColorClasses.OUR_CENTER_DOT) {
                     Blob tempCtrDot = blobs[i];
                     LinkedList<Blob> tempDots = new LinkedList<Blob>();
@@ -356,9 +363,12 @@ namespace VisionStatic {
                         byte c = blobs[j].ColorClass;
                         if (c == ColorClasses.COLOR_DOT_CYAN || c == ColorClasses.COLOR_DOT_GREEN ||
                             c == ColorClasses.COLOR_DOT_PINK) {
-                            // TODO: change this from pixel dist to world dist
-                            distSq = RobotFinder.distanceSq(tempCtrDot.CenterX, tempCtrDot.CenterY, blobs[j].CenterX, blobs[j].CenterY);
-                            if (distSq < RobotFinder.DIST_SQ_TO_CENTER_PIX) {
+							//uncomment to use image coordinates
+                            //distSq = RobotFinder.distanceSq(tempCtrDot.CenterX, tempCtrDot.CenterY, blobs[j].CenterX, blobs[j].CenterY);
+							distSq = RobotFinder.distanceSq(tempCtrDot.CenterWorldX, tempCtrDot.CenterWorldY, blobs[j].CenterWorldX, blobs[j].CenterWorldY);
+							if (distSq < RobotFinder.DIST_SQ_TO_CENTER){
+							//uncomment to use image coordinates
+							//if (distSq < RobotFinder.DIST_SQ_TO_CENTER_PIX){
                                 tempDots.AddLast(blobs[j]);
                                 tempCtrDistsSq.AddLast(distSq);
                             }
@@ -371,6 +381,19 @@ namespace VisionStatic {
                         patterns.Add(pattern);
                     }
                 }
+				else if (blobs[i].ColorClass == ColorClasses.COLOR_BALL)
+				{
+					currBallAreaError = Math.Abs(blobs[i].AreaScaled - AREA_BALL);
+					if (currBallAreaError < ERROR_BALL && currBallAreaError < bestBallAreaError)
+					{
+						tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
+						tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, (wx - 2100) / 10, out wx, out wy);
+						//gameObjects.Ball = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
+						goBall = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
+						bestBallAreaError = currBallAreaError;
+					}
+				}
+
             }
 
             foreach (Pattern pattern in patterns) {
@@ -396,9 +419,11 @@ namespace VisionStatic {
                 Array.Sort(pattern.ctrDistsSq, pattern.dots);
                 // this copy into pattern.dots might be superflous
                 for (int i = 0; i < 4; i++)
-                    //pattern.ctrVectors[i] = new Vector(pattern.dots[i].CenterWorldX - pattern.centerDot.CenterWorldX, pattern.dots[i].CenterWorldY - pattern.centerDot.CenterWorldY);
-                    // reverse Y to get a righthanded coord system
-                    pattern.ctrVectors[i] = new Vector(pattern.dots[i].CenterX - pattern.centerDot.CenterX, -1 * (pattern.dots[i].CenterY - pattern.centerDot.CenterY));
+                    //reverse X when dealing with world coordinates
+					pattern.ctrVectors[i] = new Vector(-1*(pattern.dots[i].CenterWorldX - pattern.centerDot.CenterWorldX), pattern.dots[i].CenterWorldY - pattern.centerDot.CenterWorldY);
+					//uncomment to use image coordinates
+					// reverse Y to get a righthanded coord system
+                    //pattern.ctrVectors[i] = new Vector(pattern.dots[i].CenterX - pattern.centerDot.CenterX, -1 * (pattern.dots[i].CenterY - pattern.centerDot.CenterY));
 
                 if (VERBOSE) {
                     Console.Write("Four dots chosen: ");
@@ -414,9 +439,11 @@ namespace VisionStatic {
                 double[,] lengths = new double[4, 4];
                 for (int i = 0; i < 4; i++) {
                     for (int j = 0; j < 4; j++) {
-                        //vectors[i, j] = new System.Windows.Vector(pattern.dots[j].CenterWorldX - pattern.dots[i].CenterWorldX, pattern.dots[j].CenterWorldY - pattern.dots[i].CenterWorldY);
-                        // reverse Y to get a righthanded coord system
-                        vectors[i, j] = new System.Windows.Vector(pattern.dots[j].CenterX - pattern.dots[i].CenterX, -1 * (pattern.dots[j].CenterY - pattern.dots[i].CenterY));
+                        //reverse X when dealing with world coordinates
+						vectors[i, j] = new Vector(-1*(pattern.dots[j].CenterWorldX - pattern.dots[i].CenterWorldX), pattern.dots[j].CenterWorldY - pattern.dots[i].CenterWorldY);
+						//uncomment to use image coordinates
+						// reverse Y to get a righthanded coord system
+                        //vectors[i, j] = new System.Windows.Vector(pattern.dots[j].CenterX - pattern.dots[i].CenterX, -1 * (pattern.dots[j].CenterY - pattern.dots[i].CenterY));
                         lengths[i, j] = vectors[i, j].LengthSquared;
                     }
                 }
@@ -609,7 +636,15 @@ namespace VisionStatic {
                     Console.WriteLine("WX=" + robot.X.ToString() + "  WY=" + robot.Y.ToString() + "  Orient=" + robot.Orientation.ToString());
                 }
 
-                if (robot.Id >= 0) {
+				Vector2 ballPos;
+                if (goBall == null)
+					ballPos = null;
+				else
+					ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
+
+				visionMessage.BallPosition = ballPos;
+				
+				if (robot.Id >= 0) {
                     VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(robot.Id, true,
                                                                                   VisionToGeneralCoords(robot.X, robot.Y),
                                                                                   VisionToGeneralOrientation(robot.Orientation));
