@@ -11,7 +11,7 @@ string REFBOX_ADDR 224.5.92.5
 int REFBOX_PORT 10001
 
 # testing directory
-string PLAY_DIR ../../plays
+string PLAY_DIR ../../plays/Test2009
 # competition directory
 #string PLAY_DIR ../../plays
 
@@ -25,4 +25,4 @@ bool ROBOT_HAS_KICKER_2 true
 bool ROBOT_HAS_KICKER_3 true
 bool ROBOT_HAS_KICKER_4 true
 
-bool ROBOT_IS_GOALIE_0 true
+bool ROBOT_IS_GOALIE_0 false
