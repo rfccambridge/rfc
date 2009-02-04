@@ -101,6 +101,10 @@
       <Project>{08383292-7063-4436-ADE4-CCD3AD048D46}</Project>
       <Name>Vision</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Play Selector\PlaySelector.csproj">
+      <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
+      <Name>PlaySelector</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

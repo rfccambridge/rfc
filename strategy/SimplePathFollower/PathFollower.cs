@@ -4,6 +4,7 @@ using System.Text;
 using Robocup.Core;
 using Robocup.CoreRobotics;
 using Robocup.MotionControl;
+using Robocup.Plays;
 
 namespace SimplePathFollower
 {
@@ -25,6 +26,8 @@ namespace SimplePathFollower
 		public IPredictor Predictor { get { return predictor; } }
 		public IRobots Commander { get { return commander; } }
 
+        private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
+
 		public PathFollower()
 		{
 			robotID = 0;
@@ -42,7 +45,7 @@ namespace SimplePathFollower
 		}
 
 
-		public void Init()
+		public void Init(IMotionPlanner newPlanner)
 		{
 			if (predictor != null)
 			{
@@ -50,11 +53,11 @@ namespace SimplePathFollower
 				return;
 			}
 
-			if (planner != null)
+		/*	if (planner != null)
 			{
 				Console.Write("Planner already running.");
 				return;
-			}
+			}*/
 
 			if (controller != null)
 			{
@@ -64,43 +67,70 @@ namespace SimplePathFollower
 
 			commander = new Robocup.ControlForm.RemoteRobots();
 			predictor = new BasicPredictor();
-			planner = new FeedbackMotionPlanner();
+            planner = newPlanner;
+             
 			controller = new RFCController(commander, planner, predictor);
 		}
 
+        public bool setPlanner(IMotionPlanner newPlanner) {
+            if (!running) {
+                planner = newPlanner;
+                controller = new RFCController(commander, planner, predictor);
+                return true;
+            }
+
+            return false;
+        }
 
 		public void Follow()
 		{
 			running = true;
-            const double MIN_SQ_DIST_TO_WP = 0;// because distances are very small .01;
 			waypointIndex = 0;
-			
-			controller.move(robotID, false, waypoints[waypointIndex]);
 
-			do
+            //because this class just gets one point from the gui,
+            //generatign a static path is taken care of in feedbackbackMotionPlanner
+
+            controller.move(robotID, false, waypoints[0]);
+           
+            do
 			{
                 RobotInfo curinfo;
+                BallInfo ballInfo;
                 try {
                      curinfo = predictor.getCurrentInformation(robotID);
+                     ballInfo = predictor.getBallInfo();
                 } catch (ApplicationException e) {
                     Console.WriteLine("Failed Predictor.getCurrentInformation(). Dumping exception\n" + e.ToString());
                     return;
                 }
-				double wpDistanceSq = curinfo.Position.distanceSq
-					(waypoints[waypointIndex]);
-				if (wpDistanceSq > MIN_SQ_DIST_TO_WP)
-				{
-					waypointIndex = (waypointIndex + 1) % waypoints.Count;
-					controller.move(robotID, false, waypoints[waypointIndex]);
-				}
+				/*double wpDistanceSq = curinfo.Position.distanceSq(waypoints[waypointIndex]);
+                if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
+                    waypointIndex = (waypointIndex + 1);//Stop at end for now % waypoints.Count;
+                    controller.move(robotID, false, waypoints[waypointIndex]);
+                }*/
+                controller.move(robotID, false, waypoints[waypointIndex]);
 			
 				System.Threading.Thread.Sleep(10);
 			} while (running);
 		}
 
+        public void Kick() 
+        {
+            running = true;
+
+            ActionInterpreter interpreter = new ActionInterpreter(controller, predictor);
+            interpreter.Kick(robotID, new Vector2(0, 0));
+            do {
+
+                //interpreter.Kick(robotID, new Vector2(0, 0));
+                System.Threading.Thread.Sleep(1000);
+            } while (running);
+        }
+
 		public void Stop()
 		{
-			running = false;
+            controller.stop(robotID);
+            running = false;
 		}
 
         public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter) {            
@@ -114,7 +144,7 @@ namespace SimplePathFollower
         //currently just PID constants, so having it call reload on the planner. Not sure if it should call controller as well or
         //if there should be a controll.reloadConstants(); planne.reloadConstants() chain
         public void reloadConstants() {
-            FeedbackMotionPlanner myTempPlanner = (FeedbackMotionPlanner)planner;
+            CircleFeedbackMotionPlanner myTempPlanner = (CircleFeedbackMotionPlanner)planner;
             myTempPlanner.reloadConstants();
 
         }

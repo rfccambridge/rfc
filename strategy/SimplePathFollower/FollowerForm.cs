@@ -11,6 +11,7 @@ using Robocup.CoreRobotics;
 using Robocup.ControlForm;
 using Robocup.Utilities;
 using System.Diagnostics;
+using Robocup.MotionControl;
 
 namespace SimplePathFollower
 {
@@ -37,14 +38,31 @@ namespace SimplePathFollower
 		{
 			InitializeComponent();
 
-             MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
+                       
+            MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
+
+            _pathFollower = new PathFollower();
 
 			_visionConnected = false;
 			_controlConnected = false;
             _running = false;
 
-			_pathFollower = new PathFollower();
-			_pathFollower.Init();
+            // Populate the MotionPlanner combobox
+            Array motionPlannersArr = Enum.GetValues(typeof(MotionPlanners));
+            object[] motionPlanners = new object[motionPlannersArr.Length];
+            motionPlannersArr.CopyTo(motionPlanners, 0);
+
+            cmbMotionPlanner.Items.AddRange(motionPlanners);
+
+            BtnStartStop.Text = "Start";
+            
+
+            // Default MotionPlanner selection
+            _currentPlannerSelection = MotionPlanners.CircleFeedbackMotionPlanner;
+            cmbMotionPlanner.SelectedItem = _currentPlannerSelection;
+            IMotionPlanner planner = new CircleFeedbackMotionPlanner();
+			
+			_pathFollower.Init(planner);
 			_predictor = (BasicPredictor)_pathFollower.Predictor;
 
             if (_fieldDrawerForm != null)
@@ -55,6 +73,9 @@ namespace SimplePathFollower
             _fieldDrawerForm.Show();
 
             _stopwatch.Start();
+
+
+           
 
 		}
 
@@ -160,41 +181,36 @@ namespace SimplePathFollower
 			}
 		}
 
-		private void BtnStart_Click(object sender, EventArgs e)
-		{
-            if (_running) {
-                MessageBox.Show("Already running. Press stop first.");
-                return;
-            }
-            
-            List<Vector2> wpList = new List<Vector2>();
-            wpList.Add(new Vector2(1.2, -0.5));
-            //wpList.Add(new Vector2(-0.5, -0.5));
-			//wpList.Add(new Vector2(0.5, -0.5));
-			//wpList.Add(new Vector2(0.5, 0.5));
-			//wpList.Add(new Vector2(-0.5, 0.5));
-
-			_pathFollower.RobotID = 0;
-			_pathFollower.Waypoints = wpList;
-
-            // start the path follower in a new thread 
-            _running = true;
-            VoidDelegate followLoopDelegate = new VoidDelegate(_pathFollower.Follow);
-            AsyncCallback followErrorHandler = new AsyncCallback(FollowErrorHandler);
-            IAsyncResult FollowLoopHandle = followLoopDelegate.BeginInvoke(followErrorHandler, null);			
-		}
-		
-		private void BtnStop_Click(object sender, EventArgs e)
+		private void BtnStartStop_Click(object sender, EventArgs e)
 		{
             if (!_running) {
-                MessageBox.Show("Path Follower not running. Press start first.");
-                return;
+              
+                List<Vector2> wpList = new List<Vector2>();
+                wpList.Add(new Vector2(1.2, -0.5));
+                //wpList.Add(new Vector2(-0.5, -0.5));
+                //wpList.Add(new Vector2(0.5, -0.5));
+                //wpList.Add(new Vector2(0.5, 0.5));
+                //wpList.Add(new Vector2(-0.5, 0.5));
+
+                _pathFollower.RobotID = 0;
+                _pathFollower.Waypoints = wpList;
+
+                _running = true;
+                // start the path follower in a new thread                 
+                VoidDelegate followLoopDelegate = new VoidDelegate(_pathFollower.Follow);
+                AsyncCallback followErrorHandler = new AsyncCallback(ErrorHandler);
+                IAsyncResult FollowLoopHandle = followLoopDelegate.BeginInvoke(followErrorHandler, null);
+
+                BtnStartStop.Text = "Stop";
+                
+            } else {
+                _pathFollower.Stop();
+                _running = false;
+                BtnStartStop.Text = "Start";
             }
-			_pathFollower.Stop();
-            _running = false;
 		}
 
-        private void FollowErrorHandler(IAsyncResult res) {            
+        private void ErrorHandler(IAsyncResult res) {            
             _pathFollower.Stop();
             _running = false;
         }
@@ -202,6 +218,54 @@ namespace SimplePathFollower
         private void btnReloadPIDConstants_Click(object sender, EventArgs e) {
             //implement chain of methods to allow _pathFollower.reloadConstants();
             _pathFollower.reloadConstants();
+        }
+
+        private void BtnKick_Click(object sender, EventArgs e) {
+            if (_running) {
+                MessageBox.Show("Already running. Press stop first.");
+                return;
+            }
+
+            VoidDelegate kickLoopDelegate = new VoidDelegate(_pathFollower.Kick);
+            AsyncCallback kickErrorHandler = new AsyncCallback(ErrorHandler);
+            IAsyncResult kickLoopHandle = kickLoopDelegate.BeginInvoke(ErrorHandler, null);	
+
+            _running = true;
+        }
+
+        enum MotionPlanners { CircleFeedbackMotionPlanner, BugFeedbackMotionPlanner, MixedBiRRTMotionPlanner };
+        private MotionPlanners _currentPlannerSelection;
+
+        private void cmbMotionPlanner_SelectedIndexChanged(object sender, EventArgs e) {
+
+            // Don't do anything if pathFollower is not initialized
+            // if (!_pathFollower.Initialized) { ... }
+            if (_pathFollower.Predictor == null) {
+                return;
+            }
+
+            IMotionPlanner planner;
+            switch ((MotionPlanners)cmbMotionPlanner.SelectedItem) {
+                case MotionPlanners.BugFeedbackMotionPlanner:
+                    planner = new BugFeedbackMotionPlanner();
+                    if (_pathFollower.setPlanner(planner)) {
+                        _currentPlannerSelection = MotionPlanners.BugFeedbackMotionPlanner;                     
+                    }
+                    break;
+                case MotionPlanners.CircleFeedbackMotionPlanner:
+                    planner = new CircleFeedbackMotionPlanner();
+                    if (_pathFollower.setPlanner(planner)) {
+                        _currentPlannerSelection = MotionPlanners.CircleFeedbackMotionPlanner;
+                    }                    
+                    break;
+                case MotionPlanners.MixedBiRRTMotionPlanner:
+                    planner = new MixedBiRRTMotionPlanner();
+                    if (_pathFollower.setPlanner(planner)) {
+                        _currentPlannerSelection = MotionPlanners.MixedBiRRTMotionPlanner;
+                    }
+                    break;
+            }
+            cmbMotionPlanner.SelectedItem = _currentPlannerSelection;
         }
 
 	}
