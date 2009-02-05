@@ -10,8 +10,8 @@ namespace Robocup.MotionControl {
     public class CirclePlanner {
 
         private const double RADIUS = 0.5; // meters?
-        private const int NUM_WAYPOINTS = 40; // designed with an even number in mind
-        private const double SPEED = 1; // meters/sec
+        private const int NUM_WAYPOINTS = 25; // designed with an even number in mind
+        private const double SPEED = .4; // meters/sec
         private const double ANGULAR_V = 0; // rad/sec, 0 for now
                 
         private const double ANGLE_STEP = 2 * Math.PI / NUM_WAYPOINTS;     
@@ -41,7 +41,7 @@ namespace Robocup.MotionControl {
             y_prev = center.Y + RADIUS * Math.Sin(0);
             orientation = 0;
 
-            for (double t = ANGLE_STEP; t - 2 * Math.PI < 0.0001; t += ANGLE_STEP) {
+            for (double t = ANGLE_STEP; t - 1.5 * Math.PI < 0.0001; t += ANGLE_STEP) {
                 x = center.X + RADIUS * Math.Cos(t);
                 y = center.Y + RADIUS * Math.Sin(t);
 
@@ -55,7 +55,7 @@ namespace Robocup.MotionControl {
 
                 x_prev = x;
                 y_prev = y;
-                //orientation += ANGLE_STEP;//for now lets not have the robot turn to make it easier to tune/test
+                orientation += 3*ANGLE_STEP;//for now lets not have the robot turn to make it easier to tune/test
             }          
 
             Pair<List<RobotInfo>, List<Vector2>> path = new Pair<List<RobotInfo>, List<Vector2>>(waypoints, new List<Vector2>());

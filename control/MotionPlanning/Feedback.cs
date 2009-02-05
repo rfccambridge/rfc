@@ -46,8 +46,10 @@ namespace Robocup.MotionControl {
             double desiredOrientation = angleCheck(desiredState.Orientation);
             
             Console.WriteLine(currentState.Position.X.ToString() + " Current X|Desired: " + desiredState.Position.X.ToString());
-            //Console.WriteLine(currentState.Position.Y.ToString() + " Current Y|Desired: " + desiredState.Position.Y.ToString());
-            Console.WriteLine(xCommand.ToString() + " xCommand|yCommand: " + yCommand.ToString());
+            Console.WriteLine(currentState.Position.Y.ToString() + " Current Y|Desired: " + desiredState.Position.Y.ToString());
+            Console.WriteLine(currentOrientation.ToString() + " Current Theta|Desired: " + desiredOrientation.ToString());
+            
+            //Console.WriteLine(xCommand.ToString() + " xCommand|yCommand: " + yCommand.ToString());
             
             
             double angularVCommand = thetaPID.compute(currentOrientation, desiredOrientation, currentState.AngularVelocity, desiredState.AngularVelocity);
@@ -83,7 +85,7 @@ namespace Robocup.MotionControl {
             double forward = Math.Cos(theta)*xCommand+Math.Sin(theta)*yCommand;
             double lateral = Math.Sin(theta)*xCommand-Math.Cos(theta)*yCommand;
 
-            Console.WriteLine(lateral.ToString() + " lateral|Forward: " + forward.ToString());
+            //Console.WriteLine(lateral.ToString() + " lateral|Forward: " + forward.ToString());
         
             //computed here to save typing, since used 4 times
             double sing = Math.Sin(ANGLE_AXIS_TO_WHEEL);
@@ -102,7 +104,7 @@ namespace Robocup.MotionControl {
             //sent do not exceed maximum values allowed by the protocol.
         }
 
-        public void reloadConstands(){
+        public void ReloadConstants(){
             xPID.reloadConstants();
             yPID.reloadConstants();
             thetaPID.reloadConstants();

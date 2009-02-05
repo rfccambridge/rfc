@@ -33,6 +33,8 @@ namespace Robocup.MotionControl
         {
             navigator.drawLast(g, c);
         }
+
+        public void ReloadConstants() {}
     }
     /*public class CurrentPlanner : NavigationPlanner
     {
