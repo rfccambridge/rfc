@@ -122,8 +122,8 @@ namespace SimplePathFollower
             interpreter.Kick(robotID, new Vector2(0, 0));
             do {
 
-                //interpreter.Kick(robotID, new Vector2(0, 0));
-                System.Threading.Thread.Sleep(1000);
+                interpreter.Kick(robotID, new Vector2(0, 0));
+                System.Threading.Thread.Sleep(10);
             } while (running);
         }
 
@@ -144,8 +144,10 @@ namespace SimplePathFollower
         //currently just PID constants, so having it call reload on the planner. Not sure if it should call controller as well or
         //if there should be a controll.reloadConstants(); planne.reloadConstants() chain
         public void reloadConstants() {
-            CircleFeedbackMotionPlanner myTempPlanner = (CircleFeedbackMotionPlanner)planner;
-            myTempPlanner.reloadConstants();
+            // calls reloadConstants within planner
+            planner.ReloadConstants();
+            //CircleFeedbackMotionPlanner myTempPlanner = (CircleFeedbackMotionPlanner)planner;
+            //myTempPlanner.reloadConstants();
 
         }
 	}

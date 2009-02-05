@@ -111,7 +111,7 @@ namespace Robocup.ControlForm
             //INavigator navigator = new Navigation.Examples.LookAheadBug();
             //IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
-            IMotionPlanner planner = new Robocup.MotionControl.FeedbackMotionPlanner();
+            IMotionPlanner planner = new Robocup.MotionControl.CircleFeedbackMotionPlanner();
 
             for (int i = 0; i < 10; i++)
             {
@@ -168,8 +168,8 @@ namespace Robocup.ControlForm
             Dictionary<InterpreterPlay, string> filenames = new Dictionary<InterpreterPlay, string>();
             foreach (string fname in files)
             {
-                string extension = fname.Substring(1 + fname.LastIndexOf('.'));
-                if (extension != "txt")
+                string extension = Path.GetExtension(fname);
+                if (extension != ".txt")
                     continue;
                 StreamReader reader = new StreamReader(fname);
                 string filecontents = reader.ReadToEnd();

@@ -226,6 +226,8 @@ namespace SimplePathFollower
                 return;
             }
 
+            BtnStartStop.Text = "Stop";
+
             VoidDelegate kickLoopDelegate = new VoidDelegate(_pathFollower.Kick);
             AsyncCallback kickErrorHandler = new AsyncCallback(ErrorHandler);
             IAsyncResult kickLoopHandle = kickLoopDelegate.BeginInvoke(ErrorHandler, null);	
@@ -233,7 +235,7 @@ namespace SimplePathFollower
             _running = true;
         }
 
-        enum MotionPlanners { CircleFeedbackMotionPlanner, BugFeedbackMotionPlanner, MixedBiRRTMotionPlanner };
+        enum MotionPlanners { CircleFeedbackMotionPlanner, BugFeedbackMotionPlanner, MixedBiRRTMotionPlanner, StickyRRTFeedbackMotionPlanner };
         private MotionPlanners _currentPlannerSelection;
 
         private void cmbMotionPlanner_SelectedIndexChanged(object sender, EventArgs e) {
@@ -262,6 +264,12 @@ namespace SimplePathFollower
                     planner = new MixedBiRRTMotionPlanner();
                     if (_pathFollower.setPlanner(planner)) {
                         _currentPlannerSelection = MotionPlanners.MixedBiRRTMotionPlanner;
+                    }
+                    break;
+                case MotionPlanners.StickyRRTFeedbackMotionPlanner:
+                    planner = new StickyRRTFeedbackMotionPlanner();
+                    if (_pathFollower.setPlanner(planner)) {
+                        _currentPlannerSelection = MotionPlanners.StickyRRTFeedbackMotionPlanner;
                     }
                     break;
             }
