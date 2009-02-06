@@ -285,6 +285,7 @@ namespace SimplePathFollower
         const string LOG_FILE = "testlog.txt";
         private void btnReplay_Click(object sender, EventArgs e) {
 
+            return;
             TextReader txtReader = new StreamReader(LOG_FILE);
 
             // create predictor and give it the info from the file            
@@ -311,8 +312,8 @@ namespace SimplePathFollower
             path.First.Add(waypointInfo);
             
             // call Common.drawpath
-            Common.DrawPath(path, Color.Blue, fieldDrawer.CreateGraphics(), fieldDrawer.Converter);
-
+            //Common.DrawPath(path, Color.Blue, fieldDrawer.CreateGraphics(), fieldDrawer.Converter);
+            
             txtReader.Close();
 
             fieldDrawer.Show();

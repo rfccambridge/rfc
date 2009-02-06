@@ -25,6 +25,7 @@ namespace SimplePathFollower
 
 		public IPredictor Predictor { get { return predictor; } }
 		public IRobots Commander { get { return commander; } }
+        public IMotionPlanner Planner { get { return planner; } }
 
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
 

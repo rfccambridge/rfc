@@ -157,21 +157,18 @@ namespace Robocup.MotionControl
     /// StickyDumbPath follows a straight course to the destination regardless of obstacles
     /// </summary>
     public class StickyDumbMotionPlanner : IMotionPlanner {
+        const int NUM_ROBOTS = 5;
 
         // Each robot has a feedback object, a timer, and a path object
         private Feedback[] _feedbackObjs;
         private DateTime[] _timesLastCalled;
         private RobotPath[] _paths;
 
-        const int NUM_ROBOTS = 5;
-
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
 		private double WAYPOINT_DISTANCE = .05;
         private static int PATH_RECALCULATE_INTERVAL;
 
-
         public StickyDumbMotionPlanner() {
-
             LoadParameters();
 
             //Store feedback for each robot
@@ -179,13 +176,18 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID] = new Feedback(robotID);
 
+            //Set empty paths
+            _paths = new RobotPath[NUM_ROBOTS];
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
+                _paths[robotID] = new RobotPath();
+            }
+
             //Store time last called
             _timesLastCalled = new DateTime[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
                 //Set to arbitrary time in past- January 1, 2000
                 _timesLastCalled[robotID] = new DateTime(2000, 1, 1);
             }
-
         }
 
         private void LoadParameters() {
@@ -216,11 +218,14 @@ namespace Robocup.MotionControl
             double orientation = (destination.Position - origin.Position).cartesianAngle();
             Vector2 singlevector = (destination.Position - origin.Position).normalizeToLength(extendDistance);
 
-            while (origin.Position.distanceSq(destination.Position) > extendDistance * extendDistance) {
+
+            do
+            {
                 newposition = (retpath[retpath.Count - 1].Position + singlevector);
-                
+
+                // Hm... system ran out of memory at this line:    
                 retpath.Add(new RobotInfo(newposition, orientation, id));
-            }
+            } while (newposition.distanceSq(destination.Position) > extendDistance * extendDistance);
 
         	retpath.Add(destination);
 
@@ -289,6 +294,9 @@ namespace Robocup.MotionControl
         public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
             if (_paths[0] == null)
                 return;
+            if (_paths[0].Waypoints == null)
+                return;
+
             List<Vector2> emptylist = new List<Vector2>();
             Common.DrawPath(new Pair<List<RobotInfo>, List<Vector2>>(_paths[0].Waypoints, emptylist), Color.Blue, Color.Green, g, c);
         }
@@ -839,6 +847,12 @@ namespace Robocup.MotionControl
             set { _logFile = value; }
         }
 
+        public bool Logging {
+            get {
+                return _logging;
+            }
+        }
+        
         public void StartLogging() {
             if (_logging)
                 return;

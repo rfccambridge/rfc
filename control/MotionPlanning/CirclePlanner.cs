@@ -41,7 +41,7 @@ namespace Robocup.MotionControl {
             y_prev = center.Y + RADIUS * Math.Sin(0);
             orientation = 0;
 
-            for (double t = ANGLE_STEP; t - 1.5 * Math.PI < 0.0001; t += ANGLE_STEP) {
+            for (double t = ANGLE_STEP; t - 2.0 * Math.PI < 0.0001; t += ANGLE_STEP) {
                 x = center.X + RADIUS * Math.Cos(t);
                 y = center.Y + RADIUS * Math.Sin(t);
 

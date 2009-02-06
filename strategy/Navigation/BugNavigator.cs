@@ -20,7 +20,7 @@ namespace Navigation
             const double angleSweep = .1;
             const double avoidRobotDist = .22;
             const double extraAvoidBallDist = .1;
-            const double lookAheadDist = .1;
+            const double lookAheadDist = .15;
             const double getCloserAmount = .1;
 
             public BugNavigator()
@@ -95,18 +95,32 @@ namespace Navigation
                 foreach (Obstacle o in obstacles)
                 {
                     if (position.distanceSq(o.position) < o.size * o.size)
+
                     {
-                        return new NavigationResults(o.position + (1d + o.size) * (position - o.position).normalize());
+                        // unclear what this does
+                        //return new NavigationResults(o.position + (1d + o.size) * (position - o.position).normalize());
+
+                        // this makes the robot go to a waypoint located along the vector that is 90 degrees cc from 
+                        // the vector from the robot to the obstacle
+                        Vector2 towardsObst = (position - o.position).normalize();                        
+                        towardsObst = towardsObst.normalizeToLength(lookAheadDist);             
+                        Vector2 awayFromObst = new Vector2(towardsObst.X, -1 * towardsObst.Y);
+                        return new NavigationResults(position + awayFromObst);
                     }
                 }
 
                 if (!avoidingObstacle[id])
                 {
+                    //if you're really close to the destination have that be the next point
+                    if (position.distanceSq(destination) <= lookAheadDist * lookAheadDist)
+                        return new NavigationResults(destination);
+
                     roundsSinceTrace[id]++;
                     Vector2 wanted = position + lookAheadDist * (destination - position).normalize();
                     Obstacle o = blockingObstacle(wanted, obstacles, 1);
                     if (o == null)
                         return new NavigationResults(wanted);
+                    
                     avoidingObstacle[id] = true;
                     continueDistanceSq[id] = position.distanceSq(destination);
                     lastDirection[id] = (destination - position).cartesianAngle();

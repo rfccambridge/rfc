@@ -18,6 +18,10 @@ namespace Robocup.MotionControl {
 
         // Can be constructed multiple ways, depending on how the path is determined
 
+        public RobotPath() {
+            // Create empty path
+        }
+
         /// <summary>
         /// Given a list of RobotInfo waypoints
         /// </summary>
