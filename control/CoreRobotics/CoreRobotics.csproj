@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicPredictor.cs" />
+    <Compile Include="StaticPredictor.cs" />
     <Compile Include="FourWheeledMovement.cs" />
     <Compile Include="MulticastRefBoxListener.cs" />
     <Compile Include="RefBoxState.cs" />

@@ -40,6 +40,8 @@
             this.btnReloadPIDConstants = new System.Windows.Forms.Button();
             this.BtnKick = new System.Windows.Forms.Button();
             this.cmbMotionPlanner = new System.Windows.Forms.ComboBox();
+            this.btnReplay = new System.Windows.Forms.Button();
+            this.btnStartStopLogging = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnVision
@@ -151,11 +153,33 @@
             this.cmbMotionPlanner.TabIndex = 12;
             this.cmbMotionPlanner.SelectedIndexChanged += new System.EventHandler(this.cmbMotionPlanner_SelectedIndexChanged);
             // 
+            // btnReplay
+            // 
+            this.btnReplay.Location = new System.Drawing.Point(168, 229);
+            this.btnReplay.Name = "btnReplay";
+            this.btnReplay.Size = new System.Drawing.Size(75, 23);
+            this.btnReplay.TabIndex = 13;
+            this.btnReplay.Text = "Replay";
+            this.btnReplay.UseVisualStyleBackColor = true;
+            this.btnReplay.Click += new System.EventHandler(this.btnReplay_Click);
+            // 
+            // btnStartStopLogging
+            // 
+            this.btnStartStopLogging.Location = new System.Drawing.Point(168, 275);
+            this.btnStartStopLogging.Name = "btnStartStopLogging";
+            this.btnStartStopLogging.Size = new System.Drawing.Size(75, 23);
+            this.btnStartStopLogging.TabIndex = 14;
+            this.btnStartStopLogging.Text = "Start log";
+            this.btnStartStopLogging.UseVisualStyleBackColor = true;
+            this.btnStartStopLogging.Click += new System.EventHandler(this.btnStartStopLogging_Click);
+            // 
             // FollowerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 273);
+            this.ClientSize = new System.Drawing.Size(292, 340);
+            this.Controls.Add(this.btnStartStopLogging);
+            this.Controls.Add(this.btnReplay);
             this.Controls.Add(this.cmbMotionPlanner);
             this.Controls.Add(this.BtnKick);
             this.Controls.Add(this.btnReloadPIDConstants);
@@ -189,5 +213,7 @@
         private System.Windows.Forms.Button btnReloadPIDConstants;
         private System.Windows.Forms.Button BtnKick;
         private System.Windows.Forms.ComboBox cmbMotionPlanner;
+        private System.Windows.Forms.Button btnReplay;
+        private System.Windows.Forms.Button btnStartStopLogging;
 	}
 }

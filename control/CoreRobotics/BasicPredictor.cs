@@ -282,7 +282,7 @@ namespace Robocup.CoreRobotics
 
         public void updateRobot(int id, RobotInfo newInfo)
         {
-            throw new ApplicationException("this is not implemented");
+            throw new ApplicationException("this is not implemented");                                   
         }
         #endregion
     }

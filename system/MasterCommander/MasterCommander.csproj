@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BugNavigator.cs" />
     <Compile Include="Commander.cs" />
     <Compile Include="CommanderState.cs" />
     <Compile Include="CommanderTypes.cs" />

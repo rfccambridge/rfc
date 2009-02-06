@@ -11,6 +11,10 @@ namespace Robocup.Core {
             set;
         }
 
+        bool Logging {
+            get;
+        }
+
         void StartLogging();
         void StopLogging();
 
