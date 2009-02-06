@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arrow.cs" />
+    <Compile Include="Combinations.cs" />
     <Compile Include="CoordinateConverter.cs" />
     <Compile Include="FieldDrawer.cs" />
     <Compile Include="FieldDrawerForm.cs">
@@ -47,11 +48,15 @@
       <DependentUpon>FieldDrawerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GeneralPID.cs" />
+    <Compile Include="GenerateOption.cs" />
     <Compile Include="HighResTimer.cs" />
+    <Compile Include="IMetaCollection.cs" />
     <Compile Include="KeyboardHook.cs" />
     <Compile Include="Logging.cs" />
+    <Compile Include="Permutations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerialUtils.cs" />
+    <Compile Include="SmallPrimeUtility.cs" />
     <Compile Include="SpecialFunctions.cs" />
   </ItemGroup>
   <ItemGroup>

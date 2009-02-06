@@ -101,7 +101,7 @@ namespace Vision
         }
     }
 
-    class BlobComparer : System.Collections.IComparer {
+    class BlobAreaComparer : System.Collections.IComparer {
         int area1, area2;
         public int Compare(object b1, object b2) {
             
@@ -119,6 +119,37 @@ namespace Vision
             } else if (area2 > area1) {
                 return -1;
             } else {
+                return 0;
+            }
+        }
+    }
+    class   BlobAreaScaledComparer : System.Collections.Generic.IComparer<Blob>
+    {
+        float area1, area2;
+        public int Compare(Blob b1, Blob b2)
+        {
+
+            if (b1 == null)
+            {
+                return 1;
+            }
+            if (b2 == null)
+            {
+                return -1;
+            }
+
+            area1 = b1.AreaScaled;
+            area2 = b2.AreaScaled;
+            if (area1 > area2)
+            {
+                return 1;
+            }
+            else if (area2 > area1)
+            {
+                return -1;
+            }
+            else
+            {
                 return 0;
             }
         }
@@ -148,7 +179,7 @@ namespace Vision
         private ImageForm _imageForm;
         
 
-        private BlobComparer blobComparer;
+        private BlobAreaComparer blobComparer;
 
         private bool _blobbing;
 
@@ -181,7 +212,7 @@ namespace Vision
 
             _imageForm = imageForm;
 
-            blobComparer = new BlobComparer();
+            blobComparer = new BlobAreaComparer();
 
             _visionLoopDelegate = new VoidDelegate(VisionLoop);
             _errorHandler = new AsyncCallback(ErrorHandler);
