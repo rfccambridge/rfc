@@ -153,174 +153,152 @@ namespace Robocup.MotionControl
         }
     }
 #endif
-    ///*
-    ///// <summary>
-    ///// StickyDumbPath follows a straight course to the destination regardless of obstacles
-    ///// </summary>
-    //public class StickyDumbPath : IMotionPlanner {
-    //    // TODO: get rid of fullpath
-    //    List<RobotInfo> fullpath;
+    /// <summary>
+    /// StickyDumbPath follows a straight course to the destination regardless of obstacles
+    /// </summary>
+    public class StickyDumbMotionPlanner : IMotionPlanner {
 
-    //    // Each robot has a feedback object, a timer, and a path object
-    //    private Feedback[] _feedbackObjs;
-    //    private DateTime[] _timesLastCalled;
-    //    private RobotPath[] _paths;
+        // Each robot has a feedback object, a timer, and a path object
+        private Feedback[] _feedbackObjs;
+        private DateTime[] _timesLastCalled;
+        private RobotPath[] _paths;
 
-    //    //private BidirectionalRRTPlanner<RobotInfo, Vector2, RobotInfoTree, Vector2Tree> _planner;
-    //    private BidirectionalRRTPlanner<RobotInfo, RobotInfo, RobotInfoTree, RobotInfoTree> _planner;
-    //    //private Pair<List<RobotInfo>, List<Vector2>> _path;
-    //    private Pair<List<RobotInfo>, List<RobotInfo>> _path;
+        const int NUM_ROBOTS = 5;
 
-    //    const int NUM_ROBOTS = 5;
+        private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
+		private double WAYPOINT_DISTANCE = .05;
+        private static int PATH_RECALCULATE_INTERVAL;
 
-    //    private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
-    //    private static int PATH_RECALCULATE_INTERVAL;
 
-    //    public StickyDumbPath() {
+        public StickyDumbMotionPlanner() {
 
-    //        LoadParameters();
+            LoadParameters();
 
-    //        //replaced with static testing planner
-    //        _planner = new BidirectionalRRTPlanner<RobotInfo, RobotInfo, RobotInfoTree, RobotInfoTree>(
-    //            Common.ExtendRRThrough, Common.ExtendRRThrough, Common.ExtendRRThrough, Common.ExtendRRThrough, Common.RandomStateR, Common.RandomStateR);
+            //Store feedback for each robot
+            _feedbackObjs = new Feedback[NUM_ROBOTS];
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
+                _feedbackObjs[robotID] = new Feedback(robotID);
 
-    //        //Store feedback for each robot
-    //        _feedbackObjs = new Feedback[NUM_ROBOTS];
-    //        for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-    //            _feedbackObjs[robotID] = new Feedback(robotID);
+            //Store time last called
+            _timesLastCalled = new DateTime[NUM_ROBOTS];
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
+                //Set to arbitrary time in past- January 1, 2000
+                _timesLastCalled[robotID] = new DateTime(2000, 1, 1);
+            }
 
-    //        //Store time last called
-    //        _timesLastCalled = new DateTime[NUM_ROBOTS];
-    //        for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
-    //            //Set to arbitrary time in past- January 1, 2000
-    //            _timesLastCalled[robotID] = new DateTime(2000, 1, 1);
-    //        }
+        }
 
-    //    }
+        private void LoadParameters() {
+            PATH_RECALCULATE_INTERVAL = Constants.get<int>("default", "PATH_RECALCULATE_INTERVAL");
+        }
 
-    //    private void LoadParameters() {
-    //        PATH_RECALCULATE_INTERVAL = Constants.get<int>("default", "PATH_RECALCULATE_INTERVAL");
-    //    }
+        /// <summary>
+        /// Reloads PID constants from file
+        /// </summary>
+        public void ReloadConstants() {
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
+                _feedbackObjs[robotID].ReloadConstants();
+        }
 
-    //    /// <summary>
-    //    /// Reloads PID constants from file
-    //    /// </summary>
-    //    public void ReloadConstants() {
-    //        for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-    //            _feedbackObjs[robotID].ReloadConstants();
-    //    }
+        /// <summary>
+        /// Create a linear series of waypoints between origin and destination, given waypoint distance
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <param name="destination"></param>
+        /// <returns></returns>
+        private RobotPath getPath(RobotInfo origin, RobotInfo destination, double extendDistance) {
+            List<RobotInfo> retpath = new List<RobotInfo>();
 
-    //    /// <summary>
-    //    /// Create a linear series of waypoints between origin and destination, given waypoint distance
-    //    /// </summary>
-    //    /// <param name="origin"></param>
-    //    /// <param name="destination"></param>
-    //    /// <returns></returns>
-    //    /*private RobotPath getPath(RobotInfo origin, RobotInfo destination, double extendDistance) {
-    //        List<RobotInfo> retpath = new List<RobotInfo>();
+        	int id = origin.ID;
+            retpath.Add(origin);
 
-    //        int id = 
-    //        retpath.Add(origin);
+        	Vector2 newposition;
+            double orientation = (destination.Position - origin.Position).cartesianAngle();
+            Vector2 singlevector = (destination.Position - origin.Position).normalizeToLength(extendDistance);
 
-    //        orientation = (destination.Position - origin.Position).cartesianAngle();
-    //        singlevector = (destination.Position - origin.Position).normalizeToLength(extendDistance);
-
-    //        while (origin.Position.distanceSq(destination.Position) > extendDistance * extendDistance) {
-    //            newposition = (retpath[retpath.Count - 1] + singlevector);
+            while (origin.Position.distanceSq(destination.Position) > extendDistance * extendDistance) {
+                newposition = (retpath[retpath.Count - 1].Position + singlevector);
                 
-    //            retpath.Add();
-    //        }
+                retpath.Add(new RobotInfo(newposition, orientation, id));
+            }
 
-    //        return retpath;
-    //    }*/
+        	retpath.Add(destination);
 
-    //    public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
-    //        List<Obstacle> obstacles = new List<Obstacle>();
-    //        foreach (RobotInfo info in predictor.getAllInfos()) {
-    //            if (info.ID != id)
-    //                //TODO magic number (robot radius)
-    //                obstacles.Add(new Obstacle(info.Position, .2));
-    //        }
-    //        //TODO goal hack
-    //        if (!TagSystem.GetTags(id).Contains("goalie")) {
-    //            obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
-    //            obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
-    //        }
+            return new RobotPath(retpath);
+        }
 
-    //        RobotInfo curinfo;
-    //        try {
-    //            curinfo = predictor.getCurrentInformation(id);
-    //        } catch (ApplicationException e) {
-    //            throw e;
-    //        }
+        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+            List<Obstacle> obstacles = new List<Obstacle>();
+            foreach (RobotInfo info in predictor.getAllInfos()) {
+                if (info.ID != id)
+                    //TODO magic number (robot radius)
+                    obstacles.Add(new Obstacle(info.Position, .2));
+            }
+            //TODO goal hack
+            if (!TagSystem.GetTags(id).Contains("goalie")) {
+                obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+            }
 
-    //        foreach (Obstacle o in obstacles) {
-    //            if (curinfo.Position.distanceSq(o.position) < o.size * o.size) {
-    //                o.size = .9 * Math.Sqrt(curinfo.Position.distanceSq(o.position));
-    //            }
-    //        }
+            RobotInfo curinfo;
+            try {
+                curinfo = predictor.getCurrentInformation(id);
+            } catch (ApplicationException e) {
+                throw e;
+            }
 
-    //        //Check whether there has been enough time since last refresh
-    //        DateTime nowCached = DateTime.Now;
-    //        if ((nowCached - _timesLastCalled[id]).TotalMilliseconds > PATH_RECALCULATE_INTERVAL) {
-    //            _path = _planner.Plan(curinfo, desiredState, obstacles);
-    //            //Combine first and second
-    //            fullpath = _path.First;
-    //            fullpath.AddRange(_path.Second);
-    //            _timesLastCalled[id] = nowCached;
-    //        }
+            foreach (Obstacle o in obstacles) {
+                if (curinfo.Position.distanceSq(o.position) < o.size * o.size) {
+                    o.size = .9 * Math.Sqrt(curinfo.Position.distanceSq(o.position));
+                }
+            }
+			
+            //Check whether there has been enough time since last refresh
+            DateTime nowCached = DateTime.Now;
+            if ((nowCached - _timesLastCalled[id]).TotalMilliseconds > PATH_RECALCULATE_INTERVAL) {
+                _paths[id] = getPath(curinfo, desiredState, WAYPOINT_DISTANCE);
+                _timesLastCalled[id] = nowCached;
+            }
 
-    //        if (_path == null)
-    //            throw new Exception("Something wrong with stickyPlanner! No path calculated!!!");
+            if (_paths[id] == null)
+                throw new Exception("Something wrong with StickyDumbPath! No path calculated!!!");
 
-    //        ///instead of going to nearest going to try more of a carrot on a stick approach and go to the next one.
-    //        ///  RobotInfo nearestWayPoint = findNearestWaypoint(curinfo, path);
-    //        ///WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nearestWayPoint);
-
-    //        /*nextWaypointIndex = findNearestWaypointIndex(curinfo, _path);
-    //        if (nextWaypointIndex != _path.First.Count - 1)
-    //           nextWaypointIndex = nextWaypointIndex + 1;
-    //        nextWayPoint = _path.First[nextWaypointIndex];*/
-
-    //        nextWaypointIndex = findNearestWaypointIndex(curinfo);
-    //        if (nextWaypointIndex != fullpath.Count - 1)
-    //            nextWaypointIndex = nextWaypointIndex + 1;
-    //        nextWayPoint = fullpath[nextWaypointIndex];
+        	RobotInfo nextWaypoint;
+			int nextWaypointIndex = _paths[id].findNearestWaypointIndex(curinfo);
+            if (nextWaypointIndex != _paths[id].Waypoints.Count - 1)
+                nextWaypointIndex = nextWaypointIndex + 1;
+            nextWaypoint = _paths[id].getWaypoint(nextWaypointIndex);
 
 
-    //        double wpDistanceSq = curinfo.Position.distanceSq(nextWayPoint.Position);
+            double wpDistanceSq = curinfo.Position.distanceSq(nextWaypoint.Position);
 
-    //        if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
-    //            WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);
-    //            return new MotionPlanningResults(wheelSpeeds, nextWayPoint);
-    //        } else {
+            if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
+                WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWaypoint);
+                return new MotionPlanningResults(wheelSpeeds, nextWaypoint);
+            } else {
 
-    //            Console.WriteLine("Close enough to point, stopping now.");
-    //            return new MotionPlanningResults(new WheelSpeeds(), nextWayPoint);
-    //        }
+                Console.WriteLine("Close enough to point, stopping now.");
+                return new MotionPlanningResults(new WheelSpeeds(), nextWaypoint);
+            }
 
-    //        //WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);
-    //        //return new MotionPlanningResults(wheelSpeeds, nextWayPoint);
+            //WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);
+            //return new MotionPlanningResults(wheelSpeeds, nextWayPoint);
 
-    //    }
+        }
 
-    //    public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
-    //        if (_path == null)
-    //            return;
-    //        List<Vector2> emptylist = new List<Vector2>();
-    //        Common.DrawPath(new Pair<List<RobotInfo>, List<Vector2>>(fullpath, emptylist), Color.Blue, Color.Green, g, c);
-    //        //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
-    //        //Common.DrawRobotInfoTree(_planner.LastTree2(), Color.Green, g, c);
-    //        //Common.DrawPath(_planner.LastPath, Color.Blue, g, c);
-    //    }
+        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
+            if (_paths[0] == null)
+                return;
+            List<Vector2> emptylist = new List<Vector2>();
+            Common.DrawPath(new Pair<List<RobotInfo>, List<Vector2>>(_paths[0].Waypoints, emptylist), Color.Blue, Color.Green, g, c);
+        }
 
-    //    //reload all necessary constants from files, for now just PID reload
-    //    public void reloadConstants() {
-    //        for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-    //            _feedbackObjs[robotID].ReloadConstants();
-    //    }
-    //}
-    //*/
+        //reload all necessary constants from files, for now just PID reload
+        public void reloadConstants() {
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
+                _feedbackObjs[robotID].ReloadConstants();
+        }
+    }
 
     public class MixedBiRRTMotionPlanner : IMotionPlanner
     {

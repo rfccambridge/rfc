@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using Robocup.MessageSystem;
 using Robocup.Core;
@@ -235,7 +232,8 @@ namespace SimplePathFollower
             _running = true;
         }
 
-        enum MotionPlanners { CircleFeedbackMotionPlanner, BugFeedbackMotionPlanner, MixedBiRRTMotionPlanner, StickyRRTFeedbackMotionPlanner };
+        enum MotionPlanners { CircleFeedbackMotionPlanner, BugFeedbackMotionPlanner, 
+			MixedBiRRTMotionPlanner, StickyRRTFeedbackMotionPlanner , StickyDumbMotionPlanner};
         private MotionPlanners _currentPlannerSelection;
 
         private void cmbMotionPlanner_SelectedIndexChanged(object sender, EventArgs e) {
@@ -272,6 +270,13 @@ namespace SimplePathFollower
                         _currentPlannerSelection = MotionPlanners.StickyRRTFeedbackMotionPlanner;
                     }
                     break;
+				case MotionPlanners.StickyDumbMotionPlanner:
+					planner = new StickyDumbMotionPlanner();
+					if (_pathFollower.setPlanner(planner))
+					{
+						_currentPlannerSelection = MotionPlanners.StickyDumbMotionPlanner;
+					}
+					break;
             }
             cmbMotionPlanner.SelectedItem = _currentPlannerSelection;
         }
