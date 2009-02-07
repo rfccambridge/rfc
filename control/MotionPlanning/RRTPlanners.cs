@@ -274,6 +274,8 @@ namespace Robocup.MotionControl
                 nextWaypointIndex = nextWaypointIndex + 1;
             nextWaypoint = _paths[id].getWaypoint(nextWaypointIndex);
 
+            Console.WriteLine(_paths[id].Waypoints.Count.ToString());
+
 
             double wpDistanceSq = curinfo.Position.distanceSq(nextWaypoint.Position);
 
@@ -375,7 +377,7 @@ namespace Robocup.MotionControl
             Common.DrawVector2Tree(planner.LastTree2(), Color.Green, g, c);
         }
     }
-    public class CircleFeedbackMotionPlanner : IMotionPlanner {
+    public class CircleFeedbackMotionPlanner : IMotionPlanner, ILogger {
         //the index of the next waypoint the robots going to try and go to and an associated robotinfo
         int nextWaypointIndex = 0;
         RobotInfo nextWayPoint;
@@ -390,6 +392,50 @@ namespace Robocup.MotionControl
         const int NUM_ROBOTS = 5;
 
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
+
+        #region ILogger
+
+        private string _logFile = null;
+        private bool _logging = false;
+        private LogWriter _logWriter = new LogWriter();
+
+        public string LogFile
+        {
+            get { return _logFile; }
+            set { _logFile = value; }
+        }
+
+        public bool Logging
+        {
+            get
+            {
+                return _logging;
+            }
+        }
+
+        public void StartLogging()
+        {
+            if (_logging)
+                return;
+
+            if (_logFile == null)
+            {
+                throw new ApplicationException("Logger: must set LogFile before calling start");
+            }
+
+            _logWriter.OpenLogFile(_logFile);
+            _logging = true;
+        }
+
+        public void StopLogging()
+        {
+            if (!_logging)
+                return;
+
+            _logWriter.CloseLogFile();
+            _logging = false;
+        }
+        #endregion        
 
         public CircleFeedbackMotionPlanner() {
             
@@ -452,6 +498,8 @@ namespace Robocup.MotionControl
         }
 
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+            List<Object> itemsToLog = new List<Object>();
+            
             List<Obstacle> obstacles = new List<Obstacle>();
             foreach (RobotInfo info in predictor.getAllInfos()) {
                 if (info.ID != id)
@@ -488,21 +536,41 @@ namespace Robocup.MotionControl
             if (nextWaypointIndex!=path.First.Count-1)
                 nextWaypointIndex = nextWaypointIndex+1;
             nextWayPoint = path.First[nextWaypointIndex];
+
+            // Logging
+            itemsToLog.Add(DateTime.Now);
+            itemsToLog.Add(curinfo);
+            itemsToLog.Add(desiredState);
+            itemsToLog.Add(nextWayPoint);            
             
             double wpDistanceSq = curinfo.Position.distanceSq(nextWayPoint.Position);
 
+            MotionPlanningResults results;
+            WheelSpeeds wheelSpeeds;
+
             if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
-                WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);
-                return new MotionPlanningResults(wheelSpeeds, nextWayPoint);
-            } else {
-                
+                wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);                
+            } else {                
                 Console.WriteLine("Close enough to point, stopping now.");
-                return new MotionPlanningResults(new WheelSpeeds(), nextWayPoint);
+                wheelSpeeds = new WheelSpeeds();                
+            }
+
+            itemsToLog.Add(wheelSpeeds);
+
+            results = new MotionPlanningResults(wheelSpeeds, nextWayPoint);
+            
+            RobotPath robotPath = new RobotPath(path.First);
+            itemsToLog.Add(robotPath);
+
+            if (_logging)
+            {
+                _logWriter.LogItems(itemsToLog);
             }
 
             //WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);
             //return new MotionPlanningResults(wheelSpeeds, nextWayPoint);
 
+            return results;
         }
 
         public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
@@ -817,8 +885,6 @@ namespace Robocup.MotionControl
         }
     }
 
-
-
     public class BugFeedbackMotionPlanner : IMotionPlanner, Robocup.Core.ILogger {
 
         public void ReloadConstants() {}
@@ -839,8 +905,7 @@ namespace Robocup.MotionControl
 
         private string _logFile = null;
         private bool _logging = false;
-        private object _textWriterLock = new object();
-        private TextWriter _textWriter;
+        private LogWriter _logWriter = new LogWriter();        
 
         public string LogFile {
             get { return _logFile; }
@@ -861,20 +926,16 @@ namespace Robocup.MotionControl
                 throw new ApplicationException("Logger: must set LogFile before calling start");
             }
 
-            lock (_textWriterLock) {
-                _textWriter = new StreamWriter(_logFile);
-                _logging = true;
-            }
+            _logWriter.OpenLogFile(_logFile);
+            _logging = true;
         }
 
         public void StopLogging() {            
             if (!_logging)
                return;          
-
-            lock (_textWriterLock) {
-                _textWriter.Close();                        
-                _logging = false;
-            }
+            
+                _logWriter.CloseLogFile();
+                _logging = false;            
         }
         #endregion        
 
@@ -943,6 +1004,9 @@ namespace Robocup.MotionControl
         }
 
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+
+            List<Object> itemsToLog = new List<Object>();
+
             List<Obstacle> obstacles = new List<Obstacle>();
             foreach (RobotInfo info in predictor.getAllInfos()) {
                 if (info.ID != id)
@@ -977,18 +1041,11 @@ namespace Robocup.MotionControl
                 0);
             //results.waypoint
 
-            lock (_textWriterLock) {
-                if (_logging) {
-                    DateTime timestamp = DateTime.Now;
-                    _textWriter.Write(timestamp.Hour.ToString() + ":" + timestamp.Minute.ToString() + ":" +
-                                      timestamp.Second.ToString() + "." + timestamp.Millisecond.ToString());
-                    _textWriter.Write(curinfo.ID.ToString() + " " + curinfo.Position.ToString() + " " +
-                                      curinfo.Orientation.ToString() + " " + curinfo.Velocity.ToString() + " ");
-                    _textWriter.Write(desiredState.ID.ToString() + " " + desiredState.Position.ToString() + " " +
-                                      desiredState.Orientation.ToString() + " " + desiredState.Velocity.ToString() + " ");
-                    _textWriter.Write(results.waypoint.ToString());                    
-                }
-            }
+            itemsToLog.Add(DateTime.Now);
+            itemsToLog.Add(curinfo);
+            itemsToLog.Add(desiredState);
+            RobotInfo nextWaypoint = new RobotInfo(results.waypoint, 0, 0);
+            itemsToLog.Add(nextWaypoint);                        
 
             RobotInfo rInfo = new RobotInfo(new Vector2(results.waypoint.X, results.waypoint.Y), results.waypoint.cartesianAngle(), curinfo.ID);
             List<RobotInfo> waypoints = new List<RobotInfo>();
@@ -1012,11 +1069,13 @@ namespace Robocup.MotionControl
                 mpResults =  new MotionPlanningResults(wheelSpeeds, null);
             }
 
-            lock (_textWriterLock) {
-                if (_logging) {
-                    _textWriter.Write(wheelSpeeds.ToString());
-                    _textWriter.WriteLine();
-                }
+            itemsToLog.Add(wheelSpeeds);
+
+            RobotPath robotPath = new RobotPath(waypoints);
+            itemsToLog.Add(robotPath);
+            
+            if (_logging) {
+                _logWriter.LogItems(itemsToLog);      
             }
 
             return mpResults;

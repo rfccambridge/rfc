@@ -42,9 +42,12 @@
     <Compile Include="IMotionPlanner.cs" />
     <Compile Include="INavigator.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="LogReader.cs" />
+    <Compile Include="LogWriter.cs" />
     <Compile Include="MovementModeler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotInfo.cs" />
+    <Compile Include="RobotPath.cs" />
     <Compile Include="TagSystem.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="WheelSpeeds.cs" />

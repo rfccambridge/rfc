@@ -10,10 +10,13 @@ using Robocup.Utilities;
 using System.Diagnostics;
 using Robocup.MotionControl;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
 
 namespace SimplePathFollower
 {
     public delegate void VoidDelegate();
+    public delegate bool BoolDelegate();    
+    public delegate void ButtonStringDelegate(Button btn, string text);
 
 	public partial class FollowerForm : Form
 	{
@@ -31,7 +34,13 @@ namespace SimplePathFollower
         private ICoordinateConverter _converter;
         private Object _drawingLock = new Object();
         private Stopwatch _stopwatch = new Stopwatch();
-		
+
+        // Logging
+        LogReader _logReader;
+        IPredictor _logPredictor;
+        FieldDrawerForm _logFieldDrawer;
+        List<Type> _logLineFormat;
+
 		public FollowerForm()
 		{
 			InitializeComponent();
@@ -52,7 +61,7 @@ namespace SimplePathFollower
 
             cmbMotionPlanner.Items.AddRange(motionPlanners);
 
-            BtnStartStop.Text = "Start";
+            btnStartStop.Text = "Start";
             
 
             // Default MotionPlanner selection
@@ -73,7 +82,20 @@ namespace SimplePathFollower
             _stopwatch.Start();
 
 
-           
+            // Logging
+            _logReader = new LogReader();
+            _logPredictor = new StaticPredictor();
+            _logFieldDrawer = new FieldDrawerForm(_logPredictor);
+
+            // Log Line format
+            // timestamp current_state desired_state next_waypoint wheel_speeds path
+            _logLineFormat = new List<Type>();
+            _logLineFormat.Add(typeof(DateTime));
+            _logLineFormat.Add(typeof(RobotInfo));
+            _logLineFormat.Add(typeof(RobotInfo));
+            _logLineFormat.Add(typeof(RobotInfo));
+            _logLineFormat.Add(typeof(WheelSpeeds));
+            _logLineFormat.Add(typeof(RobotPath));
 
 		}
 
@@ -190,27 +212,58 @@ namespace SimplePathFollower
                 //wpList.Add(new Vector2(0.5, 0.5));
                 //wpList.Add(new Vector2(-0.5, 0.5));
 
-                _pathFollower.RobotID = 0;
+                _pathFollower.RobotID = int.Parse(txtRobotID.Text);
                 _pathFollower.Waypoints = wpList;
 
                 _running = true;
+                btnStartStop.Text = "Stop";
+
                 // start the path follower in a new thread                 
-                VoidDelegate followLoopDelegate = new VoidDelegate(_pathFollower.Follow);
+                BoolDelegate followLoopDelegate = new BoolDelegate(_pathFollower.Follow);
                 AsyncCallback followErrorHandler = new AsyncCallback(ErrorHandler);
                 IAsyncResult FollowLoopHandle = followLoopDelegate.BeginInvoke(followErrorHandler, null);
-
-                BtnStartStop.Text = "Stop";
-                
+               
             } else {
                 _pathFollower.Stop();
                 _running = false;
-                BtnStartStop.Text = "Start";
+                btnStartStop.Text = "Start";
             }
 		}
 
-        private void ErrorHandler(IAsyncResult res) {            
+        private void ErrorHandler(IAsyncResult res) {
+
+            AsyncResult result = (AsyncResult)res; // access the implementation of the interface
+            BoolDelegate callerDelegate = (BoolDelegate)result.AsyncDelegate;
+
+            bool error = callerDelegate.EndInvoke(res);
+
+            if (error)
+            {
+                MessageBox.Show("Error! Follow() method failed.");
+            }
+
+
             _pathFollower.Stop();
             _running = false;
+
+            // Cross thread operation:           
+            SetButtonText(btnStartStop, "Start");
+          
+        }
+
+        delegate void StringDelegate(string str);
+        private void SetButtonText(Button btn, string text)
+        {                        
+            if (btn.InvokeRequired)
+            {
+                // This is a worker thread so delegate the task.
+                btn.Invoke(new ButtonStringDelegate(SetButtonText), btn, text);
+            }
+            else
+            {
+                // This is the UI thread so perform the task.
+                btn.Text = text;
+            }            
         }
 
         private void btnReloadPIDConstants_Click(object sender, EventArgs e) {
@@ -224,7 +277,7 @@ namespace SimplePathFollower
                 return;
             }
 
-            BtnStartStop.Text = "Stop";
+            btnStartStop.Text = "Stop";
 
             VoidDelegate kickLoopDelegate = new VoidDelegate(_pathFollower.Kick);
             AsyncCallback kickErrorHandler = new AsyncCallback(ErrorHandler);
@@ -282,81 +335,56 @@ namespace SimplePathFollower
             cmbMotionPlanner.SelectedItem = _currentPlannerSelection;
         }
 
-        const string LOG_FILE = "testlog.txt";
-        private void btnReplay_Click(object sender, EventArgs e) {
+        const string LOG_FILE = "testlog.txt";        
+        private void btnLogNext_Click(object sender, EventArgs e) {
 
-            return;
-            TextReader txtReader = new StreamReader(LOG_FILE);
+            if (!_logReader.LogOpen)
+            {
+                MessageBox.Show("Log file not open.");
+                return;
+            }
 
-            // create predictor and give it the info from the file            
-            IInfoAcceptor predictor = new StaticPredictor();
-            FieldDrawerForm fieldDrawer = new FieldDrawerForm((IPredictor)predictor);
+            if (!_logFieldDrawer.Visible)
+                _logFieldDrawer.Show();
 
-            string line = txtReader.ReadLine();
+            // Get logged info
 
-            DateTime timestamp;
-            RobotInfo robotInfo;
-            RobotInfo desiredInfo;
-            Vector2 waypoint;
-            WheelSpeeds wheelSpeeds;
+            _logReader.Next();
+            List<Object> loggedItems = _logReader.GetLoggedItems();
 
-            parseLogLine(line, out timestamp, out robotInfo, out desiredInfo, out waypoint, out wheelSpeeds);
 
-            predictor.updateRobot(robotInfo.ID, robotInfo);
+            // Log Line format
+            // timestamp current_state desired_state next_waypoint wheel_speeds path
+            RobotInfo curState = (RobotInfo)loggedItems[1];
+            RobotInfo waypointInfo = (RobotInfo)loggedItems[3];
+            RobotInfo destState = (RobotInfo)loggedItems[2];
+            RobotPath path = (RobotPath)loggedItems[5];                                   
+
+            // Update predictor (this will also draw the robot positions)
+
+            ((IInfoAcceptor)_logPredictor).updateRobot(curState.ID, curState);
             
-            // call drawfield
-
-            // build path from info in file
-            Pair<List<RobotInfo>, List<Vector2>> path = new Pair<List<RobotInfo>, List<Vector2>>(new List<RobotInfo>(), new List<Vector2>());            
-            RobotInfo waypointInfo = new RobotInfo(waypoint, 0, 0);
-            path.First.Add(waypointInfo);
+            // Draw the path, and the arrows
             
-            // call Common.drawpath
-            //Common.DrawPath(path, Color.Blue, fieldDrawer.CreateGraphics(), fieldDrawer.Converter);
-            
-            txtReader.Close();
+            Graphics gfx = _logFieldDrawer.CreateGraphics();
+            ICoordinateConverter converter = _logFieldDrawer.Converter;
 
-            fieldDrawer.Show();
+            Common.DrawPath(path, Color.Blue, Color.Blue, gfx, converter);
 
-        }
+            List<Arrow> arrows = new List<Arrow>();
+            arrows.Add(new Arrow(curState.Position, destState.Position, Color.Red, 0.04));
+            arrows.Add(new Arrow(curState.Position, waypointInfo.Position, Color.Green, 0.04));
 
-        private void parseLogLine(string line, out DateTime timestamp,
-                                               out RobotInfo robotInfo, out RobotInfo desiredInfo,
-                                               out Vector2 waypoint, out WheelSpeeds wheelSpeeds) {
-            string[] items = line.Split(' ');
-
-            // Timestamp
-            string[] timeItems = items[0].Split(':');            
-            timestamp = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(timeItems[0]), int.Parse(timeItems[1]),
-                                              int.Parse(timeItems[2]));
-
-            // Robotinfo
-            string[] positionItems = (items[2].Substring(1, items[2].Length - 2)).Split(','); // strip the "<" and ">"
-            string[] velocityItems = (items[4].Substring(1, items[4].Length - 2)).Split(',');
-            robotInfo = new RobotInfo(new Vector2(double.Parse(positionItems[0]), double.Parse(positionItems[1])),
-                                      new Vector2(double.Parse(velocityItems[0]), double.Parse(velocityItems[1])),
-                                      0, double.Parse(items[3]), int.Parse(items[1]));
-
-            // DesiredInfo
-            positionItems = (items[6].Substring(1, items[6].Length - 2)).Split(','); // strip the "<" and ">"
-            velocityItems = (items[8].Substring(1, items[8].Length - 2)).Split(',');
-            desiredInfo = new RobotInfo(new Vector2(double.Parse(positionItems[0]), double.Parse(positionItems[1])),
-                                      new Vector2(double.Parse(velocityItems[0]), double.Parse(velocityItems[1])),
-                                      0, double.Parse(items[7]), int.Parse(items[5]));
-
-            // Waypoint
-            string[] waypointItems = (items[9].Substring(1, items[9].Length - 2)).Split(','); // strip the "<" and ">"
-            waypoint = new Vector2(double.Parse(waypointItems[0]), double.Parse(waypointItems[1]));
-
-            // WheelSpeeds
-            string[] wheelsItems = (items[10].Substring(1, items[10].Length - 2)).Split(','); // strip the "{" and "}"
-            wheelSpeeds = new WheelSpeeds(int.Parse(wheelsItems[0]), int.Parse(wheelsItems[1]), 
-                                          int.Parse(wheelsItems[2]), int.Parse(wheelsItems[3]));
-        }
+            foreach (Arrow arrow in arrows)
+                arrow.drawConvertToPixels(gfx, converter);
+        }       
 
         private void btnStartStopLogging_Click(object sender, EventArgs e) {
-            if (!(_pathFollower.Planner is ILogger)) 
+            if (!(_pathFollower.Planner is ILogger))
+            {
+                MessageBox.Show("Selected MotionPlanner does not implement ILogger interface.");
                 return;
+            }
 
             ILogger logger = _pathFollower.Planner as ILogger;
 
@@ -369,6 +397,21 @@ namespace SimplePathFollower
                 logger.StopLogging();
                 btnStartStopLogging.Text = "Start log";
             }
+        }
+        
+        private void btnLogOpenClose_Click(object sender, EventArgs e)
+        {
+            if (_logReader.LogOpen)
+            {
+                _logReader.CloseLogFile();
+                btnLogOpenClose.Text = "Open log";
+            }
+            else
+            {
+                _logReader.OpenLogFile(LOG_FILE, _logLineFormat);
+                btnLogOpenClose.Text = "Close log";
+            }
+
         }
 	}
 

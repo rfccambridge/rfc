@@ -201,6 +201,13 @@ namespace Robocup.MotionControl
             p.Dispose();
             b.Dispose();
         }
+
+        static public void DrawPath(RobotPath path, Color color1, Color color2, Graphics g, ICoordinateConverter c)
+        {
+            Pair<List<RobotInfo>, List<Vector2>> pairPath = new Pair<List<RobotInfo>,List<Vector2>>(path.Waypoints, new List<Vector2>());            
+            DrawPath(pairPath, color1, color2, g, c);
+        }
+
         static public void DrawPath(Pair<List<RobotInfo>, List<Vector2>> path, Color color1, Color color2, Graphics g, ICoordinateConverter c) {
             if (path == null)
                 return;

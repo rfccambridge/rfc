@@ -7,19 +7,14 @@ using Robocup.Utilities;
 namespace Robocup.CoreRobotics
 {
     /// <summary>
-    /// A basic implementation of IPredictor that just remembers the last values that it saw.
+    /// A basic implementation of IPredictor that always returns the information from its previous update 
+    /// no matter how long ago the update happened.
     /// </summary>
     public class StaticPredictor : IPredictor, IInfoAcceptor
     {  
         protected BallInfo ballInfo = new BallInfo(new Vector2(0, 0));
         protected List<RobotInfo> ourRobotsInfo = new List<RobotInfo>();
         protected List<RobotInfo> theirRobotsInfo = new List<RobotInfo>();       
-
-        public StaticPredictor()
-        {
-        }
-
-
 
         #region IPredictor Members
 
@@ -73,11 +68,7 @@ namespace Robocup.CoreRobotics
 
         public void updateRobot(int id, RobotInfo newInfo)
         {
-            foreach (RobotInfo robotInfo in ourRobotsInfo) {
-                if (robotInfo.ID == id) {
-                    ourRobotsInfo.Remove(robotInfo);
-                }
-            }
+            ourRobotsInfo.RemoveAll(new Predicate<RobotInfo>(delegate(RobotInfo rinfo) { return rinfo.ID == id; }));
             ourRobotsInfo.Add(newInfo);
         }
         #endregion

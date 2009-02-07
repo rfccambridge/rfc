@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
-using Robocup.Core;
 using Robocup.CoreRobotics;
 
-namespace Robocup.MotionControl {
+namespace Robocup.Core {
     /// <summary>
     /// Describes a path to a destination as a series of RobotInfo waypoints
     /// </summary>
@@ -59,6 +57,7 @@ namespace Robocup.MotionControl {
             _id = id;
             _path = makeRobotInfoList(_id, waypoints);
         }
+
 
         // Public interface for variables
         public int ID {

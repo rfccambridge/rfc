@@ -83,7 +83,8 @@ namespace SimplePathFollower
             return false;
         }
 
-		public void Follow()
+        // returns whether an error has occured or not
+		public bool Follow()
 		{
 			running = true;
 			waypointIndex = 0;
@@ -101,8 +102,8 @@ namespace SimplePathFollower
                      curinfo = predictor.getCurrentInformation(robotID);
                      ballInfo = predictor.getBallInfo();
                 } catch (ApplicationException e) {
-                    Console.WriteLine("Failed Predictor.getCurrentInformation(). Dumping exception\n" + e.ToString());
-                    return;
+                    Console.WriteLine("Failed Predictor.getCurrentInformation(). Dumping exception\n" + e.ToString());                    
+                    return true;
                 }
 				/*double wpDistanceSq = curinfo.Position.distanceSq(waypoints[waypointIndex]);
                 if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
@@ -112,8 +113,10 @@ namespace SimplePathFollower
                 controller.move(robotID, false, waypoints[waypointIndex]);
 			
 				System.Threading.Thread.Sleep(10);
-			} while (running);
-		}
+            } while (running);
+
+            return false;
+        }
 
         public void Kick() 
         {

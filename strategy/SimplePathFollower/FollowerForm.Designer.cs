@@ -31,7 +31,7 @@
             this.BtnVision = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.VisionHost = new System.Windows.Forms.TextBox();
-            this.BtnStartStop = new System.Windows.Forms.Button();
+            this.btnStartStop = new System.Windows.Forms.Button();
             this.VisionStatus = new System.Windows.Forms.Label();
             this.ControlStatus = new System.Windows.Forms.Label();
             this.ControlHost = new System.Windows.Forms.TextBox();
@@ -40,8 +40,11 @@
             this.btnReloadPIDConstants = new System.Windows.Forms.Button();
             this.BtnKick = new System.Windows.Forms.Button();
             this.cmbMotionPlanner = new System.Windows.Forms.ComboBox();
-            this.btnReplay = new System.Windows.Forms.Button();
+            this.btnLogNext = new System.Windows.Forms.Button();
             this.btnStartStopLogging = new System.Windows.Forms.Button();
+            this.btnLogOpenClose = new System.Windows.Forms.Button();
+            this.txtRobotID = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // BtnVision
@@ -71,15 +74,15 @@
             this.VisionHost.TabIndex = 2;
             this.VisionHost.Text = "localhost";
             // 
-            // BtnStartStop
+            // btnStartStop
             // 
-            this.BtnStartStop.Location = new System.Drawing.Point(168, 186);
-            this.BtnStartStop.Name = "BtnStartStop";
-            this.BtnStartStop.Size = new System.Drawing.Size(75, 23);
-            this.BtnStartStop.TabIndex = 3;
-            this.BtnStartStop.Text = "Start";
-            this.BtnStartStop.UseVisualStyleBackColor = true;
-            this.BtnStartStop.Click += new System.EventHandler(this.BtnStartStop_Click);
+            this.btnStartStop.Location = new System.Drawing.Point(168, 186);
+            this.btnStartStop.Name = "btnStartStop";
+            this.btnStartStop.Size = new System.Drawing.Size(75, 23);
+            this.btnStartStop.TabIndex = 3;
+            this.btnStartStop.Text = "Start";
+            this.btnStartStop.UseVisualStyleBackColor = true;
+            this.btnStartStop.Click += new System.EventHandler(this.BtnStartStop_Click);
             // 
             // VisionStatus
             // 
@@ -153,15 +156,15 @@
             this.cmbMotionPlanner.TabIndex = 12;
             this.cmbMotionPlanner.SelectedIndexChanged += new System.EventHandler(this.cmbMotionPlanner_SelectedIndexChanged);
             // 
-            // btnReplay
+            // btnLogNext
             // 
-            this.btnReplay.Location = new System.Drawing.Point(168, 229);
-            this.btnReplay.Name = "btnReplay";
-            this.btnReplay.Size = new System.Drawing.Size(75, 23);
-            this.btnReplay.TabIndex = 13;
-            this.btnReplay.Text = "Replay";
-            this.btnReplay.UseVisualStyleBackColor = true;
-            this.btnReplay.Click += new System.EventHandler(this.btnReplay_Click);
+            this.btnLogNext.Location = new System.Drawing.Point(93, 305);
+            this.btnLogNext.Name = "btnLogNext";
+            this.btnLogNext.Size = new System.Drawing.Size(75, 23);
+            this.btnLogNext.TabIndex = 13;
+            this.btnLogNext.Text = "Next";
+            this.btnLogNext.UseVisualStyleBackColor = true;
+            this.btnLogNext.Click += new System.EventHandler(this.btnLogNext_Click);
             // 
             // btnStartStopLogging
             // 
@@ -173,13 +176,43 @@
             this.btnStartStopLogging.UseVisualStyleBackColor = true;
             this.btnStartStopLogging.Click += new System.EventHandler(this.btnStartStopLogging_Click);
             // 
+            // btnLogOpenClose
+            // 
+            this.btnLogOpenClose.Location = new System.Drawing.Point(12, 305);
+            this.btnLogOpenClose.Name = "btnLogOpenClose";
+            this.btnLogOpenClose.Size = new System.Drawing.Size(75, 23);
+            this.btnLogOpenClose.TabIndex = 15;
+            this.btnLogOpenClose.Text = "Open log";
+            this.btnLogOpenClose.UseVisualStyleBackColor = true;
+            this.btnLogOpenClose.Click += new System.EventHandler(this.btnLogOpenClose_Click);
+            // 
+            // txtRobotID
+            // 
+            this.txtRobotID.Location = new System.Drawing.Point(215, 219);
+            this.txtRobotID.Name = "txtRobotID";
+            this.txtRobotID.Size = new System.Drawing.Size(29, 20);
+            this.txtRobotID.TabIndex = 16;
+            this.txtRobotID.Text = "0";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(165, 225);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(50, 13);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "RobotID:";
+            // 
             // FollowerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 340);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.txtRobotID);
+            this.Controls.Add(this.btnLogOpenClose);
             this.Controls.Add(this.btnStartStopLogging);
-            this.Controls.Add(this.btnReplay);
+            this.Controls.Add(this.btnLogNext);
             this.Controls.Add(this.cmbMotionPlanner);
             this.Controls.Add(this.BtnKick);
             this.Controls.Add(this.btnReloadPIDConstants);
@@ -188,7 +221,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.BtnControl);
             this.Controls.Add(this.VisionStatus);
-            this.Controls.Add(this.BtnStartStop);
+            this.Controls.Add(this.btnStartStop);
             this.Controls.Add(this.VisionHost);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.BtnVision);
@@ -204,7 +237,7 @@
 		private System.Windows.Forms.Button BtnVision;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox VisionHost;
-		private System.Windows.Forms.Button BtnStartStop;
+		private System.Windows.Forms.Button btnStartStop;
 		private System.Windows.Forms.Label VisionStatus;
 		private System.Windows.Forms.Label ControlStatus;
 		private System.Windows.Forms.TextBox ControlHost;
@@ -213,7 +246,10 @@
         private System.Windows.Forms.Button btnReloadPIDConstants;
         private System.Windows.Forms.Button BtnKick;
         private System.Windows.Forms.ComboBox cmbMotionPlanner;
-        private System.Windows.Forms.Button btnReplay;
+        private System.Windows.Forms.Button btnLogNext;
         private System.Windows.Forms.Button btnStartStopLogging;
+        private System.Windows.Forms.Button btnLogOpenClose;
+        private System.Windows.Forms.TextBox txtRobotID;
+        private System.Windows.Forms.Label label2;
 	}
 }
