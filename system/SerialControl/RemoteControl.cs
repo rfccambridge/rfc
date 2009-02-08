@@ -293,7 +293,9 @@ namespace Robotics.Commander {
                         statusLabel.Text = "charging";
                         break;
                     case 32:        // space fire kicker
+                        srobots.setStopCharge(curRobot);
                         srobots.setKick(curRobot);
+                        srobots.setStopCharge(curRobot);
                         statusLabel.Text = "kick";
                         break;
                     case 75:        // k stop charging
@@ -356,6 +358,14 @@ namespace Robotics.Commander {
                     case 'l':
                         driveInDirection(1.0f, 1.0f);
                         statusLabel.Text = "l /";
+                        break;
+                    case 84:
+                        //rcom.DriveStraight(oldcommander, 2, 65535);
+                        //setMotorSpeeds(speed, speed, speed, speed);
+                        driveInDirection(0.0f, 1.0f);
+                        srobots.setCharge(curRobot);
+                        //rcom.DriveDir(oldcommander, Int32.Parse(forwardDir.Text), 65535);
+                        statusLabel.Text = "^y";
                         break;
                     default:
                         //if(e.KeyCode==Keys.Escape)        // exit
