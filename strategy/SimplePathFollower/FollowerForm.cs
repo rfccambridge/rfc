@@ -100,7 +100,7 @@ namespace SimplePathFollower
 
             timer = new Timer();
             timer.Interval = 500;
-            timer.Tick += new EventHandler(InvalidateTimerHanlder);
+            //timer.Tick += new EventHandler(InvalidateTimerHanlder);
             timer.Start();
 		}
 
@@ -348,12 +348,8 @@ namespace SimplePathFollower
         }
 
         const string LOG_FILE = "testlog.txt";
-
-        Graphics _gfx = null;
+        
         private void btnLogNext_Click(object sender, EventArgs e) {
-
-            if (_gfx != null)
-                _gfx.Dispose();
 
             if (!_logReader.LogOpen)
             {
@@ -381,24 +377,19 @@ namespace SimplePathFollower
 
             ((IInfoAcceptor)_logPredictor).updateRobot(curState.ID, curState);
             
-            // Draw the path, and the arrows
-
-
-            _fieldDrawerForm.Invalidate();
+            // Draw the path, and the arrows            
             
-            Graphics gfx = _logFieldDrawer.CreateGraphics();
-            ICoordinateConverter converter = _logFieldDrawer.Converter;
+            // Since we are the only ones who are using this FieldDrawer, we can monopolize 
+            // its arrows and paths holder
+            _logFieldDrawer.ClearPaths();
+            _logFieldDrawer.AddPath(path);
+            
+            _logFieldDrawer.ClearArrows();
+            _logFieldDrawer.AddArrow(new Arrow(curState.Position, destState.Position, Color.Red, 0.04));
+            _logFieldDrawer.AddArrow(new Arrow(curState.Position, waypointInfo.Position, Color.Green, 0.04));
 
-            _fieldDrawerForm.Invalidate();
-
-            Common.DrawPath(path, Color.Blue, Color.Blue, gfx, converter);
-
-            List<Arrow> arrows = new List<Arrow>();
-            arrows.Add(new Arrow(curState.Position, destState.Position, Color.Red, 0.04));
-            arrows.Add(new Arrow(curState.Position, waypointInfo.Position, Color.Green, 0.04));
-
-            foreach (Arrow arrow in arrows)
-                arrow.drawConvertToPixels(gfx, converter);
+            _logFieldDrawer.Invalidate();
+           
         }       
 
         private void btnStartStopLogging_Click(object sender, EventArgs e) {

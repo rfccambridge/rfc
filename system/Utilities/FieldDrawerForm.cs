@@ -28,7 +28,7 @@ namespace Robocup.Utilities
         {
             base.OnPaint(e);
 
-            drawer.paintField(e.Graphics);
+            drawer.paintField(e.Graphics);            
         }
 
         public ICoordinateConverter Converter
@@ -37,5 +37,36 @@ namespace Robocup.Utilities
         }
         //public void GetGraphics() {
         //    return this.cr
+
+        public int AddArrow(Arrow arrow)
+        {
+            return drawer.AddArrow(arrow);
+        }
+
+        public void ClearArrows()
+        {
+            drawer.ClearArrows();
+        }
+
+        public void RemoveArrow(int arrowID)
+        {
+            drawer.RemoveArrow(arrowID);
+        }
+
+        public int AddPath(RobotPath path)
+        {
+            return drawer.AddPath(path);
+        }
+
+        public void ClearPaths()
+        {
+            drawer.ClearPaths();
+        }
+
+        public void RemovePath(int pathID)
+        {
+            drawer.RemovePath(pathID);
+        }
+
     }
 }

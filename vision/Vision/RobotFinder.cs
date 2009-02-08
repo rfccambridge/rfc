@@ -753,6 +753,11 @@ namespace VisionStatic
                     }
                 }
 
+                if (bestPattern == null)
+                {
+                    Console.WriteLine("No patterns found.");
+                    return visionMessage;
+                }
 
                 Robot robot = new Robot();
 

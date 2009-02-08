@@ -31,10 +31,25 @@ namespace Robocup.Utilities
 
         IPredictor predictor;
         ICoordinateConverter converter;
+
+        Dictionary<int, Arrow> _arrows;
+        Object _arrowsLock = new Object();
+        int _nextArrowID;
+
+        Dictionary<int, RobotPath> _paths;
+        Object _pathsLock = new object();
+        int _nextPathID;
+       
         public FieldDrawer(IPredictor predictor, ICoordinateConverter c)
         {
             this.predictor = predictor;
             this.converter = c;
+
+            _arrows = new Dictionary<int, Arrow>();
+            _nextArrowID = 0;
+
+            _paths = new Dictionary<int, RobotPath>();
+            _nextPathID = 0;
         }
         private void drawRobot(RobotInfo r, Graphics g, Color c)
         {
@@ -115,6 +130,87 @@ namespace Robocup.Utilities
                 BALL_SIZE
             );
 
+            // draw arrows
+
+            lock (_arrowsLock)
+            {
+                foreach (Arrow arrow in _arrows.Values)
+                    arrow.drawConvertToPixels(g, converter);
+            }
+
+            // draw paths
+
+            lock (_pathsLock)
+            {
+                foreach (RobotPath path in _paths.Values)
+                    PathDrawing.DrawPath(path, Color.Blue, Color.Blue, g, converter);
+            }
+
         }
+
+        public int AddArrow(Arrow arrow)
+        {
+            int arrowID;
+
+            lock (_arrowsLock)
+            {
+                _arrows.Add(_nextArrowID, arrow);
+                arrowID = _nextArrowID;
+                _nextArrowID++;
+            }
+
+            return arrowID;
+        }
+
+        public void ClearArrows()
+        {
+            lock (_arrowsLock)
+            {
+                _arrows.Clear();
+                _nextArrowID = 0;
+            }
+        }
+
+        public void RemoveArrow(int arrowID)
+        {
+            lock (_arrowsLock)
+            {
+                _arrows.Remove(arrowID);
+            }
+        }
+
+
+        public int AddPath(RobotPath path)
+        {
+            int pathID;
+
+            lock (_pathsLock)
+            {
+                _paths.Add(_nextPathID, path);
+                pathID = _nextPathID;
+                _nextPathID++;
+            }
+
+            return pathID;
+        }
+
+        public void ClearPaths()
+        {
+            lock (_pathsLock)
+            {
+                _paths.Clear();
+                _nextPathID = 0;
+            }
+        }
+
+        public void RemovePath(int pathID)
+        {
+            lock (_pathsLock)
+            {
+                _paths.Remove(pathID);
+            }
+        }
+
+
     }
 }

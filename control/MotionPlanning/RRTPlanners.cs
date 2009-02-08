@@ -9,6 +9,7 @@ using System.Drawing;
 
 using Navigation.Examples;
 using System.IO;
+using Robocup.Utilities;
 
 namespace Robocup.MotionControl
 {
@@ -300,7 +301,7 @@ namespace Robocup.MotionControl
                 return;
 
             List<Vector2> emptylist = new List<Vector2>();
-            Common.DrawPath(new Pair<List<RobotInfo>, List<Vector2>>(_paths[0].Waypoints, emptylist), Color.Blue, Color.Green, g, c);
+            PathDrawing.DrawPath(new Pair<List<RobotInfo>, List<Vector2>>(_paths[0].Waypoints, emptylist), Color.Blue, Color.Green, g, c);
         }
 
         //reload all necessary constants from files, for now just PID reload
@@ -392,50 +393,9 @@ namespace Robocup.MotionControl
         const int NUM_ROBOTS = 5;
 
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
+        private int LOG_EVERY_MSEC;
 
-        #region ILogger
-
-        private string _logFile = null;
-        private bool _logging = false;
-        private LogWriter _logWriter = new LogWriter();
-
-        public string LogFile
-        {
-            get { return _logFile; }
-            set { _logFile = value; }
-        }
-
-        public bool Logging
-        {
-            get
-            {
-                return _logging;
-            }
-        }
-
-        public void StartLogging()
-        {
-            if (_logging)
-                return;
-
-            if (_logFile == null)
-            {
-                throw new ApplicationException("Logger: must set LogFile before calling start");
-            }
-
-            _logWriter.OpenLogFile(_logFile);
-            _logging = true;
-        }
-
-        public void StopLogging()
-        {
-            if (!_logging)
-                return;
-
-            _logWriter.CloseLogFile();
-            _logging = false;
-        }
-        #endregion        
+    
 
         public CircleFeedbackMotionPlanner() {
             
@@ -449,6 +409,7 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID] = new Feedback(robotID);
 
+            ReloadConstants();
         }
         
          
@@ -562,9 +523,12 @@ namespace Robocup.MotionControl
             RobotPath robotPath = new RobotPath(path.First);
             itemsToLog.Add(robotPath);
 
-            if (_logging)
+            DateTime now = DateTime.Now;
+            TimeSpan timeSinceLastLog = now.Subtract(_lastLogEntry);
+            if (_logging && timeSinceLastLog.TotalMilliseconds > 500)
             {
                 _logWriter.LogItems(itemsToLog);
+                _lastLogEntry = now;
             }
 
             //WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);
@@ -576,7 +540,7 @@ namespace Robocup.MotionControl
         public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
             //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
             //Common.DrawVector2Tree(_planner.LastTree2(), Color.Green, g, c);
-            Common.DrawPath(_planner.LastPath, Color.Blue, Color.Green, g, c);
+            PathDrawing.DrawPath(_planner.LastPath, Color.Blue, Color.Green, g, c);
         }
 
         /// <summary>
@@ -585,7 +549,54 @@ namespace Robocup.MotionControl
         public void ReloadConstants() {
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
+
+            LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
         }
+
+        #region ILogger
+
+        private string _logFile = null;
+        private bool _logging = false;
+        private DateTime _lastLogEntry;
+        private LogWriter _logWriter = new LogWriter();
+
+        public string LogFile
+        {
+            get { return _logFile; }
+            set { _logFile = value; }
+        }
+
+        public bool Logging
+        {
+            get
+            {
+                return _logging;
+            }
+        }
+
+        public void StartLogging()
+        {
+            if (_logging)
+                return;
+
+            if (_logFile == null)
+            {
+                throw new ApplicationException("Logger: must set LogFile before calling start");
+            }
+
+            _logWriter.OpenLogFile(_logFile);
+            _logging = true;
+        }
+
+        public void StopLogging()
+        {
+            if (!_logging)
+                return;
+
+            _logWriter.CloseLogFile();
+            _logging = false;
+        }
+        #endregion        
     }
 
     public class StickyRRTFeedbackMotionPlanner : IMotionPlanner {
@@ -786,7 +797,7 @@ namespace Robocup.MotionControl
             if (_path == null)
                 return;
             List<Vector2> emptylist = new List<Vector2>();
-            Common.DrawPath(new Pair<List<RobotInfo>, List<Vector2>>(fullpath, emptylist), Color.Blue, Color.Green, g, c);
+            PathDrawing.DrawPath(new Pair<List<RobotInfo>, List<Vector2>>(fullpath, emptylist), Color.Blue, Color.Green, g, c);
             //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
             //Common.DrawRobotInfoTree(_planner.LastTree2(), Color.Green, g, c);
             //Common.DrawPath(_planner.LastPath, Color.Blue, g, c);
@@ -885,9 +896,7 @@ namespace Robocup.MotionControl
         }
     }
 
-    public class BugFeedbackMotionPlanner : IMotionPlanner, Robocup.Core.ILogger {
-
-        public void ReloadConstants() {}
+    public class BugFeedbackMotionPlanner : IMotionPlanner, Robocup.Core.ILogger {       
 
         // Each robot has a feedback object
         private Feedback[] _feedbackObjs;
@@ -900,45 +909,8 @@ namespace Robocup.MotionControl
         const int NUM_ROBOTS = 5;
 
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
-
-        #region ILogger
-
-        private string _logFile = null;
-        private bool _logging = false;
-        private LogWriter _logWriter = new LogWriter();        
-
-        public string LogFile {
-            get { return _logFile; }
-            set { _logFile = value; }
-        }
-
-        public bool Logging {
-            get {
-                return _logging;
-            }
-        }
-        
-        public void StartLogging() {
-            if (_logging)
-                return;
-
-            if (_logFile == null) {
-                throw new ApplicationException("Logger: must set LogFile before calling start");
-            }
-
-            _logWriter.OpenLogFile(_logFile);
-            _logging = true;
-        }
-
-        public void StopLogging() {            
-            if (!_logging)
-               return;          
-            
-                _logWriter.CloseLogFile();
-                _logging = false;            
-        }
-        #endregion        
-
+        private int LOG_EVERY_MSEC;
+      
         public BugFeedbackMotionPlanner() {
 
 
@@ -955,8 +927,9 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID] = new Feedback(robotID);
 
-        }
+            ReloadConstants();            
 
+        }
 
         /// <summary>
         /// !! Implementation only valid for testing purposes because ignores the 
@@ -1073,9 +1046,13 @@ namespace Robocup.MotionControl
 
             RobotPath robotPath = new RobotPath(waypoints);
             itemsToLog.Add(robotPath);
-            
-            if (_logging) {
-                _logWriter.LogItems(itemsToLog);      
+
+            DateTime now = DateTime.Now;
+            TimeSpan timeSinceLastLog = now.Subtract(_lastLogEntry);
+            if (_logging && timeSinceLastLog.TotalMilliseconds > 500)
+            {
+                _logWriter.LogItems(itemsToLog);
+                _lastLogEntry = now;
             }
 
             return mpResults;
@@ -1088,15 +1065,62 @@ namespace Robocup.MotionControl
             //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
             //Common.DrawVector2Tree(_planner.LastTree2(), Color.Green, g, c);
             if (path != null) {
-                Common.DrawPath(path, Color.Blue, Color.Green, g, c);
-                Console.WriteLine("num_waypoints=", path.First.Count.ToString());
+                PathDrawing.DrawPath(path, Color.Blue, Color.Green, g, c);                
             }
         }
 
         //reload all necessary constants from files, for now just PID reload
-        public void reloadConstants() {
+        public void ReloadConstants() {
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
+
+            LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
         }
+
+        #region ILogger
+
+        private string _logFile = null;
+        private bool _logging = false;
+        private DateTime _lastLogEntry;
+        private LogWriter _logWriter = new LogWriter();
+
+        public string LogFile
+        {
+            get { return _logFile; }
+            set { _logFile = value; }
+        }
+
+        public bool Logging
+        {
+            get
+            {
+                return _logging;
+            }
+        }
+
+        public void StartLogging()
+        {
+            if (_logging)
+                return;
+
+            if (_logFile == null)
+            {
+                throw new ApplicationException("Logger: must set LogFile before calling start");
+            }
+
+            _logWriter.OpenLogFile(_logFile);
+            _logging = true;
+        }
+
+        public void StopLogging()
+        {
+            if (!_logging)
+                return;
+
+            _logWriter.CloseLogFile();
+            _logging = false;
+        }
+        #endregion        
+
     }
 }
