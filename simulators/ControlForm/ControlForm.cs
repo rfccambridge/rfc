@@ -137,6 +137,7 @@ namespace Robocup.ControlForm {
                 _basicPredictor.updatePartTheirRobotInfo(theirs, cameraName);
                 if (msg.BallPosition != null)
                 {
+                    // Not sure what is this 2 + 1.01*(x-2) adjustment
                     Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);
                     _basicPredictor.updateBallInfo(new BallInfo(ballposition));
                 }
@@ -150,7 +151,7 @@ namespace Robocup.ControlForm {
             }
         }
 
-        private void visionConnect_Click(object sender, EventArgs e) {
+        private void visionTopConnect_Click(object sender, EventArgs e) {
             try {
                 if (!visionTopConnected) {
                     _visionTop = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionTopHost.Text, MESSAGE_SENDER_PORT);

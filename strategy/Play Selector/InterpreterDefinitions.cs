@@ -178,7 +178,8 @@ namespace Robocup.Plays
                     bool matchestags = true;
                     foreach (string tag in tags)
                     {
-                        if (!TagSystem.GetTags(rinf.ID).Contains(tag))
+                        // Not sure why GetTags is null sometimes.
+                        if (TagSystem.GetTags(rinf.ID) == null || !TagSystem.GetTags(rinf.ID).Contains(tag))
                         {
                             matchestags = false;
                             break;

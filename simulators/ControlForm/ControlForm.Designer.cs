@@ -103,7 +103,7 @@ namespace Robocup.ControlForm {
             this.visionTopConnect.TabIndex = 1;
             this.visionTopConnect.Text = "Connect";
             this.visionTopConnect.UseVisualStyleBackColor = true;
-            this.visionTopConnect.Click += new System.EventHandler(this.visionConnect_Click);
+            this.visionTopConnect.Click += new System.EventHandler(this.visionTopConnect_Click);
             // 
             // rfcStart
             // 
