@@ -6,7 +6,7 @@ The main code repository is RFC, so to access it the TortoiseSVN repo-browser UR
 
 svn://rfccambridge.com:3690/RFC
 
- anonymous checkout is enabled, though you will need to get an account added to make commits
+anonymous checkout is enabled, though you will need to get an account added to make commits
 
 
 To setup a workspace equivalent
