@@ -97,7 +97,18 @@ namespace SimplePathFollower
             _logLineFormat.Add(typeof(WheelSpeeds));
             _logLineFormat.Add(typeof(RobotPath));
 
+
+            timer = new Timer();
+            timer.Interval = 500;
+            timer.Tick += new EventHandler(InvalidateTimerHanlder);
+            timer.Start();
 		}
+
+        Timer timer;
+
+        private void InvalidateTimerHanlder(object obj, EventArgs e) {            
+            _logFieldDrawer.Invalidate();
+        }
 
 		private void BtnVision_Click(object sender, EventArgs e)
 		{
@@ -171,6 +182,8 @@ namespace SimplePathFollower
                 }                
            
 		}
+
+        Stopwatch invalidateStopwatch = new Stopwatch();
 
 
 
@@ -279,9 +292,8 @@ namespace SimplePathFollower
 
             btnStartStop.Text = "Stop";
 
-            VoidDelegate kickLoopDelegate = new VoidDelegate(_pathFollower.Kick);
-            AsyncCallback kickErrorHandler = new AsyncCallback(ErrorHandler);
-            IAsyncResult kickLoopHandle = kickLoopDelegate.BeginInvoke(ErrorHandler, null);	
+            VoidDelegate kickLoopDelegate = new VoidDelegate(_pathFollower.Kick);            
+            IAsyncResult kickLoopHandle = kickLoopDelegate.BeginInvoke(null, null);	
 
             _running = true;
         }
@@ -335,8 +347,13 @@ namespace SimplePathFollower
             cmbMotionPlanner.SelectedItem = _currentPlannerSelection;
         }
 
-        const string LOG_FILE = "testlog.txt";        
+        const string LOG_FILE = "testlog.txt";
+
+        Graphics _gfx = null;
         private void btnLogNext_Click(object sender, EventArgs e) {
+
+            if (_gfx != null)
+                _gfx.Dispose();
 
             if (!_logReader.LogOpen)
             {
@@ -365,9 +382,14 @@ namespace SimplePathFollower
             ((IInfoAcceptor)_logPredictor).updateRobot(curState.ID, curState);
             
             // Draw the path, and the arrows
+
+
+            _fieldDrawerForm.Invalidate();
             
             Graphics gfx = _logFieldDrawer.CreateGraphics();
             ICoordinateConverter converter = _logFieldDrawer.Converter;
+
+            _fieldDrawerForm.Invalidate();
 
             Common.DrawPath(path, Color.Blue, Color.Blue, gfx, converter);
 
