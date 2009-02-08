@@ -45,16 +45,16 @@ namespace Robotics.Commander {
         public RemoteControl() {
             Form.CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
-            textBox1.Text = "8 backspace ======= kill the robot" + "\r\n"
+            textBox1.Text = "8 backspace ======== kill the robot" + "\r\n"
                            + "37 left =========== move left in x " + "\r\n"
                            + "39 right ========== move right in x" + "\r\n"
                            + "38 up ============= move forward in y" + "\r\n"
                            + "40 down =========== move backward in y" + "\r\n"
                            + "188 , ============= rotate anti-clockwise" + "\r\n"
                            + "190 . ============= rotate clockwise" + "\r\n"
-                           + "67 c ============== charge kicker" + "\r\n"
+                           + "67 c ============== charge kicker (not supported)" + "\r\n"
                            + "32 space ========== fire kicker" + "\r\n"
-                           + "75 k ============== fire chipkicker" + "\r\n"
+                           + "75 k ============== stop charging (not supported)" + "\r\n"
                            + "68 d ============== dribbler on" + "\r\n"
                            + "70 f ============== dribbler off" + "\r\n"
                            + "187 = ============= speed up" + "\r\n"
@@ -289,18 +289,20 @@ namespace Robotics.Commander {
                         break;
                     case 67:        // c charge kicker
                         //rcon.setOther(comboTarget.SelectedIndex, comboSource.SelectedIndex, 0);
-                        srobots.setCharge(curRobot);
-                        statusLabel.Text = "charging";
+                        //srobots.setCharge(curRobot);
+                        //statusLabel.Text = "charging";
+                        statusLabel.Text = "no charging";
                         break;
                     case 32:        // space fire kicker
-                        srobots.setStopCharge(curRobot);
+                        //srobots.setStopCharge(curRobot);
                         srobots.setKick(curRobot);
-                        srobots.setStopCharge(curRobot);
+                        //srobots.setStopCharge(curRobot);
                         statusLabel.Text = "kick";
                         break;
                     case 75:        // k stop charging
-                        srobots.setStopCharge(curRobot);
-                        statusLabel.Text = "stop charge";
+                        //srobots.setStopCharge(curRobot);
+                        //statusLabel.Text = "stop charge";
+                        statusLabel.Text = "no chargingi";
                         break;
                     case 68:        // d dribbler on
                         srobots.startDribbler(curRobot);
@@ -363,7 +365,7 @@ namespace Robotics.Commander {
                         //rcom.DriveStraight(oldcommander, 2, 65535);
                         //setMotorSpeeds(speed, speed, speed, speed);
                         driveInDirection(0.0f, 1.0f);
-                        srobots.setCharge(curRobot);
+                        //srobots.setCharge(curRobot);
                         //rcom.DriveDir(oldcommander, Int32.Parse(forwardDir.Text), 65535);
                         statusLabel.Text = "^y";
                         break;

@@ -95,6 +95,11 @@ double ALPHA_THETA_3 .5
 double ALPHA_THETA_4 .5
 
 
+int MAX_STEP 3
+int MAX_ACCELERATION 20
+#The amount of time to charge the kicker, before kicking
+int CHARGE_TIME 1000
+
 
 
 #OLD, but maybe used SOMEWHERE
@@ -111,9 +116,6 @@ float MOVE_PID_MAX 90
 float MOVE_PID_RESET .1
 
 double MOVE_PID_MAX_SPEED 15.0
-
-int MAX_STEP 3
-int MAX_ACCELERATION 20
 
 double MOVE_VTERM_MAX 15
 double MOVE_VTERM_GAIN 30

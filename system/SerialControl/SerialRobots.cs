@@ -103,10 +103,13 @@ namespace Robotics.Commander
             set { maxStep = value; }
         }
 
+        private int chargeTime = Constants.get<int>("control", "CHARGE_TIME");
+
         public void ReloadConstants()
         {
             maxAcceleration = Constants.get<int>("control", "MAX_ACCELERATION");
             maxStep = Constants.get<int>("control", "MAX_STEP");
+            chargeTime = Constants.get<int>("control", "CHARGE_TIME");
         }
 
 
@@ -166,13 +169,49 @@ namespace Robotics.Commander
             comport.Write(msg, 0, msg.Length);
         }
 
-        private List<int> canKick = new List<int>();
         private List<int> charging = new List<int>();
 
         private Dictionary<int, double> lastCharge = new Dictionary<int, double>();
         private Dictionary<int, System.Threading.Timer> timers = new Dictionary<int, System.Threading.Timer>();
 
-        internal void setCharge(int robotID)
+        private void doKick(int robotID)
+        {
+            lock (charging)
+            {
+                if (!charging.Contains(robotID))
+                    return;
+                charging.Remove(robotID);
+                Console.WriteLine("robot " + robotID + " is kicking!");
+                string smsg = headsigns[robotID] + "k" + endsign;
+                //Console.WriteLine("kick:" + smsg);
+                comport.Write(smsg);
+            }
+        }
+        internal void setKick(int robotID)
+        {
+            lock (charging)
+            {
+                double curTime = HighResTimer.SecondsSinceStart();
+                if (charging.Contains(robotID))
+                {
+                    if (curTime - lastCharge[robotID] > .001 * chargeTime)
+                    {
+                        doKick(robotID);
+                    }
+                    return;
+                }
+                charging.Add(robotID);
+                lastCharge[robotID] = curTime;
+                System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
+                {
+                    timers.Remove(robotID);
+                    doKick(robotID);
+                }, null, chargeTime, System.Threading.Timeout.Infinite);
+                timers[robotID] = t;
+            }
+        }
+
+        /*internal void setCharge(int robotID)
         {
             lock (canKick)
             {
@@ -195,9 +234,9 @@ namespace Robotics.Commander
             //Console.WriteLine("charge:" + smsg);
             comport.Write(smsg);
             Console.WriteLine("robot " + robotID + " is now charging");
-        }
+        }*/
 
-        internal void setStopCharge(int robotID)
+        /*internal void setStopCharge(int robotID)
         {
             lock (canKick)
             {
@@ -217,7 +256,7 @@ namespace Robotics.Commander
             //Console.WriteLine("stopcharge:" + smsg);
             comport.Write(smsg);
             Console.WriteLine("robot " + robotID + " has stopped charging");
-        }
+        }*/
 
         public void SetPIDConstants(int robotID, byte P, byte I, byte D)
         {
@@ -226,7 +265,7 @@ namespace Robotics.Commander
             comport.Write(msg, 0, msg.Length);
         }
 
-        public void setKick(int robotID)
+        /*public void setKick(int robotID)
         {
             lock (canKick)
             {
@@ -248,7 +287,7 @@ namespace Robotics.Commander
                 //System.Threading.Thread.Sleep(100);
                 //this.setCharge(robotID);
             }
-        }
+        }*/
 
         public void startDribbler(int target)
         {
