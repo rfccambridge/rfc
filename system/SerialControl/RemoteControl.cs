@@ -249,21 +249,21 @@ namespace Robotics.Commander {
                     case 'a':
                     case 37:        // left move left in x
                         //rcom.DriveStraight(oldcommander, 0, 65535);
-                        setMotorSpeeds(-speed, -speed, speed, speed);
+                        setMotorSpeeds(-speed, speed, speed, -speed);
                         //driveInDirection(-1.0f, 0.0f);
                         statusLabel.Text = "<-x";
                         break;
                     case 'd':
                     case 39:        // right move right in x
                         //rcom.DriveStraight(oldcommander, 1, 65535);
-                        setMotorSpeeds(speed, speed, -speed, -speed);
+                        setMotorSpeeds(speed, -speed, -speed, speed);
                         //driveInDirection(1.0f, 0.0f);
                         statusLabel.Text = "x->";
                         break;
                     case 'w':
                     case 38:        // up move forward in y
                         //rcom.DriveStraight(oldcommander, 2, 65535);
-                        setMotorSpeeds(speed, -speed, speed, -speed);
+                        setMotorSpeeds(speed, speed, speed, speed);
                         //driveInDirection(0.0f, 1.0f);
                         //rcom.DriveDir(oldcommander, Int32.Parse(forwardDir.Text), 65535);
                         statusLabel.Text = "^y";
@@ -271,7 +271,7 @@ namespace Robotics.Commander {
                     case 's':
                     case 40:        // down move backward in y
                         //rcom.DriveStraight(oldcommander, 3, 65535);
-                        setMotorSpeeds(-speed, speed, -speed, speed);
+                        setMotorSpeeds(-speed, -speed, -speed, -speed);
                         //driveInDirection(0.0f, -1.0f);
                         statusLabel.Text = "yv";
                         break;

@@ -45,9 +45,9 @@ namespace Robocup.MotionControl {
             double currentOrientation = angleCheck(currentState.Orientation);
             double desiredOrientation = angleCheck(desiredState.Orientation);
             
-            Console.WriteLine(currentState.Position.X.ToString() + " Current X|Desired: " + desiredState.Position.X.ToString());
-            Console.WriteLine(currentState.Position.Y.ToString() + " Current Y|Desired: " + desiredState.Position.Y.ToString());
-            Console.WriteLine(currentOrientation.ToString() + " Current Theta|Desired: " + desiredOrientation.ToString());
+            //Console.WriteLine(currentState.Position.X.ToString() + " Current X|Desired: " + desiredState.Position.X.ToString());
+            //Console.WriteLine(currentState.Position.Y.ToString() + " Current Y|Desired: " + desiredState.Position.Y.ToString());
+            //Console.WriteLine(currentOrientation.ToString() + " Current Theta|Desired: " + desiredOrientation.ToString());
             
             //Console.WriteLine(xCommand.ToString() + " xCommand|yCommand: " + yCommand.ToString());
             
@@ -95,9 +95,9 @@ namespace Robocup.MotionControl {
 
 
             int lf = (int)  (sing*lateral + cosg * forward - wheelR * angularV);
-            int rf = (int)  (sing*lateral - cosg*forward - wheelR*angularV);
+            int rf = (int)  -(sing*lateral - cosg*forward - wheelR*angularV);
             int lb = (int) (-sing*lateral + cosg*forward - wheelR*angularV);
-            int rb = (int) (-sing*lateral - cosg *forward - wheelR * angularV);
+            int rb = (int) -(-sing*lateral - cosg *forward - wheelR * angularV);
 
             return new WheelSpeeds(lf, rf, lb, rb);
             //Note somewhere we need to check and ensure that wheel speeds being 

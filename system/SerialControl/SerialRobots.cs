@@ -143,8 +143,8 @@ namespace Robotics.Commander
             
             ///*******************************************
             ///Note Changing conventions!!!!! IN the new feedback class, this isn't a problem, so commenting out the following two commands.    
-            //rf *= -1;
-            //rb *= -1;
+            rf *= -1;
+            rb *= -1;
 
             // board bugs out if we send an unescaped slash
             if (lb == '\\')
@@ -191,7 +191,7 @@ namespace Robotics.Commander
                 }, null, 10000, System.Threading.Timeout.Infinite);
                 timers[robotID] = t;
             }
-            string smsg = headsigns[robotID] + "E" + endsign;
+            string smsg = headsigns[robotID] + "c" + endsign;
             //Console.WriteLine("charge:" + smsg);
             comport.Write(smsg);
             Console.WriteLine("robot " + robotID + " is now charging");
@@ -213,7 +213,7 @@ namespace Robotics.Commander
                 charging.Remove(robotID);
                 canKick.Add(robotID);
             }
-            string smsg = headsigns[robotID] + "D" + endsign;
+            string smsg = headsigns[robotID] + "s" + endsign;
             //Console.WriteLine("stopcharge:" + smsg);
             comport.Write(smsg);
             Console.WriteLine("robot " + robotID + " has stopped charging");
@@ -240,13 +240,13 @@ namespace Robotics.Commander
                     return;
                 canKick.Remove(robotID);
                 Console.WriteLine("robot " + robotID + " is kicking!");
-                string smsg = headsigns[robotID] + "K" + endsign;
+                string smsg = headsigns[robotID] + "k" + endsign;
                 //Console.WriteLine("kick:" + smsg);
                 comport.Write(smsg);
 
                 //uncomment this to have the robot start charging after kicking
-                System.Threading.Thread.Sleep(100);
-                this.setCharge(robotID);
+                //System.Threading.Thread.Sleep(100);
+                //this.setCharge(robotID);
             }
         }
 
