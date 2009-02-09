@@ -22,8 +22,10 @@ namespace SimplePathFollower
 	{
 		private int MESSAGE_SENDER_PORT;
 
-		private MessageReceiver<VisionMessage> _vision;
-		private bool _visionConnected;
+		private MessageReceiver<VisionMessage> _visionTop;
+        private MessageReceiver<VisionMessage> _visionBottom;
+		private bool _visionConnectedTop;
+        private bool _visionConnectedBottom;
 		private bool _controlConnected;
 		private PathFollower _pathFollower;
 		private BasicPredictor _predictor;
@@ -50,7 +52,8 @@ namespace SimplePathFollower
 
             _pathFollower = new PathFollower();
 
-			_visionConnected = false;
+			_visionConnectedTop = false;
+            _visionConnectedBottom = false;
 			_controlConnected = false;
             _running = false;
 
@@ -110,28 +113,28 @@ namespace SimplePathFollower
             _logFieldDrawer.Invalidate();
         }
 
-		private void BtnVision_Click(object sender, EventArgs e)
+		private void btnVisionTop_Click(object sender, EventArgs e)
 		{
 			try
 			{
-				if (!_visionConnected)
+				if (!_visionConnectedTop)
 				{
-					_vision = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(
-						VisionHost.Text, MESSAGE_SENDER_PORT);
-					_vision.MessageReceived += 
+					_visionTop = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(
+						txtVisionHostTop.Text, MESSAGE_SENDER_PORT);
+					_visionTop.MessageReceived += 
 						new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(
-							handleVisionUpdate);
+							handleVisionUpdateTop);
 
-					VisionStatus.BackColor = Color.Green;
-					BtnVision.Text = "Disconnect";
-					_visionConnected = true;
+					lblVisionStatusTop.BackColor = Color.Green;
+					btnConnectVisionTop.Text = "Disconnect";
+					_visionConnectedTop = true;
 				}
 				else
 				{
-					_vision.Close();
-					VisionStatus.BackColor = Color.Red;
-					BtnVision.Text = "Connect";
-					_visionConnected = false;
+					_visionTop.Close();
+					lblVisionStatusTop.BackColor = Color.Red;
+					btnConnectVisionTop.Text = "Connect";
+					_visionConnectedTop = false;
 				}
 			}
 			catch (Exception except)
@@ -141,11 +144,51 @@ namespace SimplePathFollower
 			}
 		}
 
-		
-		private void handleVisionUpdate(VisionMessage msg)
-		{
-			String cameraName = "top_cam";
+        private void btnVisionBottom_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!_visionConnectedBottom)
+                {
+                    _visionBottom = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(
+                        txtVisionHostTop.Text, MESSAGE_SENDER_PORT);
+                    _visionBottom.MessageReceived +=
+                        new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(
+                            handleVisionUpdateBottom);
 
+                    lblVisionStatusBottom.BackColor = Color.Green;
+                    btnConnectVisionBottom.Text = "Disconnect";
+                    _visionConnectedBottom = true;
+                }
+                else
+                {
+                    _visionBottom.Close();
+                    lblVisionStatusBottom.BackColor = Color.Red;
+                    btnConnectVisionBottom.Text = "Connect";
+                    _visionConnectedBottom = false;
+                }
+            }
+            catch (Exception except)
+            {
+                Console.WriteLine("Problem connecting to vision: " + except.ToString());
+                Console.WriteLine(except.StackTrace);
+            }
+        }
+
+        private void handleVisionUpdateTop(VisionMessage msg)
+        {
+            // OMEGA is hard-coded
+            handleVisionUpdate(msg, "OMEGA");
+        }
+
+        private void handleVisionUpdateBottom(VisionMessage msg)
+        {
+            // OMEGA is hard-coded
+            handleVisionUpdate(msg, "NOT_OMEGA");
+        }
+
+		private void handleVisionUpdate(VisionMessage msg, string computerName)
+		{			
 			List<RobotInfo> ours = new List<RobotInfo>();
 
 			foreach (VisionMessage.RobotData robot in msg.OurRobots)
@@ -161,8 +204,8 @@ namespace SimplePathFollower
 
 			lock (_predictorLock)
 			{
-				_predictor.updatePartOurRobotInfo(ours, cameraName);
-				_predictor.updatePartTheirRobotInfo(theirs, cameraName);
+				_predictor.updatePartOurRobotInfo(ours, computerName);
+				_predictor.updatePartTheirRobotInfo(theirs, computerName);
 				if (msg.BallPosition != null)
 				{
 					Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);
