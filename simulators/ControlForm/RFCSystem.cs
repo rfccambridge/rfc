@@ -111,7 +111,9 @@ namespace Robocup.ControlForm
             //INavigator navigator = new Navigation.Examples.LookAheadBug();
             //IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
-            IMotionPlanner planner = new Robocup.MotionControl.CircleFeedbackMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.CircleFeedbackMotionPlanner();
+            IMotionPlanner planner = new Robocup.MotionControl.BugFeedbackMotionPlanner();
 
             for (int i = 0; i < 10; i++)
             {

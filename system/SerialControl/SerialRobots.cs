@@ -159,7 +159,7 @@ namespace Robotics.Commander
             if (rb == '\\')
                 rb++;
 
-            Console.WriteLine("setting speeds to: " + new WheelSpeeds(lf,rf,lb,rb).ToString());
+            Console.WriteLine("id " + id + ": setting speeds to: " + new WheelSpeeds(lf,rf,lb,rb).ToString());
 
             //robots expect wheel powers in this order:
             //rf lf lb rb
@@ -200,6 +200,11 @@ namespace Robotics.Commander
                     }
                     return;
                 }
+                string smsg = headsigns[robotID] + "c" + endsign;
+                //Console.WriteLine("charge:" + smsg);
+                comport.Write(smsg);
+                Console.WriteLine("robot " + robotID + " is now charging");
+
                 charging.Add(robotID);
                 lastCharge[robotID] = curTime;
                 System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
@@ -343,7 +348,7 @@ namespace Robotics.Commander
         {
             int lf=wheelSpeeds.lf, rf=wheelSpeeds.rf, lb=wheelSpeeds.lb, rb=wheelSpeeds.rb;
 
-            int maxspeed = 127;
+            int maxspeed = 40;
 
             double time = HighResTimer.SecondsSinceStart();
             /*if (!lastSpeeds.ContainsKey(id))

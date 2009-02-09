@@ -73,13 +73,22 @@ namespace Robocup.CoreRobotics
         }
         public void move(int robotID, bool avoidBall, Vector2 destination, double orientation)
         {
+            //Console.WriteLine("Destination in RFCController immediately: " + destination.ToString());
             if(double.IsNaN(destination.X) || double.IsNaN(destination.Y))
             {
                 Console.WriteLine("invalid destination");
                 return;
             }
 
-            RobotInfo thisRobot = Predictor.getCurrentInformation(robotID);
+            RobotInfo thisRobot;
+
+            try {
+                thisRobot = Predictor.getCurrentInformation(robotID);
+            }
+            catch (ApplicationException e) {
+                Console.WriteLine("Predictor did not find Robot " + robotID.ToString());
+                return;
+            }
 
             double avoidBallDist = (avoidBall ? ballAvoidDist : 0f);
             /*NavigationResults results =
@@ -94,7 +103,9 @@ namespace Robocup.CoreRobotics
             WheelSpeeds motorSpeeds = GetPlanner(robotID).calculateWheelSpeeds(Predictor, robotID, thisRobot, results);
              */
             MotionPlanningResults mpResults;
-            
+
+            //Console.WriteLine("Destination in RFCController later: " + destination.ToString());
+
             try {
                  mpResults = Planner.PlanMotion(robotID, new RobotInfo(destination, orientation, robotID),
                     Predictor, avoidBallDist);

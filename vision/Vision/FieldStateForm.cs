@@ -49,8 +49,8 @@ namespace Vision {
        // private Size FIELD_SIZE = new Size(420, 610);
         //private SizeF FIELD_SIZE_WORLD = new SizeF(4.2f, 6.1f);
 
-        private Size FIELD_SIZE = new Size(350, 450);
-        private SizeF FIELD_SIZE_WORLD = new SizeF(3.5f, 4.5f);
+        private Size FIELD_SIZE = new Size(370, 480);
+        private SizeF FIELD_SIZE_WORLD = new SizeF(3.7f, 4.8f);
         
 
         private int OUT_ZONE_WIDTH = 30;

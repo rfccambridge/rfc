@@ -278,13 +278,13 @@ namespace Robotics.Commander {
                     case 'q':
                     case 188:       // , rotate anti-clockwise
                         //rcom.Rotate(oldcommander, 0, 65535);
-                        setMotorSpeeds(-speed, -speed, -speed, -speed);
+                        setMotorSpeeds(-speed, speed, -speed, speed);
                         statusLabel.Text = "anti clock";
                         break;
                     case 'e':
                     case 190:       // . rotate clockwise
                         //rcom.Rotate(oldcommander, 1, 65535);
-                        setMotorSpeeds(speed, speed, speed, speed);
+                        setMotorSpeeds(speed, -speed, speed, -speed);
                         statusLabel.Text = "clock";
                         break;
                     case 67:        // c charge kicker

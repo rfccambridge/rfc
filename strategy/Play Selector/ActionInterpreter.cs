@@ -34,14 +34,21 @@ namespace Robocup.Plays
             this.angleTolerance = angleTolerance;
         }
         private RobotInfo getOurRobotFromID(int robotID)
-        {
-            return predictor.getCurrentInformation(robotID);
+        {            
+                return predictor.getCurrentInformation(robotID);
         }
 
         public void Dribble(int robotID, Vector2 target)
         {
-            RobotInfo thisrobot = getOurRobotFromID(robotID);
-            Vector2 ball = predictor.getBallInfo().Position;
+            RobotInfo thisrobot;
+            Vector2 ball;
+            try {
+                thisrobot = getOurRobotFromID(robotID);
+                ball = predictor.getBallInfo().Position;
+            } catch (ApplicationException e) {
+                Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
+                return;
+            }
             Vector2 robotposition = thisrobot.Position;
             double dotP = (target - ball).normalize() * (ball - robotposition).normalize();
             Vector2 destination = target;
@@ -84,12 +91,12 @@ namespace Robocup.Plays
         /// This is the distance that the robots should put themselves from the ball,
         /// when they get ready to kick it.
         /// </summary>
-        private readonly double kickDistance = .10;//.095
+        private readonly double kickDistance = .15;//.095
 
         /// <summary>
         /// This is how many ticks of ball motion you should add to the distance to lead the ball appropriately
         /// </summary>
-        private readonly double ballLeading = 3.0;
+        private readonly double ballLeading = 0;//3.0;
 
         public void Stop(int robotID)
         {
@@ -102,26 +109,59 @@ namespace Robocup.Plays
         /// </summary>
         public void Kick(int robotID, Vector2 target)
         {
-            RobotInfo thisrobot = getOurRobotFromID(robotID);
-            BallInfo ballinfo = predictor.getBallInfo();
-            Vector2 ball = predictor.getBallInfo().Position;
+            RobotInfo thisrobot;
+            Vector2 ball;
+            BallInfo ballinfo;
+            try {
+                thisrobot = getOurRobotFromID(robotID);
+                ballinfo = predictor.getBallInfo();
+                ball = predictor.getBallInfo().Position;
+            }
+            catch (ApplicationException e) {
+                Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
+                return;
+            }
+
+            //JUST FOR TEMPORARY TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //ball = new Vector2(1.0, 0);
+
+
+
+            //Console.WriteLine("Ball's position: "+ball.ToString());
+            /*if (ball.X > 2.2 || ball.X < .4 || ball.Y > 1.4 || ball.Y < -1.5)
+                Console.WriteLine("Terrible ball location!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");*/
             //double dx = ballinfo.Position.X - target.X;
             //double dy = ballinfo.Position.Y - target.Y;
             Vector2 destination = extend(target, ball, kickDistance);
+            /*Console.WriteLine("destination: " + destination.ToString());
+            if (destination.X > 2.2 || destination.X < .4 || destination.Y > 1.4 || destination.Y < -1.5) {
+                Console.WriteLine("Terrible destination!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }*/
+
             double destinationAngle = targetAngle(ball, target);
+            Console.WriteLine("Distance from robot to ball: " + Math.Sqrt(ball.distanceSq(thisrobot.Position)));
+            Console.WriteLine("angle Difference: " + UsefulFunctions.angleDifference(destinationAngle, thisrobot.Orientation));
             if (closeEnough(thisrobot, destination.X, destination.Y, destinationAngle))
             {
+                Console.WriteLine("Going to try and Kick!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 commander.kick(robotID);
             }
-            else
-            {
+            else if (thisrobot.Position.distanceSq(destination) < 4*kickDistance*kickDistance) {
+                //we're close to the ball but not quite there yet
+                commander.move(
+                    robotID,
+                    true,
+                    new Vector2(destination.X, destination.Y),
+                    destinationAngle);
+
+            }else//we're kindof far away from the ball
+                {
                 destination += ballLeading * ballinfo.Velocity;
                 commander.move(
                     robotID,
                     true,
                     new Vector2(destination.X, destination.Y),
-                    destinationAngle
-                );
+                    destinationAngle);
             }
         }
 
@@ -130,10 +170,16 @@ namespace Robocup.Plays
         /// </summary>
         public void Move(int robotID, Vector2 target)
         {
-            if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01)
-                commander.stop(robotID);
-            else
-                commander.move(robotID, true, target);
+            try {
+                if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01)
+                    commander.stop(robotID);
+                else
+                    commander.move(robotID, true, target);
+            }
+            catch (ApplicationException e) {
+                Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
+                return;
+            }
         }
         /// <summary>
         /// Has the robot move to the point target, avoiding all obstacles (including the ball)
@@ -149,17 +195,24 @@ namespace Robocup.Plays
         private void Move(int robotID, bool avoidBall, Vector2 target, Vector2 facing)
         {
             double orient = Math.Atan2(facing.Y - target.Y, facing.X - target.X); //hack for different coordinates
-            if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01 &&
-                Math.Abs(getOurRobotFromID(robotID).Orientation - orient) < 0.15)
-                commander.stop(robotID);
-            else
-                commander.move(robotID, avoidBall, target, orient);
+            try {
+                if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01 &&
+                    Math.Abs(getOurRobotFromID(robotID).Orientation - orient) < 0.15)
+                    commander.stop(robotID);
+                else
+                    commander.move(robotID, avoidBall, target, orient);
+            }
+            catch (ApplicationException e) {
+                Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
+                return;
+            }
             //HACK: commander.move(robotID, true, target, Math.Atan2(facing.Y - target.Y, facing.X - target.X));
         }
 
-        private readonly double angleTolerance = Math.PI / 120;  //1.5º
+        private readonly double angleTolerance = Math.PI / 90;// 2 degrees | 120;  //1.5º
         //private const double angleTolerance = (Math.PI);  //180º
-        private readonly double distanceTolerance = .035;  //4d cm
+        private readonly double distanceTolerance = .05;  //4d cm
+        
         /// <summary>
         /// Returns if this robot is close enough to the desired position and orientation
         /// (such as to decide whether or not the robot is in position to kick the ball)

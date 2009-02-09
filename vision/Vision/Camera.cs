@@ -289,7 +289,8 @@ namespace VisionCamera {
            // Console.Write(".");
 
             // Convert the image.
-
+            // Sometimes the line below throws:
+            // "Attempted to read or write protected memory. This is often an indication that other memory is corrupt."
             ret = flycaptureConvertImage(flycapContext, ref pgrImage,
                 ref flycapRGBImage);
             if (ret != 0) {

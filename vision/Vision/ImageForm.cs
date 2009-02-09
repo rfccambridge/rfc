@@ -209,7 +209,7 @@ namespace Vision
 
             Size blobSize = new Size(blob.Right - blob.Left, blob.Bottom - blob.Top);
             string caption = "Blob #" + blob.BlobID.ToString() +
-                "\nColorClass: " + blob.ColorClass.ToString() +
+                "\nColorClass: " + ColorClasses.GetName(blob.ColorClass) +
                 "\nArea: " + blob.Area.ToString() +
                 "\nScaled Area: " + String.Format("{0:0.00}", blob.AreaScaled) +
                 "\nCenter: (" + blob.CenterX + ", " + blob.CenterY + ")" +
@@ -1007,6 +1007,21 @@ namespace Vision
                 case '\'':
                     _recording = false;
                     ChangeStatus(IDLE_STATUS);
+                    break;
+
+                case '6':
+                    TextReader tr = new StreamReader(WORK_DIR + "tsai_points.txt");
+                    TextWriter tw = new StreamWriter(WORK_DIR + "tsai_points_fixed.txt");
+
+                    string line;
+                    while ((line = tr.ReadLine()) != null) {                    
+                        string[] items = line.Split(' ');
+                        int fixedY = int.Parse(items[3]) - 1500;
+                        tw.WriteLine(items[0] + " " + items[1] + " " +  items[2] + " " + fixedY.ToString() + " " + items[4]);
+                    }
+
+                    tw.Close();
+                    tr.Close();
                     break;
             }
 

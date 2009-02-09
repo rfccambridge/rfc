@@ -110,7 +110,7 @@ namespace SimplePathFollower
                     waypointIndex = (waypointIndex + 1);//Stop at end for now % waypoints.Count;
                     controller.move(robotID, false, waypoints[waypointIndex]);
                 }*/
-                controller.move(robotID, false, waypoints[waypointIndex]);
+                controller.move(robotID, false, waypoints[waypointIndex],0.0);
 			
 				System.Threading.Thread.Sleep(10);
             } while (running);

@@ -17,10 +17,10 @@ namespace Navigation
             double[] traceDirection = new double[TEAMSIZE];
             int[] roundsSinceTrace = new int[TEAMSIZE];
             Vector2[] lastDestination = new Vector2[TEAMSIZE];
-            const double angleSweep = .1;
-            const double avoidRobotDist = .22;
+            const double angleSweep = .01; //.1
+            const double avoidRobotDist = .28;
             const double extraAvoidBallDist = .1;
-            const double lookAheadDist = .15;
+            const double lookAheadDist = .1;//.18; //.15
             const double getCloserAmount = .1;
 
             public BugNavigator()
@@ -32,12 +32,20 @@ namespace Navigation
             }
 
 
-            Obstacle blockingObstacle(Vector2 position, List<Obstacle> obstacles, double gettingTiredFactor)
+            Obstacle blockingObstacle(Vector2 position, List<Obstacle> obstacles, double gettingTiredFactor, Vector2 destination)
             {
                 foreach (Obstacle o in obstacles)
                 {
-                    if (position.distanceSq(o.position) <= o.size * o.size / gettingTiredFactor)
-                        return o;
+                    if ((position - o.position).magnitudeSq() > 0.00001) {//make sure you're not yourself
+                        Vector2 botObst = o.position - position;
+                        Vector2 botDest = destination - position;
+                        double angle_DestObst = UsefulFunctions.angleDifference(botObst.cartesianAngle(), botDest.cartesianAngle());
+                        double obstDistsq = position.distanceSq(o.position);
+                        double destDistsq = position.distanceSq(destination);
+                        //if the you're close enough to the obstacle it's within ninety degrees of planned direction and it's closer than the destination
+                        if (obstDistsq < o.size * o.size && Math.Abs(angle_DestObst) < Math.PI / 2 && obstDistsq<destDistsq)
+                            return o;
+                    }
                 }
                 return null;
             }
@@ -90,11 +98,17 @@ namespace Navigation
                 if (destination.distanceSq(lastDestination[id]) > .5 * .5)
                     //if (lastDestination[id].distanceSq(destination) > .5 * .5)
                     avoidingObstacle[id] = false;
+
                 lastDestination[id] = destination;
 
+                //checks if really close to an obstacle
                 foreach (Obstacle o in obstacles)
                 {
-                    if (position.distanceSq(o.position) < o.size * o.size)
+                    Vector2 botObst = o.position - position;
+                    Vector2 botDest = destination - position;
+                    double angle_DestObst = UsefulFunctions.angleDifference(botObst.cartesianAngle(), botDest.cartesianAngle());
+                    if (position.distanceSq(o.position) < o.size * o.size/5 &&
+                        Math.Abs(angle_DestObst) < Math.PI / 2)
 
                     {
                         // unclear what this does
@@ -102,14 +116,19 @@ namespace Navigation
 
                         // this makes the robot go to a waypoint located along the vector that is 90 degrees cc from 
                         // the vector from the robot to the obstacle
-                        Vector2 towardsObst = (position - o.position).normalize();                        
-                        towardsObst = towardsObst.normalizeToLength(lookAheadDist);             
-                        Vector2 awayFromObst = new Vector2(towardsObst.X, -1 * towardsObst.Y);
-                        return new NavigationResults(position + awayFromObst);
+
+                        //Sometimes it thinks itself is an obsticle, or vision sees it as another robot and then the system remembers it,
+                        //and if the obsticle and the robot are in the same position it causes problems, because of division by 0.
+                        if ((position - o.position).magnitudeSq() > 0.00001) {
+                            Vector2 towardsObst = (position - o.position).normalize();
+                            towardsObst = towardsObst.normalizeToLength(lookAheadDist);
+                            Vector2 awayFromObst = new Vector2(towardsObst.X, -1 * towardsObst.Y);
+                            return new NavigationResults(position + awayFromObst);
+                        }
                     }
                 }
 
-                if (!avoidingObstacle[id])
+                if (true)//if (!avoidingObstacle[id])
                 {
                     //if you're really close to the destination have that be the next point
                     if (position.distanceSq(destination) <= lookAheadDist * lookAheadDist)
@@ -117,55 +136,65 @@ namespace Navigation
 
                     roundsSinceTrace[id]++;
                     Vector2 wanted = position + lookAheadDist * (destination - position).normalize();
-                    Obstacle o = blockingObstacle(wanted, obstacles, 1);
-                    if (o == null)
+                    Obstacle o = blockingObstacle(wanted, obstacles, 1, destination);
+                    if (o == null)//this is redundant with the other chunk marded xkcd I think
                         return new NavigationResults(wanted);
                     
                     avoidingObstacle[id] = true;
                     continueDistanceSq[id] = position.distanceSq(destination);
                     lastDirection[id] = (destination - position).cartesianAngle();
                     //Robocup.Plays.CommonFunctions.crossproduct
-                    if (roundsSinceTrace[id] > 20)
+                    /*if (roundsSinceTrace[id] > 20)
                     {
                         traceDirection[id] = Math.Sign(UsefulFunctions.crossproduct(destination, position, o.position));
                         if (traceDirection[id] == 0)
                             traceDirection[id] = 1;
-                    }
+                    }*/
                 }
                 roundsSinceTrace[id] = 0;
                 //so now avoidingObstacle[id] should be true
-                if (position.distanceSq(destination) < continueDistanceSq[id] - getCloserAmount)
+                /*if (position.distanceSq(destination) < continueDistanceSq[id] - getCloserAmount)
                 {
                     avoidingObstacle[id] = false;
                     return navigate(id, position, destination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
-                }
+                }*/
                 double traceDir = traceDirection[id];
                 double direction = lastDirection[id];
                 int count = 0;
-                if (blockingObstacle(extend(position, direction), obstacles, 1) == null)
-                {
-                    while (blockingObstacle(extend(position, direction + angleSweep), obstacles, 1) == null)
-                    {
+               
+                //this is the main tangent bug section
+                if (blockingObstacle(extend(position, direction), obstacles, 1, destination) == null) {
+                    //no obstacle so onward! I think this is redundat with a chunk above marked xkcd
+                    Vector2 wanted = position + lookAheadDist * (destination - position).normalize();
+                    return new NavigationResults(wanted);
+                }
+                else {
+                    //sweep one direction to try and avoid obstacles
+                    while (blockingObstacle(extend(position, direction), obstacles, 1, destination) != null) {
                         direction += traceDir * angleSweep;
                         count++;
-                        if (count > Math.PI * 2 / angleSweep + 10)
-                        {
-                            avoidingObstacle[id] = false;
+                        if (count*angleSweep > Math.PI+.1) {
+                            //this way didn't work so reset the direction and try again
                             direction = (destination - position).cartesianAngle();
                             break;
                         }
-
+                    }
+                    if (blockingObstacle(extend(position, direction), obstacles, 1, destination) == null) {
+                        lastDirection[id] = direction;
+                        return new NavigationResults(extend(position, direction));
+                    }
+                    
+                    while (blockingObstacle(extend(position, direction), obstacles, 1, destination) != null) {
+                        direction -= traceDir * angleSweep;
+                        count++;
+                        if (count*angleSweep > Math.PI+.1) {
+                            //this way didn't work so give up and go in backwards
+                            break;
+                        }
                     }
                     lastDirection[id] = direction;
                     return new NavigationResults(extend(position, direction));
                 }
-                while (blockingObstacle(extend(position, direction), obstacles, 1d + count / 1000d) != null)
-                {
-                    direction -= traceDir * angleSweep;
-                    count++;
-                }
-                lastDirection[id] = direction;
-                return new NavigationResults(extend(position, direction));
             }
 
 

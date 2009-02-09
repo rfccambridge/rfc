@@ -4,6 +4,7 @@ using System.Text;
 
 using Robocup.Core;
 using Robocup.CoreRobotics;
+using Robocup.Geometry;
 
 using System.Drawing;
 
@@ -154,9 +155,11 @@ namespace Robocup.MotionControl
         }
     }
 #endif
+
     /// <summary>
     /// StickyDumbPath follows a straight course to the destination regardless of obstacles
     /// </summary>
+    /// 
     public class StickyDumbMotionPlanner : IMotionPlanner {
         const int NUM_ROBOTS = 5;
 
@@ -165,7 +168,8 @@ namespace Robocup.MotionControl
         private DateTime[] _timesLastCalled;
         private RobotPath[] _paths;
 
-        private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
+        private const double MIN_SQ_DIST_TO_WP= 0.0001;// within 1 cm
+        private const double MIN_SQ_DIST_TO_DST = 0.0121;// within 11 cm
 		private double WAYPOINT_DISTANCE = .05;
         private static int PATH_RECALCULATE_INTERVAL;
 
@@ -216,13 +220,14 @@ namespace Robocup.MotionControl
             retpath.Add(origin);
 
         	Vector2 newposition;
-            double orientation = (destination.Position - origin.Position).cartesianAngle();
+            //double orientation = (destination.Position - origin.Position).cartesianAngle();
+            double orientation = destination.Orientation;
             Vector2 singlevector = (destination.Position - origin.Position).normalizeToLength(extendDistance);
 
 
             do
             {
-                newposition = (retpath[retpath.Count - 1].Position + singlevector);
+                newposition = retpath[retpath.Count - 1].Position + singlevector;
 
                 // Hm... system ran out of memory at this line:    
                 retpath.Add(new RobotInfo(newposition, orientation, id));
@@ -234,6 +239,8 @@ namespace Robocup.MotionControl
         }
 
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+            Console.WriteLine("desired Location: " + desiredState.Position.ToString());
+            
             List<Obstacle> obstacles = new List<Obstacle>();
             foreach (RobotInfo info in predictor.getAllInfos()) {
                 if (info.ID != id)
@@ -280,10 +287,16 @@ namespace Robocup.MotionControl
 
             double wpDistanceSq = curinfo.Position.distanceSq(nextWaypoint.Position);
 
+            if (nextWaypointIndex >= _paths[id].Waypoints.Count - 1 && wpDistanceSq <= MIN_SQ_DIST_TO_DST) {
+                Console.WriteLine("Close enough to point, stopping now.");
+                return new MotionPlanningResults(new WheelSpeeds(), nextWaypoint);
+            }
+            
             if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
                 WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWaypoint);
                 return new MotionPlanningResults(wheelSpeeds, nextWaypoint);
-            } else {
+            }
+            else {
 
                 Console.WriteLine("Close enough to point, stopping now.");
                 return new MotionPlanningResults(new WheelSpeeds(), nextWaypoint);
@@ -393,6 +406,7 @@ namespace Robocup.MotionControl
         const int NUM_ROBOTS = 5;
 
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
+        private const double MIN_ANGLE_DIFF_TO_WP = 0.01;
         private int LOG_EVERY_MSEC;
 
     
@@ -505,11 +519,11 @@ namespace Robocup.MotionControl
             itemsToLog.Add(nextWayPoint);            
             
             double wpDistanceSq = curinfo.Position.distanceSq(nextWayPoint.Position);
+            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(curinfo.Orientation, nextWayPoint.Orientation));
 
-            MotionPlanningResults results;
             WheelSpeeds wheelSpeeds;
 
-            if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
+            if (wpDistanceSq > MIN_SQ_DIST_TO_WP||angleDiff>MIN_ANGLE_DIFF_TO_WP) {
                 wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);                
             } else {                
                 Console.WriteLine("Close enough to point, stopping now.");
@@ -518,7 +532,7 @@ namespace Robocup.MotionControl
 
             itemsToLog.Add(wheelSpeeds);
 
-            results = new MotionPlanningResults(wheelSpeeds, nextWayPoint);
+            MotionPlanningResults results = new MotionPlanningResults(wheelSpeeds, nextWayPoint);
             
             RobotPath robotPath = new RobotPath(path.First);
             itemsToLog.Add(robotPath);
@@ -900,15 +914,20 @@ namespace Robocup.MotionControl
 
         // Each robot has a feedback object
         private Feedback[] _feedbackObjs;
+        private NavigationResults results;
 
-        private Pair<List<RobotInfo>, List<Vector2>> path;        
+        private DateTime[] _timesLastCalled = new DateTime[5]; //number of robots
+
+        private Pair<List<RobotInfo>, List<Vector2>>[] paths;        
 
         //private NavigationPlanner _planner;
         BugNavigator _navigator;
 
         const int NUM_ROBOTS = 5;
-
+        
+        private static int PATH_RECALCULATE_INTERVAL;
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
+        private const double MIN_ANGLE_DIFF_TO_WP = 0.01;
         private int LOG_EVERY_MSEC;
       
         public BugFeedbackMotionPlanner() {
@@ -924,10 +943,16 @@ namespace Robocup.MotionControl
 
 
             _feedbackObjs = new Feedback[NUM_ROBOTS];
+            paths = new Pair<List<RobotInfo>, List<Vector2>>[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID] = new Feedback(robotID);
 
-            ReloadConstants();            
+            ReloadConstants();                     
+
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
+                //Set to arbitrary time in past- January 1, 2000
+                _timesLastCalled[robotID] = new DateTime(2000, 1, 1);
+            }
 
         }
 
@@ -977,6 +1002,7 @@ namespace Robocup.MotionControl
         }
 
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+            Console.WriteLine("desired Location: " + desiredState.Position.ToString());
 
             List<Object> itemsToLog = new List<Object>();
 
@@ -1008,10 +1034,23 @@ namespace Robocup.MotionControl
             //Pair<List<RobotInfo>, List<Vector2>> path = _planner.Plan(curinfo, desiredState, obstacles);
             //Pair<List<RobotInfo>, List<Vector2>> path = _planner.Plan(curinfo, desiredState.Position, obstacles);
             //path = _planner.Plan(curinfo, desiredState, obstacles, predictor);
-           
-            NavigationResults results = _navigator.navigate(curinfo.ID, curinfo.Position,
+
+            //Check whether there has been enough time since last refresh
+            DateTime nowCached = DateTime.Now;
+            if ((nowCached - _timesLastCalled[id]).TotalMilliseconds > PATH_RECALCULATE_INTERVAL) {
+                results = _navigator.navigate(curinfo.ID, curinfo.Position,
                 desiredState.Position, predictor.getOurTeamInfo().ToArray(), predictor.getTheirTeamInfo().ToArray(), predictor.getBallInfo(),
-                0);
+                0.15);
+                _timesLastCalled[id] = nowCached;
+            }
+
+            if (results == null)
+                throw new Exception("Something wrong with BugFeedback! No path calculated!!!");
+
+
+            //NavigationResults results = _navigator.navigate(curinfo.ID, curinfo.Position,
+            //    desiredState.Position, predictor.getOurTeamInfo().ToArray(), predictor.getTheirTeamInfo().ToArray(), predictor.getBallInfo(),
+            //    0);
             //results.waypoint
 
             itemsToLog.Add(DateTime.Now);
@@ -1020,19 +1059,24 @@ namespace Robocup.MotionControl
             RobotInfo nextWaypoint = new RobotInfo(results.waypoint, 0, 0);
             itemsToLog.Add(nextWaypoint);                        
 
-            RobotInfo rInfo = new RobotInfo(new Vector2(results.waypoint.X, results.waypoint.Y), results.waypoint.cartesianAngle(), curinfo.ID);
+            RobotInfo rInfo = new RobotInfo(new Vector2(results.waypoint.X, results.waypoint.Y), desiredState.Orientation, curinfo.ID);
+              //  /*results.waypoint.cartesianAngle()*/ (results.waypoint - curinfo.Position).cartesianAngle(), curinfo.ID);
+              
             List<RobotInfo> waypoints = new List<RobotInfo>();
             waypoints.Add(rInfo);
             List<Vector2> desState = new List<Vector2>();
             desState.Add(desiredState.Position);
-            path = new Pair<List<RobotInfo>, List<Vector2>>(waypoints, desState);
+            paths[id] = new Pair<List<RobotInfo>, List<Vector2>>(waypoints, desState);
 
             double wpDistanceSq = curinfo.Position.distanceSq(waypoints[0].Position);
+            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(curinfo.Orientation, waypoints[0].Orientation));
+            
+
 
             MotionPlanningResults mpResults;
             WheelSpeeds wheelSpeeds;
 
-            if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
+            if (wpDistanceSq > MIN_SQ_DIST_TO_WP || angleDiff>MIN_ANGLE_DIFF_TO_WP ) {
                 wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, waypoints[0]);                
                 mpResults = new MotionPlanningResults(wheelSpeeds, waypoints[0]);
             } else {
@@ -1064,7 +1108,10 @@ namespace Robocup.MotionControl
         public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
             //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
             //Common.DrawVector2Tree(_planner.LastTree2(), Color.Green, g, c);
-            if (path != null) {
+            foreach (Pair<List<RobotInfo>, List<Vector2>> path in paths) {
+                if (path == null)
+                    continue;
+
                 PathDrawing.DrawPath(path, Color.Blue, Color.Green, g, c);                
             }
         }

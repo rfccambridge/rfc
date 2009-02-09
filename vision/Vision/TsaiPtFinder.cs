@@ -112,7 +112,7 @@ namespace Vision
             lstSquares.Sort(_blobComparerY);
 
             // Debug output
-            Console.Write("Sorted by Y: ");
+            Console.Write("Sorted by Y (" + lstSquares.Count.ToString() + " total): ");
             foreach (Blob sq in lstSquares)
                 Console.Write(sq.BlobID + " ");
             Console.WriteLine();

@@ -47,7 +47,10 @@ namespace Robocup.MotionControl {
             
             //Console.WriteLine(currentState.Position.X.ToString() + " Current X|Desired: " + desiredState.Position.X.ToString());
             //Console.WriteLine(currentState.Position.Y.ToString() + " Current Y|Desired: " + desiredState.Position.Y.ToString());
-            //Console.WriteLine(currentOrientation.ToString() + " Current Theta|Desired: " + desiredOrientation.ToString());
+            Console.WriteLine(currentOrientation.ToString() + " Current Theta|Desired: " + desiredOrientation.ToString());
+            Console.WriteLine("current velocity: {0}", currentState.Velocity);
+            Console.WriteLine("position delta: {0}", desiredState.Position-currentState.Position);
+            Console.WriteLine("x/y commands: {0}", new Vector2(xCommand,yCommand));
             
             //Console.WriteLine(xCommand.ToString() + " xCommand|yCommand: " + yCommand.ToString());
             
