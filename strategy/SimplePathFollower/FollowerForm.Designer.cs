@@ -45,6 +45,9 @@
             this.btnLogOpenClose = new System.Windows.Forms.Button();
             this.txtRobotID = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // BtnVision
@@ -76,11 +79,11 @@
             // 
             // btnStartStop
             // 
-            this.btnStartStop.Location = new System.Drawing.Point(168, 186);
+            this.btnStartStop.Location = new System.Drawing.Point(149, 204);
             this.btnStartStop.Name = "btnStartStop";
-            this.btnStartStop.Size = new System.Drawing.Size(75, 23);
+            this.btnStartStop.Size = new System.Drawing.Size(94, 23);
             this.btnStartStop.TabIndex = 3;
-            this.btnStartStop.Text = "Start";
+            this.btnStartStop.Text = "MoveToPoint";
             this.btnStartStop.UseVisualStyleBackColor = true;
             this.btnStartStop.Click += new System.EventHandler(this.BtnStartStop_Click);
             // 
@@ -129,7 +132,7 @@
             // 
             // btnReloadPIDConstants
             // 
-            this.btnReloadPIDConstants.Location = new System.Drawing.Point(12, 238);
+            this.btnReloadPIDConstants.Location = new System.Drawing.Point(46, 247);
             this.btnReloadPIDConstants.Name = "btnReloadPIDConstants";
             this.btnReloadPIDConstants.Size = new System.Drawing.Size(112, 23);
             this.btnReloadPIDConstants.TabIndex = 10;
@@ -139,7 +142,7 @@
             // 
             // BtnKick
             // 
-            this.BtnKick.Location = new System.Drawing.Point(72, 186);
+            this.BtnKick.Location = new System.Drawing.Point(48, 204);
             this.BtnKick.Name = "BtnKick";
             this.BtnKick.Size = new System.Drawing.Size(75, 23);
             this.BtnKick.TabIndex = 11;
@@ -150,7 +153,7 @@
             // cmbMotionPlanner
             // 
             this.cmbMotionPlanner.FormattingEnabled = true;
-            this.cmbMotionPlanner.Location = new System.Drawing.Point(47, 145);
+            this.cmbMotionPlanner.Location = new System.Drawing.Point(46, 177);
             this.cmbMotionPlanner.Name = "cmbMotionPlanner";
             this.cmbMotionPlanner.Size = new System.Drawing.Size(196, 21);
             this.cmbMotionPlanner.TabIndex = 12;
@@ -158,17 +161,17 @@
             // 
             // btnLogNext
             // 
-            this.btnLogNext.Location = new System.Drawing.Point(93, 305);
+            this.btnLogNext.Location = new System.Drawing.Point(7, 48);
             this.btnLogNext.Name = "btnLogNext";
-            this.btnLogNext.Size = new System.Drawing.Size(75, 23);
+            this.btnLogNext.Size = new System.Drawing.Size(156, 23);
             this.btnLogNext.TabIndex = 13;
-            this.btnLogNext.Text = "Next";
+            this.btnLogNext.Text = "Next Log Entry";
             this.btnLogNext.UseVisualStyleBackColor = true;
             this.btnLogNext.Click += new System.EventHandler(this.btnLogNext_Click);
             // 
             // btnStartStopLogging
             // 
-            this.btnStartStopLogging.Location = new System.Drawing.Point(168, 275);
+            this.btnStartStopLogging.Location = new System.Drawing.Point(7, 19);
             this.btnStartStopLogging.Name = "btnStartStopLogging";
             this.btnStartStopLogging.Size = new System.Drawing.Size(75, 23);
             this.btnStartStopLogging.TabIndex = 14;
@@ -178,7 +181,7 @@
             // 
             // btnLogOpenClose
             // 
-            this.btnLogOpenClose.Location = new System.Drawing.Point(12, 305);
+            this.btnLogOpenClose.Location = new System.Drawing.Point(88, 19);
             this.btnLogOpenClose.Name = "btnLogOpenClose";
             this.btnLogOpenClose.Size = new System.Drawing.Size(75, 23);
             this.btnLogOpenClose.TabIndex = 15;
@@ -188,31 +191,52 @@
             // 
             // txtRobotID
             // 
-            this.txtRobotID.Location = new System.Drawing.Point(215, 219);
+            this.txtRobotID.Location = new System.Drawing.Point(95, 129);
             this.txtRobotID.Name = "txtRobotID";
             this.txtRobotID.Size = new System.Drawing.Size(29, 20);
             this.txtRobotID.TabIndex = 16;
             this.txtRobotID.Text = "0";
+            this.txtRobotID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(165, 225);
+            this.label2.Location = new System.Drawing.Point(45, 135);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(50, 13);
             this.label2.TabIndex = 17;
             this.label2.Text = "RobotID:";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(43, 161);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(78, 13);
+            this.label4.TabIndex = 18;
+            this.label4.Text = "MotionPlanner:";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btnLogNext);
+            this.groupBox1.Controls.Add(this.btnStartStopLogging);
+            this.groupBox1.Controls.Add(this.btnLogOpenClose);
+            this.groupBox1.Location = new System.Drawing.Point(46, 296);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(172, 79);
+            this.groupBox1.TabIndex = 19;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Logging";
+            // 
             // FollowerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 340);
+            this.ClientSize = new System.Drawing.Size(292, 387);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtRobotID);
-            this.Controls.Add(this.btnLogOpenClose);
-            this.Controls.Add(this.btnStartStopLogging);
-            this.Controls.Add(this.btnLogNext);
             this.Controls.Add(this.cmbMotionPlanner);
             this.Controls.Add(this.BtnKick);
             this.Controls.Add(this.btnReloadPIDConstants);
@@ -227,6 +251,7 @@
             this.Controls.Add(this.BtnVision);
             this.Name = "FollowerForm";
             this.Text = "FollowerForm";
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -251,5 +276,7 @@
         private System.Windows.Forms.Button btnLogOpenClose;
         private System.Windows.Forms.TextBox txtRobotID;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox groupBox1;
 	}
 }

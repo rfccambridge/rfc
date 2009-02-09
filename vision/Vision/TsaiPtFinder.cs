@@ -125,9 +125,9 @@ namespace Vision
                 row.Clear();
 				bool nextRow = false;
                 
-				// extract row
-                row.Add(lstSquares[lstSquares.Count - 1]);
-                lstSquares.RemoveAt(lstSquares.Count - 1);
+				// This is part of NO TSAI_COLS implementation
+                /*row.Add(lstSquares[lstSquares.Count - 1]);
+                /lstSquares.RemoveAt(lstSquares.Count - 1);
 
 				float avgCenterY = row[0].CenterY;
 				int prevCenterY = row[0].CenterY;
@@ -143,8 +143,15 @@ namespace Vision
 						avgCenterY = (b.CenterY + prevCenterY) / 2;
 						lstSquares.RemoveAt(lstSquares.Count - 1);
 					}
-				}
+				}*/
 
+                int TSAI_COLS = Constants.get<int>("vision", "TSAI_COLS");
+                for (int j = 0; j < TSAI_COLS; j++)
+                {
+                    if (lstSquares.Count == 0) continue;
+                    row.Add(lstSquares[lstSquares.Count - 1]);
+                    lstSquares.RemoveAt(lstSquares.Count - 1);
+                }
 
                 // sort row by X coordinate
                 row.Sort(_blobComparerX);
@@ -167,8 +174,8 @@ namespace Vision
 
             
 
-                int j; // column counter
-                for (j = 0; j < row.Count; j+=TSAI_SKIP)
+                //int j; // column counter
+                for (int j = 0; j < row.Count; j+=TSAI_SKIP)
                 {
 
                     // location of the calibration square in the image
