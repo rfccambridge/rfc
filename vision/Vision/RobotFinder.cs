@@ -406,6 +406,7 @@ namespace VisionStatic
         static public VisionMessage findGameObjects2(Vision.Blob[] blobs, int totalBlobs, TsaiCalibrator tsaiCalibrator)
         {
             VisionMessage visionMessage = new VisionMessage();
+            List<Vector2> enemyPositions = new List<Vector2>();
 
             // Each center dot (blobID) can have multiple candidate patterns
             Dictionary<int, List<Pattern>> patterns = new Dictionary<int, List<Pattern>>();
@@ -417,25 +418,20 @@ namespace VisionStatic
 
             double wx, wy;
 
-            for (int i = 0; i < totalBlobs; i++)
-            {
-                if (blobs[i].ColorClass == ColorClasses.OUR_CENTER_DOT)
-                {
+            for (int i = 0; i < totalBlobs; i++) {
+                if (blobs[i].ColorClass == ColorClasses.OUR_CENTER_DOT) {
                     Blob tempCtrDot = blobs[i];
                     LinkedList<Blob> tempDots = new LinkedList<Blob>();
                     double distSq;
 
-                    for (int j = 0; j < totalBlobs; j++)
-                    {
+                    for (int j = 0; j < totalBlobs; j++) {
                         byte c = blobs[j].ColorClass;
                         if (c == ColorClasses.COLOR_DOT_CYAN || c == ColorClasses.COLOR_DOT_GREEN ||
-                            c == ColorClasses.COLOR_DOT_PINK)
-                        {
+                            c == ColorClasses.COLOR_DOT_PINK) {
                             //uncomment to use image coordinates
                             //distSq = RobotFinder.distanceSq(tempCtrDot.CenterX, tempCtrDot.CenterY, blobs[j].CenterX, blobs[j].CenterY);
                             distSq = RobotFinder.distanceSq(tempCtrDot.CenterWorldX, tempCtrDot.CenterWorldY, blobs[j].CenterWorldX, blobs[j].CenterWorldY);
-                            if (distSq < RobotFinder.DIST_SQ_TO_CENTER)
-                            {
+                            if (distSq < RobotFinder.DIST_SQ_TO_CENTER) {
                                 //uncomment to use image coordinates
                                 //if (distSq < RobotFinder.DIST_SQ_TO_CENTER_PIX){
                                 tempDots.AddLast(blobs[j]);
@@ -446,23 +442,18 @@ namespace VisionStatic
 
                     // Choose only the largest two dots for each color
                     Dictionary<int, List<Blob>> dotsByColor = new Dictionary<int, List<Blob>>();
-                    foreach (Blob dot in tempDots)
-                    {
-                        if (!dotsByColor.ContainsKey(dot.ColorClass))
-                        {
+                    foreach (Blob dot in tempDots) {
+                        if (!dotsByColor.ContainsKey(dot.ColorClass)) {
                             dotsByColor[dot.ColorClass] = new List<Blob>();
                             dotsByColor[dot.ColorClass].Add(dot);
                         }
-                        else
-                        {
+                        else {
                             dotsByColor[dot.ColorClass].Add(dot);
                         }
                     }
-                    foreach (int color in dotsByColor.Keys)
-                    {
+                    foreach (int color in dotsByColor.Keys) {
                         List<Blob> dots = dotsByColor[color];
-                        if (dots.Count > 2)
-                        {
+                        if (dots.Count > 2) {
                             dots.Sort(new BlobAreaScaledComparer());
                             dots.Reverse();
                             dots.RemoveRange(2, dots.Count - 2);
@@ -476,10 +467,8 @@ namespace VisionStatic
                     IList<Blob> tempDotsIList = new List<Blob>(tempDots);
                     Combinations<Blob> dotCombinations = new Combinations<Blob>(tempDotsIList, 4, GenerateOption.WithoutRepetition);
 
-                    if (tempDots.Count >= 4)
-                    {
-                        foreach (IList<Blob> fourDots in dotCombinations)
-                        {
+                    if (tempDots.Count >= 4) {
+                        foreach (IList<Blob> fourDots in dotCombinations) {
                             // Only patters with two dots of one color and two dots of another are possible
                             Dictionary<int, int> colorOccurance = new Dictionary<int, int>();
                             foreach (Blob dot in fourDots)
@@ -489,17 +478,14 @@ namespace VisionStatic
                                     colorOccurance[dot.ColorClass] = 1;
 
                             bool eachTwice = true;
-                            foreach (int value in colorOccurance.Values)
-                            {
-                                if (value != 2)
-                                {
+                            foreach (int value in colorOccurance.Values) {
+                                if (value != 2) {
                                     eachTwice = false;
                                     break;
                                 }
                             }
 
-                            if (eachTwice)
-                            {
+                            if (eachTwice) {
                                 Pattern pattern = new Pattern(tempCtrDot, fourDots);
                                 if (!patterns.ContainsKey(tempCtrDot.BlobID))
                                     patterns[tempCtrDot.BlobID] = new List<Pattern>();
@@ -508,16 +494,19 @@ namespace VisionStatic
                         }
                     }
                 }
-                else if (blobs[i].ColorClass == ColorClasses.COLOR_BALL)
-                {
+                else if (blobs[i].ColorClass == ColorClasses.COLOR_BALL) {
                     currBallAreaError = Math.Abs(blobs[i].AreaScaled - AREA_BALL);
-                    if (currBallAreaError < ERROR_BALL && currBallAreaError < bestBallAreaError)
-                    {
-                        tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
-                        tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, (wx - 2100) / 10, out wx, out wy);
+                    if (currBallAreaError < ERROR_BALL && currBallAreaError < bestBallAreaError) {
+                        //tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
+                        //tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, (wx - 2100) / 10, out wx, out wy);
                         //gameObjects.Ball = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
-                        goBall = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
+                        goBall = new Vision.Ball(blobs[i].CenterWorldX, blobs[i].CenterWorldY, blobs[i].CenterX, blobs[i].CenterY);
                         bestBallAreaError = currBallAreaError;
+                    }
+                }
+                else if (blobs[i].ColorClass == ColorClasses.THEIR_CENTER_DOT) {
+                    if (Math.Abs(blobs[i].AreaScaled - AREA_THEIR_CENTER_DOT) < ERROR_THEIR_CENTER_DOT) {
+                        enemyPositions.Add(new Vector2(blobs[i].CenterWorldX, blobs[i].CenterWorldY));                        
                     }
                 }
 
@@ -761,6 +750,8 @@ namespace VisionStatic
 
                 Robot robot = new Robot();
 
+                if (bestFL == -1 || bestFR == -1 || bestRL == -1 || bestRR == -1)
+                    return new VisionMessage();
                 // ORIENTATION
 
                 Vector orientV;
@@ -822,6 +813,13 @@ namespace VisionStatic
                     visionMessage.OurRobots.Add(vmRobot);
                 }
 
+            }
+
+            // assign distinct ids to enemies
+            int enemyID = 0;
+            foreach (Vector2 enemyPosition in enemyPositions) {
+                visionMessage.TheirRobots.Add(new Robocup.Core.VisionMessage.RobotData(enemyID++, false,
+                    VisionToGeneralCoords(enemyPosition.X, enemyPosition.Y), 0));
             }
 
             return visionMessage;
