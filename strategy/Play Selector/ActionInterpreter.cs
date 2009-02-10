@@ -91,7 +91,7 @@ namespace Robocup.Plays
         /// This is the distance that the robots should put themselves from the ball,
         /// when they get ready to kick it.
         /// </summary>
-        private readonly double kickDistance = .15;//.095
+        private readonly double kickDistance = .10;//.095
 
         /// <summary>
         /// This is how many ticks of ball motion you should add to the distance to lead the ball appropriately
@@ -145,6 +145,11 @@ namespace Robocup.Plays
             {
                 Console.WriteLine("Going to try and Kick!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 commander.kick(robotID);
+                /*commander.move(
+                    robotID,
+                    true,
+                    new Vector2(destination.X, destination.Y),
+                    destinationAngle);*/
             }
             else if (thisrobot.Position.distanceSq(destination) < 4*kickDistance*kickDistance) {
                 //we're close to the ball but not quite there yet
@@ -209,7 +214,7 @@ namespace Robocup.Plays
             //HACK: commander.move(robotID, true, target, Math.Atan2(facing.Y - target.Y, facing.X - target.X));
         }
 
-        private readonly double angleTolerance = Math.PI / 90;// 2 degrees | 120;  //1.5º
+        private readonly double angleTolerance = Math.PI / 20;// 2 degrees | 120;  //1.5º
         //private const double angleTolerance = (Math.PI);  //180º
         private readonly double distanceTolerance = .05;  //4d cm
         
@@ -222,7 +227,7 @@ namespace Robocup.Plays
         {
             double anglediff = UsefulFunctions.angleDifference(orientation, robot.Orientation);
             double dist = UsefulFunctions.distance(new Vector2(x, y), robot.Position);
-            return (Math.Abs(anglediff) <= angleTolerance) && (dist <= distanceTolerance);
+            return (Math.Abs(anglediff) <= angleTolerance) && ((dist <= distanceTolerance)||dist<=kickDistance);
         }
     }
 

@@ -262,7 +262,7 @@ namespace SimplePathFollower
             if (!_running) {
               
                 List<Vector2> wpList = new List<Vector2>();
-                wpList.Add(new Vector2(1.2, -0.5));
+                wpList.Add(new Vector2(-1.2, -0.5));
                 //wpList.Add(new Vector2(-0.5, -0.5));
                 //wpList.Add(new Vector2(0.5, -0.5));
                 //wpList.Add(new Vector2(0.5, 0.5));

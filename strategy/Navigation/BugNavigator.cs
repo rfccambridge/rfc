@@ -20,7 +20,7 @@ namespace Navigation
             const double angleSweep = .01; //.1
             const double avoidRobotDist = .28;
             const double extraAvoidBallDist = .1;
-            const double lookAheadDist = .1;//.18; //.15
+            const double lookAheadDist = .18;//.18; //.15
             const double getCloserAmount = .1;
 
             public BugNavigator()
