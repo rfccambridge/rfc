@@ -30,28 +30,30 @@ namespace Vision {
          */
          // Practice MD 3rd -- 20081206
         /* --------------------------------
- * |(3500, 4500)        (0, 4500) |
+ * |(4050, 6050)        (0, 6050) |
  * |                              |
  * |           TOP                |
  * |           CAM 1              |
  * |                              |
- * |                     (0, 2400)|
+ * |                              |
+ * |                     (0, 3025)|
  * |------------------------------|
  * |                              |
  * |            BOTTOM            |
  * |            CAM 2             |
  * |                              |
- * |(3500, 0)                (0,0)|
+ * |                              |
+ * |(4050, 0)                (0,0)|
  * --------------------------------
  */
 
 
-       // private Size FIELD_SIZE = new Size(420, 610);
+        // private Size FIELD_SIZE = new Size(420, 610);
         //private SizeF FIELD_SIZE_WORLD = new SizeF(4.2f, 6.1f);
 
-        private Size FIELD_SIZE = new Size(370, 480);
-        private SizeF FIELD_SIZE_WORLD = new SizeF(3.7f, 4.8f);
-        
+        //values for new MD field
+        private Size FIELD_SIZE = new Size(405, 605);
+        private SizeF FIELD_SIZE_WORLD = new SizeF(4.05f, 6.05f);
 
         private int OUT_ZONE_WIDTH = 30;
         private Color FIELD_COLOR = Color.DarkGreen;

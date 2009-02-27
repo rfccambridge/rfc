@@ -606,6 +606,28 @@ namespace Vision
                                   totalObjects.ToString() + " objects.");
 
                     break;
+                case 'u': // clear tsai points
+                    if (_tsaiCalibrator == null) {
+                        MessageBox.Show("TsaiCalibrator not loaded!");
+                    }
+                    _tsaiCalibrator.ClearTsaiPoints();
+                    ChangeStatus("Tsai points cleared.");
+                    break;
+                case 'i': // save tsai points
+                    if (_tsaiCalibrator == null) {
+                        MessageBox.Show("TsaiCalibrator not loaded!");
+                    }
+                    _tsaiCalibrator.SaveTsaiPoints();
+                    ChangeStatus("Tsai points saved.");
+                    break;
+                case 'o': // load tsai points
+                    if (_tsaiCalibrator == null)
+                    {
+                        MessageBox.Show("TsaiCalibrator not loaded!");
+                    }
+                    _tsaiCalibrator.LoadTsaiPoints();
+                    ChangeStatus("Tsai points loaded.");
+                    break;
                 case 'd': // detect tsai points
                     if (_blobber == null)
                     {
@@ -633,8 +655,8 @@ namespace Vision
 
                     // Clear and load before appending, so that this method can be re-run
                     _tsaiCalibrator.ClearTsaiPoints();
-                    _tsaiCalibrator.LoadTsaiPoints();
-                    _tsaiCalibrator.AppendTsaiPoints(pairs);
+                    //_tsaiCalibrator.LoadTsaiPoints();
+                    _tsaiCalibrator.AppendTsaiPoints(pairs);                    
                     
                     _tsaiCalibrator.CreateLabels(imagePicBox);
                     _tsaiCalibrator.showTsaiPoints();

@@ -684,6 +684,11 @@ namespace Vision {
                 fout.WriteLine(String.Format("{0:G} {1:G} {2} {3} {4}", tP.ix, tP.iy, tP.wx, tP.wy, tP.wz));
             fout.Close();
         }
+        public void SaveTsaiPoints()
+        {
+            SaveTsaiPoints(DEFAULT_TSAI_POINTS_FILE);
+        }
+
 
         public void LoadTsaiPoints()
         {
