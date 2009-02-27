@@ -1,0 +1,29 @@
+Metadata:
+type NormalPlay
+score 1.00049727118132
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.15 0)
+theirgoal (point 3.15 0)
+point0 (pointof ball)
+robot1 (closest friendly point3 loose)
+point1 (pointof robot1)
+robot2 (closest enemy point0 loose)
+point2 (pointof robot2)
+robot3 (closest enemy ourgoal loose)
+point3 (pointof robot3)
+line4 (line point3 point2)
+line5 (line point1 point6)
+point6 (point -1.74 1.02)
+line7 (line point6 point6)
+Conditions:
+Actions:
+(robotpointmove robot1 (linearInterpolation point3 point2 0.2))
+DesignerData:
+ball <-1.42,0.35>
+robot1 <-2.14,0.5>
+robot2 <-1.11,0.47>
+robot3 <-2.32,1.53>
