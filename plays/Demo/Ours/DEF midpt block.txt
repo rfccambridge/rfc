@@ -21,7 +21,7 @@ point6 (point -1.74 1.02)
 line7 (line point6 point6)
 Conditions:
 Actions:
-(robotpointmove robot1 (linearInterpolation point3 point2 0.2))
+(robotpointmove robot1 (linearInterpolation point3 point2 0.8))
 DesignerData:
 ball <-1.42,0.35>
 robot1 <-2.14,0.5>
