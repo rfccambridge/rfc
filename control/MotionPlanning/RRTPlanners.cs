@@ -1,3 +1,5 @@
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -1170,4 +1172,35 @@ namespace Robocup.MotionControl
         #endregion        
 
     }
+
+#if FALSE
+    public class ShortMotionPlanner : IMotionPlanner
+    {
+        IPathPlanner pathplanner = new RRTPlanner();
+        IPathDriver pathdriver = new StickyFeedbackFollower();
+
+        /// <summary>
+        /// Reloads constants for planner and driver
+        /// </summary>
+        public void ReloadConstants()
+        {
+            pathplanner.ReloadConstants();
+            pathdriver.ReloadConstants();
+        }
+        
+        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
+        {
+            pathplanner.DrawLast(g, c);
+        }
+
+        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        {
+            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            WheelSpeeds speeds = pathdriver.followPath(path, predictor);
+            return MotionPlanningResults(speeds);
+        }
+    }
+#endif
+
+
 }
