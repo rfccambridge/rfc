@@ -35,7 +35,7 @@ namespace Robocup.CoreRobotics
             //max = Math.Max(.10, max);
 
             // compute magnitude of wheelspeeds based on PD
-            double speed = Constants.get<double>("control", "MOVE_PID_MAX_SPEED") ;// Math.Min(30.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
+            double speed = Constants.get<double>("control", "MOVE_PID_MAX") ;// Math.Min(30.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
             //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
 
             //Console.WriteLine("doing speed1: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));

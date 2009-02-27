@@ -144,7 +144,7 @@ namespace Robocup.Simulation
 
             // update ball location
             Vector2 newballlocation = ball.Position + dt * ball.Velocity;
-            Vector2 newballvelocity = (1 - dt * balldecay) * ball.Velocity;
+            Vector2 newballvelocity = (1 - dt * balldecay) *  ball.Velocity;
 
             // check for collisions ball-robot, update ball position
             bool collided = false;
@@ -264,21 +264,24 @@ namespace Robocup.Simulation
         }
 
         #region IRobot members
-        const double initial_ball_speed = 4f;
+        const double initial_ball_speed = 0.1f;
         readonly Random r = new Random();
         public void kick(int robotID)
         {
             RobotInfo robot = getCurrentInformation(robotID);
             // add randomness to actual robot location / direction
-            const double randomComponent = initial_ball_speed / 3;
-            double ballVx = (double)(initial_ball_speed * Math.Cos(robot.Orientation));
-            double ballVy = (double)(initial_ball_speed * Math.Sin(robot.Orientation));
-            ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
-            ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
-            RobotInfo prev = robot;
-            const double recoil = .02 / initial_ball_speed; ;
-            UpdateBall(new BallInfo(ball_info.Position, new Vector2(ballVx, ballVx)));
-            UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
+            //const double randomComponent = initial_ball_speed / 3;            
+
+            double ballVx = (double)(initial_ball_speed) * Math.Cos(robot.Orientation);
+            double ballVy = (double)(initial_ball_speed) * Math.Sin(robot.Orientation);
+
+            Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
+            //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
+            //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
+            //RobotInfo prev = robot;
+            //const double recoil = .02 / initial_ball_speed; ;
+            UpdateBall(new BallInfo(ball_info.Position, new Vector2(ballVx, ballVy)));
+            //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
         }
         Dictionary<int, WheelSpeeds> speeds = new Dictionary<int, WheelSpeeds>();
         public void setMotorSpeeds(int robotID, WheelSpeeds speeds)

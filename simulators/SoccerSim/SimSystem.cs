@@ -51,7 +51,6 @@ namespace SoccerSim
         }
 
         # region Play Resource Management
-        Dictionary<InterpreterPlay, string> playFiles;
         public InterpreterPlay[] dictionaryToArray(Dictionary<InterpreterPlay, string> plays)
         {
             InterpreterPlay[] toRet = new InterpreterPlay[plays.Keys.Count];
@@ -60,7 +59,7 @@ namespace SoccerSim
         }
         public void loadPlays(string path)
         {
-            playFiles = PlayUtils.loadPlays(path);
+            Dictionary<InterpreterPlay, string> playFiles = PlayUtils.loadPlays(isYellow ? path : path + "/opponent");
             if (isYellow)
                 _interpreter = new Interpreter(false, dictionaryToArray(playFiles), _predictor, _controller);
             else

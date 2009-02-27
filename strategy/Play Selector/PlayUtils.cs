@@ -33,9 +33,10 @@ namespace Robocup.Plays
 
         public static Dictionary<InterpreterPlay,string> loadPlays(string path)
         {
+            Console.WriteLine("Loading plays directory: " + path);
             PlayLoader<InterpreterPlay, InterpreterExpression> loader =
                 new PlayLoader<InterpreterPlay, InterpreterExpression>(new InterpreterExpression.Factory());
-            string[] files = System.IO.Directory.GetFiles("../../plays/");
+            string[] files = System.IO.Directory.GetFiles(path);
             
             Dictionary<InterpreterPlay, string> toRet = new Dictionary<InterpreterPlay, string>();
             
@@ -51,6 +52,7 @@ namespace Robocup.Plays
 
                 try
                 {
+                    Console.WriteLine("Loaded: " + fname);
                     InterpreterPlay p = loader.load(filecontents);
                     toRet.Add(p, fname);
                 }

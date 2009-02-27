@@ -11,7 +11,7 @@ namespace Robocup.Utilities
     {
         // drawing constants
         const int ROBOT_SIZE = 20;
-        const int BALL_SIZE = 6;
+        const int BALL_SIZE = 20;
         const int GOAL_DOT_SIZE = 10;
         // kicker drawing
         const double outerangle = .6;
@@ -66,6 +66,10 @@ namespace Robocup.Utilities
             corners[1] = (center + (new Vector2((double)(innerradius * Math.Cos(angle - innerangle)), (double)(innerradius * Math.Sin(angle - innerangle))))).ToPointF();
             corners[2] = (center + (new Vector2((double)(outerradius * Math.Cos(angle - outerangle)), (double)(outerradius * Math.Sin(angle - outerangle))))).ToPointF();
             corners[3] = (center + (new Vector2((double)(outerradius * Math.Cos(angle + outerangle)), (double)(outerradius * Math.Sin(angle + outerangle))))).ToPointF();
+
+            new Arrow(r.Position, r.Position + new Vector2(Math.Cos(r.Orientation), Math.Sin(r.Orientation)),
+                Color.Green, .03).drawConvertToPixels(g, converter);
+
             Brush b2 = new SolidBrush(Color.Gray);
             g.FillPolygon(b2, corners);
             b2.Dispose();
@@ -117,19 +121,7 @@ namespace Robocup.Utilities
             {
                 drawRobot(r, g, Color.Red);
             }
-
-
-            // draw ball
-            b.Dispose();
-            b = new SolidBrush(Color.Orange);
-            g.FillEllipse(
-                b,
-                converter.fieldtopixelX(predictor.getBallInfo().Position.X) - BALL_SIZE / 2,
-                converter.fieldtopixelY(predictor.getBallInfo().Position.Y) - BALL_SIZE / 2,
-                BALL_SIZE,
-                BALL_SIZE
-            );
-
+            
             // draw arrows
 
             lock (_arrowsLock)
@@ -145,6 +137,20 @@ namespace Robocup.Utilities
                 foreach (RobotPath path in _paths.Values)
                     PathDrawing.DrawPath(path, Color.Blue, Color.Blue, g, converter);
             }
+
+            // draw ball
+            new Arrow(predictor.getBallInfo().Position, predictor.getBallInfo().Position + predictor.getBallInfo().Velocity.normalize(),
+                Color.Purple, .03).drawConvertToPixels(g, converter);
+            b.Dispose();
+            b = new SolidBrush(Color.Orange);
+            g.FillEllipse(
+                b,
+                converter.fieldtopixelX(predictor.getBallInfo().Position.X) - BALL_SIZE / 2,
+                converter.fieldtopixelY(predictor.getBallInfo().Position.Y) - BALL_SIZE / 2,
+                BALL_SIZE,
+                BALL_SIZE
+            );
+
 
         }
 

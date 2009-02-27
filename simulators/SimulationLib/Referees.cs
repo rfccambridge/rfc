@@ -37,6 +37,7 @@ namespace Robocup.Simulation
             // Check for goal
             if (Math.Abs(ball.Position.Y) <= .35 && Math.Abs(ball.Position.X) >= 2.4)
             {
+                Console.WriteLine("Goal Ball reset!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 goalScored(ball.Position.X > 0);
                 move_ball(new BallInfo(new Vector2(0, 0)));
                 return;
@@ -71,11 +72,14 @@ namespace Robocup.Simulation
             {
                 // reset if stuck too long
                 should_restart++;
-                if (should_restart > 200)
+                /*if (should_restart > 200)
                 {
+                    Console.WriteLine("STUCK !!!!!!!!!!!!!!!!!!!!!!!!!");
+                    string x = Console.ReadLine();
+                    Console.WriteLine("BS: [ " + x + "]");
                     move_ball(new BallInfo(new Vector2(0, 0)));
                     should_restart = 0;
-                }
+                }*/
             }
             else
                 should_restart = 0;
