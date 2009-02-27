@@ -27,6 +27,7 @@ namespace Vision
 
         private static HelpForm HelpForm = new HelpForm();
         private static Form SeqCameraForm = null; // setup upon first request
+		private static TestForm TestForm = new TestForm();
 
         /* PRIVATE MEMBERS */
 
@@ -58,6 +59,8 @@ namespace Vision
         // Recording
         private bool _recording;
         private string _recPath = WORK_DIR;
+
+    	private bool _testing;
 
         /* CONSTRUCTORS */
 
@@ -683,6 +686,14 @@ namespace Vision
                     ClearHighlights();
                     ChangeStatus("Highlights removed.");
                     break;
+				case 'x': //start testing
+					if (TestForm.ShowDialog() == DialogResult.Cancel)
+						return;
+
+            		TestForm.Tester.Reset();
+					_testing = true;
+					//Intentional fall-through, who said goto was bad practice?
+					goto case 'a';
                 case 'a': // start live blobbing
                     if (_blobber == null)
                     {
@@ -737,6 +748,9 @@ namespace Vision
                                     _camera.resetFrameCount();
                                     stopWatch.Start();
                                 }
+								
+								if(_testing)
+									TestForm.Tester.TestFrame(visionMessage, _camera);
 
                                 _fieldState.Update(visionMessage);
 
@@ -763,6 +777,12 @@ namespace Vision
                         _blobber.Stop();
                         ChangeStatus(IDLE_STATUS);
                     }
+
+					if(_testing)
+					{
+						TestForm.Tester.FinishTest();
+						_testing = false;
+					}
                     break;
                 case '.': // go to next (saved) frame
                     AdvanceFrame(1);

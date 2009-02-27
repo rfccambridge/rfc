@@ -311,6 +311,7 @@ namespace VisionStatic
         public static float ERROR_THEIR_CENTER_DOT;
         public static float AREA_BALL;
         public static float ERROR_BALL;
+    	public static float MIN_BALL_DIST_FROM_ROBOT_SQ;
 
         // These constants are needed when using the old (before Jan. 2009) robot id method
         public static float DIST_SQ_TO_CENTER;
@@ -332,7 +333,7 @@ namespace VisionStatic
         static int THEIR_ID_OFFSET;
         static float BALL_HEIGHT_TSAI;
 
-        private static bool VERBOSE;
+        public static bool VERBOSE;
 
         // Neural Net robot id method not implemented
         //static BrainNet.NeuralFramework.INeuralNetwork _nnIdentifier;
@@ -370,6 +371,7 @@ namespace VisionStatic
             DIST_SQ_TO_CENTER_PIX = Constants.get<float>("vision", "DIST_SQ_TO_CENTER_PIX");
             AREA_BALL = Constants.get<float>("vision", "AREA_BALL");
             ERROR_BALL = Constants.get<float>("vision", "ERROR_BALL");
+        	MIN_BALL_DIST_FROM_ROBOT_SQ = Constants.get<float>("vision", "MIN_BALL_DIST_FROM_ROBOT_SQ");
 
             // These constants are needed when using the old (before Jan. 2009) robot id method
             DIST_SQ_TO_CENTER = Constants.get<float>("vision", "DIST_SQ_TO_CENTER");
@@ -411,12 +413,7 @@ namespace VisionStatic
             // Each center dot (blobID) can have multiple candidate patterns
             Dictionary<int, List<Pattern>> patterns = new Dictionary<int, List<Pattern>>();
 
-            Vision.Ball goBall = null;
-
-            double currBallAreaError;
-            double bestBallAreaError = 1000; //initally a ridiculously big number
-
-            double wx, wy;
+            List<int> ballBlobs = new List<int>();
 
             for (int i = 0; i < totalBlobs; i++) {
                 if (blobs[i].ColorClass == ColorClasses.OUR_CENTER_DOT) {
@@ -495,14 +492,7 @@ namespace VisionStatic
                     }
                 }
                 else if (blobs[i].ColorClass == ColorClasses.COLOR_BALL) {
-                    currBallAreaError = Math.Abs(blobs[i].AreaScaled - AREA_BALL);
-                    if (currBallAreaError < ERROR_BALL && currBallAreaError < bestBallAreaError) {
-                        //tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
-                        //tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, (wx - 2100) / 10, out wx, out wy);
-                        //gameObjects.Ball = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
-                        goBall = new Vision.Ball(blobs[i].CenterWorldX, blobs[i].CenterWorldY, blobs[i].CenterX, blobs[i].CenterY);
-                        bestBallAreaError = currBallAreaError;
-                    }
+                    ballBlobs.Add(i);
                 }
                 else if (blobs[i].ColorClass == ColorClasses.THEIR_CENTER_DOT) {
                     if (Math.Abs(blobs[i].AreaScaled - AREA_THEIR_CENTER_DOT) < ERROR_THEIR_CENTER_DOT) {
@@ -797,14 +787,6 @@ namespace VisionStatic
                     Console.WriteLine("WX=" + robot.X.ToString() + "  WY=" + robot.Y.ToString() + "  Orient=" + robot.Orientation.ToString());
                 }
 
-                Vector2 ballPos;
-                if (goBall == null)
-                    ballPos = null;
-                else
-                    ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
-
-                visionMessage.BallPosition = ballPos;
-
                 if (robot.Id >= 0)
                 {
                     VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(robot.Id, true,
@@ -813,9 +795,47 @@ namespace VisionStatic
                     visionMessage.OurRobots.Add(vmRobot);
                 }
 
+				//Check if possible ball isn't too near to center of robot 
+				//obviously a wrong blob -> should be discarded
+				for(int i=0; i<ballBlobs.Count; i++)
+				{
+					int ind = ballBlobs[i];
+					if (ind == -1) continue;
+					Vector2 tmpBallPosition = new Vector2(blobs[ind].CenterWorldX, blobs[ind].CenterWorldY);
+					if (tmpBallPosition.distanceSq(new Vector2(robot.X, robot.Y)) < MIN_BALL_DIST_FROM_ROBOT_SQ)
+						//discard this ball blob
+						ballBlobs[i] = -1;
+				}
+
             }
 
-            // assign distinct ids to enemies
+			Ball goBall = null;
+			double currBallAreaError;
+			double bestBallAreaError = 1000; //initally a ridiculously big number
+			
+			foreach(int i in ballBlobs)
+            {
+				if (i == -1) continue;
+				currBallAreaError = Math.Abs(blobs[i].AreaScaled - AREA_BALL);
+				if (currBallAreaError < ERROR_BALL && currBallAreaError < bestBallAreaError)
+				{
+					//tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
+					//tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, (wx - 2100) / 10, out wx, out wy);
+					//gameObjects.Ball = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
+					goBall = new Ball(blobs[i].CenterWorldX, blobs[i].CenterWorldY, blobs[i].CenterX, blobs[i].CenterY);
+					bestBallAreaError = currBallAreaError;
+				}
+            }
+			
+			Vector2 ballPos;
+            if (goBall == null)
+               ballPos = null;
+            else
+               ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
+
+            visionMessage.BallPosition = ballPos;
+
+			// assign distinct ids to enemies
             int enemyID = 0;
             foreach (Vector2 enemyPosition in enemyPositions) {
                 visionMessage.TheirRobots.Add(new Robocup.Core.VisionMessage.RobotData(enemyID++, false,
