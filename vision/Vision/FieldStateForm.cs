@@ -73,8 +73,17 @@ namespace Vision {
             _gfxField = Graphics.FromImage(_bmpField);
             picField.BackgroundImage = _bmpField;
 
-            this.Width = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Width;
+            this.Width = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Width + 2* tabRobotStatus0.Width + 20;
             this.Height = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Height;
+
+            tabRobotStatus0.Left = picField.Left + picField.Width + 10;
+            tabRobotStatus2.Left = picField.Left + picField.Width + 10;
+            tabRobotStatus4.Left = picField.Left + picField.Width + 10;
+
+            tabRobotStatus1.Left = picField.Left + picField.Width + tabRobotStatus0.Width + 20;
+            tabRobotStatus3.Left = picField.Left + picField.Width + tabRobotStatus0.Width + 20;
+            tabRobotStatusBall.Left = picField.Left + picField.Width + tabRobotStatus0.Width + 20;
+
         }
 
         public Graphics getGraphics() {
@@ -92,18 +101,21 @@ namespace Vision {
                 //if (robot != null && robot.ID >= 0) {
                 DrawOurRobot(robot);
                 botsOnField++;
+                UpdateStatusDisplay(robot);
                 //}
             }
             foreach (VisionMessage.RobotData robot in visionMessage.TheirRobots) {
                 //if (robot != null && robot.ID >= 0) {
                     DrawTheirRobot(robot);
-                    botsOnField++;
+                    botsOnField++;                    
               //  }
             }
 
             if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
                 DrawBall(visionMessage.BallPosition);
                 ballsOnField++;
+                lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
+                                                                                 visionMessage.BallPosition.Y).ToString();
             }
 
            // if (ballsOnField == 0)
@@ -113,6 +125,30 @@ namespace Vision {
 
             picField.Invalidate();
         }
+
+        private void UpdateStatusDisplay(VisionMessage.RobotData robot) {
+            Label lblControl = null;
+            switch (robot.ID) {
+                case 0:
+                    lblControl = lblLoc0;
+                    break;
+                case 1:
+                    lblControl = lblLoc1;
+                    break;
+                case 2:
+                    lblControl = lblLoc2;
+                    break;
+                case 3:
+                    lblControl = lblLoc3;
+                    break;
+                case 4:
+                    lblControl = lblLoc4;
+                    break;
+            }
+
+            lblControl.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(robot.Position.X, robot.Position.Y).ToString();
+        }
+
         private void DrawCoords()
         {
             Font font = new Font(FontFamily.GenericSansSerif, 8);
@@ -214,6 +250,10 @@ namespace Vision {
         private void FieldStateForm_FormClosing(object sender, FormClosingEventArgs e) {
             e.Cancel = true;
             Hide();
+        }
+
+        private void tableLayoutPanel4_Paint(object sender, PaintEventArgs e) {
+
         }
     
     }

@@ -1287,7 +1287,7 @@ namespace VisionStatic
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        private static Vector2 VisionToGeneralCoords(double x, double y)
+        public static Vector2 VisionToGeneralCoords(double x, double y)
         {
             // Move origin from bottom-right (vision) to center (general), and change the dimensions 
             // from half-field to full-field and rotate the coord system by pi/2 clockwise (by flipping
@@ -1301,11 +1301,22 @@ namespace VisionStatic
         /// </summary>
         /// <param name="angle"></param>
         /// <returns></returns>
-        private static double VisionToGeneralOrientation(double angle)
+        public static double VisionToGeneralOrientation(double angle)
         {
             return angle - Math.PI / 2;
         }
-
+        /// <summary>
+        /// General coord system is rotated by pi/2 counter-clockwise with respect to the vision system.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static Vector2 GeneralToVisionCoords(double x, double y) {
+            // See VisionToGeneralCoords for details
+            return new Vector2(
+                x * V_HEIGHT / G_WIDTH + V_HEIGHT / 2,
+                y * V_WIDTH / G_HEIGHT + V_WIDTH / 2);                
+        }       
         #region NeuralNets_NOTIMPLEMENTED
         /*
         public static void CreateNN()
