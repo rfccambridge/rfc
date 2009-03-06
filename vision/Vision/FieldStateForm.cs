@@ -101,7 +101,7 @@ namespace Vision {
                 //if (robot != null && robot.ID >= 0) {
                 DrawOurRobot(robot);
                 botsOnField++;
-                UpdateStatusDisplay(robot);
+               // UpdateStatusDisplay(robot);
                 //}
             }
             foreach (VisionMessage.RobotData robot in visionMessage.TheirRobots) {
@@ -114,8 +114,8 @@ namespace Vision {
             if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
                 DrawBall(visionMessage.BallPosition);
                 ballsOnField++;
-                lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
-                                                                                 visionMessage.BallPosition.Y).ToString();
+                //lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
+                //                                                                 visionMessage.BallPosition.Y).ToString();
             }
 
            // if (ballsOnField == 0)
@@ -124,6 +124,18 @@ namespace Vision {
             //   Console.WriteLine("Warning: No bots on field!");
 
             picField.Invalidate();
+
+            // Setting the Text property of the labels MUST happen *after* Invalidate() was called, otherwise
+            // the field is not redrawn -- not sure what is the exact problem that is at the bottom of ths.
+            foreach (VisionMessage.RobotData robot in visionMessage.OurRobots) {
+                UpdateStatusDisplay(robot);
+            }
+
+            if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
+                lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
+                                                                                 visionMessage.BallPosition.Y).ToString();
+            }
+            
         }
 
         private void UpdateStatusDisplay(VisionMessage.RobotData robot) {
@@ -251,10 +263,6 @@ namespace Vision {
             e.Cancel = true;
             Hide();
         }
-
-        private void tableLayoutPanel4_Paint(object sender, PaintEventArgs e) {
-
-        }
-    
+   
     }
 }

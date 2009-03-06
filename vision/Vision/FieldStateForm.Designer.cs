@@ -297,8 +297,7 @@ namespace Vision {
             this.tabRobotStatus2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tabRobotStatus2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tabRobotStatus2.Size = new System.Drawing.Size(130, 100);
-            this.tabRobotStatus2.TabIndex = 4;
-            this.tabRobotStatus2.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel4_Paint);
+            this.tabRobotStatus2.TabIndex = 4;            
             // 
             // label14
             // 
