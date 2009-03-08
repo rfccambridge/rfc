@@ -190,6 +190,10 @@ namespace Robocup.Core
         /// </summary>
         public Vector2 normalize()
         {
+            double lengthSq = magnitudeSq();
+            if (lengthSq == 0)
+                return this;
+            
             return (1 / Math.Sqrt(magnitudeSq())) * this;
         }
         /// <summary>

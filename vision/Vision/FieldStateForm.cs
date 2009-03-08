@@ -127,13 +127,34 @@ namespace Vision {
 
             // Setting the Text property of the labels MUST happen *after* Invalidate() was called, otherwise
             // the field is not redrawn -- not sure what is the exact problem that is at the bottom of ths.
-            foreach (VisionMessage.RobotData robot in visionMessage.OurRobots) {
+
+            this.Invoke( new MethodInvoker( delegate {
+                lblLoc0.Text = "";
+                lblLoc1.Text = "";
+                lblLoc2.Text = "";
+                lblLoc3.Text = "";
+                lblLoc4.Text = "";
+                lblLocBall.Text = "";
+
+                lblVel0.Text = "";
+                lblVel1.Text = "";
+                lblVel2.Text = "";
+                lblVel3.Text = "";
+                lblVel4.Text = "";
+                lblVelBall.Text = "";
+            }));
+            foreach (VisionMessage.RobotData robot in visionMessage.OurRobots)
+            {
                 UpdateStatusDisplay(robot);
             }
 
-            if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
-                lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
-                                                                                 visionMessage.BallPosition.Y).ToString();
+            if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0))
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
+                                                                                     visionMessage.BallPosition.Y).ToString();
+                }));
             }
             
         }
@@ -157,8 +178,10 @@ namespace Vision {
                     lblControl = lblLoc4;
                     break;
             }
-
-            lblControl.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(robot.Position.X, robot.Position.Y).ToString();
+            this.Invoke(new MethodInvoker(delegate
+            {
+                lblControl.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(robot.Position.X, robot.Position.Y).ToString();
+            }));
         }
 
         private void DrawCoords()

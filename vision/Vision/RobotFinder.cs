@@ -1314,8 +1314,8 @@ namespace VisionStatic
         public static Vector2 GeneralToVisionCoords(double x, double y) {
             // See VisionToGeneralCoords for details
             return new Vector2(
-                x * V_HEIGHT / G_WIDTH + V_HEIGHT / 2,
-                y * V_WIDTH / G_HEIGHT + V_WIDTH / 2);                
+                y * V_WIDTH / G_HEIGHT + V_WIDTH / 2,
+                x * V_HEIGHT / G_WIDTH + V_HEIGHT / 2);
         }       
         #region NeuralNets_NOTIMPLEMENTED
         /*

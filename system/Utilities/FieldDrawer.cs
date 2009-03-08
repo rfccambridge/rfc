@@ -11,7 +11,7 @@ namespace Robocup.Utilities
     {
         // drawing constants
         const int ROBOT_SIZE = 20;
-        const int BALL_SIZE = 20;
+        const int BALL_SIZE = 8;
         const int GOAL_DOT_SIZE = 10;
         // kicker drawing
         const double outerangle = .6;
@@ -150,7 +150,7 @@ namespace Robocup.Utilities
                 BALL_SIZE,
                 BALL_SIZE
             );
-
+            b.Dispose();
 
         }
 
