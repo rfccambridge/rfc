@@ -312,6 +312,7 @@ namespace VisionStatic
         public static float AREA_BALL;
         public static float ERROR_BALL;
     	public static float MIN_BALL_DIST_FROM_ROBOT_SQ;
+        public static float MIN_ROBOT_TO_ROBOT_DIST_SQ;
 
         // These constants are needed when using the old (before Jan. 2009) robot id method
         public static float DIST_SQ_TO_CENTER;
@@ -372,6 +373,7 @@ namespace VisionStatic
             AREA_BALL = Constants.get<float>("vision", "AREA_BALL");
             ERROR_BALL = Constants.get<float>("vision", "ERROR_BALL");
         	MIN_BALL_DIST_FROM_ROBOT_SQ = Constants.get<float>("vision", "MIN_BALL_DIST_FROM_ROBOT_SQ");
+            MIN_ROBOT_TO_ROBOT_DIST_SQ = Constants.get<float>("vision", "MIN_ROBOT_TO_ROBOT_DIST_SQ");
 
             // These constants are needed when using the old (before Jan. 2009) robot id method
             DIST_SQ_TO_CENTER = Constants.get<float>("vision", "DIST_SQ_TO_CENTER");
@@ -838,6 +840,17 @@ namespace VisionStatic
 			// assign distinct ids to enemies
             int enemyID = 0;
             foreach (Vector2 enemyPosition in enemyPositions) {
+                bool skipEnemy = false;
+                foreach (VisionMessage.RobotData ourPosition in visionMessage.OurRobots)
+                    if (enemyPosition.distanceSq(GeneralToVisionCoords(ourPosition.Position))
+                                                            < MIN_ROBOT_TO_ROBOT_DIST_SQ) {
+                        skipEnemy = true;
+                        break;
+                    }
+
+                if (skipEnemy)
+                    continue;
+
                 visionMessage.TheirRobots.Add(new Robocup.Core.VisionMessage.RobotData(enemyID++, false,
                     VisionToGeneralCoords(enemyPosition.X, enemyPosition.Y), 0));
             }
@@ -1282,6 +1295,14 @@ namespace VisionStatic
         static double V_WIDTH = G_HEIGHT * M_TO_MM_FACTOR;
 
         /// <summary>
+        /// Overload to convert vision to general coordinates from a vector
+        /// </summary>
+        /// <param name="visionPos"></param>
+        /// <returns></returns>
+        public static Vector2 VisionToGeneralCoords(Vector2 visionPos) {
+            return VisionToGeneralCoords(visionPos.X, visionPos.Y);
+        }
+        /// <summary>
         /// General coord system is rotated by pi/2 counter-clockwise with respect to the vision system.
         /// </summary>
         /// <param name="x"></param>
@@ -1304,6 +1325,14 @@ namespace VisionStatic
         public static double VisionToGeneralOrientation(double angle)
         {
             return angle - Math.PI / 2;
+        }
+        /// <summary>
+        /// Overload to convert general to vision coordinates that takes a vectror
+        /// </summary>
+        /// <param name="generalPos"></param>
+        /// <returns></returns>
+        public static Vector2 GeneralToVisionCoords(Vector2 generalPos) {
+            return GeneralToVisionCoords(generalPos.X, generalPos.Y);
         }
         /// <summary>
         /// General coord system is rotated by pi/2 counter-clockwise with respect to the vision system.

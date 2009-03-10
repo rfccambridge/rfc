@@ -91,7 +91,7 @@ namespace Robocup.Plays
         /// This is the distance that the robots should put themselves from the ball,
         /// when they get ready to kick it.
         /// </summary>
-        private readonly double kickDistance = .10;//.095
+        private readonly double kickDistance = .08;//.10;//.095
 
         /// <summary>
         /// This is how many ticks of ball motion you should add to the distance to lead the ball appropriately
