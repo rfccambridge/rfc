@@ -83,21 +83,34 @@ int THEIR_ID_OFFSET_ONUFRII 0
 #  Practice field MD3rd values 
 #
 # --------------------------------
-# |(3500, 4500)        (0, 4500) |
+# |(4050, 6050)        (0, 6050) |
 # |                              |
 # |           TOP                |
 # |           CAM                |
 # |                              |
 # |                              |
+# |(4050, 3025)         (0, 3025)|
 # |------------------------------|
 # |                              |
 # |            BOTTOM            |
 # |            CAM               |
 # |                              |
-# |(3500, 0)                (0,0)|
+# |(4050, 0)                (0,0)|
 # --------------------------------
 
 # Uncomment only the quater which you wish to calibrate
+
+
+#TOP
+double TSAI_ORIGIN_IMAGE_CENTER_X 936
+double TSAI_ORIGIN_IMAGE_CENTER_Y 687
+#This is an offset we apply every time we generate an image lookup table ( = half Y-size)
+double TSAI_TOP_OFFSET_Y 3025
+
+#BOTTOM
+#double TSAI_ORIGIN_IMAGE_CENTER_X 924
+#double TSAI_ORIGIN_IMAGE_CENTER_Y 668
+#double TSAI_TOP_OFFSET_Y 0
 
 # Laptops
 
@@ -136,16 +149,16 @@ double TSAI_OFFSET_Y_OMEGA 0
 # Desktops
 # bottom right corner
 #double TSAI_OFFSET_X_RFC -250
-#double TSAI_OFFSET_Y_RFC 3025
+#double TSAI_OFFSET_Y_RFC 0
 # top right corner
 double TSAI_OFFSET_X_RFC -250
-double TSAI_OFFSET_Y_RFC 5300
+double TSAI_OFFSET_Y_RFC 1175
 # top left corner
 #double TSAI_OFFSET_X_RFC 3400
-#double TSAI_OFFSET_Y_RFC 5300
+#double TSAI_OFFSET_Y_RFC 1175
 # bottom left corner
 #double TSAI_OFFSET_X_RFC 3400
-#double TSAI_OFFSET_Y_RFC 3025
+#double TSAI_OFFSET_Y_RFC 0
 
 
 double TSAI_OFFSET_X_STRATEGIST 0

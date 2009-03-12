@@ -191,8 +191,8 @@ namespace Vision {
             //public const double DPY = 4.58;	/* [mm/pix]  Effective Y dimension of pixel in frame grabber   */
             //public const double CX = 1024 / 2;		/* [pix] Z axis intercept of camera coordinate system    */
            // public const double CY = 768 / 2;		/* [pix] Z axis intercept of camera coordinate system    */
-            public const double CX = 0;		/* [pix] Z axis intercept of camera coordinate system    */
-            public const double CY = 0;		/* [pix] Z axis intercept of camera coordinate system    */
+            public static double CX;		/* [pix] Z axis intercept of camera coordinate system    */
+            public static double CY;		/* [pix] Z axis intercept of camera coordinate system    */
             public const double SX = 1.0;
         }
 
@@ -295,6 +295,7 @@ namespace Vision {
         
         public const double ORIGIN_OFFSET_X = 11000;
         public const double ORIGIN_OFFSET_Y = 12000;
+        private static double TSAI_TOP_OFFSET_Y;
 
         //private Control hostControl;
         //private int _cameraID;
@@ -317,6 +318,12 @@ namespace Vision {
             set { _imageSize = value; }
         }
 
+        public static void LoadParameters() {
+            MANUFACTURER_CAMERA_PARAMETERS.CX= Constants.get<double>("vision", "TSAI_ORIGIN_IMAGE_CENTER_X");
+            MANUFACTURER_CAMERA_PARAMETERS.CY = Constants.get<double>("vision", "TSAI_ORIGIN_IMAGE_CENTER_Y");
+            TSAI_TOP_OFFSET_Y = Constants.get<double>("vision", "TSAI_TOP_OFFSET_Y");
+        }
+
         public TsaiCalibrator() {
             //_cameraID = cameraID;
 
@@ -330,6 +337,7 @@ namespace Vision {
             _imageSize = new System.Drawing.Size(1024, 768);
 
             //CreateDefaultTsaiPoints();
+            LoadParameters();
         }
 
         public void DefaultInitSequence(Control hostControl) {
@@ -947,7 +955,7 @@ namespace Vision {
         private void TranslateCoords(double wx, double wy, out double wxt, out double wyt)
         {
             wxt = wx - ORIGIN_OFFSET_X;
-            wyt = wy - ORIGIN_OFFSET_Y;
+            wyt = wy - ORIGIN_OFFSET_Y + TSAI_TOP_OFFSET_Y;
         }
 
 

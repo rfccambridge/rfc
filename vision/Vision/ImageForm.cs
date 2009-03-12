@@ -823,6 +823,7 @@ namespace Vision
                     RobotFinder.LoadParameters();
                     ColorClasses.LoadParameters();
                     TsaiPtFinder.LoadParameters();
+                    TsaiCalibrator.LoadParameters();
                     if (_blobber != null)
                         _blobber.ReloadParameters();
                     ChangeStatus("Constants reloaded.");

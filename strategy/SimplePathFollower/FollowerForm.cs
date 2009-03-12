@@ -151,7 +151,7 @@ namespace SimplePathFollower
                 if (!_visionConnectedBottom)
                 {
                     _visionBottom = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(
-                        txtVisionHostTop.Text, MESSAGE_SENDER_PORT);
+                        txtVisionHostBottom.Text, MESSAGE_SENDER_PORT);
                     _visionBottom.MessageReceived +=
                         new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(
                             handleVisionUpdateBottom);
@@ -342,7 +342,8 @@ namespace SimplePathFollower
         }
 
         enum MotionPlanners { CircleFeedbackMotionPlanner, BugFeedbackMotionPlanner, 
-			MixedBiRRTMotionPlanner, StickyRRTFeedbackMotionPlanner , StickyDumbMotionPlanner};
+			MixedBiRRTMotionPlanner, StickyRRTFeedbackMotionPlanner , StickyDumbMotionPlanner,
+            DumbPlanner};
         private MotionPlanners _currentPlannerSelection;
 
         private void cmbMotionPlanner_SelectedIndexChanged(object sender, EventArgs e) {
@@ -386,6 +387,12 @@ namespace SimplePathFollower
 						_currentPlannerSelection = MotionPlanners.StickyDumbMotionPlanner;
 					}
 					break;
+                case MotionPlanners.DumbPlanner:
+                    planner = new DumbPlanner();
+                    if (_pathFollower.setPlanner(planner)) {
+                        _currentPlannerSelection = MotionPlanners.DumbPlanner;
+                    }
+                    break;
             }
             cmbMotionPlanner.SelectedItem = _currentPlannerSelection;
         }
