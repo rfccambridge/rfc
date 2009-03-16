@@ -42,6 +42,7 @@
     <Compile Include="IMotionPlanner.cs" />
     <Compile Include="INavigator.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="IPathPlanner.cs" />
     <Compile Include="LogReader.cs" />
     <Compile Include="LogWriter.cs" />
     <Compile Include="MovementModeler.cs" />

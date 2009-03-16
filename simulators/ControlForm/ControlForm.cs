@@ -38,8 +38,8 @@ namespace Robocup.ControlForm {
         //static bool isOmegaTop = (Constants.get<int>("vision", "CAMERA_ID_OMEGA") == 1);
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
-        String DEFAULT_TOP = "localhost";
-        String DEFAULT_BOTTOM = "rfc";
+        String DEFAULT_TOP = "rfc";
+        String DEFAULT_BOTTOM = "localhost";
         String DEFAULT_SERIAL = "localhost";
 
 

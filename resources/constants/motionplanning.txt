@@ -1,0 +1,86 @@
+# Motion planning constants
+# Constants for NewPlanners.cs- planners developed for
+# spring 2009 CS199r class
+
+#general constants used in MotionPlanning
+int NUM_ROBOTS 5
+int MIN_SINGLE_WHEEL_SPEED 0
+int MAX_SINGLE_WHEEL_SPEED 127
+
+#wheel ORIENTATIONs
+#double RF_ORIENTATION 0.5236
+#double LF_ORIENTATION 2.618
+#double LB_ORIENTATION 3.6652
+#double RB_ORIENTATION 5.7596
+
+double ANGLE_AXIS_TO_WHEEL 0.715584993
+double WHEEL_RADIUS 0.0782828
+
+#DumbTurnPlanner constants
+
+double MIN_ANGLE_DIFFERENCE .55
+
+#DumbVeerFeedbackPlanner constants
+
+#DECIDE WHETHER TO USE ANGULAR VEER PLANNER
+int ANGULAR_VEER 1
+
+int WHEEL_SPEED_STRAIGHT 32
+int WHEEL_SPEED_TURN 6
+
+double MPS_STRAIGHT_SPEED 50
+
+double STOP_DISTANCE .1
+
+double VEER_P 11
+double VEER_I 0
+double VEER_D 3
+
+double ANGULAR_VEER_P 10
+double ANGULAR_VEER_I 0
+double ANGULAR_VEER_D -5
+
+double MIN_ANGLE_SPIN 1
+double MIN_ANGLE_KEEP_SPINNING 1
+
+double MAX_FINAL_ANGLE_DIFFERENCE .2
+
+double DIST_SLOW_DOWN .5
+
+#DumbVelocityPlanner
+double DumbVelocity 20
+
+double VELOCITY_VEER_P 10
+double VELOCITY_VEER_I 0
+double VELOCITY_VEER_D 5
+
+double VEER_CAP 0
+
+#Navigation
+int USE_NAVIGATOR 0
+
+#Switch orientation method
+double MIN_ANGLE_SWITCH .8
+
+double LOOK_AHEAD_DISTANCE .4
+double AVOID_ROBOT_DISTANCE .4
+
+#OBSTACLE AVOIDANCE
+double REPULSION_FACTOR .3
+double PERPINDICULAR_LENGTH .1
+
+#BugPlanner
+double AVOID_DIST .3
+double LOOK_AHEAD_DIST .35
+double ROTATE_ANGLE .85
+
+#DEFAULT
+double DEFAULT_DIST_SLOW_DOWN .25
+int DEFAULT_WHEEL_SPEED_STRAIGHT 25
+int DEFAULT_WHEEL_SPEED_TURN 7
+
+double DEFAULT_P 11
+double DEFAULT_I 0
+double DEFAULT_D 12
+
+double DEFAULT_STOP_DISTANCE .05

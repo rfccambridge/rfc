@@ -108,12 +108,19 @@ namespace Robocup.ControlForm
             if (_commander == null)
                 _commander = new StubRobots();
 
+            // Set default MotionPlanner (many past options are included...)
+
+            // Note- DefaultMotionPlanner is designed for the CS199r class. It is rather slow and does not
+            // avoid obstacles. It is designed to be extremely accurate and reliable, for the purpose of 
+            // testing tactics and plays in which speed or obstacles are not a concern.
+
             //INavigator navigator = new Navigation.Examples.LookAheadBug();
             //IMotionPlanner planner = new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
-            //IMotionPlanner planner = new Robocup.MotionControl.MixedBiRRTMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.CircleFeedbackMotionPlanner();
-            IMotionPlanner planner = new Robocup.MotionControl.BugFeedbackMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.BugFeedbackMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.FeedbackVeerMotionPlanner();
+            IMotionPlanner planner = new Robocup.MotionControl.DefaultMotionPlanner();
 
             for (int i = 0; i < 10; i++)
             {

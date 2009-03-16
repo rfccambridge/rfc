@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
 using Robocup.Geometry;
 using Robocup.Core;
 
@@ -17,11 +18,13 @@ namespace Navigation
             double[] traceDirection = new double[TEAMSIZE];
             int[] roundsSinceTrace = new int[TEAMSIZE];
             Vector2[] lastDestination = new Vector2[TEAMSIZE];
-            const double angleSweep = .01; //.1
-            const double avoidRobotDist = .28;
-            const double extraAvoidBallDist = .1;
-            const double lookAheadDist = .18;//.18; //.15
-            const double getCloserAmount = .1;
+            Vector2 lastPoint;
+            bool called = false;
+            double angleSweep = .01; //.1
+            double avoidRobotDist = .28;
+            double extraAvoidBallDist = .1;
+            double lookAheadDist = .4;//.18;//.18; //.15
+            double getCloserAmount = .1;
 
             public BugNavigator()
             {
@@ -29,6 +32,16 @@ namespace Navigation
                 {
                     traceDirection[i] = 1;
                 }
+            }
+
+            public void setLookAheadDist(double newDistance)
+            {
+                lookAheadDist = newDistance;
+            }
+
+            public void setAvoidRobotDist(double newDistance)
+            {
+                avoidRobotDist = newDistance;
             }
 
 
@@ -193,13 +206,21 @@ namespace Navigation
                         }
                     }
                     lastDirection[id] = direction;
-                    return new NavigationResults(extend(position, direction));
+
+                    // save last point
+                    lastPoint = extend(position, direction);
+
+                    // called is now true
+                    called = true;
+
+                    return new NavigationResults(lastPoint);
                 }
             }
 
 
             public void drawLast(System.Drawing.Graphics g, ICoordinateConverter c)
             {
+                
             }
         }
     }

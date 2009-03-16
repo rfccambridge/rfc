@@ -927,7 +927,7 @@ namespace Robocup.MotionControl
 
         const int NUM_ROBOTS = 5;
         
-        private static int PATH_RECALCULATE_INTERVAL;
+        private static int PATH_RECALCULATE_INTERVAL = 1;
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
         private const double MIN_ANGLE_DIFF_TO_WP = 0.01;
         private int LOG_EVERY_MSEC;
@@ -1120,6 +1120,7 @@ namespace Robocup.MotionControl
 
         //reload all necessary constants from files, for now just PID reload
         public void ReloadConstants() {
+            Constants.Load("control");
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
 
@@ -1173,34 +1174,6 @@ namespace Robocup.MotionControl
 
     }
 
-#if FALSE
-    public class ShortMotionPlanner : IMotionPlanner
-    {
-        IPathPlanner pathplanner = new RRTPlanner();
-        IPathDriver pathdriver = new StickyFeedbackFollower();
-
-        /// <summary>
-        /// Reloads constants for planner and driver
-        /// </summary>
-        public void ReloadConstants()
-        {
-            pathplanner.ReloadConstants();
-            pathdriver.ReloadConstants();
-        }
-        
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            pathplanner.DrawLast(g, c);
-        }
-
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
-        {
-            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
-            WheelSpeeds speeds = pathdriver.followPath(path, predictor);
-            return MotionPlanningResults(speeds);
-        }
-    }
-#endif
 
 
 }

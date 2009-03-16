@@ -43,6 +43,7 @@
     <Compile Include="NewPlanners.cs" />
     <Compile Include="PathDrivers.cs" />
     <Compile Include="PathPlanners.cs" />
+    <Compile Include="PIDLoop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotInfoNNFinder.cs" />
     <Compile Include="RRTPlanners.cs" />
