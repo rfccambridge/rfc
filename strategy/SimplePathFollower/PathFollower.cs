@@ -145,14 +145,10 @@ namespace SimplePathFollower
         }
 
         //seeks to reload any constants that this class and its own objects use from files
-        //currently just PID constants, so having it call reload on the planner. Not sure if it should call controller as well or
-        //if there should be a controll.reloadConstants(); planne.reloadConstants() chain
+        //in particular, reloads PID and other constants for the planner
         public void reloadConstants() {
             // calls reloadConstants within planner
             planner.ReloadConstants();
-            //CircleFeedbackMotionPlanner myTempPlanner = (CircleFeedbackMotionPlanner)planner;
-            //myTempPlanner.reloadConstants();
-
         }
 	}
 }
