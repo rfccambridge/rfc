@@ -814,26 +814,30 @@ namespace VisionStatic
 			Ball goBall = null;
 			double currBallAreaError;
 			double bestBallAreaError = 1000; //initally a ridiculously big number
-			
-			foreach(int i in ballBlobs)
+
+            double wx = 0;
+            double wy = 0;
+            foreach(int i in ballBlobs)
             {
 				if (i == -1) continue;
 				currBallAreaError = Math.Abs(blobs[i].AreaScaled - AREA_BALL);
 				if (currBallAreaError < ERROR_BALL && currBallAreaError < bestBallAreaError)
 				{
-					//tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
+					tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
 					//tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, (wx - 2100) / 10, out wx, out wy);
-					//gameObjects.Ball = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
-					goBall = new Ball(blobs[i].CenterWorldX, blobs[i].CenterWorldY, blobs[i].CenterX, blobs[i].CenterY);
+					goBall = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
+					//goBall = new Ball(blobs[i].CenterWorldX, blobs[i].CenterWorldY, blobs[i].CenterX, blobs[i].CenterY);
 					bestBallAreaError = currBallAreaError;
 				}
             }
 			
 			Vector2 ballPos;
             if (goBall == null)
-               ballPos = null;
-            else
-               ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
+                ballPos = null;
+            else {
+                ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
+                Console.WriteLine("Difference between two ball heights X: {0} Y: {1}", wx - goBall.X, wy - goBall.Y);
+            }
 
             visionMessage.BallPosition = ballPos;
 
