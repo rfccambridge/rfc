@@ -133,6 +133,8 @@ namespace Robocup.MotionControl
         double LOOK_AHEAD_DIST;
         double AVOID_DIST;
         double ROTATE_ANGLE;
+        double ITER_INCREMENT;
+
         BugNavigator _navigator;
 
         Vector2 lastWaypoint;
@@ -170,52 +172,38 @@ namespace Robocup.MotionControl
             finalDirection = finalDirection.normalizeToLength(LOOK_AHEAD_DIST);
 
             // add vectors repelling from obstacles
-            Vector2 thisObstacleVector;
-            foreach (Vector2 o in obstaclePositions)
+            double rotateAmount = 0;
+            Vector2 currentPath;
+
+            while (true)
             {
-                double distanceOff = distFrom(o, start, finalDirection);
-                //double angleOff = angleFrom(o, start, finalDirection);
-                //double distAlongPath = (distanceOff / Math.Tan(angleOff));
+                // check if rotate amount works either way, otherwise keep rotating
+                currentPath = rotateDegree(finalDirection, rotateAmount);
 
-                Console.WriteLine("DISTANCE OFF: " + distanceOff);
-                //Console.WriteLine("ANGLE OFF: " + angleOff);
-                //Console.WriteLine("distAlongPath: " + distAlongPath);
+                Console.WriteLine("Path: " + currentPath.ToString());
+                Console.WriteLine("Rotate amount: " + rotateAmount);
 
-                if (Math.Abs(distanceOff) <= AVOID_DIST)
+                if (isGoodPath(obstaclePositions, start, currentPath))
                 {
-                    /* tangent bug- in progress
-                    // Avoid by changing
-                    double newDirection;
-                    double angleOff = angleFrom(o, start, finalDirection);
-
-                    // use trig to figure out tangent bug
-                    // first, distance along path
-                    double distAlongPath = (distanceOff / Math.Tan(angleOff));
-                    
-                    // now find new angle
-                    double newAngle = Math.Atan((AVOID_DIST - distanceOff)/distAlongPath);
-
-                    // adjust by that angle
-                    double directionAngle = finalDirection.cartesianAngle();
-                    double */
-
-                    //Avoid by turning 90 degrees, in opposite of whichever direction the
-                    //obstacle is in
-                    //finalDirection = rotate90(finalDirection, (distanceOff < 0));
-                    finalDirection = rotateDegree(finalDirection, ROTATE_ANGLE);
+                    break;
                 }
+
+                currentPath = rotateDegree(finalDirection, -rotateAmount);
+
+                if (isGoodPath(obstaclePositions, start, currentPath))
+                {
+                    break;
+                }
+
+                rotateAmount = rotateAmount + ITER_INCREMENT;
             }
 
+            Console.WriteLine("IT'S A GOOD PATH AT " + rotateAmount + " DEGREES");
+
             // create path
-            Console.WriteLine("FINAL " + finalDirection);
+            Console.WriteLine("FINAL " + currentPath);
 
-            lastWaypoint = start + finalDirection;
-
-            //if desired, at the last second replace with BugNavigator (to compare, for example)
-            //NavigationResults results = _navigator.navigate(currentState.ID, currentState.Position,
-            //    desiredState.Position, predictor.getOurTeamInfo().ToArray(), predictor.getTheirTeamInfo().ToArray(), predictor.getBallInfo(),
-            //    avoidBallRadius);
-            //lastWaypoint = results.waypoint;
+            lastWaypoint = start + currentPath;
 
             List<Vector2> waypoints = new List<Vector2>();
             waypoints.Add(lastWaypoint);
@@ -243,32 +231,31 @@ namespace Robocup.MotionControl
             LOOK_AHEAD_DIST = Constants.get<double>("motionplanning", "LOOK_AHEAD_DIST");
             AVOID_DIST = Constants.get<double>("motionplanning", "AVOID_DIST");
             ROTATE_ANGLE = Constants.get<double>("motionplanning", "ROTATE_ANGLE");
+            ITER_INCREMENT = Constants.get<double>("motionplanning", "ITER_INCREMENT");
         }
 
-        /// <summary>
-        /// Return the distance between the position and a path between the start and end
-        /// positions, where positive represents a distance the position is to the left of
-        /// the path and negative represents a distance the position is to the right of the path
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        private double distFrom(Vector2 position, Vector2 start, Vector2 pathVector)
+        private bool isOutOfWay(Vector2 position, Vector2 start, Vector2 pathVector)
         {
-            // Simply return distance from end to position
-            return Math.Sqrt((position - (start + pathVector)).magnitudeSq());
 
             // get position relative to start
             Vector2 relativePosition = position - start;
 
             // project relativePosition onto pathVector
+
             double hypotenuse = Math.Sqrt(relativePosition.magnitudeSq());
             double angleBetween = UsefulFunctions.angleDifference(pathVector.cartesianAngle(),
                 relativePosition.cartesianAngle());
 
+            // is it completely out of the way:
+            if (Math.Abs(angleBetween) > Math.PI / 2)
+                return true;
+
+            Console.WriteLine("hypotenuse = " + hypotenuse + "; angleBetween = " + angleBetween);
+
             double opposite = hypotenuse * Math.Sin(angleBetween);
 
-            return opposite;
+            //return whether the obstacle is far enough off path or is completely out of way
+            return (opposite > AVOID_DIST);
         }
 
         /// <summary>
@@ -311,6 +298,19 @@ namespace Robocup.MotionControl
         private Vector2 rotateDegree(Vector2 v, double degree)
         {
             return new Vector2(v.X * Math.Cos(degree) - v.Y * Math.Sin(degree), v.X * Math.Sin(degree) + v.Y * Math.Cos(degree));
+        }
+
+        private bool isGoodPath(List<Vector2> obstacles, Vector2 start, Vector2 pathVector)
+        {
+            foreach (Vector2 o in obstacles)
+            {
+                if (!isOutOfWay(o, start, pathVector))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

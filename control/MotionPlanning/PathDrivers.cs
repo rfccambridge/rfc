@@ -342,6 +342,8 @@ namespace Robocup.MotionControl
             //Vector2 dir_to_goal = (goal_vector - currentState.Position).normalize();
             int id = currentState.ID;
             Vector2 dir_to_goal = (desiredState.Position - currentState.Position).normalize();
+            
+            // Angle difference is the amount the goal is to the right of the current orientation
             double angle_to_goal = dir_to_goal.cartesianAngle();
             double angle_diff = UsefulFunctions.angleDifference(angle_to_goal, currentState.Orientation);
             double sqDistToGoal = currentState.Position.distanceSq(desiredState.Position);
@@ -392,6 +394,7 @@ namespace Robocup.MotionControl
         private WheelSpeeds getVeer(double angle_difference, double sqDistToGoal, int id)
         {
             // use PID loop to get veer based on angle difference
+            // is amount to veer to the left
             double veerAmount = loops.compute(angle_difference, 0, id);
 
             int straightSpeed = WHEEL_SPEED_STRAIGHT;
@@ -446,10 +449,11 @@ namespace Robocup.MotionControl
 
             double goal_angle_difference = UsefulFunctions.angleDifference(absoluteGoalAngle, currentForwardAngle+orientation);
 
-            Console.WriteLine("ORIENTATION: " + orientation);
+            /*Console.WriteLine("ORIENTATION: " + orientation);
             Console.WriteLine("CURRENT FORWARD ANGLE: " + currentForwardAngle);
             Console.WriteLine("ABSOLUTE GOAL ANGLE: " + absoluteGoalAngle);
             Console.WriteLine("GOAL ANGLE DIFFERENCE: " + goal_angle_difference);
+             */
 
             WheelSpeeds regularSpeed = computeSpeedsAtAngle(WHEEL_SPEED_STRAIGHT, currentForwardAngle);
 
@@ -473,6 +477,8 @@ namespace Robocup.MotionControl
             // veer represents how much higher right speeds are
             int leftspeed = transformToWheelSpeed(straightSpeed - veer);
             int rightspeed = transformToWheelSpeed(straightSpeed + veer);
+            //Console.WriteLine("Left speed: " + leftspeed);
+            //Console.WriteLine("Right speed: " + rightspeed);
             return new WheelSpeeds(leftspeed, rightspeed, leftspeed, rightspeed);
         }
 
@@ -528,7 +534,7 @@ namespace Robocup.MotionControl
             left_back = transformToWheelSpeed(magnitude_y_component - magnitude_x_component);
 
             WheelSpeeds w = new WheelSpeeds(left_front, right_front, left_back, right_back);
-            Console.WriteLine("velocity: " + Convert.ToString(velocity) + " angle: " + Convert.ToString(angle_goal) + " wheel speeds: " + w.toString());
+            //Console.WriteLine("velocity: " + Convert.ToString(velocity) + " angle: " + Convert.ToString(angle_goal) + " wheel speeds: " + w.toString());
 
             return w;
         }
