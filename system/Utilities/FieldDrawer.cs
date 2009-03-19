@@ -28,6 +28,8 @@ namespace Robocup.Utilities
         static double GOAL_WIDTH = Constants.get<double>("plays","GOAL_WIDTH");
         static double GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
 
+        public String[] playNames;
+
 
         IPredictor predictor;
         ICoordinateConverter converter;
@@ -39,11 +41,19 @@ namespace Robocup.Utilities
         Dictionary<int, RobotPath> _paths;
         Object _pathsLock = new object();
         int _nextPathID;
-       
+        Font _font = new Font("Tahoma", 12);
+
         public FieldDrawer(IPredictor predictor, ICoordinateConverter c)
+            : this(predictor, c, null)
+        {
+            
+        }
+       
+        public FieldDrawer(IPredictor predictor, ICoordinateConverter c, String [] playNames)
         {
             this.predictor = predictor;
             this.converter = c;
+            this.playNames = playNames;
 
             _arrows = new Dictionary<int, Arrow>();
             _nextArrowID = 0;
@@ -72,6 +82,9 @@ namespace Robocup.Utilities
 
             Brush b2 = new SolidBrush(Color.Gray);
             g.FillPolygon(b2, corners);
+
+            g.DrawString(r.ID.ToString() + (playNames == null ? "" : ": " + playNames[r.ID]), _font, b, converter.fieldtopixelPoint(r.Position).ToPointF());
+
             b2.Dispose();
             b.Dispose();
         }

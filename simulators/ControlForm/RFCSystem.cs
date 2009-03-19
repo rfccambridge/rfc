@@ -25,7 +25,7 @@ namespace Robocup.ControlForm
 
         IPredictor _predictor;
         RFCController _controller;
-        Interpreter _interpreter;
+        public Interpreter _interpreter;
         IRobots _commander;
         ISplitInfoAcceptor _acceptor;
 

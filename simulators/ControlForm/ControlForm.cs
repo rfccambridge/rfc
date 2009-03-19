@@ -78,6 +78,7 @@ namespace Robocup.ControlForm {
 
             // todo
             _system.initialize();
+            drawer.drawer.playNames = _system._interpreter.playNames;
         }
 
         private void serialConnect_Click(object sender, EventArgs e) {

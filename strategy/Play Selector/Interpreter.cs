@@ -15,6 +15,7 @@ namespace Robocup.Plays
         private readonly IActionInterpreter actioninterpreter;
         private readonly IPredictor predictor;
         private List<InterpreterPlay> plays = new List<InterpreterPlay>();
+        public String[] playNames = new String[10];
 
         public Interpreter(bool flipCoordinates, InterpreterPlay[] plays,
                            IPredictor predictor, IActionInterpreter actioninterpreter)
@@ -68,11 +69,11 @@ namespace Robocup.Plays
             List<RobotInfo> theirteaminfo_base = predictor.getTheirTeamInfo();
             InterpreterRobotInfo[] ourteaminfo = ourteaminfo_base.ConvertAll<InterpreterRobotInfo>(delegate(RobotInfo info)
             {
-                return new InterpreterRobotInfo(info.Position, info.Velocity, info.AngularVelocity, info.Orientation, info.ID);
+                return new InterpreterRobotInfo(info);
             }).ToArray();
             InterpreterRobotInfo[] theirteaminfo = theirteaminfo_base.ConvertAll<InterpreterRobotInfo>(delegate(RobotInfo info)
             {
-                return new InterpreterRobotInfo(info.Position, info.Velocity, info.AngularVelocity, info.Orientation, info.ID);
+                return new InterpreterRobotInfo(info);
             }).ToArray();
             BallInfo ballinfo = predictor.getBallInfo();
 
@@ -87,16 +88,18 @@ namespace Robocup.Plays
             foreach (InterpreterRobotInfo robot in ourteaminfo)
             {
                 robot.setFree();
+                playNames[robot.ID] = "N/A";
             }
             foreach (InterpreterRobotInfo robot in theirteaminfo)
             {
                 robot.setFree();
             }
+                
 
             List<InterpreterPlay> plays_to_run = plays.FindAll(
                 delegate(InterpreterPlay play) { return play.PlayType == type; });
             //find all the actions we want to do
-            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, lastRunPlays, lastAssignments);
+            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, lastRunPlays, lastAssignments, playNames);
 
             lastAssignments = results.Assignments;
 

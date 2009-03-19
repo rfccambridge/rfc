@@ -120,6 +120,7 @@ namespace Robocup.Core
     /// This class is for use by the interpreter only.  The interpreter copies the data from RobotInfos into these objects,
     /// adding some extra data.
     /// </summary>
+
     public class InterpreterRobotInfo : RobotInfo
     {
         private RobotStates state;
@@ -148,8 +149,8 @@ namespace Robocup.Core
             this.Assigned = false;
         }
 
-        public InterpreterRobotInfo(Vector2 position, Vector2 velocity, double rotational_velocity, double orientation, int id)
-            : base(position, velocity, rotational_velocity, orientation, id)
+        public InterpreterRobotInfo(RobotInfo info)
+            : base(info.Position, info.Velocity, info.AngularVelocity, info.Orientation, info.ID)
         {
             this.state = RobotStates.Free;
             this.assigned = false;

@@ -14,7 +14,7 @@ namespace SoccerSim
     class SimSystem
     {
         IPredictor _predictor;
-        FieldDrawer _view;
+        public FieldDrawer _view;
         PhysicsEngine physics_engine;
 
         RFCController _controller;
@@ -22,7 +22,7 @@ namespace SoccerSim
         {
             get { return _controller; }
         }
-        Interpreter _interpreter;
+        public Interpreter _interpreter;
 
         IReferee referee;
         //RefBoxListener _listener;
@@ -59,7 +59,7 @@ namespace SoccerSim
         }
         public void loadPlays(string path)
         {
-            Dictionary<InterpreterPlay, string> playFiles = PlayUtils.loadPlays(isYellow ? path : path + "/opponent");
+            Dictionary<InterpreterPlay, string> playFiles = PlayUtils.loadPlays(isYellow ? path : path + "/Opponent Plays");
             if (isYellow)
                 _interpreter = new Interpreter(false, dictionaryToArray(playFiles), _predictor, _controller);
             else
