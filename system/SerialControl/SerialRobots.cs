@@ -216,6 +216,42 @@ namespace Robotics.Commander
             }
         }
 
+        /// <summary>
+        /// Only charge since the actual kicking is done on the robot. If a certain amount of time has passed, 
+        /// stop charging to save batteries.
+        /// </summary>
+        /// <param name="robotID"></param>
+        private void breakBeamKick(int robotID) {
+            lock (charging) {
+
+                string msgCharge = headsigns[robotID] + "b" + endsign;
+                string msgStopCharge = headsigns[robotID] + "s" + endsign;
+                
+                //If we are already charging this robot do nothing...
+                double currTime = HighResTimer.SecondsSinceStart();
+                if (charging.Contains(robotID)) {
+                    if (currTime - lastCharge[robotID] > chargeTime) {
+                        comport.Write(msgStopCharge);
+                        return;
+                    }
+                    return;
+                }
+
+                comport.Write(msgCharge);
+                Console.WriteLine("robot {0} is charging for a break-beam kick");
+                charging.Add(robotID);
+                lastCharge[robotID] = currTime;
+                
+                //After 3*charge time, stop charging to save battery
+                System.Threading.Timer t = new System.Threading.Timer(delegate(object o) {
+                    timers.Remove(robotID);
+                    comport.Write(msgStopCharge);
+                    charging.Remove(robotID);
+                }, null, 3*chargeTime, System.Threading.Timeout.Infinite);
+                timers[robotID] = t;
+            }
+        }
+
         /*internal void setCharge(int robotID)
         {
             lock (canKick)
@@ -348,7 +384,7 @@ namespace Robotics.Commander
         {
             int lf=wheelSpeeds.lf, rf=wheelSpeeds.rf, lb=wheelSpeeds.lb, rb=wheelSpeeds.rb;
 
-            int maxspeed = 80;
+            int maxspeed = 255;
 
             double time = HighResTimer.SecondsSinceStart();
             /*if (!lastSpeeds.ContainsKey(id))
@@ -432,6 +468,10 @@ namespace Robotics.Commander
         public void kick(int robotID)
         {
             setKick(robotID);
+        }
+
+        public void beamKick(int robotID) {
+            breakBeamKick(robotID);
         }
 
         #endregion
