@@ -700,6 +700,10 @@ namespace InterpreterTester
             infos[robotID] = new RobotInfo(prev.Position + (new Vector2(-ballvx * recoil, -ballvy * recoil)), prev.Orientation, prev.ID);
             //throw new Exception("The method or operation is not implemented.");
         }
+        public void beamKick(int robotID) 
+        {
+            throw new NotImplementedException("Beam kick needs to be implemented in the InterpreterTester!!!");
+        }
 
         public void stop(int robotID)
         {

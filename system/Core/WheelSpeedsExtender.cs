@@ -8,10 +8,25 @@ namespace Robocup.CoreRobotics
 {
     static public class WheelSpeedsExtender
     {
+
+        /// <summary>
+        /// Get wheel speeds to go from one RobotInfo point to drive through another 
+        /// RobotInfo point
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="goal"></param>
+        /// <returns></returns>
         static public WheelSpeeds GetWheelSpeedsThrough(RobotInfo start, RobotInfo goal)
         {
             return GetWheelSpeedsThrough(start, goal.Position);
         }
+
+        /// <summary>
+        /// Get wheel speeds to go from one RobotInfo point to drive through a Vector2
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="goal"></param>
+        /// <returns></returns>
         static public WheelSpeeds GetWheelSpeedsThrough(RobotInfo start, Vector2 goal)
         {
             // we have orientation and speed information 

@@ -278,6 +278,12 @@ namespace Robocup.ControlForm {
             _serial.Post(new RobotCommand(robotID, RobotCommand.Command.KICK, null));
         }
 
+        public void beamKick(int robotID) 
+        {
+            if (robotID < 0 || _serial == null) return;
+            _serial.Post(new RobotCommand(robotID, RobotCommand.Command.BEAMKICK, null));
+        }
+
         #endregion
     }
 }

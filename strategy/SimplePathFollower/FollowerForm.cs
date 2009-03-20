@@ -34,11 +34,14 @@ namespace SimplePathFollower
 		private BasicPredictor _predictor;
         private Object _predictorLock = new Object();
         private bool _running;
+        private bool logging;
 
         private FieldDrawerForm _fieldDrawerForm;
         private ICoordinateConverter _converter;
         private Object _drawingLock = new Object();
         private Stopwatch _stopwatch = new Stopwatch();
+
+        bool lap = true;
 
         // Logging
         LogReader _logReader;
@@ -52,9 +55,11 @@ namespace SimplePathFollower
 
             // LIST OF POSSIBLE GOALS
             goals = new List<Vector2>();
-            goals.Add(new Vector2(-.5, -1.3));
-            goals.Add(new Vector2(-2.2, -1.5));
-            goals.Add(new Vector2(-2.0, 1.2));
+            //goals.Add(new Vector2(-.5, -1.3));
+            goals.Add(new Vector2(-2, 1.5));
+            goals.Add(new Vector2(2, 1.5));
+            goals.Add(new Vector2(-2, -1.5));
+            goals.Add(new Vector2(2, -1.5));
                        
             MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
 
@@ -269,10 +274,18 @@ namespace SimplePathFollower
         {
             // based on current value of whichGoal, set the path to go
             // towards a particular point
-            List<Vector2> wpList = new List<Vector2>();
-            wpList.Add(goals[whichGoal]);
+            // if lapping is on, always sets to the list of goals rather than any
+            // particular one
 
-            _pathFollower.Waypoints = wpList;
+            if (!lap) {
+                List<Vector2> wpList = new List<Vector2>();
+                wpList.Add(goals[whichGoal]);
+
+                _pathFollower.Waypoints = wpList;
+            }
+            else {
+                _pathFollower.Waypoints = goals;
+            }
         }
 
 		private void BtnStartStop_Click(object sender, EventArgs e)
@@ -358,7 +371,7 @@ namespace SimplePathFollower
 
             btnStartStop.Text = "Stop";
 
-            VoidDelegate kickLoopDelegate = new VoidDelegate(_pathFollower.Kick);            
+            VoidDelegate kickLoopDelegate = new VoidDelegate(_pathFollower.BeamKick);            
             IAsyncResult kickLoopHandle = kickLoopDelegate.BeginInvoke(null, null);	
 
             _running = true;
@@ -522,22 +535,33 @@ namespace SimplePathFollower
         }       
 
         private void btnStartStopLogging_Click(object sender, EventArgs e) {
-            if (!(_pathFollower.Planner is ILogger))
+            /*if (!(_pathFollower.Planner is ILogger))
             {
                 MessageBox.Show("Selected MotionPlanner does not implement ILogger interface.");
                 return;
-            }
+            }*/
 
-            ILogger logger = _pathFollower.Planner as ILogger;
-
-            if (!logger.Logging) {
-                logger.LogFile = LOG_FILE;
-                logger.StartLogging();
-                btnStartStopLogging.Text = "Stop log";
+            if (logging) {
+                logging = false;
+                btnStartStopLogging.Text = "Start log";
             }
             else {
-                logger.StopLogging();
-                btnStartStopLogging.Text = "Start log";
+                logging = true;
+                btnStartStopLogging.Text = "Stop log";
+            }
+
+            // if enabled, start motion planner's logging
+            if (_pathFollower.Planner is ILogger) {
+                ILogger logger = _pathFollower.Planner as ILogger;
+
+                if (!logger.Logging) {
+                    logger.LogFile = LOG_FILE;
+                    logger.StartLogging();
+                    
+                }
+                else {
+                    logger.StopLogging();
+                }
             }
         }
         
@@ -561,6 +585,21 @@ namespace SimplePathFollower
             // SWITCH GOAL
             whichGoal = (whichGoal + 1) % goals.Count;
             setGoal();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e) {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e) {
+            if (lap) {
+                button2.Text = "Lap";
+                lap = false;
+            }
+            else {
+                button2.Text = "Stop lapping";
+                lap = true;
+            }
         }
 	}
 

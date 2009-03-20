@@ -52,6 +52,7 @@ namespace Robotics.Commander {
                            + "40 down =========== move backward in y" + "\r\n"
                            + "188 , ============= rotate anti-clockwise" + "\r\n"
                            + "190 . ============= rotate clockwise" + "\r\n"
+                           + "66 b ============== charge kicker to do break-beam kicking" + "\r\n"
                            + "67 c ============== charge kicker (not supported)" + "\r\n"
                            + "32 space ========== fire kicker" + "\r\n"
                            + "75 k ============== stop charging (not supported)" + "\r\n"
@@ -150,6 +151,9 @@ namespace Robotics.Commander {
                         case RobotCommand.Command.KICK:
                             srobots.kick(id);
                             break;
+                        case RobotCommand.Command.BEAMKICK:
+                            srobots.beamKick(id);
+                            break;
                     }
                 }
                 else if (sendcommands_remotehost)
@@ -211,6 +215,7 @@ namespace Robotics.Commander {
                 39  right  ============= move right in x
                 188 ,      ============= rotate anti-clockwise
                 190 .      ============= rotate clockwise
+                66  b      ============= break-beam kick
                 67  c      ============= charging kicker
                 75  k      ============= stop charging kicker
                 32  space  ============= fire kicker
@@ -286,6 +291,10 @@ namespace Robotics.Commander {
                         //rcom.Rotate(oldcommander, 1, 65535);
                         setMotorSpeeds(speed, -speed, speed, -speed);
                         statusLabel.Text = "clock";
+                        break;
+                    case 66:        // b break-beam kick
+                        statusLabel.Text = "Charging for break-beam";
+                        srobots.beamKick(curRobot);
                         break;
                     case 67:        // c charge kicker
                         //rcon.setOther(comboTarget.SelectedIndex, comboSource.SelectedIndex, 0);

@@ -283,6 +283,10 @@ namespace Robocup.Simulation
             UpdateBall(new BallInfo(ball_info.Position, new Vector2(ballVx, ballVy)));
             //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
         }
+        public void beamKick(int robotID) 
+        {
+            throw new NotImplementedException("Should be implemented in the simulator as well!!!");
+        }
         Dictionary<int, WheelSpeeds> speeds = new Dictionary<int, WheelSpeeds>();
         public void setMotorSpeeds(int robotID, WheelSpeeds speeds)
         {

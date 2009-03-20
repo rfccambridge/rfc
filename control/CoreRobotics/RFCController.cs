@@ -71,6 +71,10 @@ namespace Robocup.CoreRobotics
         {
             Commander.kick(robotID);
         }
+        public void beamKick(int robotID) 
+        {
+            Commander.beamKick(robotID);
+        }
         public void move(int robotID, bool avoidBall, Vector2 destination, double orientation)
         {
             //Console.WriteLine("Destination in RFCController immediately: " + destination.ToString());

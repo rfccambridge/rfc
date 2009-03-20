@@ -64,7 +64,16 @@ namespace Robocup.Core {
         /// Sets the speeds for the robot wheels.  Positive values mean that the robot will move forward.
         /// </summary>
         void setMotorSpeeds(int robotID, WheelSpeeds wheelSpeeds);
+        /// <summary>
+        /// Starts a charge/kick sequence - kicking always occurs after a certain charging delay
+        /// </summary>
+        /// <param name="robotID"></param>
         void kick(int robotID);
+        /// <summary>
+        /// Starts a charge/kick sequence - kicking occurs if the ball breaks the break-beam on the actual robot
+        /// </summary>
+        /// <param name="robotID"></param>
+        void beamKick(int robotID);
     }
 
     /// <summary>
@@ -134,6 +143,7 @@ namespace Robocup.Core {
         void move(int robotID, bool avoidBall, Vector2 dest);
         void move(int robotID, bool avoidBall, Vector2 dest, double orientation);
         void kick(int robotID);
+        void beamKick(int robotID);
         void stop(int robotID);
     }
 

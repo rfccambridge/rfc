@@ -15,6 +15,12 @@ namespace SimplePathFollower
 		private int waypointIndex;
 		private bool running;
 
+        double MIN_GOAL_DIST = .10;
+        double MIN_GOAL_DIFF_ORIENTATION = .3;
+
+        // represents whether the robot has yet reached the goal
+        public bool reachedPoint = false;
+
 		public int RobotID { get { return robotID; } set { robotID = value; } }
 		public List<Vector2> Waypoints { get { return waypoints; } set { waypoints = value; } }
 
@@ -98,6 +104,12 @@ namespace SimplePathFollower
 			{
                 RobotInfo curinfo;
                 BallInfo ballInfo;
+
+                // if lapping stops midway...
+                if (waypointIndex > waypoints.Count - 1) {
+                    waypointIndex = 0;
+                }
+
                 try {
                      curinfo = predictor.getCurrentInformation(robotID);
                      ballInfo = predictor.getBallInfo();
@@ -111,6 +123,15 @@ namespace SimplePathFollower
                     controller.move(robotID, false, waypoints[waypointIndex]);
                 }*/
                 controller.move(robotID, false, waypoints[waypointIndex],0.0);
+
+                // Lap around
+
+                double sqDistToGoal = curinfo.Position.distanceSq(waypoints[waypointIndex]);
+                double diffOrientation = Math.Abs(angleDifference(curinfo.Orientation, 0));
+
+                if (sqDistToGoal < MIN_GOAL_DIST * MIN_GOAL_DIST && diffOrientation < MIN_GOAL_DIFF_ORIENTATION) {
+                    waypointIndex = (waypointIndex + 1) % waypoints.Count;
+                }
 			
 				System.Threading.Thread.Sleep(10);
             } while (running);
@@ -127,6 +148,16 @@ namespace SimplePathFollower
             do {
 
                 interpreter.Kick(robotID, new Vector2(0, 0));
+                System.Threading.Thread.Sleep(10);
+            } while (running);
+        }
+        public void BeamKick() {
+            running = true;
+            ActionInterpreter interpreter = new ActionInterpreter(controller, predictor);
+            interpreter.BeamKick(robotID, new Vector2(0, 0));
+            do {
+
+                interpreter.BeamKick(robotID, new Vector2(0, 0));
                 System.Threading.Thread.Sleep(10);
             } while (running);
         }
@@ -149,6 +180,33 @@ namespace SimplePathFollower
         public void reloadConstants() {
             // calls reloadConstants within planner
             planner.ReloadConstants();
+        }
+
+        /// <summary>
+        /// Returns how many radians counter-clockwise the ray defined by angle1
+        /// needs to be rotated to point in the direction angle2. Stolen from UsefulFunctions
+        /// in Geometry namespace.
+        /// Uses
+        /// Returns a value in the range [-Pi,Pi)
+        /// </summary>
+        static private double angleDifference(double angle1, double angle2) {
+            //first get the inputs in the range [0, 2Pi):
+            while (angle1 < 0)
+                angle1 += Math.PI * 2;
+            while (angle2 < 0)
+                angle2 += Math.PI * 2;
+            angle1 %= Math.PI * 2;
+            angle2 %= Math.PI * 2;
+
+            double anglediff = angle2 - angle1;
+            anglediff = (anglediff + Math.PI * 2) % (Math.PI * 2);
+            //anglediff is now in the range [0,Pi*2)
+
+            //now we need to get the range to [-Pi, Pi):
+            if (anglediff < Math.PI)
+                return anglediff;
+            else
+                return anglediff - Math.PI * 2;
         }
 	}
 }

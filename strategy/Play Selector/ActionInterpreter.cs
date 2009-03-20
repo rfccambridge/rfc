@@ -91,7 +91,7 @@ namespace Robocup.Plays
         /// This is the distance that the robots should put themselves from the ball,
         /// when they get ready to kick it.
         /// </summary>
-        private readonly double kickDistance = .08;//.10;//.095
+        private readonly double kickDistance = .085;//.095;
 
         /// <summary>
         /// This is how many ticks of ball motion you should add to the distance to lead the ball appropriately
@@ -109,6 +109,11 @@ namespace Robocup.Plays
         /// </summary>
         public void Kick(int robotID, Vector2 target)
         {
+            //DEBUG!
+
+            BeamKick(robotID, target);
+            return;
+            
             RobotInfo thisrobot;
             Vector2 ball;
             BallInfo ballinfo;
@@ -143,6 +148,7 @@ namespace Robocup.Plays
             //Console.WriteLine("angle Difference: " + UsefulFunctions.angleDifference(destinationAngle, thisrobot.Orientation));
             if (closeEnough(thisrobot, destination.X, destination.Y, destinationAngle))
             {
+                Console.WriteLine("Distance from robot to ball:{0}", Math.Sqrt(thisrobot.Position.distanceSq(destination)));
                 Console.WriteLine("Going to try and Kick!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 commander.kick(robotID);
                 /*commander.move(
@@ -166,6 +172,51 @@ namespace Robocup.Plays
                     robotID,
                     true,
                     new Vector2(destination.X, destination.Y),
+                    destinationAngle);
+            }
+        }
+
+        /// <summary>
+        /// This pretty much replicates what Kick() does on the higher level. The robot kicks the ball to a certain point.
+        /// The main difference is that closeness to the ball is determined by a break-beam sensor on the robot itself and 
+        /// that is, hopefully, much more accurate than vision distances.
+        /// </summary>
+        public void BeamKick(int robotID, Vector2 target) {
+            RobotInfo thisrobot;
+            Vector2 ball;
+            BallInfo ballinfo;
+            try {
+                thisrobot = getOurRobotFromID(robotID);
+                ballinfo = predictor.getBallInfo();
+                ball = ballinfo.Position;
+            }
+            catch (ApplicationException e) {
+                Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
+                return;
+            }
+
+            //position the robot close enough to the ball so that it can kick soon,
+            //but far enough so that the break-beam doesn't trigger
+
+            Vector2 farDestination = extend(target, ball, 2*kickDistance);
+            //Vector2 actualDestination = extend(target, ball, 0.75*kickDistance);
+            Vector2 actualDestination = extend(target, ball, 0.2 * kickDistance);
+            double destinationAngle = targetAngle(ball, target);
+
+            if (closeEnough(thisrobot, farDestination.X, farDestination.Y, destinationAngle)) {
+                commander.beamKick(robotID);
+                commander.move(
+                    robotID,
+                    true,
+                    new Vector2(actualDestination.X, actualDestination.Y),
+                    destinationAngle);
+            }
+            else { //if we are far enough
+                //destination += ballLeading * ballinfo.Velocity;
+                commander.move(
+                    robotID,
+                    true,
+                    new Vector2(farDestination.X, farDestination.Y),
                     destinationAngle);
             }
         }
@@ -227,7 +278,7 @@ namespace Robocup.Plays
         {
             double anglediff = UsefulFunctions.angleDifference(orientation, robot.Orientation);
             double dist = UsefulFunctions.distance(new Vector2(x, y), robot.Position);
-            return (Math.Abs(anglediff) <= angleTolerance) && ((dist <= distanceTolerance)||dist<=kickDistance);
+            return (Math.Abs(anglediff) <= angleTolerance) && (dist <= distanceTolerance);
         }
     }
 

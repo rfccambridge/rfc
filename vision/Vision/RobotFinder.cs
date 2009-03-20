@@ -836,7 +836,6 @@ namespace VisionStatic
                 ballPos = null;
             else {
                 ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
-                Console.WriteLine("Difference between two ball heights X: {0} Y: {1}", wx - goBall.X, wy - goBall.Y);
             }
 
             visionMessage.BallPosition = ballPos;

@@ -9,7 +9,8 @@ namespace Robocup.Core
         public enum Command
         {
             MOVE,
-            KICK
+            KICK,
+            BEAMKICK
         };
         public WheelSpeeds speeds;
         public int ID;

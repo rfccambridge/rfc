@@ -14,6 +14,11 @@ namespace Robocup.CoreRobotics
             Console.WriteLine("RFCRobots::kick: " + robotID);
         }
 
+        public void beamKick(int robotID) 
+        {
+            Console.WriteLine("RFCRobotos::beamKick: " + robotID);
+        }
+
         public void setMotorSpeeds(int robotID, WheelSpeeds wheelSpeeds)
         {
             Console.WriteLine("RFCRobots::setMotorSpeeds: " + wheelSpeeds.lf + " "
