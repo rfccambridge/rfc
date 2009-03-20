@@ -13,6 +13,11 @@ namespace Robocup.Utilities
         const int ROBOT_SIZE = 20;
         const int BALL_SIZE = 8;
         const int GOAL_DOT_SIZE = 10;
+        const double ORIENT_ARROW_LEN = 0.25;
+        Color VELOCITY_ARROW_COLOR = Color.Blue;
+        const double VELOCITY_ARROW_SIZE = 0.03;
+        const double VELOCITY_ARROW_MIN_MAG_SQ = 0.01;
+        const double VELOCITY_ARROW_LEN_SCALE = 0.5; // length of arrow = magnitude * this scaling factor
         // kicker drawing
         const double outerangle = .6;
         const double innerangle = 1.0;
@@ -41,7 +46,7 @@ namespace Robocup.Utilities
         Dictionary<int, RobotPath> _paths;
         Object _pathsLock = new object();
         int _nextPathID;
-        Font _font = new Font("Tahoma", 12);
+        Font _font = new Font("Tahoma", 11);
 
         public FieldDrawer(IPredictor predictor, ICoordinateConverter c)
             : this(predictor, c, null)
@@ -61,13 +66,22 @@ namespace Robocup.Utilities
             _paths = new Dictionary<int, RobotPath>();
             _nextPathID = 0;
         }
-        private void drawRobot(RobotInfo r, Graphics g, Color c)
+        private void drawRobotOurs(RobotInfo r, Graphics g)
         {
             // draw robot
-            Brush b = new SolidBrush(c);
+            Brush b = new SolidBrush(Color.Black);
             Vector2 center = converter.fieldtopixelPoint(r.Position);
             g.FillEllipse(b, (float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2), (float)(ROBOT_SIZE), (float)(ROBOT_SIZE));
-            new Arrow(r.Position, r.Position + r.Velocity, Color.Blue, .03).drawConvertToPixels(g, converter);
+            b.Dispose();
+
+
+            // draw velocity arrow
+            if (r.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
+            {
+                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();
+                Arrow velArrow = new Arrow(r.Position, r.Position + velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
+                velArrow.drawConvertToPixels(g, converter);
+            }
 
             // draw kicker
             PointF[] corners = new PointF[4];
@@ -76,16 +90,40 @@ namespace Robocup.Utilities
             corners[1] = (center + (new Vector2((double)(innerradius * Math.Cos(angle - innerangle)), (double)(innerradius * Math.Sin(angle - innerangle))))).ToPointF();
             corners[2] = (center + (new Vector2((double)(outerradius * Math.Cos(angle - outerangle)), (double)(outerradius * Math.Sin(angle - outerangle))))).ToPointF();
             corners[3] = (center + (new Vector2((double)(outerradius * Math.Cos(angle + outerangle)), (double)(outerradius * Math.Sin(angle + outerangle))))).ToPointF();
+            b = new SolidBrush(Color.Gray);
+            g.FillPolygon(b, corners);
+            b.Dispose();
 
-            new Arrow(r.Position, r.Position + new Vector2(Math.Cos(r.Orientation), Math.Sin(r.Orientation)),
-                Color.Green, .03).drawConvertToPixels(g, converter);
+            // draw an arrow showing the robot orientation
+            Vector2 orientVect = new Vector2(Math.Cos(r.Orientation), Math.Sin(r.Orientation));
+            orientVect = orientVect.normalizeToLength(ORIENT_ARROW_LEN);
+            new Arrow(r.Position, r.Position + orientVect,
+                Color.Cyan, .04).drawConvertToPixels(g, converter);
 
-            Brush b2 = new SolidBrush(Color.Gray);
-            g.FillPolygon(b2, corners);
+            b = new SolidBrush(Color.GreenYellow);            
+            g.DrawString(r.ID.ToString() + (playNames == null ? "" : ": " + playNames[r.ID]), _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
+            b.Dispose();
+        }
 
-            g.DrawString(r.ID.ToString() + (playNames == null ? "" : ": " + playNames[r.ID]), _font, b, converter.fieldtopixelPoint(r.Position).ToPointF());
+        private void drawRobotTheirs(RobotInfo r, Graphics g)
+        {
+            // draw robot
+            Brush b = new SolidBrush(Color.Red);
+            Vector2 center = converter.fieldtopixelPoint(r.Position);
+            g.FillEllipse(b, (float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2), (float)(ROBOT_SIZE), (float)(ROBOT_SIZE));
+            b.Dispose();
 
-            b2.Dispose();
+
+            // draw velocity arrow
+            if (r.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
+            {
+                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();
+                Arrow velArrow = new Arrow(r.Position, r.Position + velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
+                velArrow.drawConvertToPixels(g, converter);
+            }
+
+            b = new SolidBrush(Color.GreenYellow);
+            g.DrawString(r.ID.ToString() + (playNames == null ? "" : ": " + playNames[r.ID]), _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
             b.Dispose();
         }
 
@@ -126,13 +164,15 @@ namespace Robocup.Utilities
             Brush b = new SolidBrush(Color.Black);
             foreach (RobotInfo r in predictor.getOurTeamInfo())
             {
-                drawRobot(r, g, Color.Black);
+                //drawRobotOurs(r, g, Color.Black);
+                drawRobotOurs(r, g);
             }
             b.Dispose();
             b = new SolidBrush(Color.Red);
             foreach (RobotInfo r in predictor.getTheirTeamInfo())
             {
-                drawRobot(r, g, Color.Red);
+                //drawRobotTheirs(r, g, Color.Red);
+                drawRobotTheirs(r, g);
             }
             
             // draw arrows
@@ -152,19 +192,26 @@ namespace Robocup.Utilities
             }
 
             // draw ball
-            new Arrow(predictor.getBallInfo().Position, predictor.getBallInfo().Position + predictor.getBallInfo().Velocity.normalize(),
-                Color.Purple, .03).drawConvertToPixels(g, converter);
-            b.Dispose();
+            BallInfo ballInfo = predictor.getBallInfo();
+
             b = new SolidBrush(Color.Orange);
             g.FillEllipse(
                 b,
-                converter.fieldtopixelX(predictor.getBallInfo().Position.X) - BALL_SIZE / 2,
-                converter.fieldtopixelY(predictor.getBallInfo().Position.Y) - BALL_SIZE / 2,
+                converter.fieldtopixelX(ballInfo.Position.X) - BALL_SIZE / 2,
+                converter.fieldtopixelY(ballInfo.Position.Y) - BALL_SIZE / 2,
                 BALL_SIZE,
                 BALL_SIZE
             );
             b.Dispose();
 
+            // draw ball velocity arrow
+            if (ballInfo.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
+            {
+                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * ballInfo.Velocity.magnitudeSq() * ballInfo.Velocity.normalize();
+                Arrow velArrow = new Arrow(ballInfo.Position, ballInfo.Position + velVector, 
+                                           VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
+                velArrow.drawConvertToPixels(g, converter);
+            }
         }
 
         public int AddArrow(Arrow arrow)

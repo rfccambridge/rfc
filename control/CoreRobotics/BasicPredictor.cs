@@ -267,8 +267,10 @@ namespace Robocup.CoreRobotics
             double now = HighResTimer.SecondsSinceStart();
             double dt = now - ballupdate;
             ballupdate = now;
+            //this.ballInfo = new BallInfo(.7 * this.ballInfo.Position + .3 * ballInfo.Position,
+            //    (1/(dt+.01))*(this.ballInfo.Position-ballInfo.Position));
             this.ballInfo = new BallInfo(.7 * this.ballInfo.Position + .3 * ballInfo.Position,
-                (1/(dt+.01))*(this.ballInfo.Position-ballInfo.Position));
+                (1 / (dt + .01)) * (ballInfo.Position-this.ballInfo.Position));
         }
 
         public void updatePartOurRobotInfo(List<RobotInfo> newInfos, string splitName)
