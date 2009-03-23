@@ -10,28 +10,30 @@ namespace Robocup.Utilities
     public class FieldDrawer
     {
         // drawing constants
-        const int ROBOT_SIZE = 20;
-        const int BALL_SIZE = 8;
-        const int GOAL_DOT_SIZE = 10;
-        const double ORIENT_ARROW_LEN = 0.25;
-        Color VELOCITY_ARROW_COLOR = Color.Blue;
-        const double VELOCITY_ARROW_SIZE = 0.03;
-        const double VELOCITY_ARROW_MIN_MAG_SQ = 0.01;
-        const double VELOCITY_ARROW_LEN_SCALE = 0.5; // length of arrow = magnitude * this scaling factor
+        int ROBOT_SIZE;
+        int BALL_SIZE;
+        int GOAL_DOT_SIZE;
+        double ORIENT_ARROW_LEN;
+        Color VELOCITY_ARROW_COLOR;
+        double VELOCITY_ARROW_SIZE;
+        double VELOCITY_ARROW_MIN_MAG_SQ;
+        double VELOCITY_ARROW_LEN_SCALE; // length of arrow = magnitude * this scaling factor
+        
         // kicker drawing
-        const double outerangle = .6;
-        const double innerangle = 1.0;
-        const double innerradius = 7;
-        const double outerradius = 11;
+        double OUTER_ANGLE = .6;
+        double INNER_ANGLE = 1.0;
+        double INNER_RADIUS = 7;
+        double OUTER_RADIUS = 11;
+
         // field drawing
-        static double FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-        static double FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
-        static double FIELD_XMIN = -FIELD_WIDTH / 2;
-        static double FIELD_XMAX = FIELD_WIDTH / 2;
-        static double FIELD_YMIN = -FIELD_HEIGHT / 2;
-        static double FIELD_YMAX = FIELD_HEIGHT/2;
-        static double GOAL_WIDTH = Constants.get<double>("plays","GOAL_WIDTH");
-        static double GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
+        static double FIELD_WIDTH;
+        static double FIELD_HEIGHT;
+        static double FIELD_XMIN;
+        static double FIELD_XMAX;
+        static double FIELD_YMIN;
+        static double FIELD_YMAX;
+        static double GOAL_WIDTH;
+        static double GOAL_HEIGHT;
 
         public String[] playNames;
 
@@ -65,7 +67,41 @@ namespace Robocup.Utilities
 
             _paths = new Dictionary<int, RobotPath>();
             _nextPathID = 0;
+
+            LoadParameters();
         }
+
+        public void LoadParameters()
+        {
+            // drawing constants
+            ROBOT_SIZE =                Constants.get<int>("drawing", "ROBOT_SIZE");
+            BALL_SIZE =                 Constants.get<int>("drawing", "BALL_SIZE");
+            GOAL_DOT_SIZE =             Constants.get<int>("drawing", "GOAL_DOT_SIZE");
+            ORIENT_ARROW_LEN =          Constants.get<double>("drawing", "ORIENT_ARROW_LEN");
+            VELOCITY_ARROW_COLOR =      Color.FromName(Constants.get<string>("drawing", "VELOCITY_ARROW_COLOR"));
+            VELOCITY_ARROW_SIZE =       Constants.get<double>("drawing", "VELOCITY_ARROW_SIZE");
+            VELOCITY_ARROW_MIN_MAG_SQ = Constants.get<double>("drawing", "VELOCITY_ARROW_MIN_MAG_SQ");
+            VELOCITY_ARROW_LEN_SCALE =  Constants.get<double>("drawing", "VELOCITY_ARROW_LEN_SCALE");
+
+            // kicker drawing
+            OUTER_ANGLE =  Constants.get<double>("drawing", "OUTER_ANGLE");
+            INNER_ANGLE =  Constants.get<double>("drawing", "INNER_ANGLE");
+            INNER_RADIUS = Constants.get<double>("drawing", "INNER_RADIUS");
+            OUTER_RADIUS = Constants.get<double>("drawing", "OUTER_RADIUS");
+            
+            // field drawing
+            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+            
+            FIELD_XMIN = -FIELD_WIDTH / 2;
+            FIELD_XMAX = FIELD_WIDTH / 2;
+            FIELD_YMIN = -FIELD_HEIGHT / 2;
+            FIELD_YMAX = FIELD_HEIGHT/2;
+
+            GOAL_WIDTH = Constants.get<double>("plays","GOAL_WIDTH");
+            GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
+        }
+
         private void drawRobotOurs(RobotInfo r, Graphics g)
         {
             // draw robot
@@ -75,10 +111,10 @@ namespace Robocup.Utilities
             b.Dispose();
 
 
-            // draw velocity arrow
+            // draw velocity arrow            
             if (r.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
             {
-                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();
+                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();                
                 Arrow velArrow = new Arrow(r.Position, r.Position + velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
                 velArrow.drawConvertToPixels(g, converter);
             }
@@ -86,10 +122,10 @@ namespace Robocup.Utilities
             // draw kicker
             PointF[] corners = new PointF[4];
             double angle = -r.Orientation;
-            corners[0] = (center + (new Vector2((double)(innerradius * Math.Cos(angle + innerangle)), (double)(innerradius * Math.Sin(angle + innerangle))))).ToPointF();
-            corners[1] = (center + (new Vector2((double)(innerradius * Math.Cos(angle - innerangle)), (double)(innerradius * Math.Sin(angle - innerangle))))).ToPointF();
-            corners[2] = (center + (new Vector2((double)(outerradius * Math.Cos(angle - outerangle)), (double)(outerradius * Math.Sin(angle - outerangle))))).ToPointF();
-            corners[3] = (center + (new Vector2((double)(outerradius * Math.Cos(angle + outerangle)), (double)(outerradius * Math.Sin(angle + outerangle))))).ToPointF();
+            corners[0] = (center + (new Vector2((double)(INNER_RADIUS * Math.Cos(angle + INNER_ANGLE)), (double)(INNER_RADIUS * Math.Sin(angle + INNER_ANGLE))))).ToPointF();
+            corners[1] = (center + (new Vector2((double)(INNER_RADIUS * Math.Cos(angle - INNER_ANGLE)), (double)(INNER_RADIUS * Math.Sin(angle - INNER_ANGLE))))).ToPointF();
+            corners[2] = (center + (new Vector2((double)(OUTER_RADIUS * Math.Cos(angle - OUTER_ANGLE)), (double)(OUTER_RADIUS * Math.Sin(angle - OUTER_ANGLE))))).ToPointF();
+            corners[3] = (center + (new Vector2((double)(OUTER_RADIUS * Math.Cos(angle + OUTER_ANGLE)), (double)(OUTER_RADIUS * Math.Sin(angle + OUTER_ANGLE))))).ToPointF();
             b = new SolidBrush(Color.Gray);
             g.FillPolygon(b, corners);
             b.Dispose();
@@ -129,6 +165,8 @@ namespace Robocup.Utilities
 
         public void paintField(Graphics g)
         {
+            
+
             // goal dots
             Brush b0 = new SolidBrush(Color.YellowGreen);
             g.FillEllipse(b0, converter.fieldtopixelX(FIELD_XMIN - GOAL_WIDTH) - GOAL_DOT_SIZE / 2, converter.fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);

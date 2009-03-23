@@ -11,12 +11,19 @@ string REFBOX_ADDR 224.5.92.5
 int REFBOX_PORT 10001
 
 # testing directory
-string PLAY_DIR ../../plays/Test2009
+#string PLAY_DIR ../../plays/Test2009
 # competition directory
-#string PLAY_DIR ../../plays
+string PLAY_DIR ../../plays
 
+## Basic Predictor constants
 double DELTA_DIST_SQ_MERGE .05
 double MAX_SECONDS_TO_KEEP_INFO 1
+# in seconds
+double VELOCITY_DT 0.2
+double VELOCITY_WEIGHT_OLD 0.5
+double VELOCITY_WEIGHT_NEW 0.5
+double POSITION_WEIGHT_OLD 0.5
+double POSITION_WEIGHT_NEW 0.5
 
 
 bool ROBOT_HAS_KICKER_0 true

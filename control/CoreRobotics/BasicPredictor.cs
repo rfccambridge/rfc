@@ -102,25 +102,39 @@ namespace Robocup.CoreRobotics
                         if (matched != null)
                         {
                             newInfos.Remove(matched);
-
-                            Vector2 velocity = matched.Velocity;
+                            
+                            Vector2 velocity = oldInfo.Velocity;
                             if (matchIDs)
                             {
                                 if (lastSeen.ContainsKey(matched.ID))
                                 {
                                     double dt = time - lastSeen[matched.ID];
-                                    velocity = (1 / (dt+.01)) * (matched.Position - oldInfo.Position);
-                                    velocity = .5 * velocity + .5 * oldInfo.Velocity;
-                                    //if (velocity.magnitudeSq()>.01)
-                                    //    Console.WriteLine(velocity);
+                                    
+                                    // Wait until a meaningfully long interval has passed before taking a velocity
+                                    // measurement
+                                    if (dt > Constants.get<double>("default", "VELOCITY_DT"))  // in seconds
+                                    {
+                                        velocity = (1 / dt) * (matched.Position - oldInfo.Position);    
+                                        
+                                        double weightOld = Constants.get<double>("default", "VELOCITY_WEIGHT_OLD");
+                                        double weightNew = Constants.get<double>("default", "VELOCITY_WEIGHT_NEW");
+                                        velocity = weightNew * velocity + weightOld * oldInfo.Velocity;
+
+                                        lastSeen[matched.ID] = time;
+                                    }
                                 }
-                                lastSeen[matched.ID] = time;
+                                else
+                                {
+                                    lastSeen[matched.ID] = time;
+                                }
                             }
 
-                            Vector2 position;// = matched.Position;
+                            Vector2 position;
                             if (otherCameraInfos.Contains(oldInfo))
                             {
-                                position = .5 * oldInfo.Position + .5 * matched.Position;
+                                double weightOld = Constants.get<double>("default", "POSITION_WEIGHT_OLD");
+                                double weightNew = Constants.get<double>("default", "POSITION_WEIGHT_NEW");
+                                position = weightOld * oldInfo.Position + weightNew * matched.Position;
                             }
                             else
                                 position = matched.Position;

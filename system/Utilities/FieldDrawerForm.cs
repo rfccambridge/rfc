@@ -28,6 +28,8 @@ namespace Robocup.Utilities
 
             drawer = new FieldDrawer(predictor, converter, playNames);
             this.Size = new Size(560, 500);
+
+            this.BackColor = Color.Green;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -72,6 +74,17 @@ namespace Robocup.Utilities
         public void RemovePath(int pathID)
         {
             drawer.RemovePath(pathID);
+        }
+
+        private void FieldDrawerForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            switch (e.KeyChar)
+            {
+                case 'r': // reload constants
+                    Constants.Load();
+                    drawer.LoadParameters();
+                    break;
+            }
         }
 
     }
