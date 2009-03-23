@@ -136,11 +136,12 @@ namespace Robocup.ControlForm {
             {
                 _basicPredictor.updatePartOurRobotInfo(ours, cameraName);
                 _basicPredictor.updatePartTheirRobotInfo(theirs, cameraName);
-                if (msg.BallPosition != null)
-                {
-                    // Not sure what is this 2 + 1.01*(x-2) adjustment
-                    Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);
-                    _basicPredictor.updateBallInfo(new BallInfo(ballposition));
+                if (msg.BallPosition != null) {
+                    //Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
+                    _basicPredictor.updateBallInfo(new BallInfo(msg.BallPosition));
+                }
+                else {
+                    _basicPredictor.updateBallInfo(null);
                 }
             }
             drawer.Invalidate();

@@ -61,6 +61,10 @@ namespace Robocup.CoreRobotics
             {
                 lock (object_lock)
                 {
+                    List<RobotInfo> origNewInfos = new List<RobotInfo>();
+                    foreach (RobotInfo r in newInfos) {
+                        origNewInfos.Add(r);
+                    }
                     double time = HighResTimer.SecondsSinceStart();
                     bool isOmega = (computerName == "OMEGA");
                     List<RobotInfo> otherCameraInfos;
@@ -76,9 +80,10 @@ namespace Robocup.CoreRobotics
                     //we give them the same id as the old one, then remove the old one
                     //and set the id of the new one to be the old one
                     List<RobotInfo> newInfoList = new List<RobotInfo>();
+                    RobotInfo matched;
                     foreach (RobotInfo oldInfo in getMergedInfos())
                     {
-                        RobotInfo matched = null;
+                        matched = null;
                         foreach (RobotInfo newInfo in newInfos)
                         {
                             if (matchIDs)
@@ -280,11 +285,32 @@ namespace Robocup.CoreRobotics
         {
             double now = HighResTimer.SecondsSinceStart();
             double dt = now - ballupdate;
-            ballupdate = now;
-            //this.ballInfo = new BallInfo(.7 * this.ballInfo.Position + .3 * ballInfo.Position,
-            //    (1/(dt+.01))*(this.ballInfo.Position-ballInfo.Position));
-            this.ballInfo = new BallInfo(.7 * this.ballInfo.Position + .3 * ballInfo.Position,
-                (1 / (dt + .01)) * (ballInfo.Position-this.ballInfo.Position));
+
+            // Apply the same stickiness rule as for the robots
+            if (ballInfo == null) {
+                if (dt > Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO")) {
+                    this.ballInfo = null;                    
+                }
+                return;
+            }
+            
+            // Wait for a meaningfully long interval to pass before taking a velocity measurement
+            if (dt > Constants.get<double>("default", "VELOCITY_DT")) {
+                if (this.ballInfo != null) {
+                    double weightOld = Constants.get<double>("default", "BALL_POSITION_WEIGHT_OLD");
+                    double weightNew = Constants.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
+
+                    Vector2 position = weightOld * this.ballInfo.Position + weightNew * ballInfo.Position;
+                    Vector2 velocity = (1 / dt) * (ballInfo.Position - this.ballInfo.Position);
+
+                    this.ballInfo = new BallInfo(position, velocity);
+                }
+                else {
+                    this.ballInfo = ballInfo;
+                }
+
+                ballupdate = now;
+            }
         }
 
         public void updatePartOurRobotInfo(List<RobotInfo> newInfos, string splitName)

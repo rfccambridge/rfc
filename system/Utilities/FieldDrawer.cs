@@ -18,6 +18,7 @@ namespace Robocup.Utilities
         double VELOCITY_ARROW_SIZE;
         double VELOCITY_ARROW_MIN_MAG_SQ;
         double VELOCITY_ARROW_LEN_SCALE; // length of arrow = magnitude * this scaling factor
+        double BALL_VELOCITY_ARROW_LEN_SCALE;
         
         // kicker drawing
         double OUTER_ANGLE = .6;
@@ -82,6 +83,7 @@ namespace Robocup.Utilities
             VELOCITY_ARROW_SIZE =       Constants.get<double>("drawing", "VELOCITY_ARROW_SIZE");
             VELOCITY_ARROW_MIN_MAG_SQ = Constants.get<double>("drawing", "VELOCITY_ARROW_MIN_MAG_SQ");
             VELOCITY_ARROW_LEN_SCALE =  Constants.get<double>("drawing", "VELOCITY_ARROW_LEN_SCALE");
+            BALL_VELOCITY_ARROW_LEN_SCALE = Constants.get<double>("drawing", "BALL_VELOCITY_ARROW_LEN_SCALE");
 
             // kicker drawing
             OUTER_ANGLE =  Constants.get<double>("drawing", "OUTER_ANGLE");
@@ -114,7 +116,7 @@ namespace Robocup.Utilities
             // draw velocity arrow            
             if (r.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
             {
-                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();                
+                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();                                
                 Arrow velArrow = new Arrow(r.Position, r.Position + velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
                 velArrow.drawConvertToPixels(g, converter);
             }
@@ -232,23 +234,25 @@ namespace Robocup.Utilities
             // draw ball
             BallInfo ballInfo = predictor.getBallInfo();
 
-            b = new SolidBrush(Color.Orange);
-            g.FillEllipse(
-                b,
-                converter.fieldtopixelX(ballInfo.Position.X) - BALL_SIZE / 2,
-                converter.fieldtopixelY(ballInfo.Position.Y) - BALL_SIZE / 2,
-                BALL_SIZE,
-                BALL_SIZE
-            );
-            b.Dispose();
+            if (ballInfo != null) {
 
-            // draw ball velocity arrow
-            if (ballInfo.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
-            {
-                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * ballInfo.Velocity.magnitudeSq() * ballInfo.Velocity.normalize();
-                Arrow velArrow = new Arrow(ballInfo.Position, ballInfo.Position + velVector, 
-                                           VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
-                velArrow.drawConvertToPixels(g, converter);
+                b = new SolidBrush(Color.Orange);
+                g.FillEllipse(
+                    b,
+                    converter.fieldtopixelX(ballInfo.Position.X) - BALL_SIZE / 2,
+                    converter.fieldtopixelY(ballInfo.Position.Y) - BALL_SIZE / 2,
+                    BALL_SIZE,
+                    BALL_SIZE
+                );
+                b.Dispose();
+
+                // draw ball velocity arrow
+                if (ballInfo.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ) {
+                    Vector2 velVector = BALL_VELOCITY_ARROW_LEN_SCALE * ballInfo.Velocity.magnitudeSq() * ballInfo.Velocity.normalize();
+                    Arrow velArrow = new Arrow(ballInfo.Position, ballInfo.Position + velVector,
+                                               VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
+                    velArrow.drawConvertToPixels(g, converter);
+                }
             }
         }
 

@@ -219,11 +219,13 @@ namespace SimplePathFollower
 			{
 				_predictor.updatePartOurRobotInfo(ours, computerName);
 				_predictor.updatePartTheirRobotInfo(theirs, computerName);
-				if (msg.BallPosition != null)
-				{
-					Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);
-					_predictor.updateBallInfo(new BallInfo(ballposition));
-				}
+                if (msg.BallPosition != null) {
+                    //Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
+                    _predictor.updateBallInfo(new BallInfo(msg.BallPosition));
+                }
+                else {
+                    _predictor.updateBallInfo(null);
+                }
 			}
 
             if (_stopwatch.ElapsedMilliseconds > 200) {
