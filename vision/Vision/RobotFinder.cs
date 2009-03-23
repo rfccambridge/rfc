@@ -268,6 +268,7 @@ namespace VisionStatic
             public Blob[] dots;
             public double[] ctrDistsSq;
             public Vector[] ctrVectors;
+            public double score;
 
             public Pattern(Blob centerDotValue, IList<Blob> dotsValue)
             {
@@ -411,6 +412,7 @@ namespace VisionStatic
         {
             VisionMessage visionMessage = new VisionMessage();
             List<Vector2> enemyPositions = new List<Vector2>();
+            Dictionary<int, double> robotScores = new Dictionary<int, double>();
 
             // Each center dot (blobID) can have multiple candidate patterns
             Dictionary<int, List<Pattern>> patterns = new Dictionary<int, List<Pattern>>();
@@ -740,10 +742,11 @@ namespace VisionStatic
                     return visionMessage;
                 }
 
-                Robot robot = new Robot();
-
-                if (bestFL == -1 || bestFR == -1 || bestRL == -1 || bestRR == -1)
+                if (bestFL == -1 || bestFR == -1 || bestRL == -1 || bestRR == -1)                
                     return new VisionMessage();
+
+                Robot robot = new Robot();
+              
                 // ORIENTATION
 
                 Vector orientV;
@@ -784,12 +787,35 @@ namespace VisionStatic
 
                 robot.Id = bestID;
 
+                // In case there were multiple center dots, hence multiple sets of candidates,
+                // that identified to the same ID, we pick the one that had the highest score (accross 
+                // the minCandidateScores)
+                bool addThisRobot = false;
+                if (!robotScores.ContainsKey(robot.Id)) {
+                    robotScores.Add(robot.Id, minCandidateScore);
+                    addThisRobot = true;
+                } else {
+                    if (minCandidateScore < robotScores[robot.Id]) {
+                        // We found a better pattern for the robot that was already identified (probably identified wrong)
+                        int oldIdx = visionMessage.OurRobots.FindIndex(new Predicate<VisionMessage.RobotData>(
+                               delegate(Robocup.Core.VisionMessage.RobotData rd) {
+                                    return rd.ID == robot.Id;
+                               }));
+                        visionMessage.OurRobots.RemoveAt(oldIdx);
+                        addThisRobot = true;
+                        robotScores[robot.Id] = minCandidateScore;
+                    } 
+                    else {
+                        addThisRobot = false;
+                    }
+                }
+
                 if (VERBOSE)
                 {
                     Console.WriteLine("WX=" + robot.X.ToString() + "  WY=" + robot.Y.ToString() + "  Orient=" + robot.Orientation.ToString());
                 }
 
-                if (robot.Id >= 0)
+                if (robot.Id >= 0 && addThisRobot)
                 {
                     VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(robot.Id, true,
                                                                                   VisionToGeneralCoords(robot.X, robot.Y),
