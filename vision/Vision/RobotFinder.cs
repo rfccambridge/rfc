@@ -267,8 +267,7 @@ namespace VisionStatic
             public Blob centerDot;
             public Blob[] dots;
             public double[] ctrDistsSq;
-            public Vector[] ctrVectors;
-            public double score;
+            public Vector[] ctrVectors;            
 
             public Pattern(Blob centerDotValue, IList<Blob> dotsValue)
             {
@@ -401,283 +400,186 @@ namespace VisionStatic
         }
 
         /// <summary>
-        /// This is new (after Jan. 2009) robot identification method -- only a couple constants involved. 
-        /// TODO: break up into smaller functions, add ability to select "use TsaiCalibrator / use pixels"
+        /// Finds dots that are close to a center dot (and consider all combinations of four
+        /// if more than four dots are close).
         /// </summary>
-        /// <param name="blobs"></param>
-        /// <param name="totalBlobs"></param>
-        /// <param name="tsaiCalibrator"></param>
+        /// <param name="ctrDot">Center dot blob</param>
         /// <returns></returns>
-        static public VisionMessage findGameObjects2(Vision.Blob[] blobs, int totalBlobs, TsaiCalibrator tsaiCalibrator)
-        {
-            VisionMessage visionMessage = new VisionMessage();
-            List<Vector2> enemyPositions = new List<Vector2>();
-            Dictionary<int, double> robotScores = new Dictionary<int, double>();
+        static private List<Pattern> gatherPattern(Blob[] blobs, int totalBlobs, Blob ctrDot) {
+            List<Pattern> patterns = new List<Pattern>();
+            LinkedList<Blob> potentialDots = new LinkedList<Blob>();
+            double distSq;
 
-            // Each center dot (blobID) can have multiple candidate patterns
-            Dictionary<int, List<Pattern>> patterns = new Dictionary<int, List<Pattern>>();
-
-            List<int> ballBlobs = new List<int>();
-
-            for (int i = 0; i < totalBlobs; i++) {
-                if (blobs[i].ColorClass == ColorClasses.OUR_CENTER_DOT) {
-                    Blob tempCtrDot = blobs[i];
-                    LinkedList<Blob> tempDots = new LinkedList<Blob>();
-                    double distSq;
-
-                    for (int j = 0; j < totalBlobs; j++) {
-                        byte c = blobs[j].ColorClass;
-                        if (c == ColorClasses.COLOR_DOT_CYAN || c == ColorClasses.COLOR_DOT_GREEN ||
-                            c == ColorClasses.COLOR_DOT_PINK) {
-                            //uncomment to use image coordinates
-                            //distSq = RobotFinder.distanceSq(tempCtrDot.CenterX, tempCtrDot.CenterY, blobs[j].CenterX, blobs[j].CenterY);
-                            distSq = RobotFinder.distanceSq(tempCtrDot.CenterWorldX, tempCtrDot.CenterWorldY, blobs[j].CenterWorldX, blobs[j].CenterWorldY);
-                            if (distSq < RobotFinder.DIST_SQ_TO_CENTER) {
-                                //uncomment to use image coordinates
-                                //if (distSq < RobotFinder.DIST_SQ_TO_CENTER_PIX){
-                                tempDots.AddLast(blobs[j]);
-                            }
-                        }
-                    }
-
-
-                    // Choose only the largest two dots for each color
-                    Dictionary<int, List<Blob>> dotsByColor = new Dictionary<int, List<Blob>>();
-                    foreach (Blob dot in tempDots) {
-                        if (!dotsByColor.ContainsKey(dot.ColorClass)) {
-                            dotsByColor[dot.ColorClass] = new List<Blob>();
-                            dotsByColor[dot.ColorClass].Add(dot);
-                        }
-                        else {
-                            dotsByColor[dot.ColorClass].Add(dot);
-                        }
-                    }
-                    foreach (int color in dotsByColor.Keys) {
-                        List<Blob> dots = dotsByColor[color];
-                        if (dots.Count > 2) {
-                            dots.Sort(new BlobAreaScaledComparer());
-                            dots.Reverse();
-                            dots.RemoveRange(2, dots.Count - 2);
-                        }
-                    }
-
-
-
-
-                    // TODO: change everything to List<> instead of LinkedList<>
-                    IList<Blob> tempDotsIList = new List<Blob>(tempDots);
-                    Combinations<Blob> dotCombinations = new Combinations<Blob>(tempDotsIList, 4, GenerateOption.WithoutRepetition);
-
-                    if (tempDots.Count >= 4) {
-                        foreach (IList<Blob> fourDots in dotCombinations) {
-                            // Only patters with two dots of one color and two dots of another are possible
-                            Dictionary<int, int> colorOccurance = new Dictionary<int, int>();
-                            foreach (Blob dot in fourDots)
-                                if (colorOccurance.ContainsKey(dot.ColorClass))
-                                    colorOccurance[dot.ColorClass]++;
-                                else
-                                    colorOccurance[dot.ColorClass] = 1;
-
-                            bool eachTwice = true;
-                            foreach (int value in colorOccurance.Values) {
-                                if (value != 2) {
-                                    eachTwice = false;
-                                    break;
-                                }
-                            }
-
-                            if (eachTwice) {
-                                Pattern pattern = new Pattern(tempCtrDot, fourDots);
-                                if (!patterns.ContainsKey(tempCtrDot.BlobID))
-                                    patterns[tempCtrDot.BlobID] = new List<Pattern>();
-                                patterns[tempCtrDot.BlobID].Add(pattern);
-                            }
-                        }
+            // Find all dots that are close enough to the center dots
+            for (int j = 0; j < totalBlobs; j++)
+            {
+                byte c = blobs[j].ColorClass;
+                if (c == ColorClasses.COLOR_DOT_CYAN || 
+                    c == ColorClasses.COLOR_DOT_GREEN ||
+                    c == ColorClasses.COLOR_DOT_PINK)
+                {
+                    //uncomment to use image coordinates
+                    //distSq = RobotFinder.distanceSq(tempCtrDot.CenterX, tempCtrDot.CenterY, blobs[j].CenterX, blobs[j].CenterY);
+                    distSq = RobotFinder.distanceSq(ctrDot.CenterWorldX, ctrDot.CenterWorldY, blobs[j].CenterWorldX, blobs[j].CenterWorldY);
+                    if (distSq < RobotFinder.DIST_SQ_TO_CENTER)
+                    {
+                        //uncomment to use image coordinates
+                        //if (distSq < RobotFinder.DIST_SQ_TO_CENTER_PIX){
+                        potentialDots.AddLast(blobs[j]);
                     }
                 }
-                else if (blobs[i].ColorClass == ColorClasses.COLOR_BALL) {
-                    ballBlobs.Add(i);
-                }
-                else if (blobs[i].ColorClass == ColorClasses.THEIR_CENTER_DOT) {
-                    if (Math.Abs(blobs[i].AreaScaled - AREA_THEIR_CENTER_DOT) < ERROR_THEIR_CENTER_DOT) {
-                        enemyPositions.Add(new Vector2(blobs[i].CenterWorldX, blobs[i].CenterWorldY));                        
-                    }
-                }
-
             }
 
-            foreach (List<Pattern> patternCandidates in patterns.Values)
+
+            // Choose only the largest two dots for each color
+            Dictionary<int, List<Blob>> dotsByColor = new Dictionary<int, List<Blob>>();
+            foreach (Blob dot in potentialDots)
             {
-                double minCandidateScore = double.MaxValue;
-                Pattern bestPattern = null;
-                int bestFL, bestFR, bestRL, bestRR;
-                bestFL = bestFR = bestRL = bestRR = -1;
-                int bestID = -1;
-
-                foreach (Pattern pattern in patternCandidates)
+                if (!dotsByColor.ContainsKey(dot.ColorClass))
                 {
-                    if (VERBOSE)
-                    {
-                        Console.WriteLine("Center dot: " + ((pattern.centerDot == null) ? "! not found !" : pattern.centerDot.BlobID.ToString()));
-                        Console.Write("Dots found (" + pattern.dots.Length + "): ");
+                    dotsByColor[dot.ColorClass] = new List<Blob>();
+                    dotsByColor[dot.ColorClass].Add(dot);
+                }
+                else
+                {
+                    dotsByColor[dot.ColorClass].Add(dot);
+                }
+            }
+            foreach (int color in dotsByColor.Keys)
+            {
+                List<Blob> dots = dotsByColor[color];
+                if (dots.Count > 2)
+                {
+                    dots.Sort(new BlobAreaScaledComparer());
+                    dots.Reverse();
+                    dots.RemoveRange(2, dots.Count - 2);
+                }
+            }
 
-                        foreach (Blob dot in pattern.dots)
+
+            // Consider all possible (and valid) combinations) -- relavant when more than
+            // four dots are close to the centerdot
+            IList<Blob> potentialDotsIList = new List<Blob>(potentialDots);
+            Combinations<Blob> dotCombinations = new Combinations<Blob>(potentialDotsIList, 4, GenerateOption.WithoutRepetition);
+
+            if (potentialDots.Count >= 4)
+            {
+                foreach (IList<Blob> fourDots in dotCombinations)
+                {
+                    // Only patters with two dots of one color and two dots of another are possible
+                    Dictionary<int, int> colorOccurance = new Dictionary<int, int>();
+                    foreach (Blob dot in fourDots)
+                        if (colorOccurance.ContainsKey(dot.ColorClass))
+                            colorOccurance[dot.ColorClass]++;
+                        else
+                            colorOccurance[dot.ColorClass] = 1;
+
+                    bool eachTwice = true;
+                    foreach (int value in colorOccurance.Values)
+                    {
+                        if (value != 2)
                         {
-                            Console.Write(dot.BlobID + " " + ColorClasses.GetName(dot.ColorClass) + "; ");
-                        }
-                        Console.WriteLine();
-                    }
-
-                    if (pattern.dots.Length < 4)
-                    {
-                        Console.WriteLine("Only " + pattern.dots.Length.ToString() + " dots found. Can't handle less than 4 dots yet.");
-
-                        continue;
-                    }
-
-                    // to do: maybe insert some out-lier detector here to filter out the false dots
-                    // for now just take the closes 4 if there are more dots        
-                    // I only know how to sort using Array.Sort()                                             
-                    //Array.Sort(pattern.ctrDistsSq, pattern.dots);           
-
-                    if (VERBOSE)
-                    {
-                        Console.Write("Four dots chosen: ");
-
-
-                        for (int i = 0; i < 4; i++)
-                        {
-                            Console.Write(pattern.dots[i].BlobID + " " + ColorClasses.GetName(pattern.dots[i].ColorClass) + "; ");
-                        }
-                        Console.WriteLine();
-                    }
-                    // Find the three vectors for each dot, and based on their length determine whether the dot a front one or a rear one
-                    System.Windows.Vector[,] vectors = new System.Windows.Vector[4, 4];
-                    double[,] lengths = new double[4, 4];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < 4; j++)
-                        {
-                            //reverse X when dealing with world coordinates
-                            vectors[i, j] = new Vector(-1 * (pattern.dots[j].CenterWorldX - pattern.dots[i].CenterWorldX), pattern.dots[j].CenterWorldY - pattern.dots[i].CenterWorldY);
-                            //uncomment to use image coordinates
-                            // reverse Y to get a righthanded coord system
-                            //vectors[i, j] = new System.Windows.Vector(pattern.dots[j].CenterX - pattern.dots[i].CenterX, -1 * (pattern.dots[j].CenterY - pattern.dots[i].CenterY));
-                            lengths[i, j] = vectors[i, j].LengthSquared;
+                            eachTwice = false;
+                            break;
                         }
                     }
 
-                    int id = -1;
-                    int frontLeft, frontRight, rearLeft, rearRight;
-                    frontLeft = frontRight = rearLeft = rearRight = -1;
-                    double minScore = double.MaxValue;
-                    double maxTerm1 = 0;
-                    double maxTerm2 = 0;
-                    double maxTerm3 = 0;
-
-                    // for debugging
-                    double[] scores = new double[24];
-                    Pair<Pair<int, int>, Pair<int, int>>[] guesses = new Pair<Pair<int, int>, Pair<int, int>>[24];
-                    int k = 0;
-
-                    const double REAR_TO_FRONT_RATIO = 1.5;
-                    #region guesses
-                    // To combine terms in the score formula, we need to normalize them. So we get the max values here.
-                    for (int fl = 0; fl < 4; fl++)
+                    if (eachTwice)
                     {
-                        for (int fr = 0; fr < 4; fr++)
+                        Pattern pattern = new Pattern(ctrDot, fourDots);                        
+                        patterns.Add(pattern);
+                    }
+                }
+            }
+
+            return patterns;
+        }
+
+        /// <summary>
+        /// Scores each possible permutation of the dot positions in a pattern and 
+        /// returns the best arrangment (indexes: [fl, fr, rl, rr]), the best
+        /// score, and the associated id.
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        static private void findBestArrangement(Pattern pattern, 
+                                                out int[] arrangement, out double score, out int id) {
+
+            const double REAR_TO_FRONT_RATIO = 1.5;                         
+            
+            double maxTerm1 = 0;
+            double maxTerm2 = 0;
+            double maxTerm3 = 0;
+            int k = 0;
+
+            // for debugging
+            double[] scores = new double[24];
+            int[][] guesses = new int[24][];
+
+            // Best pattern info
+            id = -1;
+            score = double.MaxValue;
+            arrangement = new int[4] { -1, -1, -1, -1 };
+                       
+            // Find quantities used in scoring
+            Vector2[,] vectors = new Vector2[4, 4];
+            double[,] lengths = new double[4, 4];
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    //reverse X when dealing with world coordinates
+                    vectors[i, j] = new Vector2(-1 * (pattern.dots[j].CenterWorldX - pattern.dots[i].CenterWorldX), 
+                                                pattern.dots[j].CenterWorldY - pattern.dots[i].CenterWorldY);
+                    //uncomment to use image coordinates
+                    // reverse Y to get a righthanded coord system
+                    //vectors[i, j] = new System.Windows.Vector(pattern.dots[j].CenterX - pattern.dots[i].CenterX, -1 * (pattern.dots[j].CenterY - pattern.dots[i].CenterY));
+                    lengths[i, j] = vectors[i, j].magnitudeSq();
+                }
+            }
+
+            // To combine terms in the score formula, we need to normalize them. So we get the max values here.
+            for (int fl = 0; fl < 4; fl++)
+            {
+                for (int fr = 0; fr < 4; fr++)
+                {
+                    for (int rl = 0; rl < 4; rl++)
+                    {
+                        for (int rr = 0; rr < 4; rr++)
                         {
-                            for (int rl = 0; rl < 4; rl++)
-                            {
-                                for (int rr = 0; rr < 4; rr++)
-                                {
-                                    // Iterate over permutations only
-                                    if (fl == fr || fl == rl || fl == rr || fr == rl || fr == rr || rl == rr) continue;
+                            // Iterate over permutations only
+                            if (fl == fr || fl == rl || fl == rr || fr == rl || fr == rr || rl == rr) continue;
 
-                                    double term1 = Math.Abs(lengths[fl, rl] - lengths[fr, rr]);
-                                    double term2 = Math.Abs(lengths[fl, rr] - lengths[fr, rl]);
-                                    double term3 = Math.Abs(lengths[fl, fr] - REAR_TO_FRONT_RATIO * lengths[rl, rr]);
+                            double term1 = Math.Abs(lengths[fl, rl] - lengths[fr, rr]);
+                            double term2 = Math.Abs(lengths[fl, rr] - lengths[fr, rl]);
+                            double term3 = Math.Abs(lengths[fl, fr] - REAR_TO_FRONT_RATIO * lengths[rl, rr]);
 
-                                    if (term1 > maxTerm1) { maxTerm1 = term1; }
-                                    if (term2 > maxTerm2) { maxTerm2 = term2; }
-                                    if (term3 > maxTerm3) { maxTerm3 = term3; }
-                                }
-                            }
+                            if (term1 > maxTerm1) { maxTerm1 = term1; }
+                            if (term2 > maxTerm2) { maxTerm2 = term2; }
+                            if (term3 > maxTerm3) { maxTerm3 = term3; }
                         }
                     }
+                }
+            }
 
-                    // Make sure we don't divide by zero
-                    maxTerm1 = (maxTerm1 == 0) ? 1 : maxTerm1;
-                    maxTerm2 = (maxTerm2 == 0) ? 1 : maxTerm2;
-                    maxTerm3 = (maxTerm3 == 0) ? 1 : maxTerm3;
+            // Make sure we don't divide by zero
+            maxTerm1 = (maxTerm1 == 0) ? 1 : maxTerm1;
+            maxTerm2 = (maxTerm2 == 0) ? 1 : maxTerm2;
+            maxTerm3 = (maxTerm3 == 0) ? 1 : maxTerm3;
 
-                    for (int fl = 0; fl < 4; fl++)
+            for (int fl = 0; fl < 4; fl++)
+            {
+                for (int fr = 0; fr < 4; fr++)
+                {
+                    for (int rl = 0; rl < 4; rl++)
                     {
-                        for (int fr = 0; fr < 4; fr++)
+                        for (int rr = 0; rr < 4; rr++)
                         {
-                            for (int rl = 0; rl < 4; rl++)
-                            {
-                                for (int rr = 0; rr < 4; rr++)
-                                {
-                                    // Iterate over permutations only
-                                    if (fl == fr || fl == rl || fl == rr || fr == rl || fr == rr || rl == rr) continue;
-
-                                    int tempID = ColorClasses.DOT_PATTERNS[pattern.dots[fl].ColorClass, pattern.dots[fr].ColorClass,
-                                                     pattern.dots[rl].ColorClass, pattern.dots[rr].ColorClass];
-
-                                    double term1 = Math.Abs(lengths[fl, rl] - lengths[fr, rr]);
-                                    double term2 = Math.Abs(lengths[fl, rr] - lengths[fr, rl]);
-                                    double term3 = Math.Abs(lengths[fl, fr] - REAR_TO_FRONT_RATIO * lengths[rl, rr]);
-                                    double term4 = (tempID < 0) ? 1 : 0;
-                                    double term5 = (lengths[fl, fr] < lengths[rl, rr]) ? 1 : 0;
-                                    double term6 = (Vector.CrossProduct(pattern.ctrVectors[fr], pattern.ctrVectors[fl]) < 0) ? 1 : 0;
-                                    double term7 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
-                                    double term8 = (Vector.CrossProduct(pattern.ctrVectors[fl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
-                                    double term9 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[fr]) < 0) ? 1 : 0;
-
-                                    double score = (term1 / maxTerm1 + term2 / maxTerm2 + term3 / maxTerm3 + term4 + term5 + term6 + term7 + term8 + term9) / 9;
-
-
-                                    scores[k] = score;
-                                    guesses[k] = new Pair<Pair<int, int>, Pair<int, int>>(new Pair<int, int>(fl, fr), new Pair<int, int>(rl, rr));
-                                    k++;
-
-
-                                    if (score < minScore)
-                                    {
-                                        minScore = score;
-                                        frontLeft = fl;
-                                        frontRight = fr;
-                                        rearLeft = rl;
-                                        rearRight = rr;
-                                        id = tempID;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    #endregion
-                    #region dump
-                    if (VERBOSE || id < 0)
-                    {
-                        if (id < 0)
-                        {
-                            Console.WriteLine("Robot identification failed. Dumping state...");
-                        }
-
-                        Array.Sort<double, Pair<Pair<int, int>, Pair<int, int>>>(scores, guesses);
-                        Array.Reverse(scores);
-                        Array.Reverse(guesses);
-
-                        for (int i = 0; i < scores.Length; i++)
-                        {
-                            int fl = guesses[i].First.First;
-                            int fr = guesses[i].First.Second;
-                            int rl = guesses[i].Second.First;
-                            int rr = guesses[i].Second.Second;
+                            // Iterate over permutations only
+                            if (fl == fr || fl == rl || fl == rr || fr == rl || fr == rr || rl == rr) continue;
 
                             int tempID = ColorClasses.DOT_PATTERNS[pattern.dots[fl].ColorClass, pattern.dots[fr].ColorClass,
-                                                        pattern.dots[rl].ColorClass, pattern.dots[rr].ColorClass];
+                                             pattern.dots[rl].ColorClass, pattern.dots[rr].ColorClass];
 
                             double term1 = Math.Abs(lengths[fl, rl] - lengths[fr, rr]);
                             double term2 = Math.Abs(lengths[fl, rr] - lengths[fr, rl]);
@@ -689,113 +591,264 @@ namespace VisionStatic
                             double term8 = (Vector.CrossProduct(pattern.ctrVectors[fl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
                             double term9 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[fr]) < 0) ? 1 : 0;
 
-                            Console.WriteLine("[FL FR RL RR] = [" + ColorClasses.GetName(pattern.dots[fl].ColorClass)[4] + "(" + pattern.dots[fl].BlobID + ") " +
-                                                                    ColorClasses.GetName(pattern.dots[fr].ColorClass)[4] + "(" + pattern.dots[fr].BlobID + ") " +
-                                                                    ColorClasses.GetName(pattern.dots[rl].ColorClass)[4] + "(" + pattern.dots[rl].BlobID + ") " +
-                                                                    ColorClasses.GetName(pattern.dots[rr].ColorClass)[4] + "(" + pattern.dots[rr].BlobID + ")]: score = " + scores[i].ToString());
-                            Console.WriteLine("dist(fl, rl) - dist(fr, rr) = " + (term1 / maxTerm1).ToString());
-                            Console.WriteLine("dist(fl, rr) - dist(fr, rl) = " + (term2 / maxTerm2).ToString());
-                            Console.WriteLine("dist(fl, fr) - " + REAR_TO_FRONT_RATIO.ToString() + " * dist(rl, rr) = " +
-                                (term3 / maxTerm3).ToString());
-                            Console.WriteLine("(ID == -1) = " + term4.ToString());
-                            Console.WriteLine("(dist(fl, fr) < dist(rl, rr)) = " + term5.ToString());
-                            Console.WriteLine("(fr x fl < 0) = " + term6.ToString());
-                            Console.WriteLine("(rl x rr < 0) = " + term7.ToString());
-                            Console.WriteLine("(fl x rr < 0) = " + term8.ToString());
-                            Console.WriteLine("(rl x fr < 0) = " + term9.ToString());
-                            Console.WriteLine();
+                            double tempScore = (term1 / maxTerm1 + term2 / maxTerm2 + term3 / maxTerm3 + 
+                                                term4 + term5 + term6 + term7 + term8 + term9) / 9;
 
+                            if (tempScore < score)
+                            {
+                                score = tempScore;
+                                arrangement[0] = fl;
+                                arrangement[1] = fr;
+                                arrangement[2] = rl;
+                                arrangement[3] = rr;
+                                id = tempID;
+                            }
+
+                            // For debugging: for dumping state
+                            scores[k] = score;
+                            guesses[k] = new int[4] { fl, fr, rl, rr };
+                            k++;
                         }
+                    }
+                }
+            }                    
 
-                        if (id < 0)
+            #region dump
+            if (VERBOSE || id < 0)
+            {
+                if (id < 0)
+                {
+                    Console.WriteLine("Robot identification failed. Dumping state...");
+                }
+
+                Array.Sort<double, int[]>(scores, guesses);
+                Array.Reverse(scores);
+                Array.Reverse(guesses);
+
+                for (int i = 0; i < scores.Length; i++)
+                {
+                    int fl = guesses[i][0];
+                    int fr = guesses[i][1];
+                    int rl = guesses[i][2];
+                    int rr = guesses[i][3];
+
+                    int tempID = ColorClasses.DOT_PATTERNS[pattern.dots[fl].ColorClass, pattern.dots[fr].ColorClass,
+                                                pattern.dots[rl].ColorClass, pattern.dots[rr].ColorClass];
+
+                    double term1 = Math.Abs(lengths[fl, rl] - lengths[fr, rr]);
+                    double term2 = Math.Abs(lengths[fl, rr] - lengths[fr, rl]);
+                    double term3 = Math.Abs(lengths[fl, fr] - REAR_TO_FRONT_RATIO * lengths[rl, rr]);
+                    double term4 = (tempID < 0) ? 1 : 0;
+                    double term5 = (lengths[fl, fr] < lengths[rl, rr]) ? 1 : 0;
+                    double term6 = (Vector.CrossProduct(pattern.ctrVectors[fr], pattern.ctrVectors[fl]) < 0) ? 1 : 0;
+                    double term7 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
+                    double term8 = (Vector.CrossProduct(pattern.ctrVectors[fl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
+                    double term9 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[fr]) < 0) ? 1 : 0;
+
+                    Console.WriteLine("[FL FR RL RR] = [" + ColorClasses.GetName(pattern.dots[fl].ColorClass)[4] + "(" + pattern.dots[fl].BlobID + ") " +
+                                                            ColorClasses.GetName(pattern.dots[fr].ColorClass)[4] + "(" + pattern.dots[fr].BlobID + ") " +
+                                                            ColorClasses.GetName(pattern.dots[rl].ColorClass)[4] + "(" + pattern.dots[rl].BlobID + ") " +
+                                                            ColorClasses.GetName(pattern.dots[rr].ColorClass)[4] + "(" + pattern.dots[rr].BlobID + ")]: score = " + scores[i].ToString());
+                    Console.WriteLine("dist(fl, rl) - dist(fr, rr) = " + (term1 / maxTerm1).ToString());
+                    Console.WriteLine("dist(fl, rr) - dist(fr, rl) = " + (term2 / maxTerm2).ToString());
+                    Console.WriteLine("dist(fl, fr) - " + REAR_TO_FRONT_RATIO.ToString() + " * dist(rl, rr) = " +
+                        (term3 / maxTerm3).ToString());
+                    Console.WriteLine("(ID == -1) = " + term4.ToString());
+                    Console.WriteLine("(dist(fl, fr) < dist(rl, rr)) = " + term5.ToString());
+                    Console.WriteLine("(fr x fl < 0) = " + term6.ToString());
+                    Console.WriteLine("(rl x rr < 0) = " + term7.ToString());
+                    Console.WriteLine("(fl x rr < 0) = " + term8.ToString());
+                    Console.WriteLine("(rl x fr < 0) = " + term9.ToString());
+                    Console.WriteLine();
+
+                }
+               
+            }
+            #endregion           
+        }
+
+        /// <summary>
+        /// Finds robot orientation, position, from pattern with correct arrangement.
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <param name="arrangement"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        static private Robot robotFromPattern(Pattern pattern, int[] arrangement, int id)
+        {
+            Robot robot = new Robot();
+            int fl, fr, rl, rr;
+
+            fl = arrangement[0];
+            fr = arrangement[1];
+            rl = arrangement[2];
+            rr = arrangement[3];
+            
+            // ORIENTATION
+            Vector orientV;
+            orientV = Vector.Add(pattern.ctrVectors[fl], pattern.ctrVectors[fr]);
+            orientV.Normalize();            
+            robot.Orientation = (float)Math.Atan2(orientV.Y, orientV.X);
+            
+            // POSITION
+            double[] front = new double[2] {
+                    (pattern.dots[fl].CenterWorldX + pattern.dots[fr].CenterWorldX) / 2, 
+                    (pattern.dots[fl].CenterWorldY + pattern.dots[fr].CenterWorldY) / 2
+                };
+
+            double[] rear = new double[2] { 
+                    (pattern.dots[rl].CenterWorldX + pattern.dots[rr].CenterWorldX) / 2, 
+                    (pattern.dots[rl].CenterWorldY + pattern.dots[rr].CenterWorldY) / 2 
+                };
+
+            robot.X = (front[0] + rear[0]) / 2;
+            robot.Y = (front[1] + rear[1]) / 2;
+
+            // ID
+            robot.Id = id;
+
+            return robot;
+        }
+
+        /// <summary>
+        /// This is new (after Jan. 2009) robot identification method -- only a couple constants involved. 
+        /// TODO: break up into smaller functions, add ability to select "use TsaiCalibrator / use pixels"
+        /// </summary>
+        /// <param name="blobs"></param>
+        /// <param name="totalBlobs"></param>
+        /// <param name="tsaiCalibrator"></param>
+        /// <returns></returns>
+        static public VisionMessage findGameObjects2(Vision.Blob[] blobs, int totalBlobs, TsaiCalibrator tsaiCalibrator)
+        {
+            VisionMessage visionMessage = new VisionMessage();            
+            Dictionary<int, double> robotScores = new Dictionary<int, double>();
+
+            // Each center dot (blobID) can have multiple candidate patterns
+            Dictionary<int, List<Pattern>> patterns = new Dictionary<int, List<Pattern>>();
+            List<Vector2> enemyPositions = new List<Vector2>();
+            List<int> ballBlobs = new List<int>();            
+           
+            // Identify game objects: our potential patterns around each center dot, their robots, ball.
+            for (int i = 0; i < totalBlobs; i++) {                
+                if (blobs[i].ColorClass == (byte)ColorClasses.OUR_CENTER_DOT) {
+                    List<Pattern> candidatePatterns = gatherPattern(blobs, totalBlobs, blobs[i]);
+                    patterns.Add(i, candidatePatterns);                        
+                
+                } else if (blobs[i].ColorClass == (byte)ColorClasses.COLOR_BALL) {
+                    ballBlobs.Add(i);                        
+                
+                } else if (blobs[i].ColorClass == (byte)ColorClasses.THEIR_CENTER_DOT) {
+                    if (Math.Abs(blobs[i].AreaScaled - AREA_THEIR_CENTER_DOT) < ERROR_THEIR_CENTER_DOT) {
+                        enemyPositions.Add(new Vector2(blobs[i].CenterWorldX, blobs[i].CenterWorldY));                        
+                    }
+                }            
+            }
+
+            // For each center dot
+            foreach (List<Pattern> patternCandidates in patterns.Values)
+            {                
+                // Best candidate
+                double bestScore = double.MaxValue;
+                Pattern bestPattern = null;
+                int[] bestArrangement = new int[4] { -1, -1, -1, -1 };
+                int bestID = -1;
+
+                if (patternCandidates.Count == 0)
+                {
+                    Console.WriteLine("No patterns found for a center dot.");
+                    continue;
+                }
+                
+                // For each possible set of four dots (i.e candidate)
+                foreach (Pattern pattern in patternCandidates)
+                {
+                    int[] arrangement;
+                    double score;
+                    int id;
+
+                    #region output
+                    if (VERBOSE)
+                    {
+                        Console.WriteLine("Center dot: " + ((pattern.centerDot == null) ? "! not found !" : pattern.centerDot.BlobID.ToString()));
+                        Console.Write("Dots found (" + pattern.dots.Length + "): ");
+
+                        foreach (Blob dot in pattern.dots)
                         {
-                            continue;
+                            Console.Write(dot.BlobID + " " + ColorClasses.GetName(dot.ColorClass) + "; ");
                         }
+                        Console.WriteLine();
+                    }
+                    #endregion
+                    if (pattern.dots.Length < 4)
+                    {
+                        Console.WriteLine("Only " + pattern.dots.Length.ToString() + " dots found. Can't handle less than 4 dots yet.");
+                        continue;
+                    }
+                    #region output
+                    if (VERBOSE)
+                    {
+                        Console.Write("Four dots chosen: ");
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Console.Write(pattern.dots[i].BlobID + " " + ColorClasses.GetName(pattern.dots[i].ColorClass) + "; ");
+                        }
+                        Console.WriteLine();
                     }
                     #endregion
 
+                    findBestArrangement(pattern, out arrangement, out score, out id);
+
+                    #region output
                     if (VERBOSE)
                     {
+                        int fl = arrangement[0];
+                        int fr = arrangement[1];
+                        int rl = arrangement[2];
+                        int rr = arrangement[3]; 
+
                         Console.WriteLine("Positions identified: ");
-                        Console.WriteLine(pattern.dots[frontLeft].BlobID + "(" + ColorClasses.GetName(pattern.dots[frontLeft].ColorClass) + ")        " +
-                                          pattern.dots[frontRight].BlobID + "(" + ColorClasses.GetName(pattern.dots[frontRight].ColorClass) + ")");
-                        Console.WriteLine("  " + pattern.dots[rearLeft].BlobID + "(" + ColorClasses.GetName(pattern.dots[rearLeft].ColorClass) + ")    " +
-                                          pattern.dots[rearRight].BlobID + "(" + ColorClasses.GetName(pattern.dots[rearRight].ColorClass) + ")");
+                        Console.WriteLine(pattern.dots[fl].BlobID + "(" + ColorClasses.GetName(pattern.dots[fl].ColorClass) + ")        " +
+                                          pattern.dots[fr].BlobID + "(" + ColorClasses.GetName(pattern.dots[fr].ColorClass) + ")");
+                        Console.WriteLine("  " + pattern.dots[rl].BlobID + "(" + ColorClasses.GetName(pattern.dots[rl].ColorClass) + ")    " +
+                                          pattern.dots[rr].BlobID + "(" + ColorClasses.GetName(pattern.dots[rr].ColorClass) + ")");
                         Console.WriteLine();
                     }
+                    #endregion
 
-                    if (minScore < minCandidateScore)
+                    if (score < bestScore)
                     {
-                        minCandidateScore = minScore;
-                        bestPattern = pattern;
-                        bestFL = frontLeft;
-                        bestFR = frontRight;
-                        bestRL = rearLeft;
-                        bestRR = rearRight;
                         bestID = id;
+                        bestPattern = pattern;
+                        bestScore = score;                        
+                        bestArrangement = arrangement;                        
                     }
                 }
 
-                if (bestPattern == null)
+                // Can't tolerate corrupt arrangement
+                for (int i = 0; i < 4; i++)                
+                    if (bestArrangement[i] == -1)
+                        return visionMessage;                
+
+                // Now we have all the info needed to find robot orientation and exact position
+                Robot robot = robotFromPattern(bestPattern, bestArrangement, bestID);
+
+                #region output
+                if (VERBOSE)
                 {
-                    Console.WriteLine("No patterns found.");
-                    return visionMessage;
+                    Console.WriteLine("WX=" + robot.X.ToString() + "  WY=" + robot.Y.ToString() + 
+                                      "  Orient=" + robot.Orientation.ToString());
                 }
-
-                if (bestFL == -1 || bestFR == -1 || bestRL == -1 || bestRR == -1)                
-                    return new VisionMessage();
-
-                Robot robot = new Robot();
-              
-                // ORIENTATION
-
-                Vector orientV;
-                orientV = Vector.Add(bestPattern.ctrVectors[bestFL], bestPattern.ctrVectors[bestFR]);
-                orientV.Normalize();
-                /*  refer to field sketch in TsaiCalibrator
-                 *  the coord system of the field is NOT standard, the x-axis increases from right to left:
-                 *                y ^|
-                 *                   |
-                 *       x           |
-                 *      <-----------------------
-                 *                   |
-                 *                   |
-                 *                   |
-                 * hence, the minus sign here. 
-                 */
-                robot.Orientation = (float)Math.Atan2(orientV.Y, orientV.X);
-
-
-                //find exact location
-                double[] front = new double[2] {
-                    (bestPattern.dots[bestFL].CenterWorldX + bestPattern.dots[bestFR].CenterWorldX) / 2, 
-                    (bestPattern.dots[bestFL].CenterWorldY + bestPattern.dots[bestFR].CenterWorldY) / 2
-                };
-
-                double[] rear = new double[2] { 
-                    (bestPattern.dots[bestRL].CenterWorldX + bestPattern.dots[bestRR].CenterWorldX) / 2, 
-                    (bestPattern.dots[bestRL].CenterWorldY + bestPattern.dots[bestRR].CenterWorldY) / 2 
-                };
-
-
-                robot.X = (front[0] + rear[0]) / 2;
-                robot.Y = (front[1] + rear[1]) / 2;
-
-                // Not sure what this code was supposed to do...
-                //robot.X = ((front[0] * .7933 + rear[0] * .3827) / 1.176) * 0.5 + robot.X * 0.5;
-                //robot.Y = ((front[1] * .7933 + rear[1] * .3827) / 1.176) * 0.5 + robot.Y * 0.5;
-
-                robot.Id = bestID;
+                #endregion
 
                 // In case there were multiple center dots, hence multiple sets of candidates,
-                // that identified to the same ID, we pick the one that had the highest score (accross 
-                // the minCandidateScores)
+                // that identified to the same ID, we pick the one that had the highest score 
+                // (accross the minCandidateScores)
                 bool addThisRobot = false;
                 if (!robotScores.ContainsKey(robot.Id)) {
-                    robotScores.Add(robot.Id, minCandidateScore);
+                    robotScores.Add(robot.Id, bestScore);
                     addThisRobot = true;
                 } else {
-                    if (minCandidateScore < robotScores[robot.Id]) {
+                    if (bestScore < robotScores[robot.Id]) {
                         // We found a better pattern for the robot that was already identified (probably identified wrong)
                         int oldIdx = visionMessage.OurRobots.FindIndex(new Predicate<VisionMessage.RobotData>(
                                delegate(Robocup.Core.VisionMessage.RobotData rd) {
@@ -803,17 +856,13 @@ namespace VisionStatic
                                }));
                         visionMessage.OurRobots.RemoveAt(oldIdx);
                         addThisRobot = true;
-                        robotScores[robot.Id] = minCandidateScore;
+                        robotScores[robot.Id] = bestScore;
                     } 
                     else {
                         addThisRobot = false;
                     }
                 }
-
-                if (VERBOSE)
-                {
-                    Console.WriteLine("WX=" + robot.X.ToString() + "  WY=" + robot.Y.ToString() + "  Orient=" + robot.Orientation.ToString());
-                }
+                
 
                 if (robot.Id >= 0 && addThisRobot)
                 {
