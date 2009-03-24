@@ -15,10 +15,31 @@ namespace Robocup.CoreRobotics
         {
             private readonly bool matchIDs, reassignIDs;
             /// <param name="matchIDs">whether or not to match robots based on IDs (if false, does it by positions, and reassigns IDs)</param>
+
+            private double DELTA_DIST_SQ_MERGE;
+            private double VELOCITY_DT;
+            private double VELOCITY_WEIGHT_OLD;
+            private double VELOCITY_WEIGHT_NEW;
+            private double POSITION_WEIGHT_OLD;
+            private double POSITION_WEIGHT_NEW;
+            private double MAX_SECONDS_TO_KEEP_INFO;
+
             public BasicPredictorHelper(bool matchIDs)
             {
                 this.matchIDs = matchIDs;
                 this.reassignIDs = !matchIDs;
+
+                LoadConstants();
+            }
+            public void LoadConstants()
+            {
+                DELTA_DIST_SQ_MERGE = Constants.get<double>("default", "DELTA_DIST_SQ_MERGE");
+                VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
+                VELOCITY_WEIGHT_OLD = Constants.get<double>("default", "VELOCITY_WEIGHT_OLD");
+                VELOCITY_WEIGHT_NEW = Constants.get<double>("default", "VELOCITY_WEIGHT_NEW");
+                POSITION_WEIGHT_OLD = Constants.get<double>("default", "POSITION_WEIGHT_OLD");
+                POSITION_WEIGHT_NEW = Constants.get<double>("default", "POSITION_WEIGHT_NEW");
+                MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
             }
             private object object_lock = new object();
             private List<RobotInfo> lambdaInfo = new List<RobotInfo>(), omegaInfo = new List<RobotInfo>();
@@ -96,8 +117,7 @@ namespace Robocup.CoreRobotics
                             }
                             else
                             {
-                                if (oldInfo.Position.distanceSq(newInfo.Position) <
-                                    Constants.get<double>("default", "DELTA_DIST_SQ_MERGE"))
+                                if (oldInfo.Position.distanceSq(newInfo.Position) < DELTA_DIST_SQ_MERGE)
                                 {
                                     matched = newInfo;
                                     break;
@@ -117,13 +137,11 @@ namespace Robocup.CoreRobotics
                                     
                                     // Wait until a meaningfully long interval has passed before taking a velocity
                                     // measurement
-                                    if (dt > Constants.get<double>("default", "VELOCITY_DT"))  // in seconds
+                                    if (dt > VELOCITY_DT)  // in seconds
                                     {
                                         velocity = (1 / dt) * (matched.Position - oldInfo.Position);    
                                         
-                                        double weightOld = Constants.get<double>("default", "VELOCITY_WEIGHT_OLD");
-                                        double weightNew = Constants.get<double>("default", "VELOCITY_WEIGHT_NEW");
-                                        velocity = weightNew * velocity + weightOld * oldInfo.Velocity;
+                                        velocity = VELOCITY_WEIGHT_NEW * velocity + VELOCITY_WEIGHT_OLD * oldInfo.Velocity;
 
                                         lastSeen[matched.ID] = time;
                                     }
@@ -137,9 +155,7 @@ namespace Robocup.CoreRobotics
                             Vector2 position;
                             if (otherCameraInfos.Contains(oldInfo))
                             {
-                                double weightOld = Constants.get<double>("default", "POSITION_WEIGHT_OLD");
-                                double weightNew = Constants.get<double>("default", "POSITION_WEIGHT_NEW");
-                                position = weightOld * oldInfo.Position + weightNew * matched.Position;
+                                position = POSITION_WEIGHT_OLD * oldInfo.Position + POSITION_WEIGHT_NEW * matched.Position;
                             }
                             else
                                 position = matched.Position;
@@ -188,8 +204,7 @@ namespace Robocup.CoreRobotics
                     //at this point any robots in "oldInfos" did not match any new ones
                     foreach (RobotInfo oldinfo in oldInfos)
                     {
-                        if (lastSeen.ContainsKey(oldinfo.ID) && time - lastSeen[oldinfo.ID] >=
-                            Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO"))
+                        if (lastSeen.ContainsKey(oldinfo.ID) && time - lastSeen[oldinfo.ID] >= MAX_SECONDS_TO_KEEP_INFO)
                         {
                             lastSeen.Remove(oldinfo.ID);
                             //don't re-add this
@@ -229,11 +244,26 @@ namespace Robocup.CoreRobotics
         private readonly BasicPredictorHelper our_helper = new BasicPredictorHelper(true);
         private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(false);
 
+        private double MAX_SECONDS_TO_KEEP_INFO;
+        private double VELOCITY_DT;
+        private double BALL_POSITION_WEIGHT_OLD;
+        private double BALL_POSITION_WEIGHT_NEW;
 
         public BasicPredictor()
         {
+            LoadConstants();
         }
-
+        
+        public void LoadConstants()
+        {
+            MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
+            VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
+            BALL_POSITION_WEIGHT_OLD = Constants.get<double>("default", "BALL_POSITION_WEIGHT_OLD");
+            BALL_POSITION_WEIGHT_NEW = Constants.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
+            
+            our_helper.LoadConstants();
+            their_helper.LoadConstants();
+        }
 
 
         #region IPredictor Members
@@ -288,17 +318,17 @@ namespace Robocup.CoreRobotics
 
             // Apply the same stickiness rule as for the robots
             if (ballInfo == null) {
-                if (dt > Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO")) {
+                if (dt > MAX_SECONDS_TO_KEEP_INFO) {
                     this.ballInfo = null;                    
                 }
                 return;
             }
             
             // Wait for a meaningfully long interval to pass before taking a velocity measurement
-            if (dt > Constants.get<double>("default", "VELOCITY_DT")) {
+            if (dt > VELOCITY_DT) {
                 if (this.ballInfo != null) {
-                    double weightOld = Constants.get<double>("default", "BALL_POSITION_WEIGHT_OLD");
-                    double weightNew = Constants.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
+                    double weightOld = BALL_POSITION_WEIGHT_OLD;
+                    double weightNew = BALL_POSITION_WEIGHT_NEW;
 
                     Vector2 position = weightOld * this.ballInfo.Position + weightNew * ballInfo.Position;
                     Vector2 velocity = (1 / dt) * (ballInfo.Position - this.ballInfo.Position);

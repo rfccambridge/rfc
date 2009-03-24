@@ -116,12 +116,15 @@ namespace Robocup.Core
             if (!dictionaries.ContainsKey(category))
                 LoadFromFile(category);
 
+            if (dictionaries[category].Count == 0)
+                LoadFromFile(category);
+
             /*if (!used.Contains(name))
                 used.Add(name);*/
             object val;
             bool worked = dictionaries[category].TryGetValue(name, out val);
-            if (!worked)
-                throw new ApplicationException("tried to get an unknown variable called \"" + name + "\" in category \""+category+"\"");
+            if (!worked) 
+               throw new ApplicationException("tried to get an unknown variable called \"" + name + "\" in category \"" + category + "\"");
 #if DEBUG
             if (typeof(T) != val.GetType())
                 throw new ApplicationException("you asked for a different type of variable than is stored\nGiven: " + typeof(T).Name + ", Stored: " + val.GetType().Name);
