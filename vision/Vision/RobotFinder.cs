@@ -300,6 +300,143 @@ namespace VisionStatic
             }
         }
 
+        private class Candidate {
+            public Pattern Pattern;
+            public int[] Arrangement;
+            public double Score;             
+            public int ID;
+
+            public Candidate(Pattern pattern, int[] arrangement, double score, int id) {
+                Pattern = pattern;
+                Arrangement = arrangement;
+                Score = score;
+                ID = id;
+            }
+        }
+
+        private class ConflictGraph
+        {
+            private Dictionary<int, ConflictGraphNode> _nodes;
+            private Dictionary<int, List<int>> _edges;
+            private int _nextNodeID;
+
+            public int NumNodes
+            {
+                get { return _nodes.Count; }
+            }
+            public Dictionary<int, ConflictGraphNode>.ValueCollection Nodes
+            {
+                get { return _nodes.Values; }
+            }
+
+            public ConflictGraph()
+            {
+                _nodes = new Dictionary<int, ConflictGraphNode>();
+                _edges = new Dictionary<int, List<int>>();
+                _nextNodeID = 0;
+            }
+            
+            /// <summary>
+            /// Adds the node and the edges (i.e. conflicts) to the graph, 
+            /// such that each edge denotes a conflict. 
+            /// </summary>
+            /// <param name="node"></param>
+            public void AddNode(ConflictGraphNode newNode)
+            {
+                newNode.NodeID = _nextNodeID++;
+                _edges.Add(newNode.NodeID, new List<int>());
+
+                // Record conflicts as edges
+                foreach (ConflictGraphNode node in _nodes.Values)
+                {
+                    if (conflict(newNode.Candidate, node.Candidate))
+                    {
+                        _edges[newNode.NodeID].Add(node.NodeID);
+                        _edges[node.NodeID].Add(newNode.NodeID);
+                    }
+                }
+
+                _nodes.Add(newNode.NodeID, newNode);                
+            }
+
+            /// <summary>
+            /// Removes a node and its associated edges from the graph.
+            /// </summary>
+            /// <param name="centerDotID"></param>
+            public void RemoveNode(int nodeID)
+            {
+                _nodes.Remove(nodeID);
+                _edges.Remove(nodeID);
+
+                foreach (KeyValuePair<int, List<int>> keyVal in _edges)
+                {
+                    List<int> siblings = keyVal.Value;
+                    siblings.Remove(nodeID);
+                }
+            }
+
+            /// <summary>
+            /// Returns the node IDs of the nodes the given node is connected to.
+            /// </summary>
+            /// <param name="nodeID"></param>
+            /// <returns></returns>
+            public List<int> GetSiblingNodeIDs(int nodeID)
+            {
+                return _edges[nodeID];
+            }
+
+            /// <summary>
+            /// Determines whether two candidate patterns conflict, that is
+            /// cannot possibly correspond to two separate robots on the
+            /// field. Two patterns candidates conflict if either they share 
+            /// dots or they resolve to the same ID.
+            /// </summary>
+            /// <param name="cand1"></param>
+            /// <param name="cand2"></param>
+            /// <returns></returns>
+            private bool conflict(Candidate cand1, Candidate cand2)
+            {
+                if (cand1.ID == cand2.ID)
+                    return true;
+
+                foreach (Blob dot1 in cand1.Pattern.dots)
+                    foreach (Blob dot2 in cand2.Pattern.dots)
+                        if (dot1.BlobID == dot2.BlobID)
+                            return true;
+
+                return false;
+            }
+        }
+
+        private class ConflictGraphNode 
+        {
+            private int _nodeID;          // "candidate id"
+            private int _centerDotID;            
+            private Candidate _candidate;
+
+            public int NodeID
+            {
+                get { return _nodeID; }
+                set { _nodeID = value; }
+            }
+            public int CenterDotID
+            {
+                get { return _centerDotID; }
+            }
+            public Candidate Candidate
+            {
+                get { return _candidate; }
+            }
+
+            public ConflictGraphNode(int centerDotID, Candidate candidate)
+            {
+                _centerDotID = centerDotID;
+                _candidate = candidate;
+                _nodeID = -1;                // will be set once node becomes part of the graph
+            }
+
+        }
+
         static int OUR_TEAM = 1;
         static int THEIR_TEAM = 2;
 
@@ -505,11 +642,14 @@ namespace VisionStatic
         static private void findBestArrangement(Pattern pattern, 
                                                 out int[] arrangement, out double score, out int id) {
 
-            const double REAR_TO_FRONT_RATIO = 1.5;                         
+            const double REAR_TO_FRONT_RATIO = 11 / 7.5;
+            const double SIDE_TO_FRONT_RATIO = 11 / 7.5;           
             
             double maxTerm1 = 0;
             double maxTerm2 = 0;
             double maxTerm3 = 0;
+            double maxTerm10 = 0;
+            double maxTerm11 = 0;
             int k = 0;
 
             // for debugging
@@ -553,10 +693,14 @@ namespace VisionStatic
                             double term1 = Math.Abs(lengths[fl, rl] - lengths[fr, rr]);
                             double term2 = Math.Abs(lengths[fl, rr] - lengths[fr, rl]);
                             double term3 = Math.Abs(lengths[fl, fr] - REAR_TO_FRONT_RATIO * lengths[rl, rr]);
+                            double term10 = Math.Abs(lengths[fl, fr] - SIDE_TO_FRONT_RATIO * lengths[fl, rl]);
+                            double term11 = Math.Abs(lengths[fl, fr] - SIDE_TO_FRONT_RATIO * lengths[fr, rr]);
 
                             if (term1 > maxTerm1) { maxTerm1 = term1; }
                             if (term2 > maxTerm2) { maxTerm2 = term2; }
                             if (term3 > maxTerm3) { maxTerm3 = term3; }
+                            if (term10 > maxTerm10) { maxTerm10 = term10; }
+                            if (term11 > maxTerm11) { maxTerm11 = term11; }
                         }
                     }
                 }
@@ -566,6 +710,8 @@ namespace VisionStatic
             maxTerm1 = (maxTerm1 == 0) ? 1 : maxTerm1;
             maxTerm2 = (maxTerm2 == 0) ? 1 : maxTerm2;
             maxTerm3 = (maxTerm3 == 0) ? 1 : maxTerm3;
+            maxTerm10 = (maxTerm10 == 0) ? 1 : maxTerm10;
+            maxTerm11 = (maxTerm11 == 0) ? 1 : maxTerm11;
 
             for (int fl = 0; fl < 4; fl++)
             {
@@ -590,9 +736,12 @@ namespace VisionStatic
                             double term7 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
                             double term8 = (Vector.CrossProduct(pattern.ctrVectors[fl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
                             double term9 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[fr]) < 0) ? 1 : 0;
-
+                            double term10 = Math.Abs(lengths[fl, fr] - SIDE_TO_FRONT_RATIO * lengths[fl, rl]);
+                            double term11 = Math.Abs(lengths[fl, fr] - SIDE_TO_FRONT_RATIO * lengths[fr, rr]);
+                            
                             double tempScore = (term1 / maxTerm1 + term2 / maxTerm2 + term3 / maxTerm3 + 
-                                                term4 + term5 + term6 + term7 + term8 + term9) / 9;
+                                                term4 + term5 + term6 + term7 + term8 + term9 +
+                                                term10 / maxTerm10 + term11 / maxTerm11) / 11;
 
                             if (tempScore < score)
                             {
@@ -710,6 +859,98 @@ namespace VisionStatic
             return robot;
         }
 
+
+        static private int removeConflicts(ConflictGraph graph)
+        {
+            int numConflicts = 0;
+
+            // For sorting nodes by score            
+            ConflictGraphNode[] nodes = new ConflictGraphNode[graph.NumNodes];
+            double[] scores = new double[graph.NumNodes];
+            int k;
+
+            // For simulating removing from the sorted array
+            Dictionary<int, bool> removed = new Dictionary<int,bool>(graph.NumNodes);
+            
+            // For avoiding iterating over a list that is being modified
+            List<int> nodesToRemove = new List<int>();
+
+            graph.Nodes.CopyTo(nodes, 0);
+            for (k = 0; k < nodes.Length; k++) {
+                scores[k] = nodes[k].Candidate.Score;
+                removed[nodes[k].NodeID] = false;
+            }
+            
+            // Traverse the nodes from best score to worst score
+            Array.Sort(scores, nodes);
+
+            for (k = 0; k < nodes.Length; k++)
+            {
+                if (removed[nodes[k].NodeID])
+                    continue;
+
+                // To avoid modifying the list we are iterating over
+                nodesToRemove.Clear();
+
+                List<int> siblings = graph.GetSiblingNodeIDs(nodes[k].NodeID);
+                foreach (int sibling in siblings)
+                {
+                    // Take note not to visit the lower-score 
+                    // sibling that caused the conflict
+                    removed[sibling] = true;
+
+                    nodesToRemove.Add(sibling);
+                    numConflicts++;
+                }
+
+                // Actually remove the nodes we meant to remove
+                foreach (int nodeID in nodesToRemove)
+                {
+                    graph.RemoveNode(nodeID);
+                }
+            }
+
+            return numConflicts;
+        }
+
+        /// <summary>
+        /// Keep only the candidate with best score among several non-conflicting
+        /// candidates that resolve to the same robot ID.
+        /// </summary>
+        /// <param name="graph"></param>
+        /// <returns></returns>
+        static private void collapseByCenterDot(ConflictGraph graph)
+        {
+            List<int> nodesToRemove = new List<int>();
+            
+            // Best candidates per each center dot: centerDotID -> score
+            Dictionary<int, Candidate> bestCandidates = new Dictionary<int, Candidate>(); 
+
+            foreach (ConflictGraphNode node in graph.Nodes)
+            {
+                if (!bestCandidates.ContainsKey(node.CenterDotID))
+                {
+                    bestCandidates.Add(node.CenterDotID, node.Candidate);
+                }
+                else
+                {
+                    if (node.Candidate.Score < bestCandidates[node.CenterDotID].Score)
+                    {
+                        bestCandidates[node.CenterDotID] = node.Candidate;
+                    }
+                    else
+                    {
+                        nodesToRemove.Add(node.NodeID);
+                    }
+                }
+            }
+
+            foreach (int nodeID in nodesToRemove)
+            {
+                graph.RemoveNode(nodeID);
+            }
+        }
+
         /// <summary>
         /// This is new (after Jan. 2009) robot identification method -- only a couple constants involved. 
         /// TODO: break up into smaller functions, add ability to select "use TsaiCalibrator / use pixels"
@@ -721,19 +962,20 @@ namespace VisionStatic
         static public VisionMessage findGameObjects2(Vision.Blob[] blobs, int totalBlobs, TsaiCalibrator tsaiCalibrator)
         {
             VisionMessage visionMessage = new VisionMessage();            
-            Dictionary<int, double> robotScores = new Dictionary<int, double>();
-
+            
             // Each center dot (blobID) can have multiple candidate patterns
             Dictionary<int, List<Pattern>> patterns = new Dictionary<int, List<Pattern>>();
             List<Vector2> enemyPositions = new List<Vector2>();
             List<int> ballBlobs = new List<int>();            
            
+            // Conflict graph: center dot blobID -> sibling center dot IDs
+            ConflictGraph conflictGraph = new ConflictGraph();
+            
             // Identify game objects: our potential patterns around each center dot, their robots, ball.
             for (int i = 0; i < totalBlobs; i++) {                
                 if (blobs[i].ColorClass == (byte)ColorClasses.OUR_CENTER_DOT) {
                     List<Pattern> candidatePatterns = gatherPattern(blobs, totalBlobs, blobs[i]);
-                    patterns.Add(i, candidatePatterns);                        
-                
+                    patterns.Add(blobs[i].BlobID, candidatePatterns);                                    
                 } else if (blobs[i].ColorClass == (byte)ColorClasses.COLOR_BALL) {
                     ballBlobs.Add(i);                        
                 
@@ -744,21 +986,18 @@ namespace VisionStatic
                 }            
             }
 
-            // For each center dot
-            foreach (List<Pattern> patternCandidates in patterns.Values)
-            {                
-                // Best candidate
-                double bestScore = double.MaxValue;
-                Pattern bestPattern = null;
-                int[] bestArrangement = new int[4] { -1, -1, -1, -1 };
-                int bestID = -1;
+            // Score candidates for each center dot and build conflict graph
+            foreach (KeyValuePair<int, List<Pattern>> keyVal in patterns)
+            {
+                int centerDotID = keyVal.Key;
+                List<Pattern> patternCandidates = keyVal.Value;
 
                 if (patternCandidates.Count == 0)
                 {
                     Console.WriteLine("No patterns found for a center dot.");
                     continue;
                 }
-                
+            
                 // For each possible set of four dots (i.e candidate)
                 foreach (Pattern pattern in patternCandidates)
                 {
@@ -797,7 +1036,13 @@ namespace VisionStatic
                     #endregion
 
                     findBestArrangement(pattern, out arrangement, out score, out id);
-
+                    
+                    // Add node (i.e. the center dot node) to the conflict graph
+                    // Edges (i.e. conflicts) are built within AddNode method
+                    Candidate candidate = new Candidate(pattern, arrangement, score, id);
+                    ConflictGraphNode node = new ConflictGraphNode(centerDotID, candidate);
+                    conflictGraph.AddNode(node);                    
+                 
                     #region output
                     if (VERBOSE)
                     {
@@ -815,78 +1060,90 @@ namespace VisionStatic
                     }
                     #endregion
 
-                    if (score < bestScore)
+                }
+            }           
+
+            // Choose best non-conflicting candidates for each node
+            // We can't do this as we add, because then the order of adding nodes matters
+          
+            int numConflicts = removeConflicts(conflictGraph);
+
+            #region output
+            if (VERBOSE)
+            {
+                Console.WriteLine("Conflicts removed: " + numConflicts.ToString());                                  
+            }
+            #endregion
+
+            // Choose the candidate with best score among several non-conflicting
+            // candidates that resolve to the same ID
+
+            #region output
+            int numNodesBefore = conflictGraph.NumNodes;
+            #endregion            
+            
+            collapseByCenterDot(conflictGraph);
+
+            #region output
+            if (VERBOSE)
+            {
+                Console.WriteLine("Candidates removed by collapsing: " +
+                                  (conflictGraph.NumNodes - numNodesBefore).ToString());
+            }            
+            #endregion
+        
+            // Create a robot for each node
+            #region create a robot for each node
+            foreach (ConflictGraphNode node in conflictGraph.Nodes)
+            {
+                // Sanity check
+                if (node.Candidate.ID < 0)
+                {
+                    Console.WriteLine("WARNING: RobotFinder: corrupt robot ID in conflict graph. Skipping node.");
+                    continue;
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    if (node.Candidate.Arrangement[i] == -1)
                     {
-                        bestID = id;
-                        bestPattern = pattern;
-                        bestScore = score;                        
-                        bestArrangement = arrangement;                        
+                        Console.WriteLine("WARNING: RobotFinder: corrupt dot arrangement in conflict graph. Skipping node.");
+                        continue;
                     }
                 }
 
-                // Can't tolerate corrupt arrangement
-                for (int i = 0; i < 4; i++)                
-                    if (bestArrangement[i] == -1)
-                        return visionMessage;                
-
                 // Now we have all the info needed to find robot orientation and exact position
-                Robot robot = robotFromPattern(bestPattern, bestArrangement, bestID);
+                Robot robot = robotFromPattern(node.Candidate.Pattern, node.Candidate.Arrangement, 
+                                               node.Candidate.ID);
 
                 #region output
                 if (VERBOSE)
                 {
-                    Console.WriteLine("WX=" + robot.X.ToString() + "  WY=" + robot.Y.ToString() + 
+                    Console.WriteLine("WX=" + robot.X.ToString() + "  WY=" + robot.Y.ToString() +
                                       "  Orient=" + robot.Orientation.ToString());
                 }
                 #endregion
 
-                // In case there were multiple center dots, hence multiple sets of candidates,
-                // that identified to the same ID, we pick the one that had the highest score 
-                // (accross the minCandidateScores)
-                bool addThisRobot = false;
-                if (!robotScores.ContainsKey(robot.Id)) {
-                    robotScores.Add(robot.Id, bestScore);
-                    addThisRobot = true;
-                } else {
-                    if (bestScore < robotScores[robot.Id]) {
-                        // We found a better pattern for the robot that was already identified (probably identified wrong)
-                        int oldIdx = visionMessage.OurRobots.FindIndex(new Predicate<VisionMessage.RobotData>(
-                               delegate(Robocup.Core.VisionMessage.RobotData rd) {
-                                    return rd.ID == robot.Id;
-                               }));
-                        visionMessage.OurRobots.RemoveAt(oldIdx);
-                        addThisRobot = true;
-                        robotScores[robot.Id] = bestScore;
-                    } 
-                    else {
-                        addThisRobot = false;
-                    }
-                }
-                
+                VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(robot.Id, true,
+                                                                              VisionToGeneralCoords(robot.X, robot.Y),
+                                                                              VisionToGeneralOrientation(robot.Orientation));
+                visionMessage.OurRobots.Add(vmRobot);
 
-                if (robot.Id >= 0 && addThisRobot)
+
+                //Check if possible ball isn't too near to center of robot 
+                //obviously a wrong blob -> should be discarded
+                for (int i = 0; i < ballBlobs.Count; i++)
                 {
-                    VisionMessage.RobotData vmRobot = new VisionMessage.RobotData(robot.Id, true,
-                                                                                  VisionToGeneralCoords(robot.X, robot.Y),
-                                                                                  VisionToGeneralOrientation(robot.Orientation));
-                    visionMessage.OurRobots.Add(vmRobot);
+                    int ind = ballBlobs[i];
+                    if (ind == -1) continue;
+                    Vector2 tmpBallPosition = new Vector2(blobs[ind].CenterWorldX, blobs[ind].CenterWorldY);
+                    if (tmpBallPosition.distanceSq(new Vector2(robot.X, robot.Y)) < MIN_BALL_DIST_FROM_ROBOT_SQ)
+                        //discard this ball blob
+                        ballBlobs[i] = -1;
                 }
-
-				//Check if possible ball isn't too near to center of robot 
-				//obviously a wrong blob -> should be discarded
-				for(int i=0; i<ballBlobs.Count; i++)
-				{
-					int ind = ballBlobs[i];
-					if (ind == -1) continue;
-					Vector2 tmpBallPosition = new Vector2(blobs[ind].CenterWorldX, blobs[ind].CenterWorldY);
-					if (tmpBallPosition.distanceSq(new Vector2(robot.X, robot.Y)) < MIN_BALL_DIST_FROM_ROBOT_SQ)
-						//discard this ball blob
-						ballBlobs[i] = -1;
-				}
-
             }
+            #endregion 
 
-			Ball goBall = null;
+            Ball goBall = null;
 			double currBallAreaError;
 			double bestBallAreaError = 1000; //initally a ridiculously big number
 
