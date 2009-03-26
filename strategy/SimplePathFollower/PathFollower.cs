@@ -8,12 +8,13 @@ using Robocup.Plays;
 
 namespace SimplePathFollower
 {
-	class PathFollower
+	public class PathFollower
 	{
 		private int robotID;
 		private List<Vector2> waypoints;
 		private int waypointIndex;
 		private bool running;
+        private bool lapping;
 
         double MIN_GOAL_DIST = .10;
         double MIN_GOAL_DIFF_ORIENTATION = .3;
@@ -33,6 +34,11 @@ namespace SimplePathFollower
 		public IRobots Commander { get { return commander; } }
         public IMotionPlanner Planner { get { return planner; } }
 
+        public delegate void EndLapDelegate(bool success);
+        public EndLapDelegate OnEndLap;
+        public delegate void StartLapDelegate();
+        public StartLapDelegate OnStartLap;
+
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
 
 		public PathFollower()
@@ -41,6 +47,7 @@ namespace SimplePathFollower
 			waypoints = new List<Vector2>();
 			waypointIndex = 0;
 			running = false;
+            lapping = false;
 		}
 
 		public PathFollower(int _robotID, List<Vector2> waypointList)
@@ -49,6 +56,7 @@ namespace SimplePathFollower
 			waypoints = waypointList;
 			waypointIndex = 0;
 			running = false;
+            lapping = false;
 		}
 
 
@@ -93,10 +101,11 @@ namespace SimplePathFollower
 		public bool Follow()
 		{
 			running = true;
+            lapping = false;
 			waypointIndex = 0;
 
             //because this class just gets one point from the gui,
-            //generatign a static path is taken care of in feedbackbackMotionPlanner
+            //generating a static path is taken care of in feedbackbackMotionPlanner
 
             controller.move(robotID, false, waypoints[0]);
            
@@ -106,9 +115,9 @@ namespace SimplePathFollower
                 BallInfo ballInfo;
 
                 // if lapping stops midway...
-                if (waypointIndex > waypoints.Count - 1) {
-                    waypointIndex = 0;
-                }
+                //if (waypointIndex > waypoints.Count - 1) {
+                //    waypointIndex = 0;
+                //}
 
                 try {
                      curinfo = predictor.getCurrentInformation(robotID);
@@ -130,6 +139,22 @@ namespace SimplePathFollower
                 double diffOrientation = Math.Abs(angleDifference(curinfo.Orientation, 0));
 
                 if (sqDistToGoal < MIN_GOAL_DIST * MIN_GOAL_DIST && diffOrientation < MIN_GOAL_DIFF_ORIENTATION) {
+                    if (waypointIndex == 0) {
+                        if (!lapping) {
+                            Console.WriteLine("Starting lap...");
+                            lapping = true;
+                            if (OnStartLap != null)
+                                OnStartLap();
+                        }
+                        else {
+                            Console.WriteLine("Ending lap...");
+                            if (OnEndLap != null) {
+                                OnEndLap(true);
+                                lapping = false;
+                            }
+
+                        }
+                    }
                     waypointIndex = (waypointIndex + 1) % waypoints.Count;
                 }
 			

@@ -408,6 +408,8 @@ namespace Robocup.MotionControl
 
             }
 
+            Console.WriteLine("Speed: " + straightSpeed);
+
             return addVeer(veerAmount, straightSpeed);
         }
 
@@ -455,7 +457,7 @@ namespace Robocup.MotionControl
             Console.WriteLine("GOAL ANGLE DIFFERENCE: " + goal_angle_difference);
              */
 
-            WheelSpeeds regularSpeed = computeSpeedsAtAngle(WHEEL_SPEED_STRAIGHT, currentForwardAngle);
+            WheelSpeeds regularSpeed = computeSpeedsAtAngle(straightSpeed, currentForwardAngle);
 
             // use feedback to find veer
             // use PID loop to get veer based on angle difference between current state and goal orientation
@@ -713,7 +715,7 @@ namespace Robocup.MotionControl
             // Remember that this has been called
             called = true;
 
-            Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());
+            //Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());
 
             WheelSpeeds speeds;
             //get wheel speeds using appropriate method
@@ -964,23 +966,26 @@ namespace Robocup.MotionControl
         {
             RobotInfo currentState = predictor.getCurrentInformation(path.ID);
 
-            lastWayPoint = path.findNearestWaypoint(currentState).Position;
-            RobotInfo waypointState = new RobotInfo(lastWayPoint, 0, path.ID);
+            RobotInfo desiredState = path.findNearestWaypoint(currentState);
+
+            lastWayPoint = desiredState.Position;
 
             // Remember that this has been called
             called = true;
 
             Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());
 
+            
+
             WheelSpeeds speeds;
             //get wheel speeds using appropriate method
             if (ANGULAR_VEER == 1)
             {
-                speeds = angularMethod(currentState, waypointState);
+                speeds = angularMethod(currentState, desiredState);
             }
             else
             {
-                speeds = orientationMethod(currentState, waypointState);
+                speeds = orientationMethod(currentState, desiredState);
             }
 
             //print speeds that are set

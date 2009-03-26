@@ -295,7 +295,7 @@ namespace Robocup.MotionControl
             }
             
             if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
-                WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWaypoint);
+                WheelSpeeds wheelSpeeds = _feedbackObjs[id].ComputeWheelSpeeds(curinfo, nextWaypoint);
                 return new MotionPlanningResults(wheelSpeeds, nextWaypoint);
             }
             else {
@@ -526,7 +526,7 @@ namespace Robocup.MotionControl
             WheelSpeeds wheelSpeeds;
 
             if (wpDistanceSq > MIN_SQ_DIST_TO_WP||angleDiff>MIN_ANGLE_DIFF_TO_WP) {
-                wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);                
+                wheelSpeeds = _feedbackObjs[id].ComputeWheelSpeeds(curinfo, nextWayPoint);                
             } else {                
                 Console.WriteLine("Close enough to point, stopping now.");
                 wheelSpeeds = new WheelSpeeds();                
@@ -796,7 +796,7 @@ namespace Robocup.MotionControl
             double wpDistanceSq = curinfo.Position.distanceSq(nextWayPoint.Position);
 
             if (wpDistanceSq > MIN_SQ_DIST_TO_WP) {
-                WheelSpeeds wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, nextWayPoint);
+                WheelSpeeds wheelSpeeds = _feedbackObjs[id].ComputeWheelSpeeds(curinfo, nextWayPoint);
                 return new MotionPlanningResults(wheelSpeeds, nextWayPoint);
             } else {
 
@@ -916,6 +916,7 @@ namespace Robocup.MotionControl
 
         // Each robot has a feedback object
         private Feedback[] _feedbackObjs;
+        public Feedback GetFeedbackObj(int robotID) { return _feedbackObjs[robotID]; }
         private NavigationResults results;
 
         private DateTime[] _timesLastCalled = new DateTime[5]; //number of robots
@@ -1004,7 +1005,7 @@ namespace Robocup.MotionControl
         }
 
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
-            Console.WriteLine("desired Location: " + desiredState.Position.ToString());
+            //Console.WriteLine("desired Location: " + desiredState.Position.ToString());
 
             List<Object> itemsToLog = new List<Object>();
 
@@ -1079,7 +1080,7 @@ namespace Robocup.MotionControl
             WheelSpeeds wheelSpeeds;
 
             if (wpDistanceSq > MIN_SQ_DIST_TO_WP || angleDiff>MIN_ANGLE_DIFF_TO_WP ) {
-                wheelSpeeds = _feedbackObjs[id].computeWheelSpeeds(curinfo, waypoints[0]);                
+                wheelSpeeds = _feedbackObjs[id].ComputeWheelSpeeds(curinfo, waypoints[0]);                
                 mpResults = new MotionPlanningResults(wheelSpeeds, waypoints[0]);
             } else {
 

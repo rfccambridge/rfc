@@ -51,8 +51,9 @@
             this.txtVisionHostBottom = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.btnConnectVisionBottom = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnSwitchGoal = new System.Windows.Forms.Button();
+            this.btnLap = new System.Windows.Forms.Button();
+            this.btnCalibratePID = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,7 +62,7 @@
             this.btnConnectVisionTop.Location = new System.Drawing.Point(168, 40);
             this.btnConnectVisionTop.Name = "btnConnectVisionTop";
             this.btnConnectVisionTop.Size = new System.Drawing.Size(75, 23);
-            this.btnConnectVisionTop.TabIndex = 0;
+            this.btnConnectVisionTop.TabIndex = 1;
             this.btnConnectVisionTop.Text = "Connect";
             this.btnConnectVisionTop.UseVisualStyleBackColor = true;
             this.btnConnectVisionTop.Click += new System.EventHandler(this.btnVisionTop_Click);
@@ -80,7 +81,7 @@
             this.txtVisionHostTop.Location = new System.Drawing.Point(47, 43);
             this.txtVisionHostTop.Name = "txtVisionHostTop";
             this.txtVisionHostTop.Size = new System.Drawing.Size(100, 20);
-            this.txtVisionHostTop.TabIndex = 2;
+            this.txtVisionHostTop.TabIndex = 0;
             this.txtVisionHostTop.Text = "localhost";
             // 
             // btnStartStop
@@ -88,7 +89,7 @@
             this.btnStartStop.Location = new System.Drawing.Point(149, 259);
             this.btnStartStop.Name = "btnStartStop";
             this.btnStartStop.Size = new System.Drawing.Size(94, 23);
-            this.btnStartStop.TabIndex = 3;
+            this.btnStartStop.TabIndex = 22;
             this.btnStartStop.Text = "MoveToPoint";
             this.btnStartStop.UseVisualStyleBackColor = true;
             this.btnStartStop.Click += new System.EventHandler(this.BtnStartStop_Click);
@@ -114,7 +115,7 @@
             this.ControlHost.Location = new System.Drawing.Point(47, 153);
             this.ControlHost.Name = "ControlHost";
             this.ControlHost.Size = new System.Drawing.Size(100, 20);
-            this.ControlHost.TabIndex = 7;
+            this.ControlHost.TabIndex = 4;
             this.ControlHost.Text = "localhost";
             // 
             // label3
@@ -162,7 +163,7 @@
             this.cmbMotionPlanner.Location = new System.Drawing.Point(46, 232);
             this.cmbMotionPlanner.Name = "cmbMotionPlanner";
             this.cmbMotionPlanner.Size = new System.Drawing.Size(196, 21);
-            this.cmbMotionPlanner.TabIndex = 12;
+            this.cmbMotionPlanner.TabIndex = 6;
             this.cmbMotionPlanner.SelectedIndexChanged += new System.EventHandler(this.cmbMotionPlanner_SelectedIndexChanged);
             // 
             // btnLogNext
@@ -227,7 +228,7 @@
             this.groupBox1.Controls.Add(this.btnLogNext);
             this.groupBox1.Controls.Add(this.btnStartStopLogging);
             this.groupBox1.Controls.Add(this.btnLogOpenClose);
-            this.groupBox1.Location = new System.Drawing.Point(46, 351);
+            this.groupBox1.Location = new System.Drawing.Point(46, 360);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(172, 79);
             this.groupBox1.TabIndex = 19;
@@ -247,7 +248,7 @@
             this.txtVisionHostBottom.Location = new System.Drawing.Point(46, 92);
             this.txtVisionHostBottom.Name = "txtVisionHostBottom";
             this.txtVisionHostBottom.Size = new System.Drawing.Size(100, 20);
-            this.txtVisionHostBottom.TabIndex = 22;
+            this.txtVisionHostBottom.TabIndex = 2;
             this.txtVisionHostBottom.Text = "localhost";
             // 
             // label6
@@ -264,38 +265,49 @@
             this.btnConnectVisionBottom.Location = new System.Drawing.Point(167, 92);
             this.btnConnectVisionBottom.Name = "btnConnectVisionBottom";
             this.btnConnectVisionBottom.Size = new System.Drawing.Size(75, 23);
-            this.btnConnectVisionBottom.TabIndex = 20;
+            this.btnConnectVisionBottom.TabIndex = 3;
             this.btnConnectVisionBottom.Text = "Connect";
             this.btnConnectVisionBottom.UseVisualStyleBackColor = true;
             this.btnConnectVisionBottom.Click += new System.EventHandler(this.btnVisionBottom_Click);
             // 
-            // button1
+            // btnSwitchGoal
             // 
-            this.button1.Location = new System.Drawing.Point(171, 302);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 24;
-            this.button1.Text = "Switch Goal";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnSwitchGoal.Location = new System.Drawing.Point(171, 302);
+            this.btnSwitchGoal.Name = "btnSwitchGoal";
+            this.btnSwitchGoal.Size = new System.Drawing.Size(75, 23);
+            this.btnSwitchGoal.TabIndex = 24;
+            this.btnSwitchGoal.Text = "Switch Goal";
+            this.btnSwitchGoal.UseVisualStyleBackColor = true;
+            this.btnSwitchGoal.Click += new System.EventHandler(this.btnSwitchGoal_Click);
             // 
-            // button2
+            // btnLap
             // 
-            this.button2.Location = new System.Drawing.Point(171, 331);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 25;
-            this.button2.Text = "Stop lapping";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnLap.Location = new System.Drawing.Point(171, 331);
+            this.btnLap.Name = "btnLap";
+            this.btnLap.Size = new System.Drawing.Size(75, 23);
+            this.btnLap.TabIndex = 25;
+            this.btnLap.Text = "Stop lapping";
+            this.btnLap.UseVisualStyleBackColor = true;
+            this.btnLap.Click += new System.EventHandler(this.btnLap_Click);
+            // 
+            // btnCalibratePID
+            // 
+            this.btnCalibratePID.Location = new System.Drawing.Point(47, 331);
+            this.btnCalibratePID.Name = "btnCalibratePID";
+            this.btnCalibratePID.Size = new System.Drawing.Size(111, 23);
+            this.btnCalibratePID.TabIndex = 26;
+            this.btnCalibratePID.Text = "Calibrate PID";
+            this.btnCalibratePID.UseVisualStyleBackColor = true;
+            this.btnCalibratePID.Click += new System.EventHandler(this.btnCalibratePID_Click);
             // 
             // FollowerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 483);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnCalibratePID);
+            this.Controls.Add(this.btnLap);
+            this.Controls.Add(this.btnSwitchGoal);
             this.Controls.Add(this.lblVisionStatusBottom);
             this.Controls.Add(this.txtVisionHostBottom);
             this.Controls.Add(this.label6);
@@ -349,7 +361,8 @@
         private System.Windows.Forms.TextBox txtVisionHostBottom;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnConnectVisionBottom;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnSwitchGoal;
+        private System.Windows.Forms.Button btnLap;
+        private System.Windows.Forms.Button btnCalibratePID;
 	}
 }

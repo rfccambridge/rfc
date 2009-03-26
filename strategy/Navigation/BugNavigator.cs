@@ -83,7 +83,7 @@ namespace Navigation
                 {
                     obstacles.Add(new Obstacle(enemyPositions[i].Position, avoidRobotDist));
                 }
-                if (avoidBallDist > 0)
+                if (avoidBallDist > 0 && ballPosition != null)
                     obstacles.Add(new Obstacle(ballPosition.Position, avoidBallDist + extraAvoidBallDist));
                 {
                     //goal1:

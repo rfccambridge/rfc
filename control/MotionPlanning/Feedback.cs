@@ -10,18 +10,33 @@ using System.IO;
 using System.Drawing;
 
 namespace Robocup.MotionControl {
+    
+    /// <summary>
+    /// Represents a set of PID constants for a given degree of freedom
+    /// </summary>
+    public struct DOF_Constants {
+        public double P;
+        public double I;
+        public double D;
+        public double ALPHA; //must be between 0 and 1
+    }
+
+
     /// <summary>
     /// Represents a PID loop to stabilize motion planning along a path
     /// There needs to be one of these for each robot
     /// </summary>
-    class Feedback {
+    public class Feedback {
+       
         // PID parameters
-        DOF_Numbers xPID;
-        DOF_Numbers yPID;
-        DOF_Numbers thetaPID;
+        private DOF_Numbers xPID;
+        private DOF_Numbers yPID;
+        private DOF_Numbers thetaPID;
 
         const double wheelR = 0.0782828; //distance from the center of the robot to the wheels in meters
 
+        public delegate void UpdateErrorsDelegate(double xError, double yError, double thetaError);
+        public UpdateErrorsDelegate OnUpdateErrors;
 
         public Feedback(int robotID) {
             xPID = new DOF_Numbers(robotID, DOFType.X);
@@ -37,26 +52,33 @@ namespace Robocup.MotionControl {
         /// <param name="currentPosition">Current position of the robot</param>
         /// <param name="desiredPosition">Nearest waypoint to the robot along the desired path</param>
         /// <returns></returns>
-        public WheelSpeeds computeWheelSpeeds(RobotInfo currentState, RobotInfo desiredState){
+        public WheelSpeeds ComputeWheelSpeeds(RobotInfo currentState, RobotInfo desiredState){
             //runs the math for the PID
-            double xCommand = xPID.compute(currentState.Position.X, desiredState.Position.X, currentState.Velocity.X, desiredState.Velocity.X);
-            double yCommand = yPID.compute(currentState.Position.Y, desiredState.Position.Y, currentState.Velocity.Y, desiredState.Velocity.Y);
+            double xCommand = xPID.Compute(currentState.Position.X, desiredState.Position.X, currentState.Velocity.X, desiredState.Velocity.X);
+            double yCommand = yPID.Compute(currentState.Position.Y, desiredState.Position.Y, currentState.Velocity.Y, desiredState.Velocity.Y);
             //to ensure that orientations are between 0 and 2 pi.
             double currentOrientation = angleCheck(currentState.Orientation);
             double desiredOrientation = angleCheck(desiredState.Orientation);
             
             //Console.WriteLine(currentState.Position.X.ToString() + " Current X|Desired: " + desiredState.Position.X.ToString());
             //Console.WriteLine(currentState.Position.Y.ToString() + " Current Y|Desired: " + desiredState.Position.Y.ToString());
-            Console.WriteLine(currentOrientation.ToString() + " Current Theta|Desired: " + desiredOrientation.ToString());
-            Console.WriteLine("current velocity: {0}", currentState.Velocity);
-            Console.WriteLine("position delta: {0}", desiredState.Position-currentState.Position);
-            Console.WriteLine("x/y commands: {0}", new Vector2(xCommand,yCommand));
+            //Console.WriteLine(currentOrientation.ToString() + " Current Theta|Desired: " + desiredOrientation.ToString());
+            //Console.WriteLine("current velocity: {0}", currentState.Velocity);
+            //Console.WriteLine("position delta: {0}", desiredState.Position-currentState.Position);
+            //Console.WriteLine("x/y commands: {0}", new Vector2(xCommand,yCommand));
             
             //Console.WriteLine(xCommand.ToString() + " xCommand|yCommand: " + yCommand.ToString());
             
             
-            double angularVCommand = thetaPID.compute(currentOrientation, desiredOrientation, currentState.AngularVelocity, desiredState.AngularVelocity);
-            
+            double angularVCommand = thetaPID.Compute(currentOrientation, desiredOrientation, currentState.AngularVelocity, desiredState.AngularVelocity);
+
+            if (OnUpdateErrors != null) {
+                double xError = currentState.Position.X - desiredState.Position.X;
+                double yError = currentState.Position.Y - desiredState.Position.Y;
+                double thetaError = currentOrientation - desiredOrientation;
+                OnUpdateErrors(xError, yError, thetaError);
+            }
+
             //converts from x speed, y speed and angular speed to wheel speeds
             return convert(xCommand, yCommand, angularVCommand, currentOrientation);
         }
@@ -108,9 +130,21 @@ namespace Robocup.MotionControl {
         }
 
         public void ReloadConstants(){
-            xPID.reloadConstants();
-            yPID.reloadConstants();
-            thetaPID.reloadConstants();
+            xPID.ReloadConstants();
+            yPID.ReloadConstants();
+            thetaPID.ReloadConstants();
+        }
+
+        public void UpdateConstants(DOF_Constants x, DOF_Constants y, DOF_Constants theta) {
+            xPID.UpdateConstants(x);
+            yPID.UpdateConstants(y);
+            thetaPID.UpdateConstants(theta);
+        }
+
+        public void GetConstants(out DOF_Constants xConst, out DOF_Constants yConst, out DOF_Constants thetaConst) {
+            xConst = xPID.PIDConstants;
+            yConst = yPID.PIDConstants;
+            thetaConst = thetaPID.PIDConstants;
         }
             
 
@@ -122,11 +156,9 @@ namespace Robocup.MotionControl {
             //these should all be initialized to their tuned value, or auto tuned
             //they should also all be positive values except maybe D            
 
-            private double P;
-            private double I;
-            private double D;
-            private double ALPHA; // must be between zero and 1
-            
+            private DOF_Constants constants;
+            public DOF_Constants PIDConstants { get { return constants; } }
+                        
             private double error = 0;
             private double oldError = 0;
             private double Ierror = 0;
@@ -145,14 +177,14 @@ namespace Robocup.MotionControl {
                 //pull out values for constants from a text file
                 dofType = dof;
                 robotID=robot_id;
-                reloadConstants();
+                ReloadConstants();
               
             }
         
             //computes a command for either the x velocity the y velocity or the angular velocity.
             //assume orientations are between 0 and 2 pi.
             //it usese the PID constants stored in this instance and incorporates both the velocity and current valud i.e. x and dx/dt
-            public double compute(double current, double desired, double current_dot, double desired_dot){
+            public double Compute(double current, double desired, double current_dot, double desired_dot){
 
                 double diff = desired - current;
                 if (dofType == DOFType.THETA) {//need to pick the smallest angle
@@ -162,25 +194,33 @@ namespace Robocup.MotionControl {
                         diff = 2 * Math.PI + diff;
                 }
                     
-                error = ALPHA*(diff)+(1-ALPHA)*(desired_dot-current_dot);
+                error = constants.ALPHA*(diff)+(1-constants.ALPHA)*(desired_dot-current_dot);
                 
                 
                 Ierror = Ierror+error;
                 Derror = error - oldError;
                 oldError = error;
                 
-                return P*error+I*Ierror + D*Derror;
+                return desired + constants.P*error + constants.I*Ierror + constants.D*Derror;
             }
 
             //loads/reloads all constants from the file and sets I error to 0 to aid debugging
-            public void reloadConstants() {
+            public void ReloadConstants() {
                 Ierror = 0;
                 Constants.Load();
-                P = Constants.get<double>("control", "P_" + dofType.ToString() + "_" + robotID.ToString());
-                
-                I = Constants.get<double>("control", "I_" + dofType.ToString() + "_" + robotID.ToString());
-                D = Constants.get<double>("control", "D_" + dofType.ToString() + "_" + robotID.ToString());
-                ALPHA = Constants.get<double>("control", "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.P = Constants.get<double>("control", "P_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.I = Constants.get<double>("control", "I_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.D = Constants.get<double>("control", "D_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.ALPHA = Constants.get<double>("control", "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
+            }
+
+            /// <summary>
+            /// Can be used to programatically update the set of constants.
+            /// </summary>
+            public void UpdateConstants(DOF_Constants _constants) {
+                Ierror = 0;
+
+                constants = _constants;
             }
         }
     }

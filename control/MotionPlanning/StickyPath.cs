@@ -111,7 +111,7 @@ namespace Robocup.MotionControl {
         private WheelSpeeds getWheelSpeeds(RobotInfo currentPosition) {
             //create a RobotInfo object with the desired position, orientation and velocity
             RobotInfo desired_state = getNearestWaypoint(currentPosition);
-            return feedback_loop.computeWheelSpeeds(currentPosition, desired_state);
+            return feedback_loop.ComputeWheelSpeeds(currentPosition, desired_state);
         }
 
         /// <summary>

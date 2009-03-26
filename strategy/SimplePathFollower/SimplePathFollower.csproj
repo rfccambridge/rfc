@@ -43,6 +43,7 @@
       <DependentUpon>FollowerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="PathFollower.cs" />
+    <Compile Include="PIDCalibrator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FollowerForm.resx">
