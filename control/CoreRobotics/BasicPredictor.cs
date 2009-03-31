@@ -269,7 +269,9 @@ namespace Robocup.CoreRobotics
         #region IPredictor Members
 
         public BallInfo getBallInfo()
-        {
+        {            
+            if (ballInfo == null)
+                return new BallInfo(new Vector2(0, 0), new Vector2(0, 0));
             return ballInfo;
         }
 
