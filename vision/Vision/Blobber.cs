@@ -340,13 +340,13 @@ namespace Vision
             // Obtain the result
             processFrameDelegate.EndInvoke(out visionMessage, processFrameHandle);
 
-            try
-            {
+            //try
+            //{
                 _onNewStateReady.DynamicInvoke(new object[] { visionMessage });
-            } 
-            catch (Exception)
-            {
-            }
+            //} 
+            //catch (Exception)
+            //{
+            //}
         }
 
         private void ErrorHandler(IAsyncResult res)

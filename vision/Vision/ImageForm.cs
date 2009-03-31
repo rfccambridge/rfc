@@ -774,7 +774,9 @@ namespace Vision
 								if(_testing)
 									TestForm.Tester.TestFrame(visionMessage, _camera);
 
-                                _fieldState.Update(visionMessage);
+                                this.Invoke(new MethodInvoker(delegate {
+                                    _fieldState.Update(visionMessage);
+                                }));
 
                                 //_messageSender.Post(gameObjects);
                                 //Console.WriteLine("Posting vision message.");

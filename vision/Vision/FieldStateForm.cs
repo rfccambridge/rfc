@@ -11,7 +11,7 @@ using Robocup.Core;
 
 namespace Vision {
     public partial class FieldStateForm : Form {
-        
+
         // Actual field
         /* --------------------------------
          * |(3400, 4900)        (0, 4900) |
@@ -28,7 +28,7 @@ namespace Vision {
          * |(3400, 0)                (0,0)|
          * --------------------------------
          */
-         // Practice MD 3rd -- 20081206
+        // Practice MD 3rd -- 20081206
         /* --------------------------------
  * |(4050, 6050)        (0, 6050) |
  * |                              |
@@ -73,7 +73,7 @@ namespace Vision {
             _gfxField = Graphics.FromImage(_bmpField);
             picField.BackgroundImage = _bmpField;
 
-            this.Width = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Width + 2* tabRobotStatus0.Width + 20;
+            this.Width = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Width + 2 * tabRobotStatus0.Width + 20;
             this.Height = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Height;
 
             tabRobotStatus0.Left = picField.Left + picField.Width + 10;
@@ -101,14 +101,14 @@ namespace Vision {
                 //if (robot != null && robot.ID >= 0) {
                 DrawOurRobot(robot);
                 botsOnField++;
-               // UpdateStatusDisplay(robot);
+                // UpdateStatusDisplay(robot);
                 //}
             }
             foreach (VisionMessage.RobotData robot in visionMessage.TheirRobots) {
                 //if (robot != null && robot.ID >= 0) {
-                    DrawTheirRobot(robot);
-                    botsOnField++;                    
-              //  }
+                DrawTheirRobot(robot);
+                botsOnField++;
+                //  }
             }
 
             if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
@@ -118,45 +118,41 @@ namespace Vision {
                 //                                                                 visionMessage.BallPosition.Y).ToString();
             }
 
-           // if (ballsOnField == 0)
-           //     Console.WriteLine("Warning: No balls on field!");
+            // if (ballsOnField == 0)
+            //     Console.WriteLine("Warning: No balls on field!");
             //if (botsOnField == 0)
             //   Console.WriteLine("Warning: No bots on field!");
 
             picField.Invalidate();
 
+            //Not sure if this is actually true; multithreading stuff may have caused it...
             // Setting the Text property of the labels MUST happen *after* Invalidate() was called, otherwise
             // the field is not redrawn -- not sure what is the exact problem that is at the bottom of ths.
 
-            this.Invoke( new MethodInvoker( delegate {
-                lblLoc0.Text = "";
-                lblLoc1.Text = "";
-                lblLoc2.Text = "";
-                lblLoc3.Text = "";
-                lblLoc4.Text = "";
-                lblLocBall.Text = "";
 
-                lblVel0.Text = "";
-                lblVel1.Text = "";
-                lblVel2.Text = "";
-                lblVel3.Text = "";
-                lblVel4.Text = "";
-                lblVelBall.Text = "";
-            }));
-            foreach (VisionMessage.RobotData robot in visionMessage.OurRobots)
-            {
+            lblLoc0.Text = "";
+            lblLoc1.Text = "";
+            lblLoc2.Text = "";
+            lblLoc3.Text = "";
+            lblLoc4.Text = "";
+            lblLocBall.Text = "";
+
+            lblVel0.Text = "";
+            lblVel1.Text = "";
+            lblVel2.Text = "";
+            lblVel3.Text = "";
+            lblVel4.Text = "";
+            lblVelBall.Text = "";
+
+            foreach (VisionMessage.RobotData robot in visionMessage.OurRobots) {
                 UpdateStatusDisplay(robot);
             }
 
-            if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0))
-            {
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
-                                                                                     visionMessage.BallPosition.Y).ToString();
-                }));
+            if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
+                lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
+                                                                                 visionMessage.BallPosition.Y).ToString();
             }
-            
+
         }
 
         private void UpdateStatusDisplay(VisionMessage.RobotData robot) {
@@ -178,27 +174,22 @@ namespace Vision {
                     lblControl = lblLoc4;
                     break;
             }
-            this.Invoke(new MethodInvoker(delegate
-            {
-                lblControl.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(robot.Position.X, robot.Position.Y).ToString();
-            }));
+            lblControl.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(robot.Position.X, robot.Position.Y).ToString();
         }
 
-        private void DrawCoords()
-        {
+        private void DrawCoords() {
             Font font = new Font(FontFamily.GenericSansSerif, 8);
-            _gfxField.DrawString("(0, 0)", font, Brushes.Black, 
+            _gfxField.DrawString("(0, 0)", font, Brushes.Black,
                                  OUT_ZONE_WIDTH + FIELD_SIZE.Width - 40, OUT_ZONE_WIDTH + FIELD_SIZE.Height - 20);
-            _gfxField.DrawString("(" + FIELD_SIZE_WORLD.Width.ToString() + ", " + FIELD_SIZE_WORLD.Height.ToString() + ")", 
+            _gfxField.DrawString("(" + FIELD_SIZE_WORLD.Width.ToString() + ", " + FIELD_SIZE_WORLD.Height.ToString() + ")",
                                  font, Brushes.Black, OUT_ZONE_WIDTH, OUT_ZONE_WIDTH);
         }
-        private void DrawLines()
-        {
+        private void DrawLines() {
             int x1, y1, x2, y2;
             int w, h;
 
             // outline
-            ScaleLocation(-FIELD_SIZE_WORLD.Width/2, FIELD_SIZE_WORLD.Height/2, out x1, out y1);
+            ScaleLocation(-FIELD_SIZE_WORLD.Width / 2, FIELD_SIZE_WORLD.Height / 2, out x1, out y1);
             _gfxField.DrawRectangle(Pens.White, new Rectangle(x1, y1, FIELD_SIZE.Width, FIELD_SIZE.Height));
 
             // midfield
@@ -209,16 +200,16 @@ namespace Vision {
 
             const float RADIUS = 0.25f;
             // center ring
-            ScaleLocation(0 - RADIUS, 0 + RADIUS, out x1,out  y1);
+            ScaleLocation(0 - RADIUS, 0 + RADIUS, out x1, out  y1);
             ScaleSize(RADIUS * 2, RADIUS * 2, out w, out h);
             _gfxField.DrawEllipse(Pens.White, new Rectangle(x1, y1, w, h));
 
             // top goal
-            ScaleLocation(0 - RADIUS, FIELD_SIZE_WORLD.Height/2 + RADIUS, out x1, out y1);
+            ScaleLocation(0 - RADIUS, FIELD_SIZE_WORLD.Height / 2 + RADIUS, out x1, out y1);
             _gfxField.DrawArc(Pens.White, new Rectangle(x1, y1, w, h), 180, 180);
 
             // bottom goal
-            ScaleLocation(0 - RADIUS, - FIELD_SIZE_WORLD.Height/2 + RADIUS, out x1, out y1);
+            ScaleLocation(0 - RADIUS, -FIELD_SIZE_WORLD.Height / 2 + RADIUS, out x1, out y1);
             _gfxField.DrawArc(Pens.White, new Rectangle(x1, y1, w, h), 0, 180);
         }
         private void DrawOurRobot(VisionMessage.RobotData robot) {
@@ -228,12 +219,12 @@ namespace Vision {
             Brush brush = new SolidBrush(OUR_COLOR);
             Font font = new Font(FontFamily.GenericSansSerif, 6);
             _gfxField.FillEllipse(brush, new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
-            _gfxField.DrawLine(new Pen(OUR_COLOR, 3), new PointF(x, y), 
-                               new PointF(x + DIAMETER * (float)Math.Cos(robot.Orientation+Math.PI/2), y - DIAMETER * (float)Math.Sin(robot.Orientation+Math.PI/2)));
-            _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold), 
+            _gfxField.DrawLine(new Pen(OUR_COLOR, 3), new PointF(x, y),
+                               new PointF(x + DIAMETER * (float)Math.Cos(robot.Orientation + Math.PI / 2), y - DIAMETER * (float)Math.Sin(robot.Orientation + Math.PI / 2)));
+            _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold),
                                  Brushes.DarkRed, x - DIAMETER / 3, y - DIAMETER / 3);
             _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.Position.X, robot.Position.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
-            
+
         }
 
         private void DrawTheirRobot(VisionMessage.RobotData robot) {
@@ -255,29 +246,27 @@ namespace Vision {
             int x, y;
             Font font = new Font(FontFamily.GenericSansSerif, 6);
             StandardToPixelScale(ballPos.X, ballPos.Y, out x, out y);
-            _gfxField.FillEllipse(new SolidBrush(BALL_COLOR), 
+            _gfxField.FillEllipse(new SolidBrush(BALL_COLOR),
                                   new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
             _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", ballPos.X, ballPos.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
         }
 
-        private void ScaleLocation(double worldX, double worldY, 
+        private void ScaleLocation(double worldX, double worldY,
                                    out int x, out int y) {
-            double normedX = (FIELD_SIZE_WORLD.Width / 2 + worldX )/ FIELD_SIZE_WORLD.Width;
+            double normedX = (FIELD_SIZE_WORLD.Width / 2 + worldX) / FIELD_SIZE_WORLD.Width;
             double normedY = (FIELD_SIZE_WORLD.Height / 2 - worldY) / FIELD_SIZE_WORLD.Height;
 
             x = Convert.ToInt32(OUT_ZONE_WIDTH + normedX * FIELD_SIZE.Width);
             y = Convert.ToInt32(OUT_ZONE_WIDTH + normedY * FIELD_SIZE.Height);
         }
-        private void StandardToPixelScale(double worldX, double worldY, out int x, out int y)
-        {
+        private void StandardToPixelScale(double worldX, double worldY, out int x, out int y) {
             double normedX = (FIELD_SIZE_WORLD.Width / 2 - worldY) / FIELD_SIZE_WORLD.Width;
             double normedY = (FIELD_SIZE_WORLD.Height / 2 - worldX) / FIELD_SIZE_WORLD.Height;
 
             x = Convert.ToInt32(OUT_ZONE_WIDTH + normedX * FIELD_SIZE.Width);
             y = Convert.ToInt32(OUT_ZONE_WIDTH + normedY * FIELD_SIZE.Height);
         }
-        private void ScaleSize(double worldWidth, double worldHeight, out int width, out int height)
-        {
+        private void ScaleSize(double worldWidth, double worldHeight, out int width, out int height) {
             width = (int)(worldWidth * (FIELD_SIZE.Width / FIELD_SIZE_WORLD.Width));
             height = (int)(worldHeight * (FIELD_SIZE.Height / FIELD_SIZE_WORLD.Height));
         }
@@ -286,6 +275,6 @@ namespace Vision {
             e.Cancel = true;
             Hide();
         }
-   
+
     }
 }
