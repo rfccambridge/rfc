@@ -16,17 +16,12 @@ namespace Robocup.Utilities
         ICoordinateConverter converter = new BasicCoordinateConverter(500, 30, 30);
         
         public FieldDrawerForm(IPredictor predictor)
-            : this(predictor, null)
-        {
-        }
-
-        public FieldDrawerForm(IPredictor predictor, String [] playNames)
         {
             InitializeComponent();
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
 
-            drawer = new FieldDrawer(predictor, converter, playNames);
+            drawer = new FieldDrawer(predictor, converter);
             this.Size = new Size(560, 500);
 
             this.BackColor = Color.Green;

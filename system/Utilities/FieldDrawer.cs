@@ -36,7 +36,8 @@ namespace Robocup.Utilities
         static double GOAL_WIDTH;
         static double GOAL_HEIGHT;
 
-        public String[] playNames;
+        public Dictionary<int, string> ourPlayNames;
+        public Dictionary<int, string> theirPlayNames;
 
 
         IPredictor predictor;
@@ -50,18 +51,14 @@ namespace Robocup.Utilities
         Object _pathsLock = new object();
         int _nextPathID;
         Font _font = new Font("Tahoma", 11);
-
+      
         public FieldDrawer(IPredictor predictor, ICoordinateConverter c)
-            : this(predictor, c, null)
-        {
-            
-        }
-       
-        public FieldDrawer(IPredictor predictor, ICoordinateConverter c, String [] playNames)
         {
             this.predictor = predictor;
             this.converter = c;
-            this.playNames = playNames;
+            this.ourPlayNames = ourPlayNames;
+            this.theirPlayNames = theirPlayNames;
+
 
             _arrows = new Dictionary<int, Arrow>();
             _nextArrowID = 0;
@@ -138,8 +135,11 @@ namespace Robocup.Utilities
             new Arrow(r.Position, r.Position + orientVect,
                 Color.Cyan, .04).drawConvertToPixels(g, converter);
 
-            b = new SolidBrush(Color.GreenYellow);            
-            g.DrawString(r.ID.ToString() + (playNames == null ? "" : ": " + playNames[r.ID]), _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
+            b = new SolidBrush(Color.GreenYellow);
+            string playName;           
+            if (ourPlayNames.TryGetValue(r.ID, out playName)) {
+                g.DrawString(r.ID.ToString() + playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
+            }
             b.Dispose();
         }
 
@@ -161,7 +161,10 @@ namespace Robocup.Utilities
             }
 
             b = new SolidBrush(Color.GreenYellow);
-            g.DrawString(r.ID.ToString() + (playNames == null ? "" : ": " + playNames[r.ID]), _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
+            string playName;
+            if (theirPlayNames.TryGetValue(r.ID, out playName)) {
+                g.DrawString(r.ID.ToString() + playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
+            }            
             b.Dispose();
         }
 

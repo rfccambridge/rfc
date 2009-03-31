@@ -54,7 +54,7 @@ namespace Robocup.Plays
         }
         Random r = new Random();
         public SelectorResults selectPlays(List<InterpreterPlay> plays, InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo,
-            List<InterpreterPlay> preferedPlays, List<SelectorResults.RobotAssignments> lastAssignments, String [] playNames)
+            List<InterpreterPlay> preferedPlays, List<SelectorResults.RobotAssignments> lastAssignments, Dictionary<int, string> ourPlayNames)
         {
             evaluator.updateConditions(ourteaminfo, theirteaminfo, ballinfo);
 
@@ -125,7 +125,7 @@ namespace Robocup.Plays
 //#endif
                                             numOurRobotsAvailable--;
                                             ourteaminfo[i].State = RobotStates.Busy;
-                                            playNames[id] = "PLAY " + play.Name;
+                                            ourPlayNames[id] = "PLAY " + play.Name;
                                             break;
                                         }
                                     }

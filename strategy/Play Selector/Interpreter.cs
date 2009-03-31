@@ -15,7 +15,10 @@ namespace Robocup.Plays
         private readonly IActionInterpreter actioninterpreter;
         private readonly IPredictor predictor;
         private List<InterpreterPlay> plays = new List<InterpreterPlay>();
-        public String[] playNames = new String[10];
+       
+        // Needs to be made private
+        public Dictionary<int, string> ourPlayNames = new Dictionary<int, string>();
+        public Dictionary<int, string> theirPlayNames = new Dictionary<int, string>();
 
         public Interpreter(bool flipCoordinates, InterpreterPlay[] plays,
                            IPredictor predictor, IActionInterpreter actioninterpreter)
@@ -75,8 +78,10 @@ namespace Robocup.Plays
             {
                 return new InterpreterRobotInfo(info);
             }).ToArray();
-            BallInfo ballinfo = predictor.getBallInfo();
 
+
+            BallInfo ballinfo = predictor.getBallInfo();
+            
             lock (run_lock)
             {
                 if (running)
@@ -88,7 +93,7 @@ namespace Robocup.Plays
             foreach (InterpreterRobotInfo robot in ourteaminfo)
             {
                 robot.setFree();
-                playNames[robot.ID] = "N/A";
+                ourPlayNames[robot.ID] = "N/A";
             }
             foreach (InterpreterRobotInfo robot in theirteaminfo)
             {
@@ -99,7 +104,7 @@ namespace Robocup.Plays
             List<InterpreterPlay> plays_to_run = plays.FindAll(
                 delegate(InterpreterPlay play) { return play.PlayType == type; });
             //find all the actions we want to do
-            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, lastRunPlays, lastAssignments, playNames);
+            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, lastRunPlays, lastAssignments, ourPlayNames);
 
             lastAssignments = results.Assignments;
 
