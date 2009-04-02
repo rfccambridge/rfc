@@ -34,7 +34,7 @@ namespace SimplePathFollower
 		public IRobots Commander { get { return commander; } }
         public IMotionPlanner Planner { get { return planner; } }
 
-        public delegate void EndLapDelegate(bool success);
+        public delegate void EndLapDelegate(bool success, bool invokeStop);
         public EndLapDelegate OnEndLap;
         public delegate void StartLapDelegate();
         public StartLapDelegate OnStartLap;
@@ -149,7 +149,7 @@ namespace SimplePathFollower
                         else {
                             Console.WriteLine("Ending lap...");
                             if (OnEndLap != null) {
-                                OnEndLap(true);
+                                OnEndLap(true, true);
                                 lapping = false;
                             }
 
@@ -189,8 +189,12 @@ namespace SimplePathFollower
 
 		public void Stop()
 		{
+            if (OnEndLap != null)
+                OnEndLap(false, false);
+
             controller.stop(robotID);
             running = false;
+            lapping = false;
 		}
 
         public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter) {            

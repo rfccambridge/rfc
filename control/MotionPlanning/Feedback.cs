@@ -9,12 +9,21 @@ using System.IO;
 
 using System.Drawing;
 
+using Robocup.Geometry;
+
 namespace Robocup.MotionControl {
     
     /// <summary>
     /// Represents a set of PID constants for a given degree of freedom
     /// </summary>
     public struct DOF_Constants {
+        public DOF_Constants(string _P, string _I, string _D, string _ALPHA){
+            P = double.Parse(_P);
+            I = double.Parse(_I);
+            D = double.Parse(_D);
+            ALPHA = double.Parse(_ALPHA);
+        }
+
         public double P;
         public double I;
         public double D;
@@ -119,10 +128,10 @@ namespace Robocup.MotionControl {
             //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
 
 
-            int lf = (int)  (sing*lateral + cosg * forward - wheelR * angularV);
-            int rf = (int)  -(sing*lateral - cosg*forward - wheelR*angularV);
-            int lb = (int) (-sing*lateral + cosg*forward - wheelR*angularV);
-            int rb = (int) -(-sing*lateral - cosg *forward - wheelR * angularV);
+            int lf = (int)  ((sing*lateral + cosg * forward - wheelR * angularV) * 0.5);
+            int rf = (int)  -((sing*lateral - cosg*forward - wheelR*angularV) * 0.5);
+            int lb = (int) ((-sing*lateral + cosg*forward - wheelR*angularV) * 0.5);
+            int rb = (int) -((-sing*lateral - cosg *forward - wheelR * angularV) * 0.5);
 
             return new WheelSpeeds(lf, rf, lb, rb);
             //Note somewhere we need to check and ensure that wheel speeds being 
@@ -156,11 +165,14 @@ namespace Robocup.MotionControl {
             //these should all be initialized to their tuned value, or auto tuned
             //they should also all be positive values except maybe D            
 
+            private const int oldErrorsWindowSize = 100;
+
             private DOF_Constants constants;
             public DOF_Constants PIDConstants { get { return constants; } }
                         
             private double error = 0;
             private double oldError = 0;
+            private List<double> oldErrorsWindow;
             private double Ierror = 0;
             private double Derror = 0;
 
@@ -177,14 +189,20 @@ namespace Robocup.MotionControl {
                 //pull out values for constants from a text file
                 dofType = dof;
                 robotID=robot_id;
+                //init error window with zeros
+                oldErrorsWindow = new List<double>(oldErrorsWindowSize);
+                for (int i = 0; i < oldErrorsWindowSize; i++)
+                    oldErrorsWindow.Add(0);
+                Ierror = 0;
+
                 ReloadConstants();
               
             }
-        
+
             //computes a command for either the x velocity the y velocity or the angular velocity.
             //assume orientations are between 0 and 2 pi.
             //it usese the PID constants stored in this instance and incorporates both the velocity and current valud i.e. x and dx/dt
-            public double Compute(double current, double desired, double current_dot, double desired_dot){
+            public double Compute(double current, double desired, double current_dot, double desired_dot) {
 
                 double diff = desired - current;
                 if (dofType == DOFType.THETA) {//need to pick the smallest angle
@@ -193,20 +211,29 @@ namespace Robocup.MotionControl {
                     else if (diff < -Math.PI)
                         diff = 2 * Math.PI + diff;
                 }
+
+                //double diff = UsefulFunctions.angleDifference(desired, current);
                     
                 error = constants.ALPHA*(diff)+(1-constants.ALPHA)*(desired_dot-current_dot);
                 
-                
-                Ierror = Ierror+error;
                 Derror = error - oldError;
                 oldError = error;
-                
+                //this ensures that the Ierror is calculated for a limited window with a certain fixed size
+                Ierror = Ierror + error - oldErrorsWindow[0];
+                oldErrorsWindow.RemoveAt(0);
+                oldErrorsWindow.Add(error);
+
+
                 return desired + constants.P*error + constants.I*Ierror + constants.D*Derror;
             }
 
             //loads/reloads all constants from the file and sets I error to 0 to aid debugging
             public void ReloadConstants() {
+                //clear accumulated error
+                for (int i = 0; i < oldErrorsWindowSize; i++)
+                    oldErrorsWindow[i] = 0;
                 Ierror = 0;
+
                 Constants.Load();
                 constants.P = Constants.get<double>("control", "P_" + dofType.ToString() + "_" + robotID.ToString());
                 constants.I = Constants.get<double>("control", "I_" + dofType.ToString() + "_" + robotID.ToString());
@@ -218,6 +245,9 @@ namespace Robocup.MotionControl {
             /// Can be used to programatically update the set of constants.
             /// </summary>
             public void UpdateConstants(DOF_Constants _constants) {
+                //clear accumulated error
+                for (int i = 0; i < oldErrorsWindowSize; i++)
+                    oldErrorsWindow[i] = 0;
                 Ierror = 0;
 
                 constants = _constants;

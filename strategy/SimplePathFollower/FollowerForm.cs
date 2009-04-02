@@ -238,7 +238,8 @@ namespace SimplePathFollower {
                 _stopwatch.Start();
             }
             lock (_drawingLock) {
-                _pathFollower.drawCurrent(_fieldDrawerForm.CreateGraphics(), _converter);
+                if(_fieldDrawerForm != null)
+                    _pathFollower.drawCurrent(_fieldDrawerForm.CreateGraphics(), _converter);
                 //_pathFollower.clearArrows();
             }
 
@@ -565,24 +566,24 @@ namespace SimplePathFollower {
             btnStartStop.Text = "Stop";
 
             // start the PID Calibrator in a new thread                 
-            BoolDelegate calibratorLoopDelegate = new BoolDelegate(_pidCalibrator.InitLap);
+            VoidDelegate calibratorLoopDelegate = new VoidDelegate(_pidCalibrator.ExploreAround);
             AsyncCallback calibratorErrorHandler = new AsyncCallback(CalibratorError);
             IAsyncResult FollowLoopHandle = calibratorLoopDelegate.BeginInvoke(calibratorErrorHandler, null);
         }
 
         private void CalibratorError(IAsyncResult res) {
 
-            AsyncResult result = (AsyncResult)res; // access the implementation of the interface
+            /*AsyncResult result = (AsyncResult)res; // access the implementation of the interface
             BoolDelegate callerDelegate = (BoolDelegate)result.AsyncDelegate;
 
             bool error = callerDelegate.EndInvoke(res);
 
             if (error) {
                 MessageBox.Show("Error! PID Calibration failed.");
-            }
+            }*/
 
 
-            _pidCalibrator.EndLap(false);
+            _pidCalibrator.EndLap(false, true);
             _running = false;
 
             // Cross thread operation:           
