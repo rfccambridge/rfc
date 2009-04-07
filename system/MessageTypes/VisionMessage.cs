@@ -8,25 +8,31 @@ namespace Robocup.Core
     public class VisionMessage
     {
         [Serializable]
+        public enum Team {YELLOW, BLUE};
+
+        [Serializable]
         public class RobotData
         {
-            public RobotData(int id, bool ourTeam, Vector2 position, double orientation)
+            private Team team;
+            private Vector2 position;
+            private int id;
+            private double orientation;
+
+            public RobotData(int id, Team team, Vector2 position, double orientation)
             {
                 this.id = id;
-                this.ourTeam = ourTeam;
+                this.team = team;
                 this.position = position;
                 this.orientation = orientation;
-            }
-            private bool ourTeam;
+            }            
             /// <summary>
-            /// Whether or not this robot is on our team.
+            /// Robot's team, in terms of the VisionMessage.Team enum type
             /// </summary>
-            public bool OurTeam
+            public Team Team
             {
-                get { return ourTeam; }
+                get { return team; }
             }
-
-            private int id;
+            
             /// <summary>
             /// The ID of the robot -- can be any value
             /// </summary>
@@ -34,8 +40,7 @@ namespace Robocup.Core
             {
                 get { return id; }
             }
-	
-            private Vector2 position;
+	    
             /// <summary>
             /// The position of the robot, in our standard coordinate system
             /// ([0,0] is center of field, [1,1] is up and to the right, the unit is meters)
@@ -43,13 +48,15 @@ namespace Robocup.Core
             public Vector2 Position
             {
                 get { return position; }
-            }
-            private double orientation;
+            }            
             public double Orientation
             {
                 get { return orientation; }
             }
         }
+
+        private List<RobotData> robots = new List<RobotData>();
+        
         /// <summary>
         /// Creates a VisionMessage which contains no ball or robots
         /// </summary>
@@ -80,16 +87,10 @@ namespace Robocup.Core
         {
             get { return ballPosition; }
             set { ballPosition = value; }
-        }
-        private List<RobotData> ourRobots = new List<RobotData>();
-        public List<RobotData> OurRobots
+        }        
+        public List<RobotData> Robots
         {
-            get { return ourRobots; }
-        }
-        private List<RobotData> theirRobots = new List<RobotData>();
-        public List<RobotData> TheirRobots
-        {
-            get { return theirRobots; }
-        }
+            get { return robots; }
+        }       
     }
 }
