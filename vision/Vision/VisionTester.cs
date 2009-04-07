@@ -15,9 +15,9 @@ namespace Vision
 		private const string WORK_DIR = "../../resources/vision/";
 		private TextWriter resultWriter;
 		private TextWriter badWriter;
- 
+        private Team TEST_TEAM;
 		
-		// Maximum distance that ball can travel between to frames
+		// Maximum distance that ball can travel between two frames
 		// distance greater than this considered error
 		private const double MAX_BALL_DIST_SQ = 0.25;
 		// Minimal distance from ball to robot center so that it's not found incorrectly inside the robot
@@ -41,14 +41,15 @@ namespace Vision
 		private readonly List<int> robotIDs;
 
 
-		public VisionTester()
+		public VisionTester(Team team)
 		{
+            TEST_TEAM = team;
 			robotIDs = new List<int>();
 			Reset();
 		}
 
-		public VisionTester(bool _testBall, List<int> _robotIDs) : 
-			this()
+		public VisionTester(Team _team, bool _testBall, List<int> _robotIDs) : 
+			this(_team)
 		{
 			testBall = _testBall;
 			robotIDs = _robotIDs;
@@ -77,8 +78,12 @@ namespace Vision
 			foreach (int id in robotIDs)
 			{
 				int occurence = 0;
-				foreach (VisionMessage.RobotData ourInfo in visionMessage.OurRobots)
-					if (ourInfo.ID == id) occurence++;
+                foreach (VisionMessage.RobotData robot in visionMessage.Robots) {
+                    // Ignore team color that is not being tested
+                    if ((robot.Team == VisionMessage.Team.YELLOW ? Team.YELLOW : Team.BLUE) != TEST_TEAM) continue;
+                    
+                    if (robot.ID == id) occurence++;
+                }
 
 				if (occurence != 1)
 				{
@@ -87,13 +92,16 @@ namespace Vision
 				}
 			}
 
-			foreach (VisionMessage.RobotData ourInfo in visionMessage.OurRobots)
+			foreach (VisionMessage.RobotData robot in visionMessage.Robots)
 			{
-				if (!robotIDs.Contains(ourInfo.ID))
+                // Ignore team color that is not being tested
+                if ((robot.Team == VisionMessage.Team.YELLOW ? Team.YELLOW : Team.BLUE) != TEST_TEAM) continue;
+
+				if (!robotIDs.Contains(robot.ID))
 					good = false;
 
 				if (visionMessage.BallPosition != null)
-					if (ourInfo.Position.distanceSq(visionMessage.BallPosition) <= BALL_WITHIN_ROBOT_DIST_SQ)
+					if (robot.Position.distanceSq(visionMessage.BallPosition) <= BALL_WITHIN_ROBOT_DIST_SQ)
 					{
 						good = false;
 						visionMessage.BallPosition = null;

@@ -10,7 +10,7 @@ namespace Vision
 
 		public TestForm()
 		{
-			tester = new VisionTester();
+			tester = new VisionTester(Team.YELLOW);
 			InitializeComponent();
 		}
 

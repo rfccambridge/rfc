@@ -55,11 +55,7 @@ namespace Vision {
         private Size FIELD_SIZE = new Size(405, 605);
         private SizeF FIELD_SIZE_WORLD = new SizeF(4.05f, 6.05f);
 
-        private int OUT_ZONE_WIDTH = 30;
-        private Color FIELD_COLOR = Color.DarkGreen;
-        private Color OUR_COLOR = VisionStatic.ColorClasses.COLOR_CLASSES[VisionStatic.ColorClasses.OUR_CENTER_DOT];
-        private Color THEIR_COLOR = VisionStatic.ColorClasses.COLOR_CLASSES[VisionStatic.ColorClasses.THEIR_CENTER_DOT];
-        private Color BALL_COLOR = VisionStatic.ColorClasses.COLOR_CLASSES[VisionStatic.ColorClasses.COLOR_BALL];
+        private int OUT_ZONE_WIDTH = 30;                
 
         private Bitmap _bmpField;
         private Graphics _gfxField;
@@ -73,16 +69,8 @@ namespace Vision {
             _gfxField = Graphics.FromImage(_bmpField);
             picField.BackgroundImage = _bmpField;
 
-            this.Width = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Width + 2 * tabRobotStatus0.Width + 20;
+            this.Width = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Width;
             this.Height = 3 * OUT_ZONE_WIDTH + FIELD_SIZE.Height;
-
-            tabRobotStatus0.Left = picField.Left + picField.Width + 10;
-            tabRobotStatus2.Left = picField.Left + picField.Width + 10;
-            tabRobotStatus4.Left = picField.Left + picField.Width + 10;
-
-            tabRobotStatus1.Left = picField.Left + picField.Width + tabRobotStatus0.Width + 20;
-            tabRobotStatus3.Left = picField.Left + picField.Width + tabRobotStatus0.Width + 20;
-            tabRobotStatusBall.Left = picField.Left + picField.Width + tabRobotStatus0.Width + 20;
 
         }
 
@@ -91,31 +79,21 @@ namespace Vision {
         }
 
         public void UpdateState(VisionMessage visionMessage) {
-            _gfxField.Clear(FIELD_COLOR);
+            _gfxField.Clear(Color.DarkGreen);
             DrawCoords();
             DrawLines();
 
             int botsOnField = 0;
             int ballsOnField = 0;
-            foreach (VisionMessage.RobotData robot in visionMessage.OurRobots) {
-                //if (robot != null && robot.ID >= 0) {
-                DrawOurRobot(robot);
-                botsOnField++;
-                // UpdateStatusDisplay(robot);
-                //}
-            }
-            foreach (VisionMessage.RobotData robot in visionMessage.TheirRobots) {
-                //if (robot != null && robot.ID >= 0) {
-                DrawTheirRobot(robot);
-                botsOnField++;
-                //  }
-            }
 
+            foreach (VisionMessage.RobotData robot in visionMessage.Robots) {                
+                DrawRobot(robot);
+                botsOnField++;                
+            }
+            
             if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
                 DrawBall(visionMessage.BallPosition);
-                ballsOnField++;
-                //lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
-                //                                                                 visionMessage.BallPosition.Y).ToString();
+                ballsOnField++;              
             }
 
             // if (ballsOnField == 0)
@@ -125,57 +103,7 @@ namespace Vision {
 
             picField.Invalidate();
 
-            //Not sure if this is actually true; multithreading stuff may have caused it...
-            // Setting the Text property of the labels MUST happen *after* Invalidate() was called, otherwise
-            // the field is not redrawn -- not sure what is the exact problem that is at the bottom of ths.
-
-
-            lblLoc0.Text = "";
-            lblLoc1.Text = "";
-            lblLoc2.Text = "";
-            lblLoc3.Text = "";
-            lblLoc4.Text = "";
-            lblLocBall.Text = "";
-
-            lblVel0.Text = "";
-            lblVel1.Text = "";
-            lblVel2.Text = "";
-            lblVel3.Text = "";
-            lblVel4.Text = "";
-            lblVelBall.Text = "";
-
-            foreach (VisionMessage.RobotData robot in visionMessage.OurRobots) {
-                UpdateStatusDisplay(robot);
-            }
-
-            if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
-                lblLocBall.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(visionMessage.BallPosition.X,
-                                                                                 visionMessage.BallPosition.Y).ToString();
-            }
-
-        }
-
-        private void UpdateStatusDisplay(VisionMessage.RobotData robot) {
-            Label lblControl = null;
-            switch (robot.ID) {
-                case 0:
-                    lblControl = lblLoc0;
-                    break;
-                case 1:
-                    lblControl = lblLoc1;
-                    break;
-                case 2:
-                    lblControl = lblLoc2;
-                    break;
-                case 3:
-                    lblControl = lblLoc3;
-                    break;
-                case 4:
-                    lblControl = lblLoc4;
-                    break;
-            }
-            lblControl.Text = VisionStatic.RobotFinder.GeneralToVisionCoords(robot.Position.X, robot.Position.Y).ToString();
-        }
+        } 
 
         private void DrawCoords() {
             Font font = new Font(FontFamily.GenericSansSerif, 8);
@@ -212,41 +140,44 @@ namespace Vision {
             ScaleLocation(0 - RADIUS, -FIELD_SIZE_WORLD.Height / 2 + RADIUS, out x1, out y1);
             _gfxField.DrawArc(Pens.White, new Rectangle(x1, y1, w, h), 0, 180);
         }
-        private void DrawOurRobot(VisionMessage.RobotData robot) {
+        private void DrawRobot(VisionMessage.RobotData robot) {
             const int DIAMETER = 20;
             int x, y;
-            StandardToPixelScale(robot.Position.X, robot.Position.Y, out x, out y);
-            Brush brush = new SolidBrush(OUR_COLOR);
+            Brush brush;
+            Pen pen;            
             Font font = new Font(FontFamily.GenericSansSerif, 6);
+
+            // Pixel coords
+            StandardToPixelScale(robot.Position.X, robot.Position.Y, out x, out y);
+
+            // Brush for drawing the robot circle and pen for drawing the orientation indicator            
+            if (robot.Team == VisionMessage.Team.BLUE) {
+                brush = new SolidBrush(Color.Blue);
+                pen = new Pen(Color.Blue);
+            }
+            else if (robot.Team == VisionMessage.Team.YELLOW) {
+                brush = new SolidBrush(Color.Yellow);
+                pen = new Pen(Color.Yellow);
+            } else {
+                brush = new SolidBrush(Color.Gray);
+                pen = new Pen(Color.Gray);
+            }
+                      
             _gfxField.FillEllipse(brush, new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
-            _gfxField.DrawLine(new Pen(OUR_COLOR, 3), new PointF(x, y),
+            _gfxField.DrawLine(pen, new PointF(x, y),
                                new PointF(x + DIAMETER * (float)Math.Cos(robot.Orientation + Math.PI / 2), y - DIAMETER * (float)Math.Sin(robot.Orientation + Math.PI / 2)));
             _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold),
                                  Brushes.DarkRed, x - DIAMETER / 3, y - DIAMETER / 3);
             _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.Position.X, robot.Position.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
 
         }
-
-        private void DrawTheirRobot(VisionMessage.RobotData robot) {
-            const int DIAMETER = 20;
-            int x, y;
-            Font font = new Font(FontFamily.GenericSansSerif, 6);
-            StandardToPixelScale(robot.Position.X, robot.Position.Y, out x, out y);
-            Brush brush = new SolidBrush(THEIR_COLOR);
-            _gfxField.FillEllipse(brush, new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
-            _gfxField.DrawString(robot.ID.ToString(), new Font(FontFamily.GenericMonospace, 8f, FontStyle.Bold),
-                                 Brushes.DarkRed, x - DIAMETER / 3, y - DIAMETER / 3);
-            _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", robot.Position.X, robot.Position.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
-
-        }
-
         private void DrawBall(Vector2 ballPos) {
             if (double.IsNaN(ballPos.X) || double.IsNaN(ballPos.Y)) return;
             const int DIAMETER = 8;
             int x, y;
             Font font = new Font(FontFamily.GenericSansSerif, 6);
             StandardToPixelScale(ballPos.X, ballPos.Y, out x, out y);
-            _gfxField.FillEllipse(new SolidBrush(BALL_COLOR),
+            _gfxField.FillEllipse(new SolidBrush(Color.Orange),
                                   new Rectangle(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER));
             _gfxField.DrawString(String.Format("({0:0.0},\n{1:0.0})", ballPos.X, ballPos.Y), font, Brushes.Black, x - 20, y + DIAMETER / 2);
         }

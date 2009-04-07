@@ -585,7 +585,9 @@ namespace Vision
                     //GameObjects gameObjs = VisionStatic.RobotFinder.findGameObjects(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
                     VisionMessage visionMessageLocal = VisionStatic.RobotFinder.findGameObjects2(_blobber.blobs, _blobber.totalBlobs, _tsaiCalibrator);
 
-                    if (visionMessageLocal.OurRobots.Count <= 0)
+
+
+                    if (visionMessageLocal.Robots.Count == 0)
                     {
                         Console.WriteLine("NO ROBOT!!!!");
                         TextWriter twr = new StreamWriter(WORK_DIR + "bad_frames.txt", true); // append
@@ -601,7 +603,8 @@ namespace Vision
                         _highlights.Add(HighlightBlob(_blobber.blobs[i]));
                     }
 
-                    int totalObjects = ((visionMessageLocal.BallPosition == null) ? 0 : 1) + visionMessageLocal.OurRobots.Count + visionMessageLocal.TheirRobots.Count; // 1 for ball
+                    int totalObjects = ((visionMessageLocal.BallPosition == null) ? 0 : 1) + 
+                                        visionMessageLocal.Robots.Count;
                     ChangeStatus("Frame processed. Found " + _blobber.totalBlobs.ToString() + " blobs and " +
                                   totalObjects.ToString() + " objects.");
 
@@ -821,6 +824,11 @@ namespace Vision
                         FieldState.Form.Show();
                     break;
                 case 'r': // reload constants from file
+
+                    if (_blobber == null && _blobber.Blobbing) {
+                        MessageBox.Show("Cannot reload constants while blobber is running!");
+                    }
+
                     Constants.Load();
                     RobotFinder.LoadParameters();
                     ColorClasses.LoadParameters();
