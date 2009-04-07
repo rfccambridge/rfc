@@ -36,6 +36,8 @@ namespace SimplePathFollower {
         private ICoordinateConverter _converter;
         private Object _drawingLock = new Object();
         private Stopwatch _stopwatch = new Stopwatch();
+        
+        VisionMessage.Team OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
 
         bool lap = true;
         private int whichGoal = 0;
@@ -209,14 +211,10 @@ namespace SimplePathFollower {
 
         private void handleVisionUpdate(VisionMessage msg, string computerName) {
             List<RobotInfo> ours = new List<RobotInfo>();
-
-            foreach (VisionMessage.RobotData robot in msg.OurRobots) {
-                ours.Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
-            }
-
             List<RobotInfo> theirs = new List<RobotInfo>();
-            foreach (VisionMessage.RobotData robot in msg.TheirRobots) {
-                theirs.Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
+
+            foreach (VisionMessage.RobotData robot in msg.Robots) {
+                (robot.Team == OUR_TEAM ? ours : theirs).Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
             }
 
             lock (_predictorLock) {
@@ -484,7 +482,7 @@ namespace SimplePathFollower {
 
             _logFieldDrawer.ClearArrows();
             _logFieldDrawer.AddArrow(new Arrow(curState.Position, destState.Position, Color.Red, 0.04));
-            _logFieldDrawer.AddArrow(new Arrow(curState.Position, waypointInfo.Position, Color.Green, 0.04));
+            _logFieldDrawer.AddArrow(new Arrow(curState.Position, waypointInfo.Position, Color.Yellow, 0.04));
 
             _logFieldDrawer.Invalidate();
 

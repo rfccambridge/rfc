@@ -64,6 +64,11 @@ namespace Robocup.Plays
 
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();
 
+        public List<InterpreterPlay> getPlays()
+        {
+            return plays;
+        }
+
         /// <returns>Returns true if it actually interpreted,
         /// false if it quit because it was already interpreting.</returns>
         public bool interpret(PlayTypes type)
@@ -102,7 +107,7 @@ namespace Robocup.Plays
                 
 
             List<InterpreterPlay> plays_to_run = plays.FindAll(
-                delegate(InterpreterPlay play) { return play.PlayType == type; });
+                delegate(InterpreterPlay play) { return play.PlayType == type && play.isEnabled; });
             //find all the actions we want to do
             SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, lastRunPlays, lastAssignments, ourPlayNames);
 

@@ -45,7 +45,7 @@ namespace SoccerSim
             referee = new SimpleReferee();
             _physics_engine = new PhysicsEngine(referee);
             String[] playNames = new String[10];
-            _fieldView = new FieldDrawer(_physics_engine, converter, playNames);
+            _fieldView = new FieldDrawer(_physics_engine, converter);
             // TODO make configurable how many to load
 
             //RefBoxListener refbox = new RefBoxListener(10001);
@@ -57,7 +57,10 @@ namespace SoccerSim
             _vision = new SimVision(_physics_engine, this);
 
             // HACK
-            _player1._interpreter.playNames = _player1._view.playNames = _player2._interpreter.playNames = _player2._view.playNames = playNames;
+            _player1._view.ourPlayNames = _player1._interpreter.ourPlayNames;
+            _player1._view.theirPlayNames = _player1._interpreter.theirPlayNames;
+            _player2._view.ourPlayNames = _player2._interpreter.ourPlayNames;
+            _player2._view.theirPlayNames = _player2._interpreter.theirPlayNames;
 
             InitDragAndDrop();
         }

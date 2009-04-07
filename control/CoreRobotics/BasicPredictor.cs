@@ -88,15 +88,7 @@ namespace Robocup.CoreRobotics
                     }
                     double time = HighResTimer.SecondsSinceStart();
                     bool isOmega = (computerName == "OMEGA");
-                    List<RobotInfo> otherCameraInfos;
-                    if (isOmega)
-                    {
-                        otherCameraInfos = lambdaInfo;
-                    }
-                    else
-                    {
-                        otherCameraInfos = omegaInfo;
-                    }
+                    List<RobotInfo> otherCameraInfos = isOmega ? lambdaInfo : omegaInfo;
                     //here we match all new robots with old robots that are close.
                     //we give them the same id as the old one, then remove the old one
                     //and set the id of the new one to be the old one
@@ -166,7 +158,7 @@ namespace Robocup.CoreRobotics
                     {
                         removeRobot(info.ID);
                     }
-                    if (reassignIDs)
+                    if (reassignIDs) // for enemies
                     {
                         //so at this point there should be no matches between new and old robots, in terms of position
                         //but their ids might clash.  so we get rid of the ids on the new robots that were not matched

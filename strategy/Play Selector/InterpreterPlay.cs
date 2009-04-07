@@ -7,6 +7,9 @@ namespace Robocup.Plays
 {
     public class InterpreterPlay : Play<InterpreterExpression>
     {
+        // a play can be enabled or disabled through PlaySelectorForm GUI
+        public bool isEnabled = true;
+
         private bool forceRest(int start)
         {
             for (int i=start;i<Robots.Count;i++){
@@ -84,7 +87,7 @@ namespace Robocup.Plays
 
         public override string ToString()
         {
-            return this.Name;
+            return this.Name != null && this.Name.Length > 0 ? this.Name : "UNNAMED";
         }
 
         public override void SetDesignerData(List<string> data)

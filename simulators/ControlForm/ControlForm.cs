@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Robocup.Utilities;
 using Robocup.Core;
 using Robocup.CoreRobotics;
+using Robocup.Plays;
 
 using Vision;
 namespace Robocup.ControlForm {
@@ -20,12 +21,15 @@ namespace Robocup.ControlForm {
         bool visionTopConnected = false;
         bool visionBottomConnected = false;
 
+        VisionMessage.Team OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
+
         int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionTop;
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionBottom;
 
         //FieldStateForm _field;
         FieldDrawerForm drawer;
+        PlaySelectorForm playSelectorForm;
 
         bool systemStarted = false;
         RFCSystem _system;
@@ -78,8 +82,14 @@ namespace Robocup.ControlForm {
 
             // todo
             _system.initialize();
-            drawer.drawer.ourPlayNames = _system._interpreter.ourPlayNames;
-            drawer.drawer.theirPlayNames = _system._interpreter.theirPlayNames;
+            drawer.drawer.ourPlayNames = _system.getInterpreter().ourPlayNames;
+            drawer.drawer.theirPlayNames = _system.getInterpreter().theirPlayNames;
+
+            // playSelectorForm
+            if (playSelectorForm != null)
+                playSelectorForm.Close();
+            playSelectorForm = new PlaySelectorForm(_system.getInterpreter().getPlays());
+            playSelectorForm.Show();
         }
 
         private void serialConnect_Click(object sender, EventArgs e) {
@@ -121,16 +131,11 @@ namespace Robocup.ControlForm {
             //}
             
             List<RobotInfo> ours = new List<RobotInfo>();
-
-            foreach (VisionMessage.RobotData robot in msg.OurRobots)
-            {
-                ours.Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
-            }
-
             List<RobotInfo> theirs = new List<RobotInfo>();
-            foreach (VisionMessage.RobotData robot in msg.TheirRobots)
+
+            foreach (VisionMessage.RobotData robot in msg.Robots)
             {
-                theirs.Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
+                (robot.Team == OUR_TEAM ? ours : theirs).Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
             }
 
             lock (predictor_lock)

@@ -45,6 +45,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +60,12 @@
     <Compile Include="InterpreterObjects.cs" />
     <Compile Include="PlayEvaluator.cs" />
     <Compile Include="PlaySelector.cs" />
+    <Compile Include="PlaySelectorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlaySelectorForm.Designer.cs">
+      <DependentUpon>PlaySelectorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PlayUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -85,6 +92,12 @@
       <Name>Geometry</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PlaySelectorForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PlaySelectorForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

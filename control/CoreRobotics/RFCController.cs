@@ -122,24 +122,16 @@ namespace Robocup.CoreRobotics
 
             lock (arrows)
             {        
-
-
                 // TODO: Need to make NearestWaypoint populated inside each implementation of IMotionPlanner
                 if (mpResults.NearestWaypoint != null) {
                     arrows[robotID] = new Arrow[] {
                         new Arrow(thisRobot.Position, destination, Color.Red, .04),                    
-                        new Arrow(thisRobot.Position, mpResults.NearestWaypoint.Position, Color.Green, .04) };
+                        new Arrow(thisRobot.Position, mpResults.NearestWaypoint.Position, Color.Yellow, .04) };
                 } else {
                     arrows[robotID] = new Arrow[] {
                         new Arrow(thisRobot.Position, destination, Color.Red, .04) };
                 }
-                
-                
-                
-
-                
             }
-
 
             Commander.setMotorSpeeds(robotID, wheelSpeeds);
         }

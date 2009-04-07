@@ -90,12 +90,12 @@ namespace SoccerSim
             bots = physics_engine.getOurTeamInfo();
             foreach (RobotInfo ourRobot in bots)
             {
-                vm.OurRobots.Add(new VisionMessage.RobotData(ourRobot.ID, true, new Vector2(-ourRobot.Position.Y, ourRobot.Position.X), ourRobot.Orientation));
+                vm.Robots.Add(new VisionMessage.RobotData(ourRobot.ID, VisionMessage.Team.YELLOW, new Vector2(-ourRobot.Position.Y, ourRobot.Position.X), ourRobot.Orientation));
             }
             bots = physics_engine.getTheirTeamInfo();
             foreach (RobotInfo theirRobot in bots)
             {
-                vm.TheirRobots.Add(new VisionMessage.RobotData(theirRobot.ID, false, new Vector2(-theirRobot.Position.Y, theirRobot.Position.X), theirRobot.Orientation));
+                vm.Robots.Add(new VisionMessage.RobotData(theirRobot.ID, VisionMessage.Team.BLUE, new Vector2(-theirRobot.Position.Y, theirRobot.Position.X), theirRobot.Orientation));
             }
             _messageSender.Post(vm);
             _parent.Invalidate();

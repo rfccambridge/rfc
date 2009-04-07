@@ -25,7 +25,7 @@ namespace Robocup.ControlForm
 
         IPredictor _predictor;
         RFCController _controller;
-        public Interpreter _interpreter;
+        Interpreter _interpreter;
         IRobots _commander;
         ISplitInfoAcceptor _acceptor;
 
@@ -66,7 +66,7 @@ namespace Robocup.ControlForm
             REFBOX_ADDR = Constants.get<string>("default", "REFBOX_ADDR");
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
             _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
-            isYellow = Constants.get<string>("configuration", "OUR_TEAM_COLOR") == "YELLOW";
+            isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
         }
 
         public void setRefBoxListener() {
@@ -207,6 +207,10 @@ namespace Robocup.ControlForm
             }
             initialized = true;
 
+        }
+
+        public Interpreter getInterpreter() {
+            return _interpreter;
         }
 
         public void registerCommander(IRobots commander)

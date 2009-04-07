@@ -134,7 +134,7 @@ namespace Robocup.MotionControl
         {
             if (running)
             {
-                logger.LogObject(new VisionOrCommand(message.OurRobots[0]));
+                logger.LogObject(new VisionOrCommand(message.Robots[0]));
             }
         }
 
