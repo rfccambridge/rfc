@@ -27,13 +27,10 @@ namespace VisionStatic {
         private const int TOTAL_COLORS = 8; // don't forget to change the total if you add/remove a game color
         
         private const int TOTAL_ROBOTS = 10;
-
-        public static int OUR_CENTER_DOT;
-        public static int THEIR_CENTER_DOT;
         
         public static Color[] COLOR_CLASSES;
 
-        //WHATCH the order here and in the array right bellow:
+        //WATCH the order here and in the array right bellow:
         public static int[, , ,] DOT_PATTERNS;
 
         private static bool _paramsLoaded = false;
@@ -72,18 +69,7 @@ namespace VisionStatic {
 
         public static void LoadParameters()
         {
-            _paramsLoaded = false;
-
-            if (Constants.get<string>("configuration", "OUR_TEAM_COLOR").ToUpper() == "BLUE")
-            {
-                OUR_CENTER_DOT = COLOR_BLUE_CENTER_DOT;
-                THEIR_CENTER_DOT = COLOR_YELLOW_CENTER_DOT;
-            }
-            else
-            {
-                THEIR_CENTER_DOT = COLOR_BLUE_CENTER_DOT;
-                OUR_CENTER_DOT = COLOR_YELLOW_CENTER_DOT;
-            }
+            _paramsLoaded = false;    
 
             int i, j, k, l;
 

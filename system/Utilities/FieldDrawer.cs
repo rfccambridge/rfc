@@ -9,6 +9,12 @@ namespace Robocup.Utilities
 {
     public class FieldDrawer
     {
+        // For internal use only
+        private enum Team { BLUE, YELLOW };
+
+        private Team OUR_TEAM, THEIR_TEAM;
+        
+
         // drawing constants
         int ROBOT_SIZE;
         int BALL_SIZE;
@@ -56,8 +62,8 @@ namespace Robocup.Utilities
         {
             this.predictor = predictor;
             this.converter = c;
-            this.ourPlayNames = ourPlayNames;
-            this.theirPlayNames = theirPlayNames;
+            this.ourPlayNames = new Dictionary<int, string>();//ourPlayNames;
+            this.theirPlayNames = new Dictionary<int, string>();//theirPlayNames;
 
 
             _arrows = new Dictionary<int, Arrow>();
@@ -71,6 +77,9 @@ namespace Robocup.Utilities
 
         public void LoadParameters()
         {
+            OUR_TEAM = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? Team.YELLOW : Team.BLUE;
+            THEIR_TEAM = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? Team.BLUE : Team.YELLOW;
+
             // drawing constants
             ROBOT_SIZE =                Constants.get<int>("drawing", "ROBOT_SIZE");
             BALL_SIZE =                 Constants.get<int>("drawing", "BALL_SIZE");
@@ -101,10 +110,10 @@ namespace Robocup.Utilities
             GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
         }
 
-        private void drawRobotOurs(RobotInfo r, Graphics g)
+        private void drawRobot(RobotInfo r, Color color, Graphics g)
         {
             // draw robot
-            Brush b = new SolidBrush(Color.Black);
+            Brush b = new SolidBrush(color);
             Vector2 center = converter.fieldtopixelPoint(r.Position);
             g.FillEllipse(b, (float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2), (float)(ROBOT_SIZE), (float)(ROBOT_SIZE));
             b.Dispose();
@@ -143,34 +152,14 @@ namespace Robocup.Utilities
             b.Dispose();
         }
 
-        private void drawRobotTheirs(RobotInfo r, Graphics g)
-        {
-            // draw robot
-            Brush b = new SolidBrush(Color.Red);
-            Vector2 center = converter.fieldtopixelPoint(r.Position);
-            g.FillEllipse(b, (float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2), (float)(ROBOT_SIZE), (float)(ROBOT_SIZE));
-            b.Dispose();
-
-
-            // draw velocity arrow
-            if (r.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
-            {
-                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();
-                Arrow velArrow = new Arrow(r.Position, r.Position + velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
-                velArrow.drawConvertToPixels(g, converter);
-            }
-
-            b = new SolidBrush(Color.GreenYellow);
-            string playName;
-            if (theirPlayNames.TryGetValue(r.ID, out playName)) {
-                g.DrawString(r.ID.ToString() + playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
-            }            
-            b.Dispose();
-        }
-
         public void paintField(Graphics g)
         {
-            
+            Color ourColor = (OUR_TEAM == Team.YELLOW) ? Color.Yellow : Color.Blue;
+            Color theirColor = (OUR_TEAM == Team.YELLOW) ? Color.Blue : Color.Yellow;            
+
+            // Team color information
+            g.DrawString(OUR_TEAM.ToString() + " PLAYER", _font, new SolidBrush(ourColor),
+                         converter.fieldtopixelX(FIELD_XMIN) - 5, converter.fieldtopixelY(FIELD_YMIN) + 40);
 
             // goal dots
             Brush b0 = new SolidBrush(Color.YellowGreen);
@@ -204,18 +193,17 @@ namespace Robocup.Utilities
                 converter.fieldtopixelY(FIELD_YMIN) - converter.fieldtopixelY(FIELD_YMAX)
             );
             p.Dispose();
-            Brush b = new SolidBrush(Color.Black);
+
             foreach (RobotInfo r in predictor.getOurTeamInfo())
             {
                 //drawRobotOurs(r, g, Color.Black);
-                drawRobotOurs(r, g);
+                drawRobot(r, ourColor, g);
             }
-            b.Dispose();
-            b = new SolidBrush(Color.Red);
+            
             foreach (RobotInfo r in predictor.getTheirTeamInfo())
             {
                 //drawRobotTheirs(r, g, Color.Red);
-                drawRobotTheirs(r, g);
+                drawRobot(r, theirColor, g);
             }
             
             // draw arrows
@@ -239,7 +227,7 @@ namespace Robocup.Utilities
 
             if (ballInfo != null) {
 
-                b = new SolidBrush(Color.Orange);
+                Brush b = new SolidBrush(Color.Orange);
                 g.FillEllipse(
                     b,
                     converter.fieldtopixelX(ballInfo.Position.X) - BALL_SIZE / 2,
