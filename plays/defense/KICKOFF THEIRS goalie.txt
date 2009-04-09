@@ -1,0 +1,19 @@
+Metadata:
+type KickOff_Theirs
+name goalie_for_their_kickoff
+score 10
+Objects:
+ourgoal (point -3.13 0)
+circle1 (circle ourgoal 0.95)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+bottomRightCorner (point 3.05 -2.1)
+theirgoal (point 3.13 0)
+point0 (pointof ball)
+line2 (line ourgoal point0)
+point3 (linecircleintersection line2 circle1 1)
+robot5 (closest friendly point3 loose)
+Conditions:
+Actions:
+(robotpointmove robot5 point3)
