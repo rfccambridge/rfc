@@ -40,6 +40,15 @@ namespace Robocup.CoreRobotics
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             RobotPath path = _planner.GetPath(id, desiredState, predictor, avoidBallRadius);
+
+            // if path is empty, don't move
+            if (path.isEmpty()) {
+                return new MotionPlanningResults(new WheelSpeeds());
+            }
+
+            // Make sure path contains desired state
+            path.setFinalState(desiredState);
+
             WheelSpeeds speeds = _driver.followPath(path, predictor);
             Console.WriteLine("PlanMotion returning speeds " + speeds);
             return new MotionPlanningResults(speeds);
@@ -54,6 +63,45 @@ namespace Robocup.CoreRobotics
         RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
         void DrawLast(Graphics g, ICoordinateConverter c);
         void ReloadConstants();
+    }
+
+    /// <summary>
+    /// An interface for turning an INavigator into a PathPlanner
+    /// </summary>
+    public class NavigatorPlanner : IPathPlanner
+    {
+        INavigator _navigator;
+        Vector2 lastWaypoint;
+
+        public NavigatorPlanner(INavigator navigator) {
+            _navigator = navigator;
+        }
+
+        public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+            
+            //Use navigator to get information
+            RobotInfo currentState = predictor.getCurrentInformation(id);
+
+            NavigationResults results = _navigator.navigate(currentState.ID, currentState.Position,
+                desiredState.Position, predictor.getOurTeamInfo().ToArray(), predictor.getTheirTeamInfo().ToArray(), predictor.getBallInfo(),
+                0.15);
+
+            List<Vector2> waypoints = new List<Vector2>();
+            lastWaypoint = results.waypoint;
+            waypoints.Add(lastWaypoint);
+            return new RobotPath(id, waypoints);
+        }
+
+        public void DrawLast(Graphics g, ICoordinateConverter c) {
+            if (lastWaypoint != null) {
+                Brush b = new SolidBrush(Color.Blue);
+                g.FillRectangle(b, c.fieldtopixelX(lastWaypoint.X) - 1, c.fieldtopixelY(lastWaypoint.Y) - 1, 4, 4);
+            }
+        }
+
+        public void ReloadConstants() {
+
+        }
     }
 
     /// <summary>

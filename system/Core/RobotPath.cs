@@ -10,6 +10,10 @@ namespace Robocup.Core {
     public class RobotPath {
         // Store id
         int _id;
+        bool empty = false;
+
+        // Store final goal for planners that do not store it as a waypoint
+        RobotInfo _finalState;
 
         // Store path as a list of robot info objects
         List<RobotInfo> _path;
@@ -18,6 +22,12 @@ namespace Robocup.Core {
 
         public RobotPath() {
             // Create empty path
+        }
+
+        public RobotPath(int id) {
+            // Create empty path with id
+            _id = id;
+            empty = true;
         }
 
         /// <summary>
@@ -30,6 +40,19 @@ namespace Robocup.Core {
                 throw new Exception("Empty path given to path constructor");
 
             _id = waypoints[0].ID;
+
+            _path = waypoints;
+        }
+
+        /// <summary>
+        /// Given a single Vector2 waypoint
+        /// </summary>
+        /// <param name="waypoints"></param>
+        public RobotPath(int id, Vector2 waypoint) {
+            _id = id;
+
+            List<RobotInfo> waypoints = new List<RobotInfo>();
+            waypoints.Add(new RobotInfo(waypoint, 0, id));
 
             _path = waypoints;
         }
@@ -128,6 +151,35 @@ namespace Robocup.Core {
         /// <returns></returns>
         public RobotInfo getWaypoint(int index) {
             return _path[index];
+        }
+
+        /// <summary>
+        /// Set final state, in case it is not one of the waypoints
+        /// </summary>
+        /// <param name="state"></param>
+        public void setFinalState(RobotInfo state) {
+            _finalState = state;
+        }
+
+        /// <summary>
+        /// Get final state, which may not be stored as a waypoint
+        /// </summary>
+        /// <returns></returns>
+        public RobotInfo getFinalState() {
+            if (_finalState != null) {
+                return _finalState;
+            }
+
+            // if none is set, return the last waypoint in the path
+            return _path[_path.Count-1];
+        }
+
+        /// <summary>
+        /// return whether this is an empty path
+        /// </summary>
+        /// <returns></returns>
+        public bool isEmpty() {
+            return empty;
         }
     }
 }
