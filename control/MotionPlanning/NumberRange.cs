@@ -75,7 +75,7 @@ namespace Robocup.MotionControl {
                     if (centerStep + i >= minstep && centerStep + i <= maxstep) {
                         val = stepToValue(centerStep + i);
                         break;
-                    }
+                    } 
                 }
                 if (_lst[centerStep - i]) 
                 {
