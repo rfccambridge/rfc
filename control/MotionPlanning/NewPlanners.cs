@@ -969,15 +969,22 @@ namespace Robocup.MotionControl
 
     public class BugExtendMotionPlanner : PlannerDriver
     {
-        static BugPlanner pathplanner = new BugPlanner();
+        static TangentBugPlanner pathplanner = new TangentBugPlanner();
         static ExtenderDriver pathdriver = new ExtenderDriver();
 
         public BugExtendMotionPlanner() : base(pathplanner, pathdriver) { }
     }
 
+    public class BugNavigatorExtendMotionPlanner : PlannerDriver {
+        static BugNavigatorPlanner pathplanner = new BugNavigatorPlanner();
+        static ExtenderDriver pathdriver = new ExtenderDriver();
+
+        public BugNavigatorExtendMotionPlanner() : base(pathplanner, pathdriver) { }
+    }
+
     public class BugFeedbackVeerMotionPlanner : PlannerDriver
     {
-        static BugPlanner pathplanner = new BugPlanner();
+        static TangentBugPlanner pathplanner = new TangentBugPlanner();
         static FeedbackVeerDriver pathdriver = new FeedbackVeerDriver();
 
         public BugFeedbackVeerMotionPlanner() : base(pathplanner, pathdriver) { }
@@ -1001,6 +1008,28 @@ namespace Robocup.MotionControl
         static DefaultDriver pathdriver = new DefaultDriver();
 
         public DefaultMotionPlanner() : base(pathplanner, pathdriver) { }
+    }
+
+    /// <summary>
+    /// New implementation of BugFeedbackMotionPlanner- split into two parts
+    /// </summary>
+    public class BugFeedbackMotionPlanner : PlannerDriver 
+    {
+        static BugNavigatorPlanner pathplanner = new BugNavigatorPlanner();
+        static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
+
+        public BugFeedbackMotionPlanner() : base(pathplanner, pathdriver) { }
+
+        public Feedback GetFeedbackObj(int robotID) { return pathdriver.GetFeedbackObj(robotID); }
+    }
+
+    public class TangentBugFeedbackMotionPlanner : PlannerDriver {
+        static TangentBugPlanner pathplanner = new TangentBugPlanner();
+        static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
+
+        public TangentBugFeedbackMotionPlanner() : base(pathplanner, pathdriver) { }
+
+        public Feedback GetFeedbackObj(int robotID) { return pathdriver.GetFeedbackObj(robotID); }
     }
 
 }

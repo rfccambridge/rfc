@@ -41,6 +41,7 @@
     <Compile Include="Feedback.cs" />
     <Compile Include="NavigationPlanner.cs" />
     <Compile Include="NewPlanners.cs" />
+    <Compile Include="NumberRange.cs" />
     <Compile Include="PathDrivers.cs" />
     <Compile Include="PathPlanners.cs" />
     <Compile Include="PIDLoop.cs" />

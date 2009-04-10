@@ -128,10 +128,42 @@ namespace Robocup.MotionControl {
             //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
 
 
-            int lf = (int)  ((sing*lateral + cosg * forward - wheelR * angularV) * 0.5);
-            int rf = (int)  -((sing*lateral - cosg*forward - wheelR*angularV) * 0.5);
-            int lb = (int) ((-sing*lateral + cosg*forward - wheelR*angularV) * 0.5);
-            int rb = (int) -((-sing*lateral - cosg *forward - wheelR * angularV) * 0.5);
+            double _lf =   (sing*lateral + cosg * forward - wheelR * angularV);
+            double _rf =   -(sing*lateral - cosg*forward - wheelR*angularV);
+            double _lb =  (-sing*lateral + cosg*forward - wheelR*angularV);
+            double _rb =  -(-sing*lateral - cosg *forward - wheelR * angularV);
+
+            int lf, rf, lb, rb;
+
+
+            lf = (int)_lf;
+            if (lf > 57) 
+                lf = 57;
+            rf = (int)_rf;
+            if (rf > 57) 
+                rf = 57;
+            lb = (int)_lb;
+            if (lb > 57) 
+                lb = 57;
+            rb = (int)_rb;
+            if (rb > 57) 
+                rb = 57;
+
+
+            //double _scaleDown = 1;
+            //if (_lf > 5 && _rf > 5 && _lb > 5 && _rb > 5) {
+            //    lf = (int)(_lf * _scaleDown);
+            //    rf = (int)(_rf * _scaleDown);
+            //    lb = (int)(_lb * _scaleDown);
+            //    rb = (int)(_rb * _scaleDown);
+            //}
+            //else {
+            //    lf = (int) _lf;
+            //   rf = (int) _rf;
+            //    lb = (int) _lb;
+            //    rb = (int) _rb;
+            //}
+
 
             return new WheelSpeeds(lf, rf, lb, rb);
             //Note somewhere we need to check and ensure that wheel speeds being 
@@ -165,7 +197,7 @@ namespace Robocup.MotionControl {
             //these should all be initialized to their tuned value, or auto tuned
             //they should also all be positive values except maybe D            
 
-            private const int oldErrorsWindowSize = 100;
+            private const int oldErrorsWindowSize = 300;
 
             private DOF_Constants constants;
             public DOF_Constants PIDConstants { get { return constants; } }
@@ -218,13 +250,14 @@ namespace Robocup.MotionControl {
                 
                 Derror = error - oldError;
                 oldError = error;
+
                 //this ensures that the Ierror is calculated for a limited window with a certain fixed size
                 Ierror = Ierror + error - oldErrorsWindow[0];
                 oldErrorsWindow.RemoveAt(0);
                 oldErrorsWindow.Add(error);
 
-
-                return desired + constants.P*error + constants.I*Ierror + constants.D*Derror;
+                double command = desired + constants.P * error + constants.I * Ierror + constants.D * Derror;
+                return command;
             }
 
             //loads/reloads all constants from the file and sets I error to 0 to aid debugging

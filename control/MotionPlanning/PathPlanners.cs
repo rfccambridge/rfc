@@ -36,6 +36,13 @@ namespace Robocup.MotionControl
         }
     }
 
+    // PathPlanner version of the BugNavigator INavigator
+    public class BugNavigatorPlanner : NavigatorPlanner {
+        static BugNavigator navigator = new BugNavigator();
+
+        public BugNavigatorPlanner() : base(navigator) { }
+    }
+
     public class PointChargePlanner : IPathPlanner
     {
         double REPULSION_FACTOR;
@@ -128,87 +135,208 @@ namespace Robocup.MotionControl
         }
     }
 
-    public class BugPlanner : IPathPlanner
+    public class TangentBugPlanner : IPathPlanner
     {
         double LOOK_AHEAD_DIST;
         double AVOID_DIST;
-        double ROTATE_ANGLE;
-        double ITER_INCREMENT;
+        double MIN_ABS_VAL_STICK;
+        double WAYPOINT_DIST;
+        double EXTRA_GOAL_DIST;
+        double BOUNDARY_AVOID;
+
+        double MIN_X_ROBOT_BOUNDARY;
+        double MAX_X_ROBOT_BOUNDARY;
+        double MIN_Y_ROBOT_BOUNDARY;
+        double MAX_Y_ROBOT_BOUNDARY;
+
+        // line segments that must be avoided- field edges and goals
+        List<Line> boundary_lines;
+
+        double previousAngle;
 
         BugNavigator _navigator;
 
         Vector2 lastWaypoint;
 
-        public BugPlanner()
+        public TangentBugPlanner()
         {
             _navigator = new BugNavigator();
             ReloadConstants();
+            previousAngle = 0;
         }
 
         public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
+
             RobotInfo currentState = predictor.getCurrentInformation(id);
 
             Vector2 start = currentState.Position;
             Vector2 end = desiredState.Position;
-
-            // get desired waypoint
-            List<Vector2> obstaclePositions = new List<Vector2>();
-            foreach (RobotInfo info in predictor.getAllInfos())
-            {
-                if (info.ID != id)
-                    //TODO magic number (robot radius)
-                    obstaclePositions.Add(info.Position);
-            }
 
             // keep track of final direction
             Vector2 finalDirection = new Vector2();
 
             // add direction to goal
             Vector2 directionToGoal = (end - start);
+
+            
+            
+            /*// KICK BALL HACK!
+            if (avoidBallRadius == 0.12) {
+                BallInfo ball = predictor.getBallInfo();
+                Vector2 ballPosition = ball.Position;
+                Vector2 ballVector = (ballPosition - currentState.Position);
+                double sqDistToBall = ballVector.magnitudeSq();
+                if (sqDistToBall < .2 && Math.Abs(ballVector.cartesianAngle() - currentState.Orientation) < .3) {
+                    Console.WriteLine("ACTIVATED!!!!!");
+                    List<Vector2> tempWaypoints = new List<Vector2>();
+                    lastWaypoint = start + ballVector.normalizeToLength(20);
+                    tempWaypoints.Add(lastWaypoint);
+
+                    return new RobotPath(id, tempWaypoints);
+                }
+            }
+
+            
+            // if close to the goal, use a little beyond that as a waypoint
+            if (directionToGoal.magnitudeSq() < WAYPOINT_DIST * WAYPOINT_DIST) {
+                List<Vector2> tempWaypoints = new List<Vector2>();
+                lastWaypoint = start + directionToGoal.normalizeToLength(Math.Sqrt(directionToGoal.magnitudeSq()) + EXTRA_GOAL_DIST);
+                tempWaypoints.Add(lastWaypoint);
+
+                return new RobotPath(id, tempWaypoints);
+            }*/
+
+            // if close to the goal, use that
+            if (directionToGoal.magnitudeSq() < WAYPOINT_DIST * WAYPOINT_DIST) {
+                return new RobotPath(id, desiredState.Position);
+            }
+
+            // get desired waypoint
+            List<Vector2> obstaclePositions = new List<Vector2>();
+            foreach (RobotInfo info in predictor.getAllInfos())
+            {
+                if (info.ID != id)
+                    obstaclePositions.Add(info.Position);
+            }
+
             finalDirection = finalDirection + directionToGoal;
 
             //normalize to look ahead distance
-            finalDirection = finalDirection.normalizeToLength(LOOK_AHEAD_DIST);
+            finalDirection = finalDirection.normalizeToLength(WAYPOINT_DIST);
+            double finalDirectionAngle = finalDirection.cartesianAngle();
 
-            // add vectors repelling from obstacles
-            double rotateAmount = 0;
-            Vector2 currentPath;
+            // create possible number range
+            NumberRange angle_range = new NumberRange(-Math.PI, Math.PI, 50);
 
-            while (true)
-            {
-                // check if rotate amount works either way, otherwise keep rotating
-                currentPath = rotateDegree(finalDirection, rotateAmount);
+            double obstacleDist;
+            double obstacleAngle;
+            double angleDiff;
+            double angleAvoid;
 
-                Console.WriteLine("Path: " + currentPath.ToString());
-                Console.WriteLine("Rotate amount: " + rotateAmount);
+            // remove impossible angles
+            foreach (Vector2 o in obstaclePositions) {
+                // get distance to obstacle
+                obstacleDist = start.distanceSq(o);
 
-                if (isGoodPath(obstaclePositions, start, currentPath))
+                // if it is too far away, don't worry
+                // HACK: can be same obstacle, so avoid changes that are way too low. This is a problem.
+                if (obstacleDist > LOOK_AHEAD_DIST || obstacleDist < .001)
                 {
-                    break;
+                    continue;
                 }
 
-                currentPath = rotateDegree(finalDirection, -rotateAmount);
+                // get angle to obstacle
+                obstacleAngle = (o-start).cartesianAngle();
+                angleDiff = UsefulFunctions.angleDifference(finalDirectionAngle, obstacleAngle);
 
-                if (isGoodPath(obstaclePositions, start, currentPath))
-                {
-                    break;
+                // get amount around angle to avoid
+                // note- isn't perfect tangent
+                angleAvoid = Math.Atan(AVOID_DIST / obstacleDist);
+                //Console.WriteLine("FINAL: " + finalDirectionAngle + " OBSTACLE: " + obstacleAngle);
+                //Console.WriteLine("Avoiding obstacle at distance " + obstacleDist);
+                //Console.WriteLine("Obstacle is at angle " + angleDiff);
+                //Console.WriteLine("Avoiding from " + (angleDiff - angleAvoid) + " to " + (angleDiff + angleAvoid));
+
+                // remove this range of the possible angles
+                angle_range.remove(angleDiff - angleAvoid, angleDiff + angleAvoid);
+
+            }
+            
+            // avoid boundary lines, but only if inside boundaries
+            double dist_to_line;
+            Console.WriteLine("checking lines:");
+            // do not perform this loop if inside boundaries
+            Console.WriteLine(start.X + " " + start.Y);
+            if (start.X > MIN_X_ROBOT_BOUNDARY && start.X < MAX_X_ROBOT_BOUNDARY &&
+                start.Y > MIN_Y_ROBOT_BOUNDARY && start.Y < MAX_Y_ROBOT_BOUNDARY) {
+                Console.WriteLine("CHECKING");
+                foreach (Line l in boundary_lines) {
+                    // get distance from line
+                    dist_to_line = l.distFromLine(start);
+                    Console.WriteLine("There is a line at " + dist_to_line + " distance");
+                    // ignore lines more than a certain distance
+                    if (dist_to_line > BOUNDARY_AVOID) {
+                        continue;
+                    }
+
+                    // avoid line
+                    Vector2 proj_point = l.projectionOntoLine(start);
+                    Vector2 dir_to_point = proj_point - start;
+                    double dist_to_point = Math.Sqrt(dir_to_point.magnitudeSq());
+
+                    angleAvoid = Math.Acos(dist_to_point / BOUNDARY_AVOID);
+                    angleDiff = UsefulFunctions.angleDifference(finalDirectionAngle, dir_to_point.cartesianAngle());
+
+                    // remove this range of the possible angles
+                    angle_range.remove(angleDiff - angleAvoid, angleDiff + angleAvoid);
                 }
-
-                rotateAmount = rotateAmount + ITER_INCREMENT;
             }
 
-            Console.WriteLine("IT'S A GOOD PATH AT " + rotateAmount + " DEGREES");
+            // use closest angle to center
+            double bestAngle;
 
-            // create path
-            Console.WriteLine("FINAL " + currentPath);
+            // Once a side has been picked, stick to it
+            // THIS IS A LITTLE BIT OF A HACK!
+            if (previousAngle > MIN_ABS_VAL_STICK)
+            {
+                 bestAngle = angle_range.closestToCenter(-MIN_ABS_VAL_STICK, 100);
+            }
+            else if (previousAngle < -MIN_ABS_VAL_STICK)
+            {
+                bestAngle = angle_range.closestToCenter(-100, MIN_ABS_VAL_STICK);
+            }
+            else
+            {
+                bestAngle = angle_range.closestToCenter(-100, 100);
+            }
 
-            lastWaypoint = start + currentPath;
+            if (bestAngle == -1000) {
+                // no good route- return empty path
+                return new RobotPath(id);
+
+            }
+
+            /*
+            if (Math.Abs(bestAngle) > MIN_ABS_VAL_STICK && Math.Abs(previousAngle) > MIN_ABS_VAL_STICK && 
+                Math.Abs(bestAngle - previousAngle) > 2 * MIN_ABS_VAL_STICK) {
+                double bestAngle = angle_range.closestToCenter();
+
+            }
+             */
+
+            Console.WriteLine("best angle: " + bestAngle);
+
+            finalDirection = rotateDegree(finalDirection, bestAngle);
+
+            previousAngle = bestAngle;
+
+            lastWaypoint = start + finalDirection;
 
             List<Vector2> waypoints = new List<Vector2>();
             waypoints.Add(lastWaypoint);
 
-            Console.WriteLine("LAST WAYPOINT: " + lastWaypoint.ToString());
+            //Console.WriteLine("LAST WAYPOINT: " + lastWaypoint.ToString());
 
             RobotPath path = new RobotPath(id, waypoints);
 
@@ -230,8 +358,38 @@ namespace Robocup.MotionControl
 
             LOOK_AHEAD_DIST = Constants.get<double>("motionplanning", "LOOK_AHEAD_DIST");
             AVOID_DIST = Constants.get<double>("motionplanning", "AVOID_DIST");
-            ROTATE_ANGLE = Constants.get<double>("motionplanning", "ROTATE_ANGLE");
-            ITER_INCREMENT = Constants.get<double>("motionplanning", "ITER_INCREMENT");
+            WAYPOINT_DIST = Constants.get<double>("motionplanning", "WAYPOINT_DIST");
+            MIN_ABS_VAL_STICK = Constants.get<double>("motionplanning", "MIN_ABS_VAL_STICK");
+            EXTRA_GOAL_DIST = Constants.get<double>("motionplanning", "EXTRA_GOAL_DIST");
+
+            
+            MIN_X_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MIN_X_ROBOT_BOUNDARY");
+            MAX_X_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MAX_X_ROBOT_BOUNDARY");
+            MIN_Y_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MIN_Y_ROBOT_BOUNDARY");
+            MAX_Y_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MAX_Y_ROBOT_BOUNDARY");
+
+            BOUNDARY_AVOID = Constants.get<double>("motionplanning", "BOUNDARY_AVOID");
+
+            // field edges
+            // corner points
+            Vector2 topleft = new Vector2(MIN_X_ROBOT_BOUNDARY, MAX_Y_ROBOT_BOUNDARY);
+            Vector2 topright = new Vector2(MAX_X_ROBOT_BOUNDARY, MAX_Y_ROBOT_BOUNDARY);
+            Vector2 bottomleft = new Vector2(MIN_X_ROBOT_BOUNDARY, MIN_Y_ROBOT_BOUNDARY);
+            Vector2 bottomright = new Vector2(MAX_Y_ROBOT_BOUNDARY, MIN_Y_ROBOT_BOUNDARY);
+
+            // create boundary lines
+            boundary_lines = new List<Line>();
+            // top
+            boundary_lines.Add(new Line(topleft, topright));
+            // left
+            boundary_lines.Add(new Line(topleft, bottomleft));
+            // bottom
+            boundary_lines.Add(new Line(bottomleft, bottomright));
+            // right
+            boundary_lines.Add(new Line(topright, bottomright));
+            
+            //ROTATE_ANGLE = Constants.get<double>("motionplanning", "ROTATE_ANGLE");
+            //ITER_INCREMENT = Constants.get<double>("motionplanning", "ITER_INCREMENT");
         }
 
         private bool isOutOfWay(Vector2 position, Vector2 start, Vector2 pathVector)
@@ -313,4 +471,6 @@ namespace Robocup.MotionControl
             return true;
         }
     }
+
+
 }

@@ -912,7 +912,13 @@ namespace Robocup.MotionControl
         }
     }
 
-    public class BugFeedbackMotionPlanner : IMotionPlanner, Robocup.Core.ILogger {       
+    //NOTE: BugFeedbackMotionPlanner, below, is now defined in NewPlanners.cs. It is seperated into
+    //its components, a planner and a driver, but should act exactly identically. You can
+    //edit the components, which are BugNavigatorPlanner to plan the path and PositionFeedbackDriver
+    //to follow that waypoint. You can also comment out that planner and uncomment this one if you must.
+
+#if false
+        public class BugFeedbackMotionPlanner : IMotionPlanner, Robocup.Core.ILogger {       
 
         // Each robot has a feedback object
         private Feedback[] _feedbackObjs;
@@ -1174,6 +1180,7 @@ namespace Robocup.MotionControl
         #endregion        
 
     }
+#endif
 
 
 
