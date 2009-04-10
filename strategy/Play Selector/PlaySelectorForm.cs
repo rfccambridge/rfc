@@ -17,6 +17,8 @@ namespace Robocup.Plays
             foreach (InterpreterPlay play in plays)
                 this.checkedListBox1.Items.Add(play);
             this.checkedListBox1.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox1_ItemCheck);
+            for (int i = 0; i < this.checkedListBox1.Items.Count; ++i)
+                this.checkedListBox1.SetItemChecked(i, true);
         }
 
         // Activates the move button if there are checked items.

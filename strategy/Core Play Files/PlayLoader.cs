@@ -25,11 +25,17 @@ namespace Robocup.Plays
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
+        /// 
         public P load(string s)
+        {
+            return load(s, "UNNAMED?");
+        }
+        public P load(string s, string defaultName)
         {
             Function.AddFunctions(factory.Functions());
 
             play = new P();
+            play.Name = defaultName;
 
             s = s.Replace("#ml", "");
 
@@ -99,6 +105,7 @@ namespace Robocup.Plays
             {
                 play.Conditions.Add(getObject(condition, typeof(bool)));
             }
+
             foreach (string header in (List<string>)definitionLists["metadata"])
             {
                 processMetadata(header);
@@ -135,7 +142,7 @@ namespace Robocup.Plays
                     play.NumRuns = int.Parse(strings[1]);
                     break;*/
                 case "name":
-                    play.Name = strings[1];
+                    play.Name = play.Name + " - " + strings[1];
                     break;
                 case "score":
                     play.Score = double.Parse(strings[1]);

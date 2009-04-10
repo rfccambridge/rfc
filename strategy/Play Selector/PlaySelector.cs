@@ -125,7 +125,7 @@ namespace Robocup.Plays
 //#endif
                                             numOurRobotsAvailable--;
                                             ourteaminfo[i].State = RobotStates.Busy;
-                                            ourPlayNames[id] = "PLAY " + play.Name;
+                                            ourPlayNames[id] = "PLAY " + play.ToString();
                                             break;
                                         }
                                     }

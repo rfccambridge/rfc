@@ -53,7 +53,7 @@ namespace Robocup.Plays
                 try
                 {
                     Console.WriteLine("Loaded: " + fname);
-                    InterpreterPlay p = loader.load(filecontents);
+                    InterpreterPlay p = loader.load(filecontents, Path.GetFileNameWithoutExtension(fname));
                     toRet.Add(p, fname);
                 }
                 catch (Exception ex)

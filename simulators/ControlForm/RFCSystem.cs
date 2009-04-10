@@ -186,8 +186,8 @@ namespace Robocup.ControlForm
                 reader.Dispose();
 
                 try
-                {
-                    InterpreterPlay p = loader.load(filecontents);
+                {   
+                    InterpreterPlay p = loader.load(filecontents, Path.GetFileNameWithoutExtension(fname));
                     plays.Add(p);
                     filenames.Add(p, fname);
                 }
@@ -244,7 +244,7 @@ namespace Robocup.ControlForm
                     initialize();
 
                 _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
-                isYellow = Constants.get<string>("configuration", "OUR_TEAM_COLOR") == "YELLOW";
+                isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
 
                 _refbox.start();
                 t = new System.Timers.Timer(_sleepTime);
