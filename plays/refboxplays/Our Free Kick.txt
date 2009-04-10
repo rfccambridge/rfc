@@ -1,35 +1,36 @@
 # Our Free Kick Specifications: Direct Free Kick
-#  Attempt to Kick Directly into opponents' goal
-#  Kicker cannot touch ball a second time until touched by another robot
-#  Place Kicker on opposite side of ball
-#
+#  Robot0 attempts to Kick Directly into opponents' goal
+#  Robot0 cannot touch ball a second time until touched by another robot
+#  Place Robot0 on opposite side of ball and goal
+#  Find direct line from ball to inside of goal, but if not within 8 seconds, kick anyways
+#  All other team robots are 200 mm away from opponent's defense area
 
 Metadata:
 type SetPlay_Ours
 name Refbox_Our_Free_Kick
-score 102
-
-##todo
+score 100
 Objects:
-ourgoal (point -3.13 0)
-robot0 (closest-with-tags friendly ourgoal loose goalie)
-robot2 (closest enemy ourgoal loose)
-point6 (pointof ball)
-robot4 (closest enemy point6 loose)
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-theirgoal (point 3.13 0)
-point1 (pointof robot0)
-point3 (pointof robot2)
-point5 (pointof robot4)
-line7 (line point5 ourgoal)
-circle8 (circle ourgoal 0.7)
-point9 (linecircleintersection line7 circle8 0)
-line10 (line point3 ourgoal)
-point11 (linecircleintersection line10 circle8 0)
+ourgoal (point -3.15 0)
+theirgoal (point 3.15 0)
+robot1 (closest friendly point1 loose)
+point0 (pointof robot1)
+point1 (pointof ball)
+robot2 (closest enemy ourgoal loose)
+point2 (pointof robot2)
+point3 (point -2.99 0.42)
+point4 (point -2.98 -0.4)
+line5 (line point3 point4)
+line6 (line point1 point7)
+point7 (point -3.07 -0.39)
 Conditions:
+True
 Actions:
-(if_Action (< (pointpointdistance ourgoal point6) 1) (robotpointpointmove robot0 point11 point3) (robotpointpointmove robot0 point9 point5))
-
+(robotpointkick robot1 point7)
+DesignerData:
+ball <-2.2,0.01>
+robot1 <-1.67,-0.02>
+robot2 <-2.83,0.01>
