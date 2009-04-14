@@ -48,6 +48,7 @@ namespace Robocup.Utilities
 
         IPredictor predictor;
         ICoordinateConverter converter;
+        PlayTypes playType;
 
         Dictionary<int, Arrow> _arrows;
         Object _arrowsLock = new Object();
@@ -71,6 +72,8 @@ namespace Robocup.Utilities
 
             _paths = new Dictionary<int, RobotPath>();
             _nextPathID = 0;
+
+            playType = PlayTypes.Stopped;
 
             LoadParameters();
         }
@@ -108,6 +111,10 @@ namespace Robocup.Utilities
 
             GOAL_WIDTH = Constants.get<double>("plays","GOAL_WIDTH");
             GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
+        }
+
+        public void SetPlayType(PlayTypes newPlayType) {
+            playType = newPlayType;
         }
 
         private void drawRobot(RobotInfo r, Color color, Graphics g)
@@ -160,6 +167,11 @@ namespace Robocup.Utilities
             // Team color information
             g.DrawString(OUR_TEAM.ToString() + " PLAYER", _font, new SolidBrush(ourColor),
                          converter.fieldtopixelX(FIELD_XMIN) - 5, converter.fieldtopixelY(FIELD_YMIN) + 40);
+
+                // Game state
+            g.DrawString("GAME STATE: " + playType.ToString(), _font, new SolidBrush(ourColor),
+                            converter.fieldtopixelX(FIELD_XMIN) + 120, converter.fieldtopixelY(FIELD_YMIN) + 40);
+
 
             // goal dots
             Brush b0 = new SolidBrush(Color.YellowGreen);

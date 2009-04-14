@@ -120,7 +120,8 @@ namespace Robocup.ControlForm
             //IMotionPlanner planner = new Robocup.MotionControl.CircleFeedbackMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.BugFeedbackMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.FeedbackVeerMotionPlanner();
-            IMotionPlanner planner = new Robocup.MotionControl.DefaultMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.DefaultMotionPlanner();
+            IMotionPlanner planner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
 
             for (int i = 0; i < 10; i++)
             {
@@ -198,7 +199,7 @@ namespace Robocup.ControlForm
                 }
             }
 
-            _interpreter = new Interpreter((Constants.get<int>("plays","IS_OUR_GOAL_LEFT")!=1), plays.ToArray(), _predictor, _controller);
+            _interpreter = new Interpreter(Constants.get<bool>("plays","IS_OUR_GOAL_LEFT"), plays.ToArray(), _predictor, _controller);
 
             running = false;
             if (wasRunning)
@@ -283,19 +284,23 @@ namespace Robocup.ControlForm
         {
             if (counter % 100 == 0)
                 Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
-            _controller.clearArrows();
+            _controller.clearArrows();            
             _interpreter.interpret(
                 _refbox.GetCurrentPlayType()
             );
             if (RoundRan != null)
-                RoundRan(this, new EventArgs());
-            Console.WriteLine("play type is: " + _refbox.GetCurrentPlayType());
+                RoundRan(this, new EventArgs());            
             counter++;
         }
 
+        public PlayTypes getCurrentPlayType() {
+            return _refbox.GetCurrentPlayType();
+        }
+
         public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter)
-        {
+        {            
             _controller.drawCurrent(g, converter);
+
         }
     }
 }

@@ -6,6 +6,8 @@ using Robocup.Utilities;
 
 namespace Robocup.CoreRobotics
 {
+
+
     /// <summary>
     /// A basic implementation of IPredictor that just remembers the last values that it saw.
     /// </summary>
@@ -94,7 +96,8 @@ namespace Robocup.CoreRobotics
                     //and set the id of the new one to be the old one
                     List<RobotInfo> newInfoList = new List<RobotInfo>();
                     RobotInfo matched;
-                    foreach (RobotInfo oldInfo in getMergedInfos())
+                    List<RobotInfo> merged = getMergedInfos();
+                    foreach (RobotInfo oldInfo in merged)
                     {
                         matched = null;
                         foreach (RobotInfo newInfo in newInfos)
@@ -236,14 +239,32 @@ namespace Robocup.CoreRobotics
         private readonly BasicPredictorHelper our_helper = new BasicPredictorHelper(true);
         private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(false);
 
+        // Should really be a generalized game state
+        private PlayTypes playType;
+
         private double MAX_SECONDS_TO_KEEP_INFO;
         private double VELOCITY_DT;
         private double BALL_POSITION_WEIGHT_OLD;
         private double BALL_POSITION_WEIGHT_NEW;
+        private double BALL_MOVED_DIST;
+
+        private bool IS_OUR_GOAL_LEFT;
+        
+        // Predefined ball positions, when in a refbox gamestate
+        private BallInfo BALL_POS_KICKOFF;
+        private BallInfo BALL_POS_PENALTY;
+
+        // Mark is currently set
+        bool marking;          
+        Vector2 markedPosition;
 
         public BasicPredictor()
         {
             LoadConstants();
+
+            playType = PlayTypes.Stopped;      
+            marking = false;            
+            markedPosition = new Vector2(0.0, 0.0);
         }
         
         public void LoadConstants()
@@ -252,7 +273,16 @@ namespace Robocup.CoreRobotics
             VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
             BALL_POSITION_WEIGHT_OLD = Constants.get<double>("default", "BALL_POSITION_WEIGHT_OLD");
             BALL_POSITION_WEIGHT_NEW = Constants.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
-            
+            BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
+
+            IS_OUR_GOAL_LEFT = Constants.get<bool>("plays", "IS_OUR_GOAL_LEFT");
+
+            // Predefined locations of the ball  based on the play
+            BALL_POS_PENALTY = new BallInfo(new Vector2(Constants.get<double>("plays", "BALL_POS_PENALTY_X"),
+                                                        Constants.get<double>("plays", "BALL_POS_PENALTY_Y")));
+            BALL_POS_KICKOFF = new BallInfo(new Vector2(Constants.get<double>("plays", "BALL_POS_KICKOFF_X"),
+                                                        Constants.get<double>("plays", "BALL_POS_KICKOFF_Y")));
+
             our_helper.LoadConstants();
             their_helper.LoadConstants();
         }
@@ -261,10 +291,56 @@ namespace Robocup.CoreRobotics
         #region IPredictor Members
 
         public BallInfo getBallInfo()
-        {            
+        {
+            int sign;
+            BallInfo ballPos;
+
             if (ballInfo == null)
-                return new BallInfo(new Vector2(0, 0), new Vector2(0, 0));
-            return ballInfo;
+                //return new BallInfo(new Vector2(0, 0), new Vector2(0, 0));
+                throw new ApplicationException("BasicPredictor.getBallInfo: internal ball is null!");
+
+
+            // Either return a predefined ball position or the one the vision actually
+            // sees based on the current game state
+            switch (playType) {
+                case PlayTypes.PenaltyKick_Ours:
+                case PlayTypes.PenaltyKick_Ours_Setup:
+                    sign = (IS_OUR_GOAL_LEFT) ? -1 : 1;
+                    ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
+                                                              BALL_POS_PENALTY.Position.Y));
+                    return ballPos;                    
+                case PlayTypes.PenaltyKick_Theirs:                
+                    sign = (IS_OUR_GOAL_LEFT) ? 1 : -1;
+                    ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
+                                                       BALL_POS_PENALTY.Position.Y));
+                    return ballPos;
+                case PlayTypes.KickOff_Ours:
+                case PlayTypes.KickOff_Ours_Setup:
+                case PlayTypes.KickOff_Theirs:
+                case PlayTypes.Kickoff_Theirs_Setup:
+                    return BALL_POS_KICKOFF;
+                default:
+                    return ballInfo;                   
+            }
+        }
+
+        public void setBallMark() {           
+            markedPosition = new Vector2(ballInfo.Position.X, ballInfo.Position.Y);
+            marking = true;
+        }
+
+        public void clearBallMark() {
+            marking = false;
+        }
+
+        public bool hasBallMoved() {
+            if (ballInfo == null) {
+                throw new ApplicationException("BasicPredictor.hasBallMoved: internal ball is null!");
+            }
+
+            if (!marking) return true;
+            bool ret = markedPosition.distanceSq(ballInfo.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST;
+            return ret;
         }
 
         public RobotInfo getCurrentInformation(int robotID)
@@ -313,7 +389,8 @@ namespace Robocup.CoreRobotics
             // Apply the same stickiness rule as for the robots
             if (ballInfo == null) {
                 if (dt > MAX_SECONDS_TO_KEEP_INFO) {
-                    this.ballInfo = null;                    
+                    // Just keep the old location for now.
+                    //this.ballInfo = null;                    
                 }
                 return;
             }
@@ -350,6 +427,11 @@ namespace Robocup.CoreRobotics
         {
             throw new ApplicationException("this is not implemented");                                   
         }
+
+        public void setPlayType(PlayTypes newPlayType) {
+            playType = newPlayType;
+        }
+
         #endregion
     }
 }

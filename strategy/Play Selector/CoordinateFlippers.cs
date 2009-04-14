@@ -53,6 +53,22 @@ namespace Robocup.Plays
             return new BallInfo(-info.Position, -info.Velocity);
         }
 
+        public void setBallMark() {
+            predictor.setBallMark();
+        }
+
+        public void clearBallMark() {
+            predictor.clearBallMark();
+        }
+
+        public bool hasBallMoved() {
+            return predictor.hasBallMoved();
+        }
+
+        public void setPlayType(PlayTypes newPlayType) {
+            predictor.setPlayType(newPlayType);
+        }
+
         #endregion
     }
     /// <summary>
@@ -131,6 +147,22 @@ namespace Robocup.Plays
         public BallInfo getBallInfo()
         {
             return predictor.getBallInfo();
+        }
+
+        public void setBallMark() {
+            predictor.setBallMark();
+        }
+
+        public void clearBallMark() {
+            predictor.clearBallMark();
+        }
+
+        public bool hasBallMoved() {
+            return predictor.hasBallMoved();
+        }
+
+        public void setPlayType(PlayTypes newPlayType) {
+            predictor.setPlayType(newPlayType);
         }
 
         #endregion

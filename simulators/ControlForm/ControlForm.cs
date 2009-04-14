@@ -154,7 +154,8 @@ namespace Robocup.ControlForm {
 
             lock (field_lock)
             {
-                //_system.drawCurrent(_field.getGraphics(), converter);
+                //_system.drawCurrent(_field.getGraphics(), converter);                
+                drawer.setPlayType(_system.getCurrentPlayType());
                 _system.drawCurrent(drawer.CreateGraphics(), converter);
             }
         }

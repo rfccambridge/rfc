@@ -20,9 +20,7 @@ namespace Robocup.CoreRobotics
         int lastCmdCounter;
 
         public RefBoxState(IRefBoxListener referee, IPredictor predictor, bool yellow)
-        {
-            marking = false;
-            markedPosition = new Vector2(0.0, 0.0);
+        {          
             //TODO change this back so that it defaults to Halt?
             playsToRun = PlayTypes.Halt;
             
@@ -50,13 +48,9 @@ namespace Robocup.CoreRobotics
 
         public PlayTypes GetCurrentPlayType()
         {
-            if (marking)
-            {
-                if (hasBallMoved(.02))
-                {
-                    playsToRun = PlayTypes.NormalPlay;
-                    clearBallMark();
-                }
+           if (_predictor.hasBallMoved()) {
+                    playsToRun = PlayTypes.NormalPlay;                    
+                    _predictor.clearBallMark();
             }
             if (lastCmdCounter < _referee.getCmdCounter())
             {
@@ -85,7 +79,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayTypes.PenaltyKick_Ours;
                         if (playsToRun == PlayTypes.KickOff_Ours_Setup)
                             playsToRun = PlayTypes.KickOff_Ours;
-                        setBallMark();
+                        _predictor.setBallMark();
                         break;
                     case MulticastRefBoxListener.KICKOFF_BLUE:
                         if (isYellow)
@@ -107,7 +101,7 @@ namespace Robocup.CoreRobotics
                         {
                             playsToRun = PlayTypes.SetPlay_Ours;
                         }
-                        setBallMark();
+                        _predictor.setBallMark();
                         break;
                     case MulticastRefBoxListener.KICKOFF_YELLOW:
                         if (!isYellow)
@@ -129,7 +123,7 @@ namespace Robocup.CoreRobotics
                         {
                             playsToRun = PlayTypes.SetPlay_Ours;
                         }
-                        setBallMark();
+                        _predictor.setBallMark();
                         break;
                     case MulticastRefBoxListener.PENALTY_BLUE:
                         // handle penalty
@@ -157,25 +151,10 @@ namespace Robocup.CoreRobotics
                 }
             }
             //Console.WriteLine("playtype: " + playsToRun);
+            _predictor.setPlayType(playsToRun);
             return playsToRun;
         }
 
-        void setBallMark()
-        {
-            markedPosition = new Vector2(_predictor.getBallInfo().Position.X, _predictor.getBallInfo().Position.Y);
-            marking = true;
-        }
-
-        bool hasBallMoved(double dist_mm)
-        {
-            if (!marking) return true;
-            bool ret = markedPosition.distanceSq(_predictor.getBallInfo().Position) > dist_mm * dist_mm;
-            return ret;
-        }
-
-        void clearBallMark()
-        {
-            marking = false;
-        }
+    
     }
 }

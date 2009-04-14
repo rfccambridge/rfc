@@ -56,6 +56,22 @@ namespace Robocup.CoreRobotics
             return rtn;
         }
 
+        public void setBallMark() {
+            throw new ApplicationException("StaticPredictor.setBallMark: not implemented");
+        }
+
+        public void clearBallMark() {
+            throw new ApplicationException("StaticPredictor.clearBallMark: not implemented");
+        }
+
+        public bool hasBallMoved() {
+            throw new ApplicationException("StaticPredictor.hasBallMoved: not implemented");
+        }
+
+        public void setPlayType(PlayTypes newPlayType) {
+            throw new ApplicationException("StaticPredictor.setPlayType: not implemented");
+        }
+
         #endregion
 
         #region IInfoAcceptor Members

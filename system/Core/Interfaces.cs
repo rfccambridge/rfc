@@ -34,7 +34,7 @@ namespace Robocup.Core {
         SetPlay_Theirs,
         PenaltyKick_Ours,
         PenaltyKick_Ours_Setup,
-        PenaltyKick_Theirs,
+        PenaltyKick_Theirs,        
         KickOff_Ours,
         KickOff_Ours_Setup,
         Kickoff_Theirs_Setup,
@@ -118,7 +118,29 @@ namespace Robocup.Core {
         List<RobotInfo> getOurTeamInfo();
         List<RobotInfo> getTheirTeamInfo();
         List<RobotInfo> getAllInfos();
+        /// <summary>
+        /// Returns ball position ***based on the game state***
+        /// </summary>
+        /// <returns></returns>
         BallInfo getBallInfo();
+        /// <summary>
+        /// Marks used by hasBallMoved to track if ball has moved
+        /// </summary>
+        void setBallMark();
+        /// <summary>
+        /// Marks used by hasBallMoved to track if ball has moved
+        /// </summary>
+        void clearBallMark();
+        /// <summary>
+        /// Tracks if the ball has moved (does not use getBallInfo, of course); 
+        /// use set/clearBallMark() to manage the tracking
+        /// </summary>
+        /// <returns></returns>
+        bool hasBallMoved();
+        /// <summary>
+        /// Sets the type of play. Could use better summary
+        /// </summary>
+        void setPlayType(PlayTypes newPlayType);
     }
 
     /// <summary>
