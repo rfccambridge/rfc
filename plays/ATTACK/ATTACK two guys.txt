@@ -1,0 +1,28 @@
+Metadata:
+type NormalPlay
+name AttackTwoGuys
+score 2.002615
+
+Objects:
+point2 (pointof ball)
+robot0 (closest friendly point2 loose)
+point1 (pointof robot0)
+circleball (circle point2 1.0)
+balltogoal (line point2 theirgoal) 
+robot1goto (linecircleintersection balltogoal circleball)
+robot1 (closest friendly robot1goto loose)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.13 0)
+theirgoal (point 3.13 0)
+
+Conditions:
+(< 0.6 (pointpointdistance point1 ourgoal))
+
+Actions:
+(if_Action (< (pointpointdistance point1 point2) (pointpointdistance robot1point point2))
+(robotpointkick robot0 theirgoal) (robotpointmove robot0 robot1goto))
+(if_Action (< (pointpointdistance point1 point2) (pointpointdistance robot1point point2))
+(robotpointmove robot1 robot1goto) (robotpointkick robot1 robot1goto))
