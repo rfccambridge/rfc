@@ -8,10 +8,7 @@ namespace Robocup.CoreRobotics
 {
     public class RefBoxState : IReferee
     {
-        bool isYellow;
-
-        bool marking;
-        Vector2 markedPosition;
+        bool isYellow;                
         PlayTypes playsToRun;
         
         IRefBoxListener _referee;

@@ -38,6 +38,7 @@ namespace Robocup.Utilities
             this.Name = "FieldDrawerForm";
             this.Text = "FieldDrawerForm";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FieldDrawerForm_KeyPress);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FieldDrawerForm_FormClosing);
             this.ResumeLayout(false);
 
         }

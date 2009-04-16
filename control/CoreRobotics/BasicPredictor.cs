@@ -251,6 +251,7 @@ namespace Robocup.CoreRobotics
         private bool IS_OUR_GOAL_LEFT;
         
         // Predefined ball positions, when in a refbox gamestate
+        private bool ASSUME_BALL;
         private BallInfo BALL_POS_KICKOFF;
         private BallInfo BALL_POS_PENALTY;
 
@@ -278,10 +279,13 @@ namespace Robocup.CoreRobotics
             IS_OUR_GOAL_LEFT = Constants.get<bool>("plays", "IS_OUR_GOAL_LEFT");
 
             // Predefined locations of the ball  based on the play
+            ASSUME_BALL = Constants.get<bool>("plays", "ASSUME_BALL");
             BALL_POS_PENALTY = new BallInfo(new Vector2(Constants.get<double>("plays", "BALL_POS_PENALTY_X"),
                                                         Constants.get<double>("plays", "BALL_POS_PENALTY_Y")));
             BALL_POS_KICKOFF = new BallInfo(new Vector2(Constants.get<double>("plays", "BALL_POS_KICKOFF_X"),
                                                         Constants.get<double>("plays", "BALL_POS_KICKOFF_Y")));
+
+
 
             our_helper.LoadConstants();
             their_helper.LoadConstants();
@@ -295,10 +299,11 @@ namespace Robocup.CoreRobotics
             int sign;
             BallInfo ballPos;
 
-            if (ballInfo == null)
-                //return new BallInfo(new Vector2(0, 0), new Vector2(0, 0));
+            if (ballInfo == null)                
                 throw new ApplicationException("BasicPredictor.getBallInfo: internal ball is null!");
 
+            if (!ASSUME_BALL)
+                return ballInfo;
 
             // Either return a predefined ball position or the one the vision actually
             // sees based on the current game state

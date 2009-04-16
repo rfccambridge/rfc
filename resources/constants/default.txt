@@ -37,3 +37,9 @@ bool ROBOT_HAS_KICKER_4 true
 bool ROBOT_IS_GOALIE_0 true
 
 int PATH_RECALCULATE_INTERVAL 500
+
+# GUI: ControlForm default values for text fields, no real effect
+# Presumably, each machine would have a private convenient setting for these
+string DEFAULT_HOST_VISION_TOP localhost
+string DEFAULT_HOST_VISION_BOTTOM marduk
+string DEFAULT_HOST_SERIAL localhost

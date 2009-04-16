@@ -21,9 +21,10 @@ namespace Robocup.ControlForm {
         bool visionTopConnected = false;
         bool visionBottomConnected = false;
 
-        VisionMessage.Team OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
+        VisionMessage.Team OUR_TEAM;
 
         int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
+        
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionTop;
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionBottom;
 
@@ -34,46 +35,48 @@ namespace Robocup.ControlForm {
         bool systemStarted = false;
         RFCSystem _system;
 
-        BasicPredictor _basicPredictor;
+        BasicPredictor _predictor;
         //ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(420,610, 5, 5);
         ICoordinateConverter converter;
 
-
-        //static bool isOmegaTop = (Constants.get<int>("vision", "CAMERA_ID_OMEGA") == 1);
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
-        String DEFAULT_TOP = "localhost";
-        String DEFAULT_BOTTOM = "marduk";
-        String DEFAULT_SERIAL = "localhost";
-
 
         public ControlForm() {
             InitializeComponent();
 
-            //_field = new FieldStateForm();
-            //_field.Show();
+            LoadConstants();
 
-            visionTopHost.Text = DEFAULT_TOP;
-            visionBottomHost.Text = DEFAULT_BOTTOM;
-            serialHost.Text = DEFAULT_SERIAL;
+            playSelectorForm = new PlaySelectorForm();
+            playSelectorForm.Show();
+
+            // Defaults hosts for the GUI, for convenience only
+            visionTopHost.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_TOP");
+            visionBottomHost.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_BOTTOM");
+            serialHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SERIAL");
 
             createSystem();
 
             this.Focus();
         }
 
+        public void LoadConstants()
+        {            
+            OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
+        }
+
         private void createSystem() {
             _serial = new RemoteRobots();
             _system = new RFCSystem();
 
-            _basicPredictor = new BasicPredictor();
+            _predictor = new BasicPredictor();
             // add vision predictor hooked up to vision
-            _system.registerAcceptor(_basicPredictor);
-            _system.registerPredictor(_basicPredictor);
+            _system.registerAcceptor(_predictor);
+            _system.registerPredictor(_predictor);
 
             if (drawer != null)
                 drawer.Close();
-            drawer = new FieldDrawerForm(_basicPredictor);
+            drawer = new FieldDrawerForm(_predictor);
             converter = drawer.Converter;
             drawer.Show();
             
@@ -82,14 +85,14 @@ namespace Robocup.ControlForm {
 
             // todo
             _system.initialize();
+            _system.reloadPlays();          
+
             drawer.drawer.ourPlayNames = _system.getInterpreter().ourPlayNames;
             drawer.drawer.theirPlayNames = _system.getInterpreter().theirPlayNames;
 
             // playSelectorForm
-            if (playSelectorForm != null)
-                playSelectorForm.Close();
-            playSelectorForm = new PlaySelectorForm(_system.getInterpreter().getPlays());
-            playSelectorForm.Show();
+            playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
+            
         }
 
         private void serialConnect_Click(object sender, EventArgs e) {
@@ -125,11 +128,7 @@ namespace Robocup.ControlForm {
         object field_lock = new object();
         object predictor_lock = new object();
         private void handleVisionUpdate(VisionMessage msg, String cameraName) {
-            //lock (field_lock)
-            //{
-            //    _field.UpdateState(msg);
-            //}
-            
+          
             List<RobotInfo> ours = new List<RobotInfo>();
             List<RobotInfo> theirs = new List<RobotInfo>();
 
@@ -140,14 +139,14 @@ namespace Robocup.ControlForm {
 
             lock (predictor_lock)
             {
-                _basicPredictor.updatePartOurRobotInfo(ours, cameraName);
-                _basicPredictor.updatePartTheirRobotInfo(theirs, cameraName);
+                _predictor.updatePartOurRobotInfo(ours, cameraName);
+                _predictor.updatePartTheirRobotInfo(theirs, cameraName);
                 if (msg.BallPosition != null) {
                     //Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
-                    _basicPredictor.updateBallInfo(new BallInfo(msg.BallPosition));
+                    _predictor.updateBallInfo(new BallInfo(msg.BallPosition));
                 }
                 else {
-                    _basicPredictor.updateBallInfo(null);
+                    _predictor.updateBallInfo(null);
                 }
             }
             drawer.Invalidate();
@@ -208,13 +207,21 @@ namespace Robocup.ControlForm {
                     return false;
                 }
 
-                _system.reloadConstants();
-                Console.WriteLine("Constants reloaded.");
+                Constants.Load();
+                
+                LoadConstants();
+                _predictor.LoadConstants();
+                _system.LoadConstants();
+                _system.reloadPlays();
+                
+                playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
+                
+                Console.WriteLine("Constants and plays reloaded.");
             }
 
             if (keyData == (Keys.Control | Keys.C)) {
                 if (systemStarted) {
-                    MessageBox.Show("System running. Need to stop system to reload contants.");
+                    MessageBox.Show("System running. Need to stop system to set refbox listener.");
                     return false;
                 }
                 _system.setRefBoxListener();

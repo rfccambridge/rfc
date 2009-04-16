@@ -86,5 +86,10 @@ namespace Robocup.Utilities
             }
         }
 
+        private void FieldDrawerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
     }
 }

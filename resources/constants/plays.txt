@@ -19,4 +19,17 @@ double GOAL_WIDTH .18
 double GOAL_HEIGHT .7
 
 # Is the goal we are defending at (-FIELD_WIDTH/2 - GOAL_WIDTH)?: 0 - false, 1 - true
-int IS_OUR_GOAL_LEFT 1
+bool IS_OUR_GOAL_LEFT true
+
+# delta distance for deciding that ball has moved
+double BALL_MOVED_DIST 0.02
+
+# Predefined ball positions when in refbox game state
+bool ASSUME_BALL false
+
+# for penalty: not absolute, but positive dist from center, sign set by BasicPredictor
+double BALL_POS_PENALTY_X 2.575
+double BALL_POS_PENALTY_Y 0
+
+double BALL_POS_KICKOFF_X 0
+double BALL_POS_KICKOFF_Y 0

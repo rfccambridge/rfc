@@ -20,9 +20,7 @@ namespace Robocup.ControlForm
 {
     // make this load/instantiate from a text file
     public class RFCSystem
-    {
-        
-
+    {        
         IPredictor _predictor;
         RFCController _controller;
         Interpreter _interpreter;
@@ -58,10 +56,10 @@ namespace Robocup.ControlForm
             initialized = false;
             running = false;
 
-            reloadConstants();
+            LoadConstants();
         }
 
-        public void reloadConstants() {
+        public void LoadConstants() {            
             REFBOX_PORT = Constants.get<int>("default","REFBOX_PORT");
             REFBOX_ADDR = Constants.get<string>("default", "REFBOX_ADDR");
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
@@ -168,7 +166,20 @@ namespace Robocup.ControlForm
             _controller = new RFCController(
                 _commander, planner, _predictor
             );
+           
+            _interpreter = new Interpreter(Constants.get<bool>("plays","IS_OUR_GOAL_LEFT"), _predictor, _controller);
 
+            running = false;
+            if (wasRunning)
+            {
+                start();
+            }
+            initialized = true;
+
+        }
+
+        public void reloadPlays()
+        {
             // create interpreter from file
             PlayLoader<InterpreterPlay, InterpreterExpression> loader =
                 new PlayLoader<InterpreterPlay, InterpreterExpression>(new InterpreterExpression.Factory());
@@ -187,7 +198,7 @@ namespace Robocup.ControlForm
                 reader.Dispose();
 
                 try
-                {   
+                {
                     InterpreterPlay p = loader.load(filecontents, Path.GetFileNameWithoutExtension(fname));
                     plays.Add(p);
                     filenames.Add(p, fname);
@@ -199,17 +210,9 @@ namespace Robocup.ControlForm
                 }
             }
 
-            _interpreter = new Interpreter(Constants.get<bool>("plays","IS_OUR_GOAL_LEFT"), plays.ToArray(), _predictor, _controller);
-
-            running = false;
-            if (wasRunning)
-            {
-                start();
-            }
-            initialized = true;
-
+            _interpreter.LoadPlays(plays);
         }
-
+       
         public Interpreter getInterpreter() {
             return _interpreter;
         }

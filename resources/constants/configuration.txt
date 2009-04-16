@@ -1,4 +1,4 @@
-string OUR_TEAM_COLOR YELLOW
+string OUR_TEAM YELLOW
 
 # robot dot patterns: FrontLeft, FrontRight, RearLeft, RearRight (P = Pink, C = Cyan, G = Green)
 

@@ -20,11 +20,10 @@ namespace Robocup.Plays
         public Dictionary<int, string> ourPlayNames = new Dictionary<int, string>();
         public Dictionary<int, string> theirPlayNames = new Dictionary<int, string>();
 
-        public Interpreter(bool flipCoordinates, InterpreterPlay[] plays,
-                           IPredictor predictor, IActionInterpreter actioninterpreter)
+        public Interpreter(bool flipCoordinates, IPredictor predictor, IActionInterpreter actioninterpreter)
         {
-            selector = new PlaySelector();
-            this.plays.AddRange(plays);
+            selector = new PlaySelector();           
+            
             if (flipCoordinates)
             {
                 //if we have to flip the coordinates, wrap the predictor/actioninterpreter
@@ -37,8 +36,8 @@ namespace Robocup.Plays
                 this.predictor = predictor;
             }
         }
-        public Interpreter(bool flipCoordinates, InterpreterPlay[] plays, IPredictor predictor, IController commander)
-            : this(flipCoordinates, plays, predictor, new ActionInterpreter(commander, predictor)) { }
+        public Interpreter(bool flipCoordinates, IPredictor predictor, IController commander)
+            : this(flipCoordinates, predictor, new ActionInterpreter(commander, predictor)) { }
         volatile bool running = false;
         object run_lock = new object();
         private List<InterpreterPlay> lastRunPlays = new List<InterpreterPlay>();
@@ -60,6 +59,11 @@ namespace Robocup.Plays
         {
             RemovePlay(old_play);
             AddPlay(new_play);
+        }
+        public void LoadPlays(List<InterpreterPlay> newPlays)
+        {
+            plays.Clear();
+            plays.AddRange(newPlays);
         }
 
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();
@@ -83,7 +87,6 @@ namespace Robocup.Plays
             {
                 return new InterpreterRobotInfo(info);
             }).ToArray();
-
 
             BallInfo ballinfo = predictor.getBallInfo();
             

@@ -89,7 +89,7 @@ namespace Robocup.CoreRobotics
             try {
                 thisRobot = Predictor.getCurrentInformation(robotID);
             }
-            catch (ApplicationException e) {
+            catch (ApplicationException) {
                 Console.WriteLine("Predictor did not find Robot " + robotID.ToString());
                 return;
             }

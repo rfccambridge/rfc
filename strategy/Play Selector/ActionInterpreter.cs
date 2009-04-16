@@ -45,7 +45,7 @@ namespace Robocup.Plays
             try {
                 thisrobot = getOurRobotFromID(robotID);
                 ball = predictor.getBallInfo().Position;
-            } catch (ApplicationException e) {
+            } catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
@@ -122,7 +122,7 @@ namespace Robocup.Plays
                 ballinfo = predictor.getBallInfo();
                 ball = ballinfo.Position;
             }
-            catch (ApplicationException e) {
+            catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
@@ -190,7 +190,7 @@ namespace Robocup.Plays
                 ballinfo = predictor.getBallInfo();
                 ball = ballinfo.Position;
             }
-            catch (ApplicationException e) {
+            catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
@@ -232,7 +232,7 @@ namespace Robocup.Plays
                 else
                     commander.move(robotID, true, target);
             }
-            catch (ApplicationException e) {
+            catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
@@ -258,7 +258,7 @@ namespace Robocup.Plays
                 else
                     commander.move(robotID, avoidBall, target, orient);
             }
-            catch (ApplicationException e) {
+            catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
