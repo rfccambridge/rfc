@@ -1,0 +1,53 @@
+Metadata:
+type NormalPlay
+name AttackThreeGuys
+score 3.002615
+
+Objects:
+point2 (pointof ball)
+robot0 (closest friendly point2 loose)
+point1 (pointof robot0)
+numbots (numourbots)
+circleball (circle point2 1.0)
+balltogoal (line point2 theirgoal) 
+supportgoto (linecircleintersection balltogoal circleball 1)
+robot1 (closest friendly supportgoto loose)
+robot1point (pointof robot1)
+robot2 (closest friendly theirgoal loose)
+robot2point (pointof robot2)
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.13 0)
+theirgoal (point 3.13 0)
+theirgoalpositivequad (linecircleintersection (line theirgoal topCenter) (circle theirgoal 1.7) 1)
+theirgoalnegativequad (linecircleintersection (line theirgoal bottomCenter) (circle theirgoal 1.7) 1)
+robot0closesttoball (and (< (pointpointdistance point1 point2) (pointpointdistance robot1point point2)) (< (pointpointdistance point1 point2) (pointpointdistance robot2point point2)))
+robot1closesttoball (and (< (pointpointdistance robot1point point2) (pointpointdistance point1 point2)) (not robot0closesttoball))
+robot2closesttoball (not (or robot0closesttoball robot1closesttoball))
+robot0kicktogoal (robotpointkick robot0 theirgoal)
+robot1kicktogoal (robotpointkick robot1 theirgoal)
+robot2kicktogoal (robotpointkick robot2 theirgoal)
+standby_point (if_point ballpositive theirgoalnegativequad theirgoalpositivequad)
+backup_standby_point (if_point ballpositive theirgoalpositivequad theirgoalnegativequad)
+loose_standby_point (if_point robot2closesttoball standby_point backup_standby_point)
+robot0_on_ballclosetogoal (robotpointmove robot0 loose_standby_point)
+robot1_on_ballclosetogoal (robotpointmove robot1 loose_standby_point)
+robot2_on_ballclosetogoal (robotpointmove robot2 standby_point)
+robot0_support (if_Action ballinrange robot0_on_ballclosetogoal (robotpointmove robot0 supportgoto))
+robot1_support (if_Action ballinrange robot1_on_ballclosetogoal (robotpointmove robot1 supportgoto))
+robot2_support (if_Action ballinrange robot2_on_ballclosetogoal (robotpointmove robot2 standby_point))
+ballinrange (< (pointpointdistance point2 theirgoal) 2)
+ballpositive (< 0 (getYcoord point2))
+
+Conditions:
+(< 0.6 (pointpointdistance point1 ourgoal))
+(< numbots 6)
+
+Actions:
+(if_Action robot0closesttoball robot0kicktogoal robot0_support)
+(if_Action robot1closesttoball robot1kicktogoal robot1_support)
+(if_Action robot2closesttoball robot2kicktogoal robot2_support)
