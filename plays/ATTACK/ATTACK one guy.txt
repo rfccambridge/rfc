@@ -18,5 +18,5 @@ Conditions:
 (< 0.6 (pointpointdistance point1 ourgoal))
 
 Actions:
-(robotpointmove robot0 point2)
+(robotpointkick robot0 theirgoal)
 

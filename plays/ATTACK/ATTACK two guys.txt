@@ -4,14 +4,6 @@ name AttackTwoGuys
 score 2.002615
 
 Objects:
-point2 (pointof ball)
-robot0 (closest friendly point2 loose)
-point1 (pointof robot0)
-circleball (circle point2 1.0)
-balltogoal (line point2 theirgoal) 
-robot1goto (linecircleintersection balltogoal circleball 1)
-robot1 (closest friendly robot1goto loose)
-robot1point (pointof robot1)
 topCenter (point 0 2.1)
 bottomCenter (point 0 -2.1)
 topLeftCorner (point -3.05 2.1)
@@ -20,14 +12,74 @@ bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
 ourgoal (point -3.13 0)
 theirgoal (point 3.13 0)
-theirgoalpositivequad (linecircleintersection (line theirgoal topCenter) (circle theirgoal 1.0) 1)
-theirgoalnegativequad (linecircleintersection (line theirgoal bottomCenter) (circle theirgoal 1.0) 1)
-robot0closertoball (< (pointpointdistance point1 point2) (pointpointdistance robot1point point2))
-ballinrange (< (pointpointdistance point2 theirgoal) 1.3)
+
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
+GOAL_MINIMUM (const-double GOAL_MINIMUM)
+BALL_IN_RANGE (const-double BALL_IN_RANGE)
+SUPPORT_AVOID (const-double SUPPORT_AVOID)
+CLEAR_DIST (const-double CLEAR_DIST)
+SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
+
+ballpoint (pointof ball)
+numbots (numourbots)
+circleball (circle ballpoint BALL_KICK_DIST)
+balltogoal (line ballpoint theirgoal)
+balldestination (linecircleintersection balltogoal circleball 1)
+addtosupport (point 0 SUPPORT_AVOID)
+addtosupportpass (point 0 SUPPORT_SETUP_PASS)
+cleartogoal (pathClear ballpoint theirgoal CLEAR_DIST)
+clearcloserange (pathClear ballpoint balldestination CLEAR_DIST)
+ballinrange (< (pointpointdistance ballpoint theirgoal) BALL_IN_RANGE)
+ballpositive (< 0 (getYcoord ballpoint))
+
+theirgoalcircle (circle theirgoal STANDBY_DISTANCE)
+theirgoalpositivequad (linecircleintersection (line theirgoal topCenter) theirgoalcircle 1)
+theirgoalnegativequad (linecircleintersection (line theirgoal bottomCenter) theirgoalcircle 1)
+
+standby_point (if_point ballpositive theirgoalnegativequad theirgoalpositivequad)
+
+robot0 (closest friendly ballpoint loose)
+robot1 (closest friendly balldestination loose)
+robot0point (pointof robot0)
+robot1point (pointof robot1)
+
+robot0closesttoball (< (pointpointdistance robot0point ballpoint) (pointpointdistance robot1point ballpoint))
+
+kickerrobot (if_robot robot0closesttoball robot0 robot1)
+supportrobot (if_robot robot0closesttoball robot1 robot0)
+
+kickerrobotpoint (if_point robot0closesttoball robot0point robot1point)
+supportrobotpoint (if_point robot0closesttoball robot1point robot0point)
+
+supportgotounblocked (if_point (pointAboveLine supportrobotpoint balltogoal) (pointadd balldestination addtosupport) (pointsubtract balldestination addtosupport))
+
+supportgotoblocked (if_point (pointAboveLine supportrobotpoint balltogoal) (pointadd balldestination addtosupportpass) (pointsubtract balldestination addtosupportpass))
+
+supportgoto (if_point clearcloserange supportgotounblocked supportgotoblocked)
+
+passsupportopen (pathClear ballpoint supportrobotpoint CLEAR_DIST)
+
+kickerhasshot (pathClear kickerrobotpoint theirgoal CLEAR_DIST)
+supporthasshot (pathClear supportrobotpoint theirgoal CLEAR_DIST)
+
+passsupport (robotpointkick kickerrobot supportrobotpoint)
+kicktogoal (robotpointkick kickerrobot theirgoal)
+
+trypass (if_Action (and passsupportopen supporthasshot) passsupport kicktogoal)
+
+supportrelay (robotpointmove supportrobot supportgoto)
+supportstandby (robotpointmove supportrobot standby_point)
+
+kickinrange (if_Action cleartogoal kicktogoal trypass)
+kickoutrange (if_Action clearcloserange kicktogoal trypass)
+
+kick (if_Action ballinrange kickinrange kickoutrange)
+support (if_Action ballinrange supportstandby supportrelay)
 
 Conditions:
-(< 0.6 (pointpointdistance point1 ourgoal))
+(< GOAL_MINIMUM (pointpointdistance robot0point ourgoal))
 
 Actions:
-(if_Action robot0closertoball (robotpointkick robot0 theirgoal) (if_Action ballinrange (robotpointmove robot0 theirgoalpositivequad) (robotpointmove robot0 robot1goto)))
-(if_Action robot0closertoball (if_Action ballinrange (robotpointmove robot1 theirgoalpositivequad) (robotpointmove robot1 robot1goto)) (robotpointkick robot1 theirgoal))
+kick
+support
