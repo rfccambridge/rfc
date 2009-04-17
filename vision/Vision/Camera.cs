@@ -291,8 +291,15 @@ namespace VisionCamera {
             // Convert the image.
             // Sometimes the line below throws:
             // "Attempted to read or write protected memory. This is often an indication that other memory is corrupt."
-            ret = flycaptureConvertImage(flycapContext, ref pgrImage,
-                ref flycapRGBImage);
+           // try {
+                ret = flycaptureConvertImage(flycapContext, ref pgrImage,
+                    ref flycapRGBImage);
+            //}
+           // catch (AccessViolationException e) {
+            //    Console.WriteLine("getFrame: AccessViolationException occured called flycaptureConvertImage(). Skipping frame.");
+             //   image = cameraImage;
+            //    return 0;
+           // }
             if (ret != 0) {
                 reportError(ret, "flycaptureConvertImage");
                 image = null;

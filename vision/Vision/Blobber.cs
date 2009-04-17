@@ -295,17 +295,20 @@ namespace Vision
             Rectangle region = _imageForm.GetRegion();
 
             while (_blobbing) {
-                //Console.WriteLine("Getting image...");
-                int rc = _camera.getFrame(out rawImage);
-                if (rc > 0)
-                    break; // should stop the thread on error
-                //Console.WriteLine("Got image...");
-
                 //make sure blobbing finished
                 while (processFrameHandle != null && !processFrameHandle.IsCompleted) {
                     Thread.Sleep(5);
                 }
-                processFrameHandle = processFrameDelegate.BeginInvoke(rawImage, region, out irrelevant, frameProcessedCallback, null);
+
+                //Console.WriteLine("Getting image...");
+                int rc = _camera.getFrame(out rawImage);
+                if (rc > 0) {
+                    Console.WriteLine("VisionLoop: getFrame() failed with return code: " + rc.ToString());
+                    continue; // try and get another thread
+                }
+                //Console.WriteLine("Got image...");
+
+               processFrameHandle = processFrameDelegate.BeginInvoke(rawImage, region, out irrelevant, frameProcessedCallback, null);
             }
         }
         
