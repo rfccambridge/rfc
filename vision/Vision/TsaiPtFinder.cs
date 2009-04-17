@@ -122,8 +122,7 @@ namespace Vision
             i = 0; // row counter
             while (lstSquares.Count > 0)
             {
-                row.Clear();
-				bool nextRow = false;
+                row.Clear();				
                 
 				// This is part of NO TSAI_COLS implementation
                 /*row.Add(lstSquares[lstSquares.Count - 1]);
