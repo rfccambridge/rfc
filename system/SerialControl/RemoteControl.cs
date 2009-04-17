@@ -87,7 +87,7 @@ namespace Robotics.Commander {
         {
             KeyEventArgs eventArgs = new KeyEventArgs(e.Key);
             int oldCurRobot = curRobot;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < srobots.NumRobots; i++)
             {
                 curRobot = i;
                 RemoteControl_KeyDown(sender, eventArgs);

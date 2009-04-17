@@ -9,11 +9,11 @@ using Robocup.Utilities;
 namespace Robotics.Commander
 {
     public class SerialRobots : IRobots
-    {
+    {       
         const byte wheel = (byte)'w';
         const byte PID = (byte)'f';
         const byte reset = (byte)'r';
-        string[] headsigns = { "\\H0v", "\\H1v", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v" };
+        string[] headsigns = { "\\H0v", "\\H1v", "\\H2v", "\\H3v", "\\H4v", "\\H5v", "\\H6v" };        
 
         string endsign = "\\E";
 
@@ -54,8 +54,13 @@ namespace Robotics.Commander
 
         private const string fname = "..\\..\\resources\\scaling.txt";
 
-        public SerialRobots(string port)
+        public int NumRobots
         {
+            get { return headsigns.Length; }
+        }
+
+        public SerialRobots(string port)
+        {            
             comport = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
 
             loadMotorScale(fname);
@@ -221,11 +226,11 @@ namespace Robotics.Commander
         /// stop charging to save batteries.
         /// </summary>
         /// <param name="robotID"></param>
-        private void breakBeamKick(int robotID) {
+        private void breakBeamKick(int robotID, string startChargeCmd, string stopChargeCmd) {
             lock (charging) {
 
-                string msgCharge = headsigns[robotID] + "b" + endsign;
-                string msgStopCharge = headsigns[robotID] + "s" + endsign;
+                string msgCharge = headsigns[robotID] + startChargeCmd + endsign;
+                string msgStopCharge = headsigns[robotID] + stopChargeCmd + endsign;
                 
                 //If we are already charging this robot do nothing...
                 double currTime = HighResTimer.SecondsSinceStart();
@@ -471,8 +476,8 @@ namespace Robotics.Commander
         }
 
         public void beamKick(int robotID) {
-            breakBeamKick(robotID);
-        }
+            breakBeamKick(robotID, "b", "k");
+        }        
 
         #endregion
 
