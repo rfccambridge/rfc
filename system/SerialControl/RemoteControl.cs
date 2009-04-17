@@ -86,8 +86,14 @@ namespace Robotics.Commander {
         private void backspace_GlobalHotkeyPressed(object sender, KeyPressedEventArgs e)
         {
             KeyEventArgs eventArgs = new KeyEventArgs(e.Key);
-            RemoteControl_KeyDown(sender, eventArgs);
-            RemoteControl_KeyUp(sender, eventArgs);
+            int oldCurRobot = curRobot;
+            for (int i = 0; i < 10; i++)
+            {
+                curRobot = i;
+                RemoteControl_KeyDown(sender, eventArgs);
+                RemoteControl_KeyUp(sender, eventArgs);
+            }
+            curRobot = oldCurRobot;
         }
 
         private void toggleSettings(object sender, EventArgs e) {
@@ -132,6 +138,8 @@ namespace Robotics.Commander {
 
 
         private void setMotorSpeeds(int lf, int rf, int lb, int rb) {
+           // Console.WriteLine("SerialControl: curRobotID = " + curRobot.ToString() + ";" +
+             //   "Setting wheelspeeds to " + lf.ToString() + "," + rf.ToString() + "," + lb.ToString() + "," + rb.ToString());
             sendCommand(curRobot, RobotCommand.Command.MOVE, new WheelSpeeds(lf, rf, lb, rb));
         }
         public void sendMove(int id, int lf, int rf, int lb, int rb) {
