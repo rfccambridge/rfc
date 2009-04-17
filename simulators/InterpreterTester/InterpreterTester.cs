@@ -733,5 +733,21 @@ namespace InterpreterTester
   
 
         #endregion
+        public void setBallMark() {
+            throw new ApplicationException("InterpreterTester.setBallMark: not implemented");
+        }
+
+        public void clearBallMark() {
+            throw new ApplicationException("InterpreterTester.clearBallMark: not implemented");
+        }
+
+        public bool hasBallMoved() {
+            throw new ApplicationException("InterpreterTester.hasBallMoved: not implemented");
+        }
+
+        public void setPlayType(PlayTypes newPlayType) {
+            throw new ApplicationException("InterpreterTester.setPlayType: not implemented");
+        }
     }
 }
+ 

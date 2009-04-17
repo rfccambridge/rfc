@@ -44,7 +44,7 @@ namespace SoccerSim
         {
             referee = new SimpleReferee();
             _physics_engine = new PhysicsEngine(referee);
-            String[] playNames = new String[10];
+
             _fieldView = new FieldDrawer(_physics_engine, converter);
             // TODO make configurable how many to load
 
