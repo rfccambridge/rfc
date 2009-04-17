@@ -39,6 +39,16 @@ namespace Robocup.ControlForm {
         //ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(420,610, 5, 5);
         ICoordinateConverter converter;
 
+        // Logging
+        LogReader _logReader;
+        IPredictor _logPredictor;
+        FieldDrawerForm _logFieldDrawer;
+        List<Type> _logLineFormat;
+        Timer timer;
+        bool logging;
+        string LOG_FILE = "testlog.txt";
+
+
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
 
@@ -258,6 +268,120 @@ namespace Robocup.ControlForm {
                 Console.WriteLine(except.StackTrace);
             }
         }
+        #region Logging
+        private void loggingInit() {
+            // Logging
+            _logReader = new LogReader();
+            _logPredictor = new StaticPredictor();
+            _logFieldDrawer = new FieldDrawerForm(_logPredictor);
+
+            // Log Line format
+            // timestamp current_state desired_state next_waypoint wheel_speeds path
+            _logLineFormat = new List<Type>();
+            _logLineFormat.Add(typeof(DateTime));
+            _logLineFormat.Add(typeof(RobotInfo));
+            _logLineFormat.Add(typeof(RobotInfo));
+            _logLineFormat.Add(typeof(RobotInfo));
+            _logLineFormat.Add(typeof(WheelSpeeds));
+            _logLineFormat.Add(typeof(RobotPath));
+
+
+            timer = new Timer();
+            timer.Interval = 500;
+            //timer.Tick += new EventHandler(InvalidateTimerHanlder);
+            timer.Start();
+        }
+
+        private void InvalidateTimerHanlder(object obj, EventArgs e) {
+            _logFieldDrawer.Invalidate();
+        }
+
+        private void btnLogNext_Click(object sender, EventArgs e) {
+
+            if (!_logReader.LogOpen) {
+                MessageBox.Show("Log file not open.");
+                return;
+            }
+
+            if (!_logFieldDrawer.Visible)
+                _logFieldDrawer.Show();
+
+            // Get logged info
+
+            _logReader.Next();
+            List<Object> loggedItems = _logReader.GetLoggedItems();
+
+
+            // Log Line format
+            // timestamp current_state desired_state next_waypoint wheel_speeds path
+            RobotInfo curState = (RobotInfo)loggedItems[1];
+            RobotInfo waypointInfo = (RobotInfo)loggedItems[3];
+            RobotInfo destState = (RobotInfo)loggedItems[2];
+            RobotPath path = (RobotPath)loggedItems[5];
+
+            // Update predictor (this will also draw the robot positions)
+
+            ((IInfoAcceptor)_logPredictor).updateRobot(curState.ID, curState);
+
+            // Draw the path, and the arrows            
+
+            // Since we are the only ones who are using this FieldDrawer, we can monopolize 
+            // its arrows and paths holder
+            _logFieldDrawer.ClearPaths();
+            _logFieldDrawer.AddPath(path);
+
+            _logFieldDrawer.ClearArrows();
+            _logFieldDrawer.AddArrow(new Arrow(curState.Position, destState.Position, Color.Red, 0.04));
+            _logFieldDrawer.AddArrow(new Arrow(curState.Position, waypointInfo.Position, Color.Yellow, 0.04));
+
+            _logFieldDrawer.Invalidate();
+
+        }
+
+        private void btnStartStopLogging_Click(object sender, EventArgs e) {
+            /*if (!(_pathFollower.Planner is ILogger))
+            {
+                MessageBox.Show("Selected MotionPlanner does not implement ILogger interface.");
+                return;
+            }*/
+
+            if (logging) {
+                logging = false;
+                btnStartStopLogging.Text = "Start log";
+            }
+            else {
+                logging = true;
+                btnStartStopLogging.Text = "Stop log";
+            }
+
+            // if enabled, start motion planner's logging
+            if (_system.Controller is RFCController && ((RFCController)_system.Controller).Planner is ILogger) {
+                ILogger logger = ((RFCController)_system.Controller).Planner as ILogger;
+
+                if (!logger.Logging) {
+                    logger.LogFile = LOG_FILE;
+                    logger.StartLogging();
+
+                }
+                else {
+                    logger.StopLogging();
+                }
+            }
+        }
+
+        private void btnLogOpenClose_Click(object sender, EventArgs e) {
+            if (_logReader.LogOpen) {
+                _logReader.CloseLogFile();
+                btnLogOpenClose.Text = "Open log";
+            }
+            else {
+                _logReader.OpenLogFile(LOG_FILE, _logLineFormat);
+                btnLogOpenClose.Text = "Close log";
+            }
+
+        }
+
+        #endregion
 
 
     }
@@ -278,6 +402,7 @@ namespace Robocup.ControlForm {
             _serial.Close();
         }
 
+   
         #region IRobots Members
         const float scaling = 1.0f;
         public void setMotorSpeeds(int robotID, WheelSpeeds wheelSpeeds) {
@@ -286,7 +411,10 @@ namespace Robocup.ControlForm {
             //Console.WriteLine("RemoteRobots::setMotorSpeeds: " + wheelSpeeds.lf / scaling + " "
             //    + wheelSpeeds.rf / scaling + " " + wheelSpeeds.lb / scaling + " " + wheelSpeeds.rb / scaling + " ");
         }
-
+        public void charge(int robotID) {
+            if (robotID < 0 || _serial == null) return;
+            _serial.Post(new RobotCommand(robotID, RobotCommand.Command.CHARGE, null));
+        }
         public void kick(int robotID)
         {
             if (robotID < 0 || _serial == null) return;

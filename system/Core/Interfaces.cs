@@ -74,6 +74,7 @@ namespace Robocup.Core {
         /// </summary>
         /// <param name="robotID"></param>
         void beamKick(int robotID);
+        void charge(int robotID);
     }
 
     /// <summary>
@@ -150,6 +151,7 @@ namespace Robocup.Core {
     /// </summary>
     public interface IActionInterpreter
     {
+        void Charge(int robotID);
         void Kick(int robotID, Vector2 target);
         void Move(int robotID, Vector2 target);
         void Move(int robotID, Vector2 target, Vector2 facing);
@@ -164,8 +166,9 @@ namespace Robocup.Core {
     public interface IController {
         void move(int robotID, bool avoidBall, Vector2 dest);
         void move(int robotID, bool avoidBall, Vector2 dest, double orientation);
+        void charge(int robotID);
         void kick(int robotID);
-        void beamKick(int robotID);
+        void beamKick(int robotID, bool goForward);
         void stop(int robotID);
     }
 

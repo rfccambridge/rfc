@@ -191,7 +191,7 @@ namespace Robotics.Commander
                 //Console.WriteLine("kick:" + smsg);
                 comport.Write(smsg);
             }
-        }
+        }        
         internal void setKick(int robotID)
         {
             lock (charging)
@@ -231,28 +231,29 @@ namespace Robotics.Commander
 
                 string msgCharge = headsigns[robotID] + startChargeCmd + endsign;
                 string msgStopCharge = headsigns[robotID] + stopChargeCmd + endsign;
+                string msgDischarge = headsigns[robotID] + "k" + endsign;
                 
                 //If we are already charging this robot do nothing...
                 double currTime = HighResTimer.SecondsSinceStart();
-                if (charging.Contains(robotID)) {
-                    if (currTime - lastCharge[robotID] > chargeTime) {
-                        comport.Write(msgStopCharge);
-                        return;
-                    }
-                    return;
-                }
+                //if (charging.Contains(robotID)) {
+                //    if (currTime - lastCharge[robotID] > chargeTime) {
+                //        comport.Write(msgStopCharge);
+                //        return;
+                //    }
+                //    return;
+                //}
 
                 comport.Write(msgCharge);
                 Console.WriteLine("robot {0} is charging for a break-beam kick");
                 charging.Add(robotID);
                 lastCharge[robotID] = currTime;
                 
-                //After 3*charge time, stop charging to save battery
+                //After 5*charge time, stop charging to save battery
                 System.Threading.Timer t = new System.Threading.Timer(delegate(object o) {
                     timers.Remove(robotID);
-                    comport.Write(msgStopCharge);
+                    comport.Write(msgDischarge);
                     charging.Remove(robotID);
-                }, null, 3*chargeTime, System.Threading.Timeout.Infinite);
+                }, null, 5*chargeTime, System.Threading.Timeout.Infinite);
                 timers[robotID] = t;
             }
         }
@@ -468,6 +469,10 @@ namespace Robotics.Commander
             setAllMotor(id, 0, lf, rf, lb, rb, 1000);
             /*else
                 setAllMotor(robotID, 0, 0, 0, 0, 0, 65535);*/
+        }
+
+        public void charge(int robotID) {
+            throw new ApplicationException("not implemented");
         }
 
         public void kick(int robotID)

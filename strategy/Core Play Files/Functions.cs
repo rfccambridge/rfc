@@ -461,6 +461,9 @@ namespace Robocup.Plays
             {
                 return ((double)objects[0]) < ((double)objects[1]);
             });
+            addFunction(">", "double, double - Greater than", "~ < ~", typeof(bool), new Type[] { typeof(double), typeof(double) }, delegate(EvaluatorState state, object[] objects) {
+                return ((double)objects[0]) > ((double)objects[1]);
+            });
             addFunction("intadd", "int, int - Add", "~ + ~", typeof(int), new Type[] { typeof(int), typeof(int) }, delegate(EvaluatorState state, object[] objects)
             {
                 return ((int)objects[0]) + ((int)objects[1]);
@@ -480,13 +483,13 @@ namespace Robocup.Plays
             #endregion
 
             #region misc
-            addFunction("numourbots", " - # our robots", "The number of robots currently on our team", typeof(int), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            addFunction("numourbots", " - # our robots", "The number of robots currently on our team", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                return state.OurTeamInfo.Length;
+                return (double) state.OurTeamInfo.Length;
             });
-            addFunction("numtheirbots", " - # their robots", "The number of robots currently on their team", typeof(int), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            addFunction("numtheirbots", " - # their robots", "The number of robots currently on their team", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                return state.TheirTeamInfo.Length;
+                return (double) state.TheirTeamInfo.Length;
             });
 
             addFunction("const-double", "double constant", "The (double) constant ~", typeof(double), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
@@ -505,6 +508,7 @@ namespace Robocup.Plays
             {
                 return Core.Constants.get<string>("plays", (string)objects[0]);
             });
+
 
             addFunction("print-if", "bool string print", "print ~", typeof(bool), new Type[] { typeof(bool), typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
@@ -582,6 +586,17 @@ namespace Robocup.Plays
                     Vector2 target = (Vector2)objects[1];
                     Vector2 facing = (Vector2)objects[2];
                     a.Move(robot.getID(), target, facing);
+                }, robot.getID());
+            });
+            addFunction("robotpointpointmovecharge", "Robot, Point, Point - Move", "Have robot ~ move to ~, and face ~ and charge", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Robot robot = (Robot)objects[0];
+                return new ActionDefinition(delegate(IActionInterpreter a)
+                {
+                    Vector2 target = (Vector2)objects[1];
+                    Vector2 facing = (Vector2)objects[2];
+                    a.Move(robot.getID(), target, facing);
+                    a.Charge(robot.getID());
                 }, robot.getID());
             });
             addFunction("donothing", "Robot - Do Nothing", "Have robot ~ stop and do nothing", typeof(ActionDefinition), new Type[] { typeof(Robot) }, delegate(EvaluatorState state, object[] objects)

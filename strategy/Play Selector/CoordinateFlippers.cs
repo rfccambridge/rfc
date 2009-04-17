@@ -84,6 +84,9 @@ namespace Robocup.Plays
 
         #region IActionInterpreter Members
 
+        public void Charge(int robotID) {
+            actionInterpreter.Charge(robotID);
+        }
         public void Kick(int robotID, Vector2 target)
         {
             actionInterpreter.Kick(robotID, -target);

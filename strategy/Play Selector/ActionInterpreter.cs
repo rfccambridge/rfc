@@ -91,7 +91,7 @@ namespace Robocup.Plays
         /// This is the distance that the robots should put themselves from the ball,
         /// when they get ready to kick it.
         /// </summary>
-        private readonly double kickDistance = .085;//.095;
+        private readonly double kickDistance = .095;
 
         /// <summary>
         /// This is how many ticks of ball motion you should add to the distance to lead the ball appropriately
@@ -101,6 +101,10 @@ namespace Robocup.Plays
         public void Stop(int robotID)
         {
             commander.stop(robotID);
+        }
+
+        public void Charge(int robotID) {
+            commander.charge(robotID);
         }
 
         /// <summary>
@@ -200,11 +204,14 @@ namespace Robocup.Plays
 
             Vector2 farDestination = extend(target, ball, 2*kickDistance);
             //Vector2 actualDestination = extend(target, ball, 0.75*kickDistance);
-            Vector2 actualDestination = extend(target, ball, 0.2 * kickDistance);
+            //Vector2 actualDestination = extend(target, ball, 0.1 * kickDistance);
+            Vector2 actualDestination = ball + (target - ball).normalizeToLength(1.5*kickDistance);
+            //Vector2 actualDestination = ball;
             double destinationAngle = targetAngle(ball, target);
 
             if (closeEnough(thisrobot, farDestination.X, farDestination.Y, destinationAngle)) {
-                commander.beamKick(robotID);
+                commander.beamKick(robotID, false);
+                //System.Threading.Thread.Sleep(50);
                 commander.move(
                     robotID,
                     true,
@@ -213,6 +220,9 @@ namespace Robocup.Plays
             }
             else { //if we are far enough
                 //destination += ballLeading * ballinfo.Velocity;
+                if (thisrobot.Position.distanceSq(ball) <= 9 * kickDistance * kickDistance)
+                    commander.beamKick(robotID, false);
+                
                 commander.move(
                     robotID,
                     true,
@@ -267,7 +277,7 @@ namespace Robocup.Plays
 
         private readonly double angleTolerance = Math.PI / 20;// 2 degrees | 120;  //1.5º
         //private const double angleTolerance = (Math.PI);  //180º
-        private readonly double distanceTolerance = .05;  //4d cm
+        private readonly double distanceTolerance = .07;  //4d cm
         
         /// <summary>
         /// Returns if this robot is close enough to the desired position and orientation

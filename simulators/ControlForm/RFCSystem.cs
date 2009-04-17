@@ -37,6 +37,9 @@ namespace Robocup.ControlForm
         {
             get { return _acceptor; }
         }
+        public IController Controller {
+            get { return _controller; }
+        }
 
         System.Timers.Timer t;
 
@@ -46,17 +49,17 @@ namespace Robocup.ControlForm
 
         private int _sleepTime;
         private bool isYellow;
+        bool IS_OUR_GOAL_LEFT;
 
         int REFBOX_PORT;
         string REFBOX_ADDR;
         string PLAY_DIR;
+        
 
         public RFCSystem()
         {
             initialized = false;
-            running = false;
-
-            LoadConstants();
+            running = false;            
         }
 
         public void LoadConstants() {            
@@ -65,6 +68,7 @@ namespace Robocup.ControlForm
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
             _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
             isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
+            IS_OUR_GOAL_LEFT = Constants.get<bool>("plays", "IS_OUR_GOAL_LEFT");
         }
 
         public void setRefBoxListener() {
@@ -75,6 +79,8 @@ namespace Robocup.ControlForm
 
         public void initialize()
         {
+            LoadConstants();
+
             bool wasRunning = false;
             if (running)
             {
@@ -167,7 +173,7 @@ namespace Robocup.ControlForm
                 _commander, planner, _predictor
             );
            
-            _interpreter = new Interpreter(Constants.get<bool>("plays","IS_OUR_GOAL_LEFT"), _predictor, _controller);
+            _interpreter = new Interpreter(IS_OUR_GOAL_LEFT, _predictor, _controller);
 
             running = false;
             if (wasRunning)
@@ -258,7 +264,7 @@ namespace Robocup.ControlForm
         {
             if (counter % 100 == 0)
                 Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
-            _controller.clearArrows();            
+           // _controller.clearArrows();            
             _interpreter.interpret(
                 _refbox.GetCurrentPlayType()
             );

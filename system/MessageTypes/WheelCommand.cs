@@ -10,7 +10,8 @@ namespace Robocup.Core
         {
             MOVE,
             KICK,
-            BEAMKICK
+            BEAMKICK,
+            CHARGE
         };
         public WheelSpeeds speeds;
         public int ID;

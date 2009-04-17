@@ -38,6 +38,11 @@ namespace Robocup.ControlForm {
             this.label5 = new System.Windows.Forms.Label();
             this.visionBottomHost = new System.Windows.Forms.TextBox();
             this.visionTopHost = new System.Windows.Forms.TextBox();
+            this.btnLogNext = new System.Windows.Forms.Button();
+            this.btnLogOpenClose = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnStartStopLogging = new System.Windows.Forms.Button();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // serialHost
@@ -107,9 +112,9 @@ namespace Robocup.ControlForm {
             // 
             // rfcStart
             // 
-            this.rfcStart.Location = new System.Drawing.Point(105, 174);
+            this.rfcStart.Location = new System.Drawing.Point(21, 174);
             this.rfcStart.Name = "rfcStart";
-            this.rfcStart.Size = new System.Drawing.Size(78, 21);
+            this.rfcStart.Size = new System.Drawing.Size(162, 21);
             this.rfcStart.TabIndex = 7;
             this.rfcStart.Text = "Start";
             this.rfcStart.UseVisualStyleBackColor = true;
@@ -177,11 +182,51 @@ namespace Robocup.ControlForm {
             this.visionTopHost.Size = new System.Drawing.Size(70, 20);
             this.visionTopHost.TabIndex = 0;
             // 
+            // btnLogNext
+            // 
+            this.btnLogNext.Location = new System.Drawing.Point(6, 78);
+            this.btnLogNext.Name = "btnLogNext";
+            this.btnLogNext.Size = new System.Drawing.Size(75, 23);
+            this.btnLogNext.TabIndex = 13;
+            this.btnLogNext.Text = "Next Entry";
+            this.btnLogNext.UseVisualStyleBackColor = true;
+            // 
+            // btnLogOpenClose
+            // 
+            this.btnLogOpenClose.Location = new System.Drawing.Point(6, 48);
+            this.btnLogOpenClose.Name = "btnLogOpenClose";
+            this.btnLogOpenClose.Size = new System.Drawing.Size(75, 23);
+            this.btnLogOpenClose.TabIndex = 15;
+            this.btnLogOpenClose.Text = "Open log";
+            this.btnLogOpenClose.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btnLogNext);
+            this.groupBox1.Controls.Add(this.btnStartStopLogging);
+            this.groupBox1.Controls.Add(this.btnLogOpenClose);
+            this.groupBox1.Location = new System.Drawing.Point(190, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(91, 113);
+            this.groupBox1.TabIndex = 30;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Logging";
+            // 
+            // btnStartStopLogging
+            // 
+            this.btnStartStopLogging.Location = new System.Drawing.Point(7, 19);
+            this.btnStartStopLogging.Name = "btnStartStopLogging";
+            this.btnStartStopLogging.Size = new System.Drawing.Size(75, 23);
+            this.btnStartStopLogging.TabIndex = 14;
+            this.btnStartStopLogging.Text = "Start log";
+            this.btnStartStopLogging.UseVisualStyleBackColor = true;
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(199, 211);
+            this.ClientSize = new System.Drawing.Size(294, 211);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.visionBottomConnect);
             this.Controls.Add(this.visionBottomStatus);
             this.Controls.Add(this.label5);
@@ -201,6 +246,7 @@ namespace Robocup.ControlForm {
             this.Name = "ControlForm";
             this.Text = "ControlForm";
             this.Load += new System.EventHandler(this.ControlForm_Load);
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -223,5 +269,9 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox visionBottomHost;
         private System.Windows.Forms.TextBox visionTopHost;
+        private System.Windows.Forms.Button btnLogNext;
+        private System.Windows.Forms.Button btnLogOpenClose;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button btnStartStopLogging;
     }
 }
