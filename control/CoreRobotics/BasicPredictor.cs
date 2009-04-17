@@ -237,7 +237,7 @@ namespace Robocup.CoreRobotics
 
         protected BallInfo ballInfo = new BallInfo(new Vector2(0, 0));
         private readonly BasicPredictorHelper our_helper = new BasicPredictorHelper(true);
-        private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(false);
+        private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(true); // TODO HACK
 
         // Should really be a generalized game state
         private PlayTypes playType;
@@ -310,11 +310,11 @@ namespace Robocup.CoreRobotics
             switch (playType) {
                 case PlayTypes.PenaltyKick_Ours:
                 case PlayTypes.PenaltyKick_Ours_Setup:
-                    sign = (IS_OUR_GOAL_LEFT) ? -1 : 1;
-                    ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
-                                                              BALL_POS_PENALTY.Position.Y));
-                    return ballPos;                    
-                case PlayTypes.PenaltyKick_Theirs:                
+                //sign = (IS_OUR_GOAL_LEFT) ? -1 : 1;
+                //ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
+                //                                          BALL_POS_PENALTY.Position.Y));
+                //return ballPos;                    
+                case PlayTypes.PenaltyKick_Theirs:
                     sign = (IS_OUR_GOAL_LEFT) ? 1 : -1;
                     ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
                                                        BALL_POS_PENALTY.Position.Y));
@@ -325,8 +325,9 @@ namespace Robocup.CoreRobotics
                 case PlayTypes.Kickoff_Theirs_Setup:
                     return BALL_POS_KICKOFF;
                 default:
-                    return ballInfo;                   
+                    return ballInfo;
             }
+            return ballInfo;
         }
 
         public void setBallMark() {           

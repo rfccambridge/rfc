@@ -139,15 +139,31 @@ namespace Robocup.MotionControl {
             lf = (int)_lf;
             if (lf > 57) 
                 lf = 57;
+            if (lf < -57)
+                lf = -57;
             rf = (int)_rf;
             if (rf > 57) 
                 rf = 57;
+            if (rf < -57)
+                rf = -57;
             lb = (int)_lb;
             if (lb > 57) 
                 lb = 57;
+            if (lb < -57)
+                lb = -57;
             rb = (int)_rb;
             if (rb > 57) 
                 rb = 57;
+            if (rb < -57)
+                rb = -57;
+
+            int scaleUpFactor = 2;
+            if (Math.Abs(lf) < 10 && Math.Abs(rf) < 10 && Math.Abs(lb) < 10 && Math.Abs(rb) < 10) {
+                lf *= scaleUpFactor;
+                rf *= scaleUpFactor;
+                lb *= scaleUpFactor;
+                rb *= scaleUpFactor;
+            }
 
 
             //double _scaleDown = 1;

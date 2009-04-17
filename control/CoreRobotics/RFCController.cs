@@ -67,13 +67,22 @@ namespace Robocup.CoreRobotics
         }
         #region IController Members
 
+        public void charge(int robotID) {
+            Commander.charge(robotID);
+        }
         public void kick(int robotID)
         {
             Commander.kick(robotID);
         }
-        public void beamKick(int robotID) 
+        public void beamKick(int robotID, bool goForward) 
         {
             Commander.beamKick(robotID);
+
+            if(goForward){
+                WheelSpeeds speeds = new WheelSpeeds(10,17,17,30);
+                Commander.setMotorSpeeds(robotID, speeds);
+                System.Threading.Thread.Sleep(1500);
+            }
         }
         public void move(int robotID, bool avoidBall, Vector2 destination, double orientation)
         {

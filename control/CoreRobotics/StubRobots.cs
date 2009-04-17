@@ -9,6 +9,10 @@ namespace Robocup.CoreRobotics
     {
         #region IRobots Members
 
+        public void charge(int robotID) {
+            Console.WriteLine("RFCRobots::charge: " + robotID);
+        }
+
         public void kick(int robotID)
         {
             Console.WriteLine("RFCRobots::kick: " + robotID);
