@@ -86,6 +86,8 @@ namespace Robocup.Plays
                 return "<int>";
             else if (t == typeof(ActionDefinition))
                 return "<Action>";
+            else if (t == typeof(Robot))
+                return "<robot>";
             return "<" + t.Name + ">";
         }
 
@@ -135,7 +137,7 @@ namespace Robocup.Plays
         }*/
         public static void loadFunctions()
         {
-            addAll(addIf, typeof(int), typeof(double), typeof(Vector2), typeof(Line), typeof(Circle), typeof(ActionDefinition));
+            addAll(addIf, typeof(int), typeof(double), typeof(Vector2), typeof(Line), typeof(Circle), typeof(ActionDefinition), typeof(Robot));
 
             #region geometric functions
             addFunction("point", "X, Y - Point", "The point ~, ~", typeof(Vector2), new Type[] { typeof(double), typeof(double) }, delegate(EvaluatorState state, object[] objects)
@@ -236,6 +238,75 @@ namespace Robocup.Plays
                 }
                 return rtn;
             });
+
+
+
+            addFunction("pointAboveLine", "Point, Line - Above", "Whether point ~ is above line ~", typeof(bool), new Type[] { typeof(Vector2), typeof(Line) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Vector2 point = (Vector2)objects[0];
+                Line line = (Line)objects[1];
+
+                return pointAboveLine(point, line);
+            });
+
+            addFunction("pathClear", "Point, Point, double - Path clear", "Whether the path from point ~ to point ~ has no obstacles within distance ~", typeof(bool), new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Vector2 p1 = (Vector2)objects[0];
+                Vector2 p2 = (Vector2)objects[1];
+                double mindist = (double)objects[2];
+
+                Line line = new Line(p1, p2);
+
+                // get distance of closest robot to line
+                List<RobotInfo> allinfos = new List<RobotInfo>();
+                allinfos.AddRange(state.OurTeamInfo);
+                allinfos.AddRange(state.TheirTeamInfo);
+                Vector2[] endpoints = line.getPoints();
+
+                double rtn = 10000;
+
+                foreach (RobotInfo r in allinfos)
+                {
+                    Vector2 position = r.Position;
+                    if (Math.Sqrt(position.distanceSq(endpoints[0])) < mindist || Math.Sqrt(position.distanceSq(endpoints[1])) < mindist)
+                        continue;
+                    rtn = Math.Min(rtn, line.distFromSegment(position));
+                }
+
+                return (rtn >= mindist);
+
+            });
+
+            /*addFunction("closest_now", "Team, point - closest robot", "return the nearest robot to the point", typeof(Robot), new Type[] { typeof(TeamCondition), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+            {
+#if DEBUG
+                if (state == null) throw new ApplicationException("tried to call a function that needed an evaluatorState without one!");
+#endif
+                TeamCondition condition = (TeamCondition)objects[0];
+                Vector2 point = (Vector2)objects[1];
+
+                List<RobotInfo> allinfos = new List<RobotInfo>();
+                if (condition.maybeOurs())
+                    allinfos.AddRange(state.OurTeamInfo);
+                if (condition.maybeTheirs())
+                    allinfos.AddRange(state.TheirTeamInfo);
+
+                double nearest = 10000;
+                Robot closest_robot;
+
+                foreach (RobotInfo r in allinfos)
+                {
+                    Vector2 position = r.Position;
+                    double dist = Math.Sqrt(point.distanceSq(position));
+                    if (dist < nearest)
+                    {
+                        closest_robot = r;
+                        nearest = dist;
+                    }
+                }
+                return closest_robot;
+            });*/
+
             addFunction("linearInterpolation", "Point, Point, Fraction - Point on the line of that fraction", "The point that is between Point ~ and Point ~ for some Fraction ~", typeof(Vector2), new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
             {
                 Vector2 p1 = (Vector2)objects[0];
@@ -304,6 +375,28 @@ namespace Robocup.Plays
                 double length = Math.Sqrt(v.magnitudeSq());
                 return new Vector2(p1.X + Math.Cos(originalAngle + angle) * length, p1.Y + Math.Sin(originalAngle + angle) * length);
             });
+            addFunction("closerRobotToPoint", "Robot, Robot, Point - Closest", "Return whichever robot of ~ and ~ is closer to point ~", typeof(Robot), new Type[] { typeof(Robot), typeof(Robot), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+            {
+                /*return delegate(Commander c){
+                    Vector2 p=((Vector2)objects[1]).getPoint();
+                    c.move(((PlayRobot)objects[0]).getID(), p.X, p.Y);
+                };*/
+                Robot robot1 = (Robot)objects[0];
+                Robot robot2 = (Robot)objects[1];
+                Vector2 pt = (Vector2)objects[2];
+
+                double robot1distsq = pt.distanceSq(robot1.getPoint());
+                double robot2distsq = pt.distanceSq(robot2.getPoint());
+
+                if (robot1distsq > robot2distsq)
+                {
+                    return robot2;
+                }
+                else
+                {
+                    return robot1;
+                }
+            });
 
             #endregion
 
@@ -331,6 +424,10 @@ namespace Robocup.Plays
             addFunction("and", "Bool, Bool - And", "~ and ~", typeof(bool), new Type[] { typeof(bool), typeof(bool) }, delegate(EvaluatorState state, object[] objects)
             {
                 return ((bool)objects[0]) && ((bool)objects[1]);
+            });
+            addFunction("not", "Bool - Not", "not ~", typeof(bool), new Type[] { typeof(bool) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return (!(bool)objects[0]);
             });
             addFunction("+", "double, double - Add", "~ + ~", typeof(double), new Type[] { typeof(double), typeof(double) }, delegate(EvaluatorState state, object[] objects)
             {
@@ -408,6 +505,39 @@ namespace Robocup.Plays
             {
                 return Core.Constants.get<string>("plays", (string)objects[0]);
             });
+
+            addFunction("print-if", "bool string print", "print ~", typeof(bool), new Type[] { typeof(bool), typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                if ((bool)objects[0])
+                {
+                    Console.WriteLine((string)objects[1]);
+                }
+                return true;
+            });
+
+            addFunction("print-bool", "bool print", "print ~", typeof(bool), new Type[] { typeof(bool) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Console.WriteLine((string)objects[0]);
+                return true;
+            });
+
+            addFunction("print-double", "double print", "print ~", typeof(bool), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Console.WriteLine((string)objects[0]);
+                return true;
+            });
+
+            addFunction("print-string", "string print", "print ~", typeof(bool), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Console.WriteLine((string)objects[0]);
+                return true;
+            });
+
+            addFunction("sameRobot", "Robot, Robot - Same", "~ == ~", typeof(bool), new Type[] { typeof(Robot), typeof(Robot) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return ((Robot)objects[0]).getID() == ((Robot)objects[1]).getID();
+            });
+
             #endregion
 
             #region actions
@@ -462,11 +592,26 @@ namespace Robocup.Plays
                     a.Stop(robot.getID());
                 }/*, robot.getID()*/);
             });
+            addFunction("reloadConstants", "", "Reload constants", typeof(ActionDefinition), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                return new ActionDefinition(delegate(IActionInterpreter a)
+                {
+                    Constants.Load("plays");
+                });
+            });
             #endregion
         }
         static Function()
         {
             loadFunctions();
+        }
+
+        // HELPER FUNCTIONS
+        public static bool pointAboveLine(Vector2 point, Line line)
+        {
+            Vector2 projpoint = line.projectionOntoLine(point);
+
+            return (projpoint.Y < point.Y);
         }
     }
 }
