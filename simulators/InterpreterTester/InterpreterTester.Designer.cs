@@ -40,8 +40,7 @@ namespace InterpreterTester
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.InterpreterTester_Paint);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.InterpreterTester_MouseClick);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.InterpreterTester_KeyPress);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InterpreterTester_FormClosing);
-            this.Load += new System.EventHandler(this.InterpreterTester_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InterpreterTester_FormClosing);            
             this.ResumeLayout(false);
 
         }

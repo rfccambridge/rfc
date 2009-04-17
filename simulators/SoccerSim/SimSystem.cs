@@ -27,6 +27,8 @@ namespace SoccerSim
         IReferee referee;
         //RefBoxListener _listener;
 
+        string PLAY_DIR;
+
         System.Timers.Timer t;
         private volatile bool running;
         private bool initialized;
@@ -50,23 +52,6 @@ namespace SoccerSim
             initialize();
         }
 
-        # region Play Resource Management
-        public InterpreterPlay[] dictionaryToArray(Dictionary<InterpreterPlay, string> plays)
-        {
-            InterpreterPlay[] toRet = new InterpreterPlay[plays.Keys.Count];
-            plays.Keys.CopyTo(toRet, 0);
-            return toRet;
-        }
-        public void loadPlays(string path)
-        {
-            Dictionary<InterpreterPlay, string> playFiles = PlayUtils.loadPlays(isYellow ? path : path + "/Opponent Plays");
-            if (isYellow)
-                _interpreter = new Interpreter(false, dictionaryToArray(playFiles), _predictor, _controller);
-            else
-                _interpreter = new Interpreter(true, dictionaryToArray(playFiles), new TeamFlipperPredictor(_predictor), _controller);
-        }
-        # endregion
-
         public void initialize()
         {
             bool wasRunning = false;
@@ -77,6 +62,9 @@ namespace SoccerSim
                 wasRunning = true;
                 System.Threading.Thread.Sleep(1000);
             }
+
+            LoadConstants();
+
             // create predictor
             if (_predictor == null)
             {
@@ -97,8 +85,10 @@ namespace SoccerSim
             // refboxlistener
             //referee = new RefBoxState(_listener, _predictor, isYellow);
 
-            // create interpreter from file
-            loadPlays("../../plays");
+            // create interpreter from file                        
+            _interpreter = new Interpreter(false, _predictor, _controller);
+            Dictionary<InterpreterPlay, string> plays = PlayUtils.loadPlays(PLAY_DIR);
+            _interpreter.LoadPlays(new List<InterpreterPlay>(plays.Keys));
 
             running = false;
             if (wasRunning)
@@ -107,7 +97,11 @@ namespace SoccerSim
             }
 
             initialized = true;
+        }
 
+        public void LoadConstants()
+        {
+            PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
         }
 
         # region Start/Stop
@@ -134,7 +128,7 @@ namespace SoccerSim
                     initialize();
 
                 _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
-                isYellow = Constants.get<string>("configuration", "OUR_TEAM_COLOR") == "YELLOW";
+                isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
 
                 //referee.start();
                 t = new System.Timers.Timer(_sleepTime);

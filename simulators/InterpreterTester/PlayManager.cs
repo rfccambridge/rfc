@@ -38,6 +38,28 @@ namespace InterpreterTester
         Dictionary<InterpreterPlay, string> originals = new Dictionary<InterpreterPlay, string>();
 
         public PlayManager(Interpreter leftInterpreter, Interpreter rightInterpreter,
+            Dictionary<InterpreterPlay, string> leftPlays, Dictionary<InterpreterPlay, string> rightPlays)
+        {
+            List<PlayRecord> leftPlayRecs = new List<PlayRecord>();
+            List<PlayRecord> rightPlayRecs = new List<PlayRecord>();
+
+            foreach (KeyValuePair<InterpreterPlay, string> playRec in leftPlays)
+                leftPlayRecs.Add(new PlayRecord(playRec.Value, playRec.Key));
+
+            foreach (KeyValuePair<InterpreterPlay, string> playRec in rightPlays)
+                rightPlayRecs.Add(new PlayRecord(playRec.Value, playRec.Key));
+
+            InitializeComponent();
+
+            this.leftInterpreter = leftInterpreter;
+            this.rightInterpreter = rightInterpreter;
+            this.leftPlays = leftPlayRecs;
+            this.rightPlays = rightPlayRecs;
+
+            UpdateList();
+        }
+
+        public PlayManager(Interpreter leftInterpreter, Interpreter rightInterpreter,
             List<PlayRecord> leftPlays, List<PlayRecord> rightPlays)
         {
             InitializeComponent();

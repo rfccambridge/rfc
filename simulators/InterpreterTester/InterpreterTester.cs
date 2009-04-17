@@ -24,6 +24,8 @@ namespace InterpreterTester
 {
     public partial class InterpreterTester : Form, IController, IPredictor, ICoordinateConverter
     {
+
+
         Interpreter interpreter, defensiveinterpreter;
         const double ballspeed = .08, balldecay = .98;
         private const double ballbounce = .01, collisionradius = .12, speed = 0.02;
@@ -31,117 +33,35 @@ namespace InterpreterTester
         // ballspeed m/tick, so ms/tick = 1000 ms/s * (ballspeed m/tick) / (10m/s)
         private const double ms_per_tick = 1000 * ballspeed / 10;
 
+        int ourgoals = 0, theirgoals = 0;
+        const int TEAMSIZE = 5;
+
+        RobotInfo[] ourinfo;
+
+        RobotInfo[] theirinfo;
+
+        BallInfo ballinfo = new BallInfo(new Vector2(0, 0));
+        double ballvx = 0, ballvy = 0;
+
+        int ballImmobile = 0;
+
+        private const double chop = .001;
+
         const int testIterations = 1000;
 
-        string play_directory = "../../Plays/Demo/Ours";
-        string their_play_directory = "../../Plays/Demo/Opponent";
+        string OFFENSE_PLAY_DIR;
+        string DEFENSE_PLAY_DIR;
 
         Random r = new Random();
 
-        private PlayTypes playType = PlayTypes.NormalPlay;
-
-        //private List<InterpreterPlay> plays;
+        private PlayTypes playType = PlayTypes.NormalPlay;        
 
         PlayManager play_manager;
 
-        private void loadPlays()
-        {
-            if (play_manager != null)
-                play_manager.Close();
-
-            PlayLoader<InterpreterPlay, InterpreterExpression> loader =
-                new PlayLoader<InterpreterPlay, InterpreterExpression>(new InterpreterExpression.Factory());
-            string[] files = System.IO.Directory.GetFiles(play_directory);
-            List<InterpreterPlay> plays = new List<InterpreterPlay>();
-            List<PlayManager.PlayRecord> left_play_records = new List<PlayManager.PlayRecord>();
-            foreach (string fname in files)
-            {
-                string extension = fname.Substring(1 + fname.LastIndexOf('.'));
-                if (extension != "txt")
-                    continue;
-                StreamReader reader = new StreamReader(fname);
-                string filecontents = reader.ReadToEnd();
-                reader.Close();
-                reader.Dispose();
-
-                try
-                {
-                    InterpreterPlay p = loader.load(filecontents);
-                    plays.Add(p);
-                    left_play_records.Add(new PlayManager.PlayRecord(fname, p));
-                }
-                catch (Exception ex)
-                {
-                    DialogResult d = MessageBox.Show("Error loading plays: " + ex.Message + "\n\nContinue? \"Cancel\" will throw this error", "Error #" + ((ex.Message.GetHashCode() % 9000 + 2000000000) % 9000 + 1000),
-                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2);
-                    if (d == DialogResult.Cancel)
-                    {
-                        //I wanted to say "throw ex;", but then all you see is that the line "throw ex;" threw an error.
-                        //this way, if you debug, you can actually go to the line where it occurs (assuming that an error happens again)
-                        plays.Add(loader.load(filecontents));
-                        MessageBox.Show("Wow...it threw an error the first time but not the second time.  Debugging this will be hard.");
-                        Application.Exit();
-                    }
-                    else if (d == DialogResult.No)
-                    {
-                        Application.Exit();
-                        Environment.Exit(-1);
-                    }
-                }
-            }
-            interpreter = new Interpreter(false, plays.ToArray(), this, this);
-
-
-#if DIFFERENTPLAYS
-            files = System.IO.Directory.GetFiles(their_play_directory);
-            List<InterpreterPlay> defensiveplays = new List<InterpreterPlay>();
-            List<PlayManager.PlayRecord> right_play_records = new List<PlayManager.PlayRecord>();
-            foreach (string fname in files)
-            {
-                System.IO.StreamReader reader = new System.IO.StreamReader(fname);
-                string filecontents = reader.ReadToEnd();
-                reader.Close();
-                reader.Dispose();
-
-                try
-                {
-                    InterpreterPlay p = loader.load(filecontents);
-                    defensiveplays.Add(p);
-                    right_play_records.Add(new PlayManager.PlayRecord(fname, p));
-                }
-                catch (Exception ex)
-                {
-                    DialogResult d = MessageBox.Show("Error loading plays: " + ex.Message + "\n\nContinue? \"Cancel\" will throw this error", "Error #" + ((ex.Message.GetHashCode() % 9000 + 2000000000) % 9000 + 1000),
-                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2);
-                    if (d == DialogResult.Cancel)
-                    {
-                        //I wanted to say "throw ex;", but then all you see is that the line "throw ex;" threw an error.
-                        //this way, if you debug, you can actually go to the line where it occurs (assuming that an error happens again)
-                        defensiveplays.Add(loader.load(filecontents));
-                        MessageBox.Show("Wow...it threw an error the first time but not the second time.  Debugging this will be hard.");
-                        Application.Exit();
-                    }
-                    else if (d == DialogResult.No)
-                        Application.Exit();
-                }
-            }
-#else
-            List<InterpreterPlay> defensiveplays = plays;
-#endif
-            defensiveinterpreter = new Interpreter(true, defensiveplays.ToArray(),
-                new TeamFlipperPredictor(this), this);
-
-            play_manager = new PlayManager(interpreter, defensiveinterpreter, left_play_records, right_play_records);
-            play_manager.Show();
-        }
-        private void InterpreterTester_Load(object sender, EventArgs e)
-        {
-        }
         public InterpreterTester()
-        {
+        {            
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.DoubleBuffer, true);
-            InitializeComponent();
-            loadPlays();
+            InitializeComponent();            
 
             init();
         }
@@ -173,20 +93,38 @@ namespace InterpreterTester
             };
             ballinfo = new BallInfo(new Vector2(0, 0));
             ballvx = ballvy = 0;
+
+            LoadConstants();
+            loadPlays();
         }
 
-        int ourgoals = 0, theirgoals = 0;
-        const int TEAMSIZE = 5;
+        public void LoadConstants()
+        {
+            OFFENSE_PLAY_DIR = Constants.get<string>("default", "INTERPRETER_TESTER_OFFENSE_PLAY_DIR");
+            DEFENSE_PLAY_DIR = Constants.get<string>("default", "INTERPRETER_TESTER_DEFENSE_PLAY_DIR");
+        }
 
-        RobotInfo[] ourinfo;
+        private void loadPlays()
+        {
+            if (play_manager != null)
+                play_manager.Close();
 
-        RobotInfo[] theirinfo;
+            // Player 1 plays
+            Dictionary<InterpreterPlay, string> offensePlays = PlayUtils.loadPlays(OFFENSE_PLAY_DIR);
+            interpreter = new Interpreter(false, this, this);
+            interpreter.LoadPlays(new List<InterpreterPlay>(offensePlays.Keys));
 
-        BallInfo ballinfo = new BallInfo(new Vector2(0, 0));
-        double ballvx = 0, ballvy = 0;
+            // Player 2 plays
+            Dictionary<InterpreterPlay, string> defensePlays = PlayUtils.loadPlays(DEFENSE_PLAY_DIR);
+            defensiveinterpreter = new Interpreter(true, new TeamFlipperPredictor(this), this);
+            defensiveinterpreter.LoadPlays(new List<InterpreterPlay>(defensePlays.Keys));
 
-        int ballImmobile = 0;
+            // Play manager stuff
+            play_manager = new PlayManager(interpreter, defensiveinterpreter, offensePlays, defensePlays);
+            play_manager.Show();
+        }
 
+  
         #region Coordinate Conversions
         public int fieldtopixelX(double x)
         {
@@ -584,9 +522,7 @@ namespace InterpreterTester
                 this.Invalidate();
             }
         }
-        #endregion
-
-        private const double chop = .001;
+        #endregion        
 
         #region Commander Members
         public void move(int robotID, bool avoidBall, Vector2 dest)
@@ -777,6 +713,24 @@ namespace InterpreterTester
         {
             return ballinfo;
         }
+
+        public void setBallMark()
+        {
+            throw new ApplicationException("InterpreterTester.setBallMark: not implemented");
+        }
+        public void clearBallMark()
+        {
+            throw new ApplicationException("InterpreterTester.clearBallMark: not implemented");
+        }
+        public bool hasBallMoved()
+        {
+            throw new ApplicationException("InterpreterTester.hasBallMoved: not implemented");
+        }
+        public void setPlayType(PlayTypes newPlayType)
+        {
+            throw new ApplicationException("InterpreterTester.setPlayType: not implemented");
+        }
+  
 
         #endregion
     }

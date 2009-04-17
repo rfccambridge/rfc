@@ -110,6 +110,22 @@ namespace Robocup.Simulation
             return ball_info;
         }
 
+        public void setBallMark()
+        {
+            throw new ApplicationException("PhysicsEngine.setBallMark: not implemented");
+        }
+        public void clearBallMark()
+        {
+            throw new ApplicationException("PhysicsEngine.clearBallMark: not implemented");
+        }
+        public bool hasBallMoved()
+        {
+            throw new ApplicationException("PhysicsEngine.hasBallMoved: not implemented");
+        }
+        public void setPlayType(PlayTypes newPlayType)
+        {
+            throw new ApplicationException("PhysicsEngine.setPlayType: not implemented");
+        }
         #endregion
 
         /// <summary>

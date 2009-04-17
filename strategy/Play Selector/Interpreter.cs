@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using System.Collections;
 using Robocup.Core;
+using System.IO;
 
 namespace Robocup.Plays
 {
@@ -65,7 +66,6 @@ namespace Robocup.Plays
             plays.Clear();
             plays.AddRange(newPlays);
         }
-
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();
 
         public List<InterpreterPlay> getPlays()

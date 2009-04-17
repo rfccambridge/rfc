@@ -180,37 +180,8 @@ namespace Robocup.ControlForm
 
         public void reloadPlays()
         {
-            // create interpreter from file
-            PlayLoader<InterpreterPlay, InterpreterExpression> loader =
-                new PlayLoader<InterpreterPlay, InterpreterExpression>(new InterpreterExpression.Factory());
-
-            string[] files = System.IO.Directory.GetFiles(PLAY_DIR);
-            List<InterpreterPlay> plays = new List<InterpreterPlay>();
-            Dictionary<InterpreterPlay, string> filenames = new Dictionary<InterpreterPlay, string>();
-            foreach (string fname in files)
-            {
-                string extension = Path.GetExtension(fname);
-                if (extension != ".txt")
-                    continue;
-                StreamReader reader = new StreamReader(fname);
-                string filecontents = reader.ReadToEnd();
-                reader.Close();
-                reader.Dispose();
-
-                try
-                {
-                    InterpreterPlay p = loader.load(filecontents, Path.GetFileNameWithoutExtension(fname));
-                    plays.Add(p);
-                    filenames.Add(p, fname);
-                }
-                catch (Exception ex)
-                {
-                    //Console.WriteLine(ex.StackTrace);
-                    Console.WriteLine("error loading play \"" + fname + "\": " + ex.ToString());
-                }
-            }
-
-            _interpreter.LoadPlays(plays);
+            Dictionary<InterpreterPlay, string> plays = PlayUtils.loadPlays(PLAY_DIR);
+             _interpreter.LoadPlays(new List<InterpreterPlay>(plays.Keys));
         }
        
         public Interpreter getInterpreter() {

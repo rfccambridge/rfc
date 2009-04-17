@@ -10,10 +10,12 @@ int REBOOT_TIME 15000
 string REFBOX_ADDR 224.5.92.5
 int REFBOX_PORT 10001
 
-# testing directory
-#string PLAY_DIR ../../plays/Test2009
-# competition directory
+# Main
 string PLAY_DIR ../../plays
+
+# Interpreter Tester ONLY play directory
+string INTERPRETER_TESTER_OFFENSE_PLAY_DIR ../../plays
+string INTERPRETER_TESTER_DEFENSE_PLAY_DIR ../../plays
 
 ## Basic Predictor constants
 double DELTA_DIST_SQ_MERGE .05
