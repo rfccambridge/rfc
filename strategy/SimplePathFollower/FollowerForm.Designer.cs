@@ -54,6 +54,8 @@
             this.btnSwitchGoal = new System.Windows.Forms.Button();
             this.btnLap = new System.Windows.Forms.Button();
             this.btnCalibratePID = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -228,7 +230,7 @@
             this.groupBox1.Controls.Add(this.btnLogNext);
             this.groupBox1.Controls.Add(this.btnStartStopLogging);
             this.groupBox1.Controls.Add(this.btnLogOpenClose);
-            this.groupBox1.Location = new System.Drawing.Point(46, 360);
+            this.groupBox1.Location = new System.Drawing.Point(46, 387);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(172, 79);
             this.groupBox1.TabIndex = 19;
@@ -300,11 +302,31 @@
             this.btnCalibratePID.UseVisualStyleBackColor = true;
             this.btnCalibratePID.Click += new System.EventHandler(this.btnCalibratePID_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(47, 362);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(72, 23);
+            this.button1.TabIndex = 27;
+            this.button1.Text = "Run Play";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(134, 362);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(123, 21);
+            this.comboBox1.TabIndex = 28;
+            // 
             // FollowerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 483);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.btnCalibratePID);
             this.Controls.Add(this.btnLap);
             this.Controls.Add(this.btnSwitchGoal);
@@ -364,5 +386,7 @@
         private System.Windows.Forms.Button btnSwitchGoal;
         private System.Windows.Forms.Button btnLap;
         private System.Windows.Forms.Button btnCalibratePID;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ComboBox comboBox1;
 	}
 }

@@ -5,6 +5,7 @@ using System.Text;
 using Robocup.Core;
 using Robocup.MotionControl;
 using Robocup.Utilities;
+using Robocup.CoreRobotics;
 
 
 namespace SimplePathFollower {
@@ -37,11 +38,16 @@ namespace SimplePathFollower {
         public PIDCalibrator(PathFollower _pathFollower) {
             pathFollower = _pathFollower;
 
-            BugFeedbackMotionPlanner planner = _pathFollower.Planner as BugFeedbackMotionPlanner;
-            if (planner == null)
+            //I know it's bad practice! I don't care!!!
+            TangentBugFeedbackMotionPlanner tbugPlanner = (_pathFollower.Planner as TangentBugFeedbackMotionPlanner);
+            BugFeedbackMotionPlanner bugPlanner = (_pathFollower.Planner as BugFeedbackMotionPlanner);
+            if(bugPlanner != null)
+                feedbackPID = bugPlanner.GetFeedbackObj(_pathFollower.RobotID);
+            else if (tbugPlanner != null)
+                feedbackPID = tbugPlanner.GetFeedbackObj(_pathFollower.RobotID);
+            else
                 throw new Exception("The sky should fall on your head for calling PIDCalibrator with unsupported motion planner!!!");
 
-            feedbackPID = planner.GetFeedbackObj(_pathFollower.RobotID);
             feedbackPID.OnUpdateErrors = UpdateErrors;
 
             lapError = 0;

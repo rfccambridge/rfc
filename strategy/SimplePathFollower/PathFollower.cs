@@ -16,7 +16,7 @@ namespace SimplePathFollower
 		private bool running;
         private bool lapping;
 
-        double MIN_GOAL_DIST = .10;
+        double MIN_GOAL_DIST = .06;
         double MIN_GOAL_DIFF_ORIENTATION = .3;
 
         // represents whether the robot has yet reached the goal

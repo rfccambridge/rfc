@@ -342,7 +342,7 @@ namespace SimplePathFollower {
         }
 
         enum MotionPlanners {
-            DefaultMotionPlanner, FeedbackVeerMotionPlanner, BugFeedbackVeerMotionPlanner,
+            DefaultMotionPlanner, TangentBugFeedbackMotionPlanner, FeedbackVeerMotionPlanner, BugFeedbackVeerMotionPlanner,
             BugExtendMotionPlanner, PointChargeExtendMotionPlanner,
             PointChargeFeedbackVeerMotionPlanner, DumbTranslatePlanner,
             DumbPlanner, DumbTurnPlanner, CircleFeedbackMotionPlanner,
@@ -437,6 +437,12 @@ namespace SimplePathFollower {
                     planner = new DefaultMotionPlanner();
                     if (_pathFollower.setPlanner(planner)) {
                         _currentPlannerSelection = MotionPlanners.DefaultMotionPlanner;
+                    }
+                    break;
+                case MotionPlanners.TangentBugFeedbackMotionPlanner:
+                    planner = new TangentBugFeedbackMotionPlanner();
+                    if (_pathFollower.setPlanner(planner)) {
+                        _currentPlannerSelection = MotionPlanners.TangentBugFeedbackMotionPlanner;
                     }
                     break;
 
@@ -586,6 +592,10 @@ namespace SimplePathFollower {
 
             // Cross thread operation:           
             SetButtonText(btnStartStop, "Start");
+
+        }
+
+        private void button1_Click(object sender, EventArgs e) {
 
         }
 

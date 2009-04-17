@@ -36,19 +36,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FollowerForm.cs">
+    <Compile Include="..\..\..\doc\FollowerForm.cs">
       <SubType>Form</SubType>
+      <Link>FollowerForm.cs</Link>
     </Compile>
-    <Compile Include="FollowerForm.Designer.cs">
+    <Compile Include="..\..\..\doc\FollowerForm.Designer.cs">
       <DependentUpon>FollowerForm.cs</DependentUpon>
+      <Link>FollowerForm.Designer.cs</Link>
     </Compile>
     <Compile Include="PathFollower.cs" />
     <Compile Include="PIDCalibrator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FollowerForm.resx">
+    <EmbeddedResource Include="..\..\..\doc\FollowerForm.resx">
       <DependentUpon>FollowerForm.cs</DependentUpon>
       <SubType>Designer</SubType>
+      <Link>FollowerForm.resx</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
