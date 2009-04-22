@@ -1,0 +1,47 @@
+Metadata:
+type NormalPlay
+score 1.00738530830824
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.15 0)
+theirgoal (point 3.15 0)
+point0 (pointof ball)
+circle1 (circle point0 0.537121960079831)
+robot1 (closest friendly point4 loose)
+point2 (pointof robot1)
+robot2 (closest friendly point4 loose)
+point3 (pointof robot2)
+robot3 (closest friendly ourgoal loose)
+point4 (pointof robot3)
+robot4 (closest friendly point8 loose)
+point5 (pointof robot4)
+robot5 (closest friendly point7 loose)
+point6 (pointof robot5)
+robot6 (closest enemy point6 loose)
+point7 (pointof robot6)
+robot7 (closest enemy point5 loose)
+point8 (pointof robot7)
+robot8 (closest enemy point0 loose)
+point9 (pointof robot8)
+robot9 (closest enemy point0 loose)
+point10 (pointof robot9)
+robot10 (closest enemy theirgoal loose)
+point11 (pointof robot10)
+Conditions:
+Actions:
+DesignerData:
+ball <-1.37,-1.52>
+robot1 <-2.22,-0.37>
+robot2 <-2.31,-0.54>
+robot3 <-2.75,-0.28>
+robot4 <-1.47,0.15>
+robot5 <-2.35,-1.62>
+robot6 <-1.09,-0.18>
+robot7 <-1.41,-0.47>
+robot8 <1.47,-1.17>
+robot9 <1.26,-0.48>
+robot10 <2.76,-0.03>
+
