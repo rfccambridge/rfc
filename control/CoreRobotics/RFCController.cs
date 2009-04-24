@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
 using Robocup.Utilities;
+using Robocup.MotionControl;
 
 namespace Robocup.CoreRobotics
 {
@@ -15,6 +16,10 @@ namespace Robocup.CoreRobotics
      */
     public class RFCController : IController
     {
+        // Kick planner
+        TangentBugFeedbackMotionPlanner regularPlanner;
+        FeedbackVeerKickPlanner _kickPlanner;
+
         public RFCController(
             IRobots commander,
             IMotionPlanner planner,
@@ -23,6 +28,9 @@ namespace Robocup.CoreRobotics
             _commander = commander;
             _planner = planner;
             _predictor = predictor;
+
+            regularPlanner = new TangentBugFeedbackMotionPlanner();
+            _kickPlanner = new FeedbackVeerKickPlanner(regularPlanner);
         }
 
         private Dictionary<int, Arrow[]> arrows = new Dictionary<int, Arrow[]>();
@@ -158,6 +166,31 @@ namespace Robocup.CoreRobotics
             move(robotID, avoidBall, destination, orientation); //TODO make it the current robot position
         }
 
+        /// <summary>
+        /// Move to the ball and then kick it. Uses IKickPlanner- see David Robinson or Josh Montana
+        /// with any questions
+        /// </summary>
+        /// <param name="robotID"></param>
+        /// <param name="target"></param>
+        public void moveKick(int robotID, Vector2 target)
+        {
+            // Plan kick
+            KickPlanningResults kpResults = _kickPlanner.kick(robotID, target, Predictor);
+
+            WheelSpeeds wheelSpeeds = kpResults.wheel_speeds;
+            bool turnOnBreakBeam = kpResults.turnOnBreakBeam;
+
+            // If instructed, turn on break beam
+            if (turnOnBreakBeam)
+            {
+                beamKick(robotID);
+            }
+
+            Console.WriteLine("KickPlanner sent back speeds of " + wheelSpeeds.toString());
+
+            Commander.setMotorSpeeds(robotID, wheelSpeeds);
+        }
+
         public void stop(int robotID)
         {
             Commander.setMotorSpeeds(robotID, new WheelSpeeds());
@@ -187,6 +220,13 @@ namespace Robocup.CoreRobotics
                 }
             }            
             Planner.DrawLast(g, converter);
+        }
+
+        public void ReloadConstants()
+        {
+            _planner.ReloadConstants();
+            _kickPlanner.ReloadConstants();
+            //_predictor
         }
     }
 }
