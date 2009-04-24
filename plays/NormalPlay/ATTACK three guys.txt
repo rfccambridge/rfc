@@ -1,0 +1,112 @@
+Metadata:
+type NormalPlay
+name AttackThreeGuys
+score 3.002615
+
+Objects:
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.13 0)
+theirgoal (point 3.13 0)
+
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
+GOAL_MINIMUM (const-double GOAL_MINIMUM)
+BALL_IN_RANGE (const-double BALL_IN_RANGE)
+SUPPORT_AVOID (const-double SUPPORT_AVOID)
+CLEAR_DIST (const-double CLEAR_DIST)
+SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
+
+ballpoint (pointof ball)
+numbots (numourbots)
+circleball (circle ballpoint BALL_KICK_DIST)
+balltogoal (line ballpoint theirgoal)
+balldestination (linecircleintersection balltogoal circleball 1)
+addtosupport (point 0 SUPPORT_AVOID)
+addtosupportpass (point 0 SUPPORT_SETUP_PASS)
+cleartogoal (pathClear ballpoint theirgoal CLEAR_DIST)
+clearcloserange (pathClear ballpoint balldestination CLEAR_DIST)
+ballinrange (< (pointpointdistance ballpoint theirgoal) BALL_IN_RANGE)
+ballpositive (< 0 (getYcoord ballpoint))
+
+theirgoalcircle (circle theirgoal STANDBY_DISTANCE)
+theirgoalpositivequad (linecircleintersection (line theirgoal topCenter) theirgoalcircle 1)
+theirgoalnegativequad (linecircleintersection (line theirgoal bottomCenter) theirgoalcircle 1)
+
+robot0 (closest friendly ballpoint loose)
+robot0point (pointof robot0)
+
+robot1 (closest friendly balldestination loose)
+robot1point (pointof robot1)
+
+robot2 (closest friendly theirgoal loose)
+robot2point (pointof robot2)
+
+kickerrobot (closerRobotToPoint (closerRobotToPoint robot0 robot1 ballpoint) robot2 ballpoint)
+supportrobot (if_robot kickeris2 (closerRobotToPoint robot0 robot1 balldestination) (if_robot kickeris0 robot1 robot0))
+backuprobot (if_robot (or kickeris2 supportis2) (if_robot (or kickeris0 supportis0) robot1 robot0) robot2)
+
+kickerrobotpoint (if_point kickeris0 robot0point (if_point kickeris1 robot1point robot2point))
+supportrobotpoint (if_point supportis0 robot0point (if_point supportis1 robot1point robot2point))
+backuprobotpoint (if_point backupis0 robot0point (if_point backupis1 robot1point robot2point))
+
+kickeris0 (sameRobot kickerrobot robot0)
+kickeris1 (sameRobot kickerrobot robot1)
+kickeris2 (sameRobot kickerrobot robot2)
+
+supportis0 (sameRobot supportrobot robot0)
+supportis1 (sameRobot supportrobot robot1)
+supportis2 (sameRobot supportrobot robot2)
+
+backupis0 (sameRobot backuprobot robot0)
+backupis1 (sameRobot backuprobot robot1)
+backupis2 (sameRobot backuprobot robot2)
+
+supportgotounblocked (if_point (pointAboveLine supportrobotpoint balltogoal) (pointadd balldestination addtosupport) (pointsubtract balldestination addtosupport))
+
+supportgotoblocked (if_point (pointAboveLine supportrobotpoint balltogoal) (pointadd balldestination addtosupportpass) (pointsubtract balldestination addtosupportpass))
+
+supportgoto (if_point clearcloserange supportgotounblocked supportgotoblocked)
+
+passsupportopen (pathClear ballpoint supportrobotpoint CLEAR_DIST)
+passbackupopen (pathClear ballpoint backuprobotpoint CLEAR_DIST)
+
+supporthasshot (pathClear supportrobotpoint theirgoal CLEAR_DIST)
+backuphasshot (pathClear backuprobotpoint theirgoal CLEAR_DIST)
+
+passsupport (robotpointkick kickerrobot supportrobotpoint)
+passbackup (robotpointkick kickerrobot backuprobotpoint)
+kicktogoal (robotpointkick kickerrobot theirgoal)
+
+trypass (if_Action (and passsupportopen supporthasshot) passsupport (if_Action (and passbackupopen backuphasshot) passbackup kicktogoal))
+
+betterstandbypoint (if_point ballpositive theirgoalnegativequad theirgoalpositivequad)
+
+supportstandbyispositive (< (pointpointdistance supportrobotpoint theirgoalpositivequad) (pointpointdistance backuprobotpoint theirgoalpositivequad))
+supportstandbypoint (if_point supportstandbyispositive theirgoalpositivequad theirgoalnegativequad)
+backupstandbypoint (if_point ballinrange (if_point supportstandbyispositive theirgoalnegativequad theirgoalpositivequad) betterstandbypoint)
+
+supportrelay (robotpointmove supportrobot supportgoto)
+supportstandby (robotpointmove supportrobot supportstandbypoint)
+
+kickinrange (if_Action cleartogoal kicktogoal trypass)
+kickoutrange (if_Action clearcloserange kicktogoal trypass)
+
+kick (if_Action ballinrange kickinrange kickoutrange)
+support (if_Action ballinrange supportstandby supportrelay)
+backup (robotpointmove backuprobot backupstandbypoint)
+
+Conditions:
+(< GOAL_MINIMUM (pointpointdistance robot0point ourgoal))
+(< GOAL_MINIMUM (pointpointdistance robot1point ourgoal))
+(< GOAL_MINIMUM (pointpointdistance robot2point ourgoal))
+
+Actions:
+kick
+support
+backup
+(reloadConstants)
