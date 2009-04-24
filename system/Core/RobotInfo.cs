@@ -111,6 +111,13 @@ namespace Robocup.Core
             get { return idnum; }
         }
 
+        private bool yellowTeam;
+        public bool YellowTeam
+        {
+            get { return yellowTeam; }
+            set { yellowTeam = value; }
+        }
+
         public override string ToString()
         {
             return idnum + ": " + position + " (" + orientation + ")";

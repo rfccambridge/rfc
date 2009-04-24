@@ -25,6 +25,8 @@ namespace Robocup.CoreRobotics
             private double POSITION_WEIGHT_OLD;
             private double POSITION_WEIGHT_NEW;
             private double MAX_SECONDS_TO_KEEP_INFO;
+            private bool BLUE_HAS_PATTERN;
+            private bool YELLOW_HAS_PATTERN;
 
             public BasicPredictorHelper(bool matchIDs)
             {
@@ -42,6 +44,10 @@ namespace Robocup.CoreRobotics
                 POSITION_WEIGHT_OLD = Constants.get<double>("default", "POSITION_WEIGHT_OLD");
                 POSITION_WEIGHT_NEW = Constants.get<double>("default", "POSITION_WEIGHT_NEW");
                 MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
+
+                BLUE_HAS_PATTERN = Constants.get<bool>("configuration", "BLUE_HAS_PATTERN");
+                YELLOW_HAS_PATTERN = Constants.get<bool>("configuration", "YELLOW_HAS_PATTERN");
+
             }
             private object object_lock = new object();
             private List<RobotInfo> lambdaInfo = new List<RobotInfo>(), omegaInfo = new List<RobotInfo>();
@@ -104,7 +110,9 @@ namespace Robocup.CoreRobotics
                         {
                             if (matchIDs)
                             {
-                                if (oldInfo.ID == newInfo.ID)
+                                if (oldInfo.ID == newInfo.ID && 
+                                    ((newInfo.YellowTeam && YELLOW_HAS_PATTERN) ||
+                                     (!newInfo.YellowTeam && BLUE_HAS_PATTERN)))
                                 {
                                     matched = newInfo;
                                     break;
@@ -255,6 +263,7 @@ namespace Robocup.CoreRobotics
         private BallInfo BALL_POS_KICKOFF;
         private BallInfo BALL_POS_PENALTY;
 
+        
         // Mark is currently set
         bool marking;          
         Vector2 markedPosition;

@@ -151,7 +151,9 @@ namespace Robocup.ControlForm {
 
             foreach (VisionMessage.RobotData robot in msg.Robots)
             {
-                (robot.Team == OUR_TEAM ? ours : theirs).Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
+                RobotInfo robotInfo = new RobotInfo(robot.Position, robot.Orientation, robot.ID);
+                robotInfo.YellowTeam = (robot.Team == VisionMessage.Team.YELLOW) ? true : false;
+                (robot.Team == OUR_TEAM ? ours : theirs).Add(robotInfo);
             }
 
             lock (predictor_lock)
