@@ -167,7 +167,6 @@ namespace Robocup.MotionControl
 
         public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-
             RobotInfo currentState = predictor.getCurrentInformation(id);
 
             Vector2 start = currentState.Position;
@@ -179,8 +178,6 @@ namespace Robocup.MotionControl
             // add direction to goal
             Vector2 directionToGoal = (end - start);
 
-            
-            
             /*// KICK BALL HACK!
             if (avoidBallRadius == 0.12) {
                 BallInfo ball = predictor.getBallInfo();
@@ -218,6 +215,7 @@ namespace Robocup.MotionControl
             {
                 if (info.ID != id)
                     obstaclePositions.Add(info.Position);
+                Console.WriteLine(info.ToString());
             }
 
             finalDirection = finalDirection + directionToGoal;
@@ -265,16 +263,12 @@ namespace Robocup.MotionControl
             
             // avoid boundary lines, but only if inside boundaries
             double dist_to_line;
-            Console.WriteLine("checking lines:");
             // do not perform this loop if inside boundaries
-            Console.WriteLine(start.X + " " + start.Y);
             if (start.X > MIN_X_ROBOT_BOUNDARY && start.X < MAX_X_ROBOT_BOUNDARY &&
                 start.Y > MIN_Y_ROBOT_BOUNDARY && start.Y < MAX_Y_ROBOT_BOUNDARY) {
-                Console.WriteLine("CHECKING");
                 foreach (Line l in boundary_lines) {
                     // get distance from line
                     dist_to_line = l.distFromLine(start);
-                    Console.WriteLine("There is a line at " + dist_to_line + " distance");
                     // ignore lines more than a certain distance
                     if (dist_to_line > BOUNDARY_AVOID) {
                         continue;
@@ -313,6 +307,7 @@ namespace Robocup.MotionControl
 
             if (bestAngle == -1000) {
                 // no good route- return empty path
+                Console.WriteLine("NO GOOD ROUTE!");
                 return new RobotPath(id);
 
             }
@@ -324,8 +319,6 @@ namespace Robocup.MotionControl
 
             }
              */
-
-            Console.WriteLine("best angle: " + bestAngle);
 
             finalDirection = rotateDegree(finalDirection, bestAngle);
 

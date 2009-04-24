@@ -1022,6 +1022,7 @@ namespace Robocup.MotionControl
             //If close enough, spin to face correct orientation and stop
             if (sqDistToGoal < STOP_DISTANCE * STOP_DISTANCE)
             {
+                Console.WriteLine("STOPPING- CLOSE ENOUGH TO GOAL AT " + Math.Sqrt(sqDistToGoal).ToString());
                 return stopSpeeds(currentState, desiredState);
             }
 

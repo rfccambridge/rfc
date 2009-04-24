@@ -288,6 +288,8 @@ namespace Robocup.MotionControl {
                 constants.I = Constants.get<double>("control", "I_" + dofType.ToString() + "_" + robotID.ToString());
                 constants.D = Constants.get<double>("control", "D_" + dofType.ToString() + "_" + robotID.ToString());
                 constants.ALPHA = Constants.get<double>("control", "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
+            
+                
             }
 
             /// <summary>
