@@ -1,7 +1,7 @@
 Metadata:
 type SetPlay_Ours
 name Refbox_Our_Free_Kick (setup) 4
-score 10
+score 40
 
 Objects:
 topLeftCorner (point -3.05 2.1)
