@@ -152,7 +152,16 @@ namespace Robocup.Utilities
                 Color.Cyan, .04).drawConvertToPixels(g, converter);
 
             b = new SolidBrush(Color.GreenYellow);
-            string playName;           
+            string playName;
+            Dictionary<int, string> playNames;
+            if ((OUR_TEAM == Team.YELLOW && r.YellowTeam) || (OUR_TEAM == Team.BLUE && !r.YellowTeam))
+            {
+                playNames = ourPlayNames;
+            }
+            else
+            {
+                playNames = theirPlayNames;
+            }
             if (ourPlayNames.TryGetValue(r.ID, out playName)) {
                 g.DrawString(r.ID.ToString() + playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
             }
@@ -206,13 +215,15 @@ namespace Robocup.Utilities
             );
             p.Dispose();
 
-            foreach (RobotInfo r in predictor.getOurTeamInfo())
+            List<RobotInfo> ourInfos = predictor.getOurTeamInfo();
+            foreach (RobotInfo r in ourInfos)
             {
                 //drawRobotOurs(r, g, Color.Black);
                 drawRobot(r, ourColor, g);
             }
             
-            foreach (RobotInfo r in predictor.getTheirTeamInfo())
+            List<RobotInfo> theirInfos = predictor.getTheirTeamInfo();
+            foreach (RobotInfo r in theirInfos)
             {
                 //drawRobotTheirs(r, g, Color.Red);
                 drawRobot(r, theirColor, g);
