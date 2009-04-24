@@ -170,6 +170,9 @@ namespace Robocup.Core {
         void kick(int robotID);
         void beamKick(int robotID, bool goForward);
         void stop(int robotID);
+        void moveKick(int robotID, Vector2 target);
+
+        void ReloadConstants();
     }
 
     /** Abstraction for the robot movement controller
