@@ -1027,8 +1027,7 @@ namespace Robocup.MotionControl
             }
 
             // If pointing in right direction, go forward with veer
-            if (Math.Abs(angle_diff) < MIN_ANGLE_SPIN && (Math.Abs(angle_diff) < MIN_ANGLE_KEEP_SPINNING ||
-                                                            !alreadySpinning))
+            if (Math.Abs(angle_diff) < MIN_ANGLE_SPIN)
             {
                 WheelSpeeds veerSpeeds = getVeer(angle_diff, sqDistToGoal, id);
                 //Console.WriteLine("Going forward: " + veerSpeeds.toString());
@@ -1257,7 +1256,7 @@ namespace Robocup.MotionControl
         private Feedback[] _feedbackObjs;
         public Feedback GetFeedbackObj(int robotID) { return _feedbackObjs[robotID]; }
         //private NavigationResults results;
-        private Vector2 waypoint;
+        private Vector2[] waypoint;
 
         private DateTime[] _timesLastCalled = new DateTime[5]; //number of robots
 
@@ -1285,6 +1284,7 @@ namespace Robocup.MotionControl
             // _planner = new NavigationPlanner(_navigator);
 
 
+            waypoint = new Vector2[NUM_ROBOTS];
             _feedbackObjs = new Feedback[NUM_ROBOTS];
             paths = new Pair<List<RobotInfo>, List<Vector2>>[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
@@ -1389,7 +1389,7 @@ namespace Robocup.MotionControl
                 //results = _navigator.navigate(curinfo.ID, curinfo.Position,
                 //desiredState.Position, predictor.getOurTeamInfo().ToArray(), predictor.getTheirTeamInfo().ToArray(), predictor.getBallInfo(),
                 //0.15);
-                waypoint = path.findNearestWaypoint(curinfo).Position;
+                waypoint[id] = path.findNearestWaypoint(curinfo).Position;
                 _timesLastCalled[id] = nowCached;
             }
 
@@ -1405,10 +1405,10 @@ namespace Robocup.MotionControl
             itemsToLog.Add(DateTime.Now);
             itemsToLog.Add(curinfo);
             itemsToLog.Add(desiredState);
-            RobotInfo nextWaypoint = new RobotInfo(waypoint, 0, 0);
+            RobotInfo nextWaypoint = new RobotInfo(waypoint[id], 0, 0);
             itemsToLog.Add(nextWaypoint);
 
-            RobotInfo rInfo = new RobotInfo(new Vector2(waypoint.X, waypoint.Y), desiredState.Orientation, curinfo.ID);
+            RobotInfo rInfo = new RobotInfo(new Vector2(waypoint[id].X, waypoint[id].Y), desiredState.Orientation, curinfo.ID);
             //  /*results.waypoint.cartesianAngle()*/ (results.waypoint - curinfo.Position).cartesianAngle(), curinfo.ID);
 
             List<RobotInfo> waypoints = new List<RobotInfo>();
