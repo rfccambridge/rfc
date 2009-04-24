@@ -74,6 +74,7 @@ namespace Robotics.Commander
 
         public void Open()
         {
+            //If this throws an error, change port in constants.txt
             if (!comport.IsOpen)
                 comport.Open();
         }
