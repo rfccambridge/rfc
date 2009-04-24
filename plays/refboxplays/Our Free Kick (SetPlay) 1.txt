@@ -1,8 +1,8 @@
 Metadata:
-type SetupPlay_Ours
+type SetPlay_Ours
 name Refbox_Our_Free_Kick (setup) 1
-score 10
 
+score 10
 Objects:
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
@@ -10,12 +10,17 @@ bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
 ourgoal (point -3.15 0)
 theirgoal (point 3.15 0)
+point1 (pointof ball)
 robot1 (closest friendly point1 loose)
 point0 (pointof robot1)
-point1 (pointof ball)
+circle0 (circle point1 0.0894427190999915)
+line1 (line point1 point0)
+point2 (linecircleintersection line1 circle0 1)
+line3 (line theirgoal point1)
+point4 (linecircleintersection line3 circle0 1)
 Conditions:
 Actions:
-(robotpointpointmove robot1 theirgoal)
+(robotpointpointmove robot1 point4 theirgoal)
 DesignerData:
 ball <-0.35,-0.01>
 robot1 <-0.33,-0.78>

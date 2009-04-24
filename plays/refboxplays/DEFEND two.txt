@@ -1,6 +1,6 @@
 Metadata:
 type KickOff_Theirs
-name Refbox_Our_Free_Kick
+name Defend_two
 score 20
 
 Objects:

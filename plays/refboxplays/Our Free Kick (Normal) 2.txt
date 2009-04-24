@@ -1,0 +1,31 @@
+Metadata:
+type NormalPlay
+name Refbox_Our_Free_Kick 2
+score 10
+
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.15 0)
+theirgoal (point 3.15 0)
+robot1 (closest friendly point1 loose)
+point0 (pointof robot1)
+point1 (pointof ball)
+robot2 (closest friendly point5 loose)
+point2 (pointof robot2)
+circle3 (circle theirgoal 1.96786686541544)
+line4 (line theirgoal point1)
+point5 (linecircleintersection line4 circle3 1)
+line7 (line point2 theirgoal)
+point8 (linecircleintersection line7 circle3 0)
+Conditions:
+Actions:
+(robotpointkick robot1 point2)
+(robotpointpointmove robot2 point8 point1)
+DesignerData:
+ball <-0.35,-0.01>
+robot1 <-0.33,-0.78>
+robot2 <0.55,1.32>
+
