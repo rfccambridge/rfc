@@ -46,7 +46,7 @@ namespace Robocup.ControlForm {
         List<Type> _logLineFormat;
         Timer timer;
         bool logging;
-        string LOG_FILE = "testlog.txt";
+        string LOG_FILE;
 
 
         String TOP_CAMERA = "top_cam";
@@ -65,6 +65,10 @@ namespace Robocup.ControlForm {
             visionBottomHost.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_BOTTOM");
             serialHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SERIAL");
 
+            btnLogNext.Enabled = false;
+
+            loggingInit();
+
             createSystem();
 
             this.Focus();
@@ -73,6 +77,7 @@ namespace Robocup.ControlForm {
         public void LoadConstants()
         {            
             OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
+            LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
         }
 
         private void createSystem() {
@@ -103,6 +108,8 @@ namespace Robocup.ControlForm {
             // playSelectorForm
             playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
             
+            
+
         }
 
         private void serialConnect_Click(object sender, EventArgs e) {
@@ -301,7 +308,7 @@ namespace Robocup.ControlForm {
             if (!_logReader.LogOpen) {
                 MessageBox.Show("Log file not open.");
                 return;
-            }
+            }            
 
             if (!_logFieldDrawer.Visible)
                 _logFieldDrawer.Show();
@@ -348,10 +355,12 @@ namespace Robocup.ControlForm {
             if (logging) {
                 logging = false;
                 btnStartStopLogging.Text = "Start log";
+                btnLogOpenClose.Enabled = true;
             }
             else {
                 logging = true;
                 btnStartStopLogging.Text = "Stop log";
+                btnLogOpenClose.Enabled = false;
             }
 
             // if enabled, start motion planner's logging
@@ -360,7 +369,7 @@ namespace Robocup.ControlForm {
 
                 if (!logger.Logging) {
                     logger.LogFile = LOG_FILE;
-                    logger.StartLogging();
+                    logger.StartLogging(int.Parse(txtRobotID.Text));
 
                 }
                 else {
@@ -369,20 +378,24 @@ namespace Robocup.ControlForm {
             }
         }
 
-        private void btnLogOpenClose_Click(object sender, EventArgs e) {
+        private void btnLogOpenClose_Click(object sender, EventArgs e) {            
             if (_logReader.LogOpen) {
                 _logReader.CloseLogFile();
                 btnLogOpenClose.Text = "Open log";
+                btnLogNext.Enabled = false;
+                btnStartStopLogging.Enabled = true;
             }
             else {
                 _logReader.OpenLogFile(LOG_FILE, _logLineFormat);
                 btnLogOpenClose.Text = "Close log";
+                btnLogNext.Enabled = true;
+                btnStartStopLogging.Enabled = false;
             }
+
 
         }
 
         #endregion
-
 
     }
 
