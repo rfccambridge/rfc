@@ -108,6 +108,10 @@ namespace Robocup.Plays
             commander.stop(robotID);
         }
 
+        public void Charge(int robotID) {
+            commander.charge(robotID);
+        }
+
         /// <summary>
         /// This method does all the necessary work to get a robot to kick the ball to a certain point.
         /// This should make other functions easier, such as a moving pass.
