@@ -1,7 +1,7 @@
 Metadata:
 type NormalPlay
 name Refbox_Our_Free_Kick_kicker 5
-score 10
+score 50
 
 Objects:
 topLeftCorner (point -3.05 2.1)
