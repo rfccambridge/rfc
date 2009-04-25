@@ -8,7 +8,7 @@
 double DIST_BEHIND_BALL .3
 double DIST_THROUGH_BALL .3
 
-double TIME_WAIT_POINT_1 1.5
+double TIME_WAIT_POINT_1 .75
 
 double MAX_LATERAL_GO_THROUGH .04
 double MAX_PARALLEL_GO_THROUGH .35
@@ -19,9 +19,11 @@ double MAX_DIST_BREAK_BEAM .3
 double DIST_ACTIVATE_KICK_PLANNER .5
 
 # maximum distance and orientation difference from point 1 to go to point 2
-#double MAX_DIST_POINT_1 .06
-double MAX_DIST_POINT_1 .15
-double MAX_DIFF_ORIENTATION_POINT_1 .25
+double MAX_DIST_POINT_1 .05
+double MAX_DIST_MOVE_TRANSLATE_POINT_1 .25
+double MAX_DIFF_ORIENTATION_POINT_1 .20
+
+int SPEED_LATERAL -5
 
 # PID loop for orientation at point 1
 double point1orientation_P -15
@@ -29,3 +31,5 @@ double point1orientation_I 0
 double point1orientation_D 0
 
 int SPIN_SPEED_CAP 6
+
+double BALL_AVOID_RADIUS .10

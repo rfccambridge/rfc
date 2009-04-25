@@ -5,7 +5,7 @@
 
 
 # RFCSystem constants
-int UPDATE_SLEEP_TIME 10
+int UPDATE_SLEEP_TIME 30
 int REBOOT_TIME 15000
 string REFBOX_ADDR 224.5.92.5
 int REFBOX_PORT 10001
@@ -13,15 +13,14 @@ int REFBOX_PORT 10001
 # testing directory
 #string PLAY_DIR ../../plays/Test2009
 # competition directory
-#string PLAY_DIR ../../plays/defense
-
-string PLAY_DIR ../../plays/ATTACK
-#string PLAY_DIR ../../plays/defense
+#string PLAY_DIR ../../plays
+string PLAY_DIR ../../plays/DEFENSE
+#string PLAY_DIR ../../plays/ATTACK
 #string PLAY_DIR ../../plays/refboxplays
-#string PLAY_DIR ../../plays/refboxplays/test
+#string PLAY_DIR ../../plays/NormalPlay
 #string PLAY_DIR ../../plays/refboxplays/penalty
-#string PLAY_DIR ../../plays/refboxplays/Defensive_Refbox_plays
-#string PLAY_DIR ../../plays/delete_me
+#string PLAY_DIR ../../plays/empty
+
 
 ## Basic Predictor constants
 double DELTA_DIST_SQ_MERGE .05
@@ -32,8 +31,8 @@ double VELOCITY_WEIGHT_OLD 0.5
 double VELOCITY_WEIGHT_NEW 0.5
 double POSITION_WEIGHT_OLD 0.5
 double POSITION_WEIGHT_NEW 0.5
-double BALL_POSITION_WEIGHT_OLD 0.7
-double BALL_POSITION_WEIGHT_NEW 0.3
+double BALL_POSITION_WEIGHT_OLD 0
+double BALL_POSITION_WEIGHT_NEW 1
 
 
 bool ROBOT_HAS_KICKER_0 true
@@ -42,12 +41,12 @@ bool ROBOT_HAS_KICKER_2 true
 bool ROBOT_HAS_KICKER_3 true
 bool ROBOT_HAS_KICKER_4 true
 
-bool ROBOT_IS_GOALIE_3 true
+bool ROBOT_IS_GOALIE_0 true
 
 int PATH_RECALCULATE_INTERVAL 500
 
 # GUI: ControlForm default values for text fields, no real effect
 # Presumably, each machine would have a private convenient setting for these
 string DEFAULT_HOST_VISION_TOP localhost
-string DEFAULT_HOST_VISION_BOTTOM marduk
-string DEFAULT_HOST_SERIAL localhost
+string DEFAULT_HOST_VISION_BOTTOM rfc
+string DEFAULT_HOST_SERIAL rfc

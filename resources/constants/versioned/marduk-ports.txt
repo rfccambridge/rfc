@@ -1,4 +1,4 @@
 int VisionDataPort 50000
 int RemoteControlPort 50100
 
-string SerialPort COM12
+string SerialPort COM8
