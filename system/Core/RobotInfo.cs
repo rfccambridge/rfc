@@ -6,30 +6,41 @@ namespace Robocup.Core
 {
     public class BallInfo
     {
-        private readonly Vector2 position;
+        private Vector2 position;
         public Vector2 Position
         {
             get { return position; }
+            set { position = value; }
         }
-        private readonly Vector2 velocity;
+        private Vector2 velocity;
         public Vector2 Velocity
         {
             get { return velocity; }
+            set { velocity = value; }
+        }
+        private double lastSeen;
+        public double LastSeen
+        {
+            get { return lastSeen; }
+            set { lastSeen = value; }
         }
 
         /// <summary>
         /// Creates a BallInfo with zero velocity.
         /// </summary>
         public BallInfo(Vector2 position) : this(position, Vector2.ZERO) { }
-        public BallInfo(Vector2 position, Vector2 velocity)
+        public BallInfo(Vector2 position, Vector2 velocity) : this(position, velocity, -1) { }
+        public BallInfo(Vector2 position, Vector2 velocity, double lastSeen)
         {
             this.position = position;
             this.velocity = velocity;
+            this.lastSeen = lastSeen;
         }
         public BallInfo(BallInfo copy)
         {
             this.position = copy.position;
             this.velocity = copy.velocity;
+            this.lastSeen = copy.lastSeen;
         }
 
         public override string ToString()
@@ -42,25 +53,43 @@ namespace Robocup.Core
     /// Contains info on position, orientation and velocity of a particular robot
     /// </summary>
     public class RobotInfo
-    {
+    {        
         /// <summary>
         /// Creates a RobotInfo with zero velocity.
         /// </summary>
-        public RobotInfo(Vector2 position, double orientation, int id)
-            : this(position, Vector2.ZERO, 0, orientation, id)
+        public RobotInfo(Vector2 position, double orientation, int team, int id)
+            : this(position, Vector2.ZERO, 0, orientation, team, id, -1)
         { }
-        public RobotInfo(Vector2 position, Vector2 velocity, double rotational_velocity, double orientation, int id)
+        public RobotInfo(Vector2 position, double orientation, int id)
+            : this(position, Vector2.ZERO, 0, orientation, -1, id, -1)
+        { }
+        public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity,
+            double orientation, int team, int id)
+            : this(position, velocity, angularVelocity,
+            orientation, team, id, -1) { }
+        public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity,
+            double orientation, int id)
+            : this(position, velocity, angularVelocity,
+            orientation, -1, id, -1) { }
+        
+        public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity, 
+            double orientation, int team, int id, double lastSeen)
         {
             this.position = position;
             this.velocity = velocity;
-            this.rotational_velocity = rotational_velocity;
+            this.angularVelocity = angularVelocity;
             this.orientation = orientation;
+            this.team = team;
             this.idnum = id;
+            this.lastSeen = lastSeen;
         }
-        public RobotInfo Clone()
-        {
-            return new RobotInfo(position, velocity, rotational_velocity, orientation, idnum);
-        }
+        /// <summary>
+        /// Creates a RobotInfo that is a copy of another one.
+        /// </summary>
+        /// <param name="orig"></param>
+        public RobotInfo(RobotInfo orig)
+            : this(orig.Position, orig.Velocity, orig.AngularVelocity,
+            orig.Orientation, orig.Team, orig.ID, orig.LastSeen) { }
 
         /*private readonly List<string> tags = new List<string>();
         /// <summary>
@@ -72,50 +101,61 @@ namespace Robocup.Core
             get { return tags; }
         }*/
 
-        private readonly Vector2 position;
+        private Vector2 position;
         /// <summary>
         /// The position of the robot.
         /// </summary>
         public Vector2 Position
         {
             get { return position; }
+            set { position = value; }
         }
-        private readonly Vector2 velocity;
+        private Vector2 velocity;
         /// <summary>
         /// The velocity of the robot.
         /// </summary>
         public Vector2 Velocity
         {
             get { return velocity; }
+            set { velocity = value; }
         }
 
-        private double rotational_velocity;
+        private double angularVelocity;
         /// <summary>
         /// The rotational velocity of this robot.  Units are rad/s, CCW direction is positive.
         /// </summary>
         public double AngularVelocity
         {
-            get { return rotational_velocity; }
+            get { return angularVelocity; }
         }
 
 
-        private readonly double orientation;
+        private double orientation;
         public double Orientation
         {
             get { return orientation; }
+            set { orientation = value; }
         }
 
-        private readonly int idnum;
+        private int idnum;
         public int ID
         {
             get { return idnum; }
+            set { idnum = value; }
         }
 
-        private bool yellowTeam;
-        public bool YellowTeam
+        private int team;
+        public int Team
         {
-            get { return yellowTeam; }
-            set { yellowTeam = value; }
+            get { return team; }
+            set { team = value; }
+        }
+
+        private double lastSeen;
+        public double LastSeen
+        {
+            get { return lastSeen; }
+            set { lastSeen = value; } 
         }
 
         public override string ToString()
@@ -157,7 +197,7 @@ namespace Robocup.Core
         }
 
         public InterpreterRobotInfo(RobotInfo info)
-            : base(info.Position, info.Velocity, info.AngularVelocity, info.Orientation, info.ID)
+            : base(info.Position, info.Velocity, info.AngularVelocity, info.Orientation, info.Team, info.ID)
         {
             this.state = RobotStates.Free;
             this.assigned = false;

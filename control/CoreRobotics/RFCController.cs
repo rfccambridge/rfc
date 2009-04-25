@@ -183,7 +183,7 @@ namespace Robocup.CoreRobotics
             // If instructed, turn on break beam
             if (turnOnBreakBeam)
             {
-                beamKick(robotID);
+                beamKick(robotID, false);
             }
 
             Console.WriteLine("KickPlanner sent back speeds of " + wheelSpeeds.toString());
@@ -222,10 +222,10 @@ namespace Robocup.CoreRobotics
             Planner.DrawLast(g, converter);
         }
 
-        public void ReloadConstants()
+        public void LoadConstants()
         {
-            _planner.ReloadConstants();
-            _kickPlanner.ReloadConstants();
+            _planner.LoadConstants();
+            _kickPlanner.LoadConstants();
             //_predictor
         }
     }

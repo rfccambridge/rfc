@@ -95,13 +95,13 @@ namespace Robocup.MotionControl
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "PlannerTester";
             this.Text = "Form1";
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RRTTester_MouseUp);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.RRTTester_Paint);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.RRTTester_MouseClick);
             this.Activated += new System.EventHandler(this.RRTTester_Activated);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RRTTester_MouseUp);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RRTTester_MouseDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.RRTTester_KeyPress);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.RRTTester_MouseMove);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RRTTester_MouseDown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

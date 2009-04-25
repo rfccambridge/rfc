@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Generics.cs" />
+    <Compile Include="IKickPlanner.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IMotionPlanner.cs" />
     <Compile Include="INavigator.cs" />
@@ -51,6 +52,8 @@
     <Compile Include="RobotPath.cs" />
     <Compile Include="TagSystem.cs" />
     <Compile Include="Vector2.cs" />
+    <Compile Include="VisionMessage.cs" />
+    <Compile Include="WheelCommand.cs" />
     <Compile Include="WheelSpeeds.cs" />
     <Compile Include="WheelSpeedsExtender.cs" />
   </ItemGroup>

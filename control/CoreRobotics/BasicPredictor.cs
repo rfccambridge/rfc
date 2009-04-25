@@ -11,7 +11,7 @@ namespace Robocup.CoreRobotics
     /// <summary>
     /// A basic implementation of IPredictor that just remembers the last values that it saw.
     /// </summary>
-    public class BasicPredictor : IPredictor, ISplitInfoAcceptor
+    public class BasicPredictor : IPredictor, ISplitInfoAcceptor, IVisionInfoAcceptor
     {
         private class BasicPredictorHelper
         {
@@ -111,8 +111,8 @@ namespace Robocup.CoreRobotics
                             if (matchIDs)
                             {
                                 if (oldInfo.ID == newInfo.ID && 
-                                    ((newInfo.YellowTeam && YELLOW_HAS_PATTERN) ||
-                                     (!newInfo.YellowTeam && BLUE_HAS_PATTERN)))
+                                    (((newInfo.Team == 0) && YELLOW_HAS_PATTERN) ||
+                                     ((newInfo.Team == 1) && BLUE_HAS_PATTERN)))
                                 {
                                     matched = newInfo;
                                     break;
@@ -245,7 +245,7 @@ namespace Robocup.CoreRobotics
 
         protected BallInfo ballInfo = new BallInfo(new Vector2(0, 0));
         private readonly BasicPredictorHelper our_helper = new BasicPredictorHelper(true);
-        private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(true); // TODO HACK
+        private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(true);
 
         // Should really be a generalized game state
         private PlayTypes playType;
@@ -257,12 +257,12 @@ namespace Robocup.CoreRobotics
         private double BALL_MOVED_DIST;
 
         private bool IS_OUR_GOAL_LEFT;
+        private int OUR_TEAM;
         
         // Predefined ball positions, when in a refbox gamestate
         private bool ASSUME_BALL;
         private BallInfo BALL_POS_KICKOFF;
-        private BallInfo BALL_POS_PENALTY;
-
+        private BallInfo BALL_POS_PENALTY;        
         
         // Mark is currently set
         bool marking;          
@@ -294,68 +294,10 @@ namespace Robocup.CoreRobotics
             BALL_POS_KICKOFF = new BallInfo(new Vector2(Constants.get<double>("plays", "BALL_POS_KICKOFF_X"),
                                                         Constants.get<double>("plays", "BALL_POS_KICKOFF_Y")));
 
-
+            OUR_TEAM = Constants.get<int>("configuration", "OUR_TEAM_INT");
 
             our_helper.LoadConstants();
             their_helper.LoadConstants();
-        }
-
-
-        #region IPredictor Members
-
-        public BallInfo getBallInfo()
-        {
-            int sign;
-            BallInfo ballPos;
-
-            if (ballInfo == null)                
-                throw new ApplicationException("BasicPredictor.getBallInfo: internal ball is null!");
-
-            if (!ASSUME_BALL)
-                return ballInfo;
-
-            // Either return a predefined ball position or the one the vision actually
-            // sees based on the current game state
-            switch (playType) {
-                case PlayTypes.PenaltyKick_Ours:
-                case PlayTypes.PenaltyKick_Ours_Setup:
-                //sign = (IS_OUR_GOAL_LEFT) ? -1 : 1;
-                //ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
-                //                                          BALL_POS_PENALTY.Position.Y));
-                //return ballPos;                    
-                case PlayTypes.PenaltyKick_Theirs:
-                    sign = (IS_OUR_GOAL_LEFT) ? 1 : -1;
-                    ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
-                                                       BALL_POS_PENALTY.Position.Y));
-                    return ballPos;
-                case PlayTypes.KickOff_Ours:
-                case PlayTypes.KickOff_Ours_Setup:
-                case PlayTypes.KickOff_Theirs:
-                case PlayTypes.Kickoff_Theirs_Setup:
-                    return BALL_POS_KICKOFF;
-                default:
-                    return ballInfo;
-            }
-            return ballInfo;
-        }
-
-        public void setBallMark() {           
-            markedPosition = new Vector2(ballInfo.Position.X, ballInfo.Position.Y);
-            marking = true;
-        }
-
-        public void clearBallMark() {
-            marking = false;
-        }
-
-        public bool hasBallMoved() {
-            if (ballInfo == null) {
-                throw new ApplicationException("BasicPredictor.hasBallMoved: internal ball is null!");
-            }
-
-            if (!marking) return true;
-            bool ret = markedPosition.distanceSq(ballInfo.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST;
-            return ret;
         }
 
         public RobotInfo getCurrentInformation(int robotID)
@@ -391,9 +333,117 @@ namespace Robocup.CoreRobotics
             return rtn;
         }
 
+        #region IPredictor Members
+
+        public BallInfo getBallInfo()
+        {
+            return GetBall();
+        }
+
+        public BallInfo GetBall()
+        {
+            int sign;
+            BallInfo ballPos;
+
+            if (ballInfo == null)                
+                throw new ApplicationException("BasicPredictor.getBallInfo: internal ball is null!");
+
+            if (!ASSUME_BALL)
+                return ballInfo;
+
+            // Either return a predefined ball position or the one the vision actually
+            // sees based on the current game state
+            switch (playType) {
+                case PlayTypes.PenaltyKick_Ours:
+                case PlayTypes.PenaltyKick_Ours_Setup:
+                //sign = (IS_OUR_GOAL_LEFT) ? -1 : 1;
+                //ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
+                //                                          BALL_POS_PENALTY.Position.Y));
+                //return ballPos;                    
+                case PlayTypes.PenaltyKick_Theirs:
+                    sign = (IS_OUR_GOAL_LEFT) ? 1 : -1;
+                    ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
+                                                       BALL_POS_PENALTY.Position.Y));
+                    return ballPos;
+                case PlayTypes.KickOff_Ours:
+                case PlayTypes.KickOff_Ours_Setup:
+                case PlayTypes.KickOff_Theirs:
+                case PlayTypes.Kickoff_Theirs_Setup:
+                    return BALL_POS_KICKOFF;
+                default:
+                    return ballInfo;
+            }
+            return ballInfo;
+        }
+
+        public List<RobotInfo> GetRobots(int team)
+        {
+            if (team == 0)
+            {
+                return our_helper.getMergedInfos();
+            }
+            else
+            {
+                return their_helper.getMergedInfos();
+            }
+        }
+
+        public RobotInfo GetRobot(int team, int id)
+        {
+            List<RobotInfo> list;
+            if (team == 0)
+            {
+                list = our_helper.getMergedInfos();
+            }
+            else
+            {
+                list = their_helper.getMergedInfos();
+            }
+
+            RobotInfo robot = list.Find(new Predicate<RobotInfo>(delegate(RobotInfo r)
+            {
+                return r.ID == id;
+            }));
+
+            if (robot == null)
+            {
+                throw new ApplicationException("BasicPredictor.GetRobot: no robot with id=" + id.ToString() +
+                    " found on team " + team.ToString());
+            }
+            return robot;
+        }
+
+        public void SetBallMark()
+        {
+            markedPosition = new Vector2(ballInfo.Position.X, ballInfo.Position.Y);
+            marking = true;
+        }
+
+        public void ClearBallMark()
+        {
+            marking = false;
+        }
+
+        public bool HasBallMoved()
+        {
+            if (ballInfo == null)
+            {
+                throw new ApplicationException("BasicPredictor.hasBallMoved: internal ball is null!");
+            }
+
+            if (!marking) return true;
+            bool ret = markedPosition.distanceSq(ballInfo.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST;
+            return ret;
+        }
+
+        public void SetPlayType(PlayTypes newPlayType)
+        {
+            playType = newPlayType;
+        }
+
         #endregion
 
-        #region IInfoAcceptor Members
+        #region ISplitInfoAcceptor Members        
 
         double ballupdate = HighResTimer.SecondsSinceStart();
         public void updateBallInfo(BallInfo ballInfo)
@@ -443,10 +493,37 @@ namespace Robocup.CoreRobotics
             throw new ApplicationException("this is not implemented");                                   
         }
 
-        public void setPlayType(PlayTypes newPlayType) {
-            playType = newPlayType;
-        }
+       
+        #endregion
 
+        #region IVisionInfoAcceptor Members
+        public void Update(VisionMessage msg)
+        {
+            updateBallInfo(msg.Ball);
+
+            List<RobotInfo> ours = new List<RobotInfo>();
+            List<RobotInfo> theirs = new List<RobotInfo>();
+
+            foreach (VisionMessage.RobotData robot in msg.Robots)
+            {
+                int team = (robot.Team == VisionMessage.Team.YELLOW) ? 0 : 1;
+                RobotInfo robotInfo = new RobotInfo(robot.Position, robot.Orientation, team, robot.ID);                
+                ((team == OUR_TEAM) ? ours : theirs).Add(robotInfo);
+            }
+
+            string splitName;
+            if (msg.CameraID == 0)
+            {
+                splitName = "omega";
+            }
+            else
+            {
+                splitName = "lambda";
+            }
+
+            updatePartOurRobotInfo(ours, "omega");
+            updatePartOurRobotInfo(ours, "omega");
+        }
         #endregion
     }
 }

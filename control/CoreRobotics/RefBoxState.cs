@@ -45,9 +45,9 @@ namespace Robocup.CoreRobotics
 
         public PlayTypes GetCurrentPlayType()
         {
-           if (_predictor.hasBallMoved()) {
+           if (_predictor.HasBallMoved()) {
                     playsToRun = PlayTypes.NormalPlay;                    
-                    _predictor.clearBallMark();
+                    _predictor.ClearBallMark();
             }
             if (lastCmdCounter < _referee.getCmdCounter())
             {
@@ -76,7 +76,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayTypes.PenaltyKick_Ours;
                         if (playsToRun == PlayTypes.KickOff_Ours_Setup)
                             playsToRun = PlayTypes.KickOff_Ours;
-                        _predictor.setBallMark();
+                        _predictor.SetBallMark();
                         break;
                     case MulticastRefBoxListener.KICKOFF_BLUE:
                         if (isYellow)
@@ -98,7 +98,7 @@ namespace Robocup.CoreRobotics
                         {
                             playsToRun = PlayTypes.SetPlay_Ours;
                         }
-                        _predictor.setBallMark();
+                        _predictor.SetBallMark();
                         break;
                     case MulticastRefBoxListener.KICKOFF_YELLOW:
                         if (!isYellow)
@@ -120,7 +120,7 @@ namespace Robocup.CoreRobotics
                         {
                             playsToRun = PlayTypes.SetPlay_Ours;
                         }
-                        _predictor.setBallMark();
+                        _predictor.SetBallMark();
                         break;
                     case MulticastRefBoxListener.PENALTY_BLUE:
                         // handle penalty
@@ -148,7 +148,7 @@ namespace Robocup.CoreRobotics
                 }
             }
             //Console.WriteLine("playtype: " + playsToRun);
-            _predictor.setPlayType(playsToRun);
+            _predictor.SetPlayType(playsToRun);
             return playsToRun;
         }
 

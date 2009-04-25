@@ -43,6 +43,11 @@ namespace Robocup.Core
             this.x = x;
             this.y = y;
         }
+        /// <summary>
+        /// Constructs a vector that is a copy of another one
+        /// </summary>
+        /// <param name="copy">Original object</param>
+        public Vector2(Vector2 orig) : this(orig.X, orig.Y) { }        
         /*static public implicit operator PointF(Vector2 p)
         {
             return new PointF((float)p.X, (float)p.Y);
@@ -184,6 +189,14 @@ namespace Robocup.Core
         {
             return new Vector2(p.X * f, p.Y * f);
         }
+        /// <summary>
+        /// Returns this vector divided by a constant.
+        /// </summary>
+        static public Vector2 operator /(Vector2 p, double f)
+        {
+            return new Vector2(p.X / f, p.Y / f);
+        }
+
         /// <summary>
         /// Returns a vector that is parallel to this vector and has length 1.
         /// Has no meaning for the zero vector (will return NaN).

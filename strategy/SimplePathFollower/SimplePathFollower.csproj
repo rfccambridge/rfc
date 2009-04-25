@@ -36,22 +36,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\doc\FollowerForm.cs">
+    <Compile Include="..\..\strategy\SimplePathFollower\FollowerForm.cs">
       <SubType>Form</SubType>
       <Link>FollowerForm.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\doc\FollowerForm.Designer.cs">
+    <Compile Include="..\..\strategy\SimplePathFollower\FollowerForm.Designer.cs">
       <DependentUpon>FollowerForm.cs</DependentUpon>
       <Link>FollowerForm.Designer.cs</Link>
+    </Compile>
+    <Compile Include="FollowerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FollowerForm.Designer.cs">
+      <DependentUpon>FollowerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="PathFollower.cs" />
     <Compile Include="PIDCalibrator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="..\..\..\doc\FollowerForm.resx">
+    <EmbeddedResource Include="FollowerForm.resx">
       <DependentUpon>FollowerForm.cs</DependentUpon>
       <SubType>Designer</SubType>
-      <Link>FollowerForm.resx</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -94,10 +99,6 @@
       <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
       <Name>MessageSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\MessageTypes\MessageTypes.csproj">
-      <Project>{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}</Project>
-      <Name>MessageTypes</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
@@ -105,6 +106,10 @@
     <ProjectReference Include="..\..\vision\Vision\Vision.csproj">
       <Project>{08383292-7063-4436-ADE4-CCD3AD048D46}</Project>
       <Name>Vision</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core Play Files\CorePlayFiles.csproj">
+      <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
+      <Name>CorePlayFiles</Name>
     </ProjectReference>
     <ProjectReference Include="..\Play Selector\PlaySelector.csproj">
       <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>

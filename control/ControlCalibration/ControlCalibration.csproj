@@ -68,10 +68,6 @@
       <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
       <Name>MessageSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\MessageTypes\MessageTypes.csproj">
-      <Project>{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}</Project>
-      <Name>MessageTypes</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\system\SerialControl\SerialControl.csproj">
       <Project>{3CCB17A5-8943-4535-A148-7AE8D237BA32}</Project>
       <Name>SerialControl</Name>

@@ -27,17 +27,19 @@ namespace Robocup.ControlForm {
         
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionTop;
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionBottom;
-
-        //FieldStateForm _field;
+        
         FieldDrawerForm drawer;
         PlaySelectorForm playSelectorForm;
 
         bool systemStarted = false;
         RFCSystem _system;
 
-        BasicPredictor _predictor;
+        IPredictor _predictor;
         //ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(420,610, 5, 5);
         ICoordinateConverter converter;
+
+        object field_lock = new object();
+        object predictor_lock = new object();
 
         // Logging
         LogReader _logReader;
@@ -47,7 +49,6 @@ namespace Robocup.ControlForm {
         Timer timer;
         bool logging;
         string LOG_FILE;
-
 
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
@@ -76,7 +77,8 @@ namespace Robocup.ControlForm {
 
         public void LoadConstants()
         {            
-            OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
+            OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? 
+                VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
             LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
         }
 
@@ -86,7 +88,7 @@ namespace Robocup.ControlForm {
 
             _predictor = new BasicPredictor();
             // add vision predictor hooked up to vision
-            _system.registerAcceptor(_predictor);
+            _system.registerAcceptor(_predictor as IVisionInfoAcceptor);
             _system.registerPredictor(_predictor);
 
             if (drawer != null)
@@ -107,72 +109,18 @@ namespace Robocup.ControlForm {
 
             // playSelectorForm
             playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
-            
-            
-
-        }
-
-        private void serialConnect_Click(object sender, EventArgs e) {
-            try {
-                if (!serialConnected) {
-                    if (_serial.start(serialHost.Text)) {
-                        serialStatus.BackColor = Color.Green;
-                        serialConnect.Text = "Disconnect";
-                        serialConnected = true;
-                    }
-                } else {
-                    _serial.stop();
-                    serialStatus.BackColor = Color.Red;
-                    serialConnect.Text = "Connect";
-                    serialConnected = false;
-                }
-            } catch (Exception except) {
-                Console.WriteLine(except.StackTrace);
-            }
-
-        }
-
-
-        private void handleVisionUpdateTop(VisionMessage msg)
-        {
-            handleVisionUpdate(msg, TOP_CAMERA);
-        }
-        private void handleVisionUpdateBottom(VisionMessage msg)
-        {
-            handleVisionUpdate(msg, BOTTOM_CAMERA);
-        }
-
-        object field_lock = new object();
-        object predictor_lock = new object();
-        private void handleVisionUpdate(VisionMessage msg, String cameraName) {
-          
-            List<RobotInfo> ours = new List<RobotInfo>();
-            List<RobotInfo> theirs = new List<RobotInfo>();
-
-            foreach (VisionMessage.RobotData robot in msg.Robots)
-            {
-                RobotInfo robotInfo = new RobotInfo(robot.Position, robot.Orientation, robot.ID);
-                robotInfo.YellowTeam = (robot.Team == VisionMessage.Team.YELLOW) ? true : false;
-                (robot.Team == OUR_TEAM ? ours : theirs).Add(robotInfo);
-            }
-
+        }        
+       
+        private void handleVisionUpdate(VisionMessage msg) {
+                  
             lock (predictor_lock)
             {
-                _predictor.updatePartOurRobotInfo(ours, cameraName);
-                _predictor.updatePartTheirRobotInfo(theirs, cameraName);
-                if (msg.BallPosition != null) {
-                    //Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
-                    _predictor.updateBallInfo(new BallInfo(msg.BallPosition));
-                }
-                else {
-                    _predictor.updateBallInfo(null);
-                }
+                ((IVisionInfoAcceptor)_predictor).Update(msg);                
             }
             drawer.Invalidate();
 
             lock (field_lock)
-            {
-                //_system.drawCurrent(_field.getGraphics(), converter);                
+            {                
                 drawer.setPlayType(_system.getCurrentPlayType());
                 _system.drawCurrent(drawer.CreateGraphics(), converter);
             }
@@ -182,7 +130,7 @@ namespace Robocup.ControlForm {
             try {
                 if (!visionTopConnected) {
                     _visionTop = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionTopHost.Text, MESSAGE_SENDER_PORT);
-                    _visionTop.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateTop);
+                    _visionTop.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdate);
 
                     visionTopStatus.BackColor = Color.Green;
                     visionTopConnect.Text = "Disconnect";
@@ -194,12 +142,69 @@ namespace Robocup.ControlForm {
                     visionTopConnected = false;
                 }
             } catch (Exception except) {
+                MessageBox.Show("Problem connecting to vision on host: " + visionTopHost.Text);
                 Console.WriteLine("Problem connecting to vision: " + except.ToString());
                 Console.WriteLine(except.StackTrace);
             }
             
         }
+        private void visionBottomConnect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!visionBottomConnected)
+                {
+                    _visionBottom = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionBottomHost.Text, MESSAGE_SENDER_PORT);
+                    _visionBottom.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdate);
 
+                    visionBottomStatus.BackColor = Color.Green;
+                    visionBottomConnect.Text = "Disconnect";
+                    visionBottomConnected = true;
+                }
+                else
+                {
+                    _visionBottom.Close();
+                    visionBottomStatus.BackColor = Color.Red;
+                    visionBottomConnect.Text = "Connect";
+                    visionBottomConnected = false;
+                }
+            }
+            catch (Exception except)
+            {
+                MessageBox.Show("Problem connecting to vision on host: " + visionBottomHost.Text);
+                Console.WriteLine("Problem connecting to vision: " + except.ToString());
+                Console.WriteLine(except.StackTrace);
+            }
+        }
+
+        private void serialConnect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!serialConnected)
+                {
+                    if (_serial.start(serialHost.Text))
+                    {
+                        serialStatus.BackColor = Color.Green;
+                        serialConnect.Text = "Disconnect";
+                        serialConnected = true;
+                    }
+                }
+                else
+                {
+                    _serial.stop();
+                    serialStatus.BackColor = Color.Red;
+                    serialConnect.Text = "Connect";
+                    serialConnected = false;
+                }
+            }
+            catch (Exception except)
+            {
+                Console.WriteLine(except.StackTrace);
+            }
+
+        }
+        
         private void rfcStart_Click(object sender, EventArgs e) {
             if (!systemStarted) {
                 _system.start();
@@ -213,13 +218,7 @@ namespace Robocup.ControlForm {
                 systemStarted = false;
             }
         }
-
-        private void ControlForm_Load(object sender, EventArgs e)
-        {
-            Console.WriteLine("test");
-        }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            // save Tsai points
             if (keyData == (Keys.Control | Keys.R)) {
                 if (systemStarted) {
                     MessageBox.Show("System running. Need to stop system to reload contants.");
@@ -229,7 +228,14 @@ namespace Robocup.ControlForm {
                 Constants.Load();
                 
                 LoadConstants();
-                _predictor.LoadConstants();
+                if (_predictor is BasicPredictor) {
+                    ((BasicPredictor)_predictor).LoadConstants();
+                }
+                else if (_predictor is AveragingPredictor)
+                {
+                    ((AveragingPredictor)_predictor).LoadConstants();
+                }
+
                 _system.LoadConstants();
                 _system.reloadPlays();
                 
@@ -248,35 +254,8 @@ namespace Robocup.ControlForm {
             }
 
             return false;
-        }
-       
-        private void visionBottomConnect_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (!visionBottomConnected)
-                {
-                    _visionBottom = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionBottomHost.Text, MESSAGE_SENDER_PORT);
-                    _visionBottom.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateBottom);
+        }        
 
-                    visionBottomStatus.BackColor = Color.Green;
-                    visionBottomConnect.Text = "Disconnect";
-                    visionBottomConnected = true;
-                }
-                else
-                {
-                    _visionBottom.Close();
-                    visionBottomStatus.BackColor = Color.Red;
-                    visionBottomConnect.Text = "Connect";
-                    visionBottomConnected = false;
-                }
-            }
-            catch (Exception except)
-            {
-                Console.WriteLine("Problem connecting to vision: " + except.ToString());
-                Console.WriteLine(except.StackTrace);
-            }
-        }
         #region Logging
         private void loggingInit() {
             // Logging
@@ -369,6 +348,8 @@ namespace Robocup.ControlForm {
             if (_system.Controller is RFCController && ((RFCController)_system.Controller).Planner is ILogger) {
                 ILogger logger = ((RFCController)_system.Controller).Planner as ILogger;
 
+                //COMMENTED OUT- problems with designer...
+                /*
                 if (!logger.Logging) {
                     logger.LogFile = LOG_FILE;
                     logger.StartLogging(int.Parse(txtRobotID.Text));
@@ -377,6 +358,7 @@ namespace Robocup.ControlForm {
                 else {
                     logger.StopLogging();
                 }
+                 */
             }
         }
 

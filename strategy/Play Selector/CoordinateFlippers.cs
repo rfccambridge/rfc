@@ -53,20 +53,34 @@ namespace Robocup.Plays
             return new BallInfo(-info.Position, -info.Velocity);
         }
 
-        public void setBallMark() {
-            predictor.setBallMark();
+        // TO REPLACE THE ABOVE
+        public List<RobotInfo> GetRobots(int team)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public RobotInfo GetRobot(int team, int id)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public BallInfo GetBall()
+        {
+            throw new NotImplementedException("not implemented");
         }
 
-        public void clearBallMark() {
-            predictor.clearBallMark();
+        public void SetBallMark() {
+            predictor.SetBallMark();
         }
 
-        public bool hasBallMoved() {
-            return predictor.hasBallMoved();
+        public void ClearBallMark() {
+            predictor.ClearBallMark();
         }
 
-        public void setPlayType(PlayTypes newPlayType) {
-            predictor.setPlayType(newPlayType);
+        public bool HasBallMoved() {
+            return predictor.HasBallMoved();
+        }
+
+        public void SetPlayType(PlayTypes newPlayType) {
+            predictor.SetPlayType(newPlayType);
         }
 
         #endregion
@@ -152,20 +166,35 @@ namespace Robocup.Plays
             return predictor.getBallInfo();
         }
 
-        public void setBallMark() {
-            predictor.setBallMark();
+        // TO REPLACE THE ABOVE:
+
+        public List<RobotInfo> GetRobots(int team)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public RobotInfo GetRobot(int team, int id)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public BallInfo GetBall()
+        {
+            throw new NotImplementedException("not implemented");
         }
 
-        public void clearBallMark() {
-            predictor.clearBallMark();
+        public void SetBallMark() {
+            predictor.SetBallMark();
         }
 
-        public bool hasBallMoved() {
-            return predictor.hasBallMoved();
+        public void ClearBallMark() {
+            predictor.ClearBallMark();
         }
 
-        public void setPlayType(PlayTypes newPlayType) {
-            predictor.setPlayType(newPlayType);
+        public bool HasBallMoved() {
+            return predictor.HasBallMoved();
+        }
+
+        public void SetPlayType(PlayTypes newPlayType) {
+            predictor.SetPlayType(newPlayType);
         }
 
         #endregion

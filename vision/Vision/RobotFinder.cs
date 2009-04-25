@@ -442,6 +442,12 @@ namespace VisionStatic
         public static bool YELLOW_HAS_PATTERN;
         public static bool BLUE_HAS_PATTERN;
 
+        public static int YELLOW_ID_OFFSET;
+        public static int BLUE_ID_OFFSET;
+
+        public static int CAMERA_ID;
+
+
         // used to be used to help predictor distinguish which camera an enemy came from
         // static int THEIR_ID_OFFSET; 
 
@@ -502,6 +508,11 @@ namespace VisionStatic
             if (!(YELLOW_HAS_PATTERN || BLUE_HAS_PATTERN)) {
                 throw new ApplicationException("At least one team should have identifiable patterns!");
             }
+
+            BLUE_ID_OFFSET = Constants.get<int>("configuration", "BLUE_ID_OFFSET");
+            YELLOW_ID_OFFSET= Constants.get<int>("configuration", "YELLOW_ID_OFFSET");
+
+            CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID");
 
             // used to be used to help predictor distinguish which camera an enemy came from
             //THEIR_ID_OFFSET = Constants.get<int>("vision", "THEIR_ID_OFFSET_" + System.Windows.Forms.SystemInformation.ComputerName);
@@ -967,7 +978,7 @@ namespace VisionStatic
         /// <returns></returns>
         static public VisionMessage findGameObjects2(Vision.Blob[] blobs, int totalBlobs, TsaiCalibrator tsaiCalibrator)
         {
-            VisionMessage visionMessage = new VisionMessage();                        
+            VisionMessage visionMessage = new VisionMessage(CAMERA_ID);                        
 
             // Each center dot (blobID) can have multiple candidate patterns
             Dictionary<int, List<Pattern>> patterns = new Dictionary<int, List<Pattern>>();            
@@ -978,7 +989,8 @@ namespace VisionStatic
             ConflictGraph conflictGraph = new ConflictGraph();
 
             // For assigning some kind of an ID to the patternless robots
-            int nextIDforPatternless = 0;
+            int nextIDforPatternlessBlue = BLUE_ID_OFFSET;
+            int nextIDforPatternlessYellow = YELLOW_ID_OFFSET;
 
             // Identify game objects: our potential patterns around each center dot, their robots, ball.
             for (int i = 0; i < totalBlobs; i++) {                
@@ -1011,7 +1023,9 @@ namespace VisionStatic
                             }
                         }
                         if (addRobot) {
-                            VisionMessage.RobotData robotData = new VisionMessage.RobotData(nextIDforPatternless++,
+                              
+                            VisionMessage.RobotData robotData = new VisionMessage.RobotData(
+                                (yellowCtrDot) ? nextIDforPatternlessYellow++ : nextIDforPatternlessBlue++, 
                                     (yellowCtrDot) ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE,
                                     VisionToGeneralCoords(blobs[i].CenterWorldX, blobs[i].CenterWorldY), 0);
                             visionMessage.Robots.Add(robotData);
@@ -1208,7 +1222,7 @@ namespace VisionStatic
                 ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
             }
 
-            visionMessage.BallPosition = ballPos;
+            visionMessage.Ball = new BallInfo(ballPos);
 
 
             return visionMessage;

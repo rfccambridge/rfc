@@ -103,11 +103,6 @@
       <Name>MessageSystem</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\MessageTypes\MessageTypes.csproj">
-      <Project>{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}</Project>
-      <Name>MessageTypes</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>

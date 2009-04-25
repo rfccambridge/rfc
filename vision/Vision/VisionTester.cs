@@ -100,29 +100,29 @@ namespace Vision
 				if (!robotIDs.Contains(robot.ID))
 					good = false;
 
-				if (visionMessage.BallPosition != null)
-					if (robot.Position.distanceSq(visionMessage.BallPosition) <= BALL_WITHIN_ROBOT_DIST_SQ)
+				if (visionMessage.Ball.Position != null)
+					if (robot.Position.distanceSq(visionMessage.Ball.Position) <= BALL_WITHIN_ROBOT_DIST_SQ)
 					{
 						good = false;
-						visionMessage.BallPosition = null;
+						visionMessage.Ball = null;
 						break;
 					}
 			}
 
 			if (testBall)
 			{
-				if (visionMessage.BallPosition == null) good = false;
+				if (visionMessage.Ball.Position == null) good = false;
 				else if (oldBallPosition != null)
-					if (oldBallPosition.distanceSq(visionMessage.BallPosition) > MAX_BALL_DIST_SQ)
+					if (oldBallPosition.distanceSq(visionMessage.Ball.Position) > MAX_BALL_DIST_SQ)
 					{
 						good = false;
-						visionMessage.BallPosition = null;
+						visionMessage.Ball = null;
 					}
 			}
 
 
 
-			oldBallPosition = visionMessage.BallPosition;
+			oldBallPosition = visionMessage.Ball.Position;
 			frameCount++;
 			if (!good) badFrames++;
 

@@ -56,19 +56,19 @@ namespace Robocup.CoreRobotics
             return rtn;
         }
 
-        public void setBallMark() {
+        public void SetBallMark() {
             throw new ApplicationException("StaticPredictor.setBallMark: not implemented");
         }
 
-        public void clearBallMark() {
+        public void ClearBallMark() {
             throw new ApplicationException("StaticPredictor.clearBallMark: not implemented");
         }
 
-        public bool hasBallMoved() {
+        public bool HasBallMoved() {
             throw new ApplicationException("StaticPredictor.hasBallMoved: not implemented");
         }
 
-        public void setPlayType(PlayTypes newPlayType) {
+        public void SetPlayType(PlayTypes newPlayType) {
             throw new ApplicationException("StaticPredictor.setPlayType: not implemented");
         }
 
@@ -88,5 +88,19 @@ namespace Robocup.CoreRobotics
             ourRobotsInfo.Add(newInfo);
         }
         #endregion
+
+        // TO BE REMOVED
+        public List<RobotInfo> GetRobots(int team)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public RobotInfo GetRobot(int team, int id)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public BallInfo GetBall()
+        {
+            throw new NotImplementedException("not implemented");
+        }
     }
 }

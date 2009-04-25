@@ -29,10 +29,13 @@ namespace SimplePathFollower
 		private IMotionPlanner planner;
 		private IRobots commander;
 		private RFCController controller;
+        private Interpreter interpreter;
 
 		public IPredictor Predictor { get { return predictor; } }
 		public IRobots Commander { get { return commander; } }
         public IMotionPlanner Planner { get { return planner; } }
+        public RFCController Controller { get { return controller; } }
+        public Interpreter Interpreter { get { return interpreter; } set { interpreter = value; } }
 
         public delegate void EndLapDelegate(bool success, bool invokeStop);
         public EndLapDelegate OnEndLap;
@@ -107,13 +110,12 @@ namespace SimplePathFollower
             //because this class just gets one point from the gui,
             //generating a static path is taken care of in feedbackbackMotionPlanner
 
-            controller.move(robotID, false, waypoints[0]);
-           
-            do
-			{
+            controller.move(robotID, false, waypoints[waypointIndex], 0.0);
+
+            do 
+            {
                 RobotInfo curinfo;
                 BallInfo ballInfo;
-
                 // if lapping stops midway...
                 //if (waypointIndex > waypoints.Count - 1) {
                 //    waypointIndex = 0;
@@ -131,8 +133,8 @@ namespace SimplePathFollower
                     waypointIndex = (waypointIndex + 1);//Stop at end for now % waypoints.Count;
                     controller.move(robotID, false, waypoints[waypointIndex]);
                 }*/
-                controller.move(robotID, false, waypoints[waypointIndex],0.0);
-
+                
+                
                 // Lap around
 
                 double sqDistToGoal = curinfo.Position.distanceSq(waypoints[waypointIndex]);
@@ -208,7 +210,7 @@ namespace SimplePathFollower
         //in particular, reloads PID and other constants for the planner
         public void reloadConstants() {
             // calls reloadConstants within planner
-            planner.ReloadConstants();
+            planner.LoadConstants();
         }
 
         /// <summary>

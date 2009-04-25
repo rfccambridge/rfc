@@ -220,9 +220,9 @@ namespace SimplePathFollower {
             lock (_predictorLock) {
                 _predictor.updatePartOurRobotInfo(ours, computerName);
                 _predictor.updatePartTheirRobotInfo(theirs, computerName);
-                if (msg.BallPosition != null) {
+                if (msg.Ball != null && msg.Ball.Position != null) {
                     //Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
-                    _predictor.updateBallInfo(new BallInfo(msg.BallPosition));
+                    _predictor.updateBallInfo(new BallInfo(msg.Ball.Position));
                 }
                 else {
                     _predictor.updateBallInfo(null);
@@ -516,7 +516,7 @@ namespace SimplePathFollower {
 
                 if (!logger.Logging) {
                     logger.LogFile = LOG_FILE;
-                    logger.StartLogging();
+                    logger.StartLogging(int.Parse(txtRobotID.Text));
 
                 }
                 else {

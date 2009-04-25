@@ -636,16 +636,23 @@ namespace InterpreterTester
             infos[robotID] = new RobotInfo(prev.Position + (new Vector2(-ballvx * recoil, -ballvy * recoil)), prev.Orientation, prev.ID);
             //throw new Exception("The method or operation is not implemented.");
         }
-        public void beamKick(int robotID) 
+        public void beamKick(int robotID, bool b) 
         {
             throw new NotImplementedException("Beam kick needs to be implemented in the InterpreterTester!!!");
         }
 
         public void stop(int robotID)
         {
-            //throw new Exception("The method or operation is not implemented.");
+            throw new NotImplementedException("The method or operation is not implemented.");
         }
-
+        public void charge(int i)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public void moveKick(int i, Vector2 pt)
+        {
+            throw new NotImplementedException("not implemented");
+        }
         #endregion
 
         private void InterpreterTester_FormClosing(object sender, FormClosingEventArgs e)
@@ -714,40 +721,39 @@ namespace InterpreterTester
             return ballinfo;
         }
 
-        public void setBallMark()
+        // TO REPLACE THE ABOVE
+        public List<RobotInfo> GetRobots(int team)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public RobotInfo GetRobot(int team, int id)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public BallInfo GetBall()
+        {
+            throw new NotImplementedException("not implemented");
+        }
+
+        public void SetBallMark()
         {
             throw new ApplicationException("InterpreterTester.setBallMark: not implemented");
         }
-        public void clearBallMark()
+        public void ClearBallMark()
         {
             throw new ApplicationException("InterpreterTester.clearBallMark: not implemented");
         }
-        public bool hasBallMoved()
+        public bool HasBallMoved()
         {
             throw new ApplicationException("InterpreterTester.hasBallMoved: not implemented");
         }
-        public void setPlayType(PlayTypes newPlayType)
+        public void SetPlayType(PlayTypes newPlayType)
         {
             throw new ApplicationException("InterpreterTester.setPlayType: not implemented");
         }
   
 
-        #endregion
-        public void setBallMark() {
-            throw new ApplicationException("InterpreterTester.setBallMark: not implemented");
-        }
-
-        public void clearBallMark() {
-            throw new ApplicationException("InterpreterTester.clearBallMark: not implemented");
-        }
-
-        public bool hasBallMoved() {
-            throw new ApplicationException("InterpreterTester.hasBallMoved: not implemented");
-        }
-
-        public void setPlayType(PlayTypes newPlayType) {
-            throw new ApplicationException("InterpreterTester.setPlayType: not implemented");
-        }
+        #endregion     
     }
 }
  

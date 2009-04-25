@@ -89,6 +89,14 @@ namespace Robocup.Core {
         void updateBallInfo(BallInfo ballInfo);
     }
 
+    public interface IVisionInfoAcceptor {
+        /// <summary>
+        /// Updates the state of (usually) a Predictor based on a vision message.
+        /// </summary>
+        /// <param name="msg">The message received from Vision</param>
+        void Update(VisionMessage msg);
+    }
+
     /// <summary>
     /// An interface for things that will take and handle info about the current state,
     /// usually to later give it back out.  More specifically, for when there are multiple
@@ -112,36 +120,43 @@ namespace Robocup.Core {
     /// <remarks>These operations could be expensive, and may change during the course of a single function.
     /// So it's best to create a copy of the results at the beginning and use the copy.</remarks>
     /// </summary>
-    public interface IPredictor {
+    public interface IPredictor {       
         //returns information about the robots (position, velocity, orientation)
         //we don't care where it got its information from
-        RobotInfo getCurrentInformation(int robotID);
-        List<RobotInfo> getOurTeamInfo();
-        List<RobotInfo> getTheirTeamInfo();
-        List<RobotInfo> getAllInfos();
+        List<RobotInfo> GetRobots(int team);
+
+        RobotInfo GetRobot(int team, int id);
         /// <summary>
-        /// Returns ball position ***based on the game state***
+        /// Returns ball position
         /// </summary>
         /// <returns></returns>
-        BallInfo getBallInfo();
+        BallInfo GetBall();
         /// <summary>
         /// Marks used by hasBallMoved to track if ball has moved
         /// </summary>
-        void setBallMark();
+        void SetBallMark();
         /// <summary>
         /// Marks used by hasBallMoved to track if ball has moved
         /// </summary>
-        void clearBallMark();
+        void ClearBallMark();
         /// <summary>
         /// Tracks if the ball has moved (does not use getBallInfo, of course); 
         /// use set/clearBallMark() to manage the tracking
         /// </summary>
         /// <returns></returns>
-        bool hasBallMoved();
+        bool HasBallMoved();
         /// <summary>
-        /// Sets the type of play. Could use better summary
+        /// Sets the type of play. A Predictor uses the PlayType if configured 
+        /// to return an assumed ball position (based on referee box state).
         /// </summary>
-        void setPlayType(PlayTypes newPlayType);
+        void SetPlayType(PlayTypes newPlayType);
+
+        // TO BE REMOVED
+        BallInfo getBallInfo();
+        List<RobotInfo> getOurTeamInfo();
+        List<RobotInfo> getTheirTeamInfo();
+        RobotInfo getCurrentInformation(int id);
+        List<RobotInfo> getAllInfos();
     }
 
     /// <summary>
@@ -172,7 +187,7 @@ namespace Robocup.Core {
         void stop(int robotID);
         void moveKick(int robotID, Vector2 target);
 
-        void ReloadConstants();
+        void LoadConstants();
     }
 
     /** Abstraction for the robot movement controller

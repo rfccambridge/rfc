@@ -60,9 +60,9 @@ namespace Robocup.Core
         /// <summary>
         /// Creates a VisionMessage which contains no ball or robots
         /// </summary>
-        public VisionMessage()
-            : this(null)
+        public VisionMessage(int cameraID)
         {
+            this.cameraID = cameraID;
         }
         /// <summary>
         /// Creates a new VisionMessage with the specified ball position.
@@ -72,10 +72,18 @@ namespace Robocup.Core
         /// 
         /// If no ball was found, this parameter should be null.
         /// </param>
-        public VisionMessage(Vector2 ballPosition)
+        public VisionMessage(int cameraID, Vector2 ballPosition)
         {
             this.ballPosition = ballPosition;
+            this.cameraID = cameraID;
         }
+
+        private readonly int cameraID;
+        public int CameraID
+        {
+            get { return cameraID; }            
+        }
+
         private Vector2 ballPosition;
         /// <summary>
         /// The position of the ball, in our standard coordinate system

@@ -9,7 +9,7 @@ namespace Robocup.MotionControl
 {
     public class TestRRTPlanner : IMotionPlanner
     {
-        public void ReloadConstants() { }
+        public void LoadConstants() { }
 
         private Dictionary<int, RRTIndvPlanner> planners = new Dictionary<int, RRTIndvPlanner>();
         public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
@@ -81,7 +81,7 @@ namespace Robocup.MotionControl
             Random r = new Random();
             MovementModeler mm = new MovementModeler();
 
-            public void ReloadConstants() { }
+            public void LoadConstants() { }
 
             bool blocked(Vector2 position)
             {

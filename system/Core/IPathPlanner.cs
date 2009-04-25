@@ -26,7 +26,7 @@ namespace Robocup.CoreRobotics
         /// <summary>
         /// Reloads constants for planner and driver
         /// </summary>
-        public void ReloadConstants()
+        public void LoadConstants()
         {
             _planner.ReloadConstants();
             _driver.ReloadConstants();
@@ -72,18 +72,23 @@ namespace Robocup.CoreRobotics
     {
         INavigator _navigator;
         Vector2 lastWaypoint;
-
+        
         public NavigatorPlanner(INavigator navigator) {
             _navigator = navigator;
         }
 
         public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+            int ourTeam = Constants.get<int>("configuration", "OUR_TEAM_INT");
+            int theirTeam = 1 - ourTeam;
+
             
             //Use navigator to get information
-            RobotInfo currentState = predictor.getCurrentInformation(id);
-
+            RobotInfo currentState = predictor.GetRobot(ourTeam, id);
+            
             NavigationResults results = _navigator.navigate(currentState.ID, currentState.Position,
-                desiredState.Position, predictor.getOurTeamInfo().ToArray(), predictor.getTheirTeamInfo().ToArray(), predictor.getBallInfo(),
+                desiredState.Position, predictor.GetRobots(ourTeam).ToArray(), 
+                predictor.GetRobots(theirTeam).ToArray(), 
+                predictor.GetBall(),
                 0.15);
 
             List<Vector2> waypoints = new List<Vector2>();

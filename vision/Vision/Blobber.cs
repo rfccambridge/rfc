@@ -162,6 +162,7 @@ namespace Vision
         private int MIN_BLOB_WIDTH;
         private int MAX_BLOB_HEIGHT;
         private int MAX_BLOB_WIDTH;
+        private int CAMERA_ID;
 
         private bool _paramsLoaded = false;
 
@@ -238,6 +239,8 @@ namespace Vision
             MIN_BLOB_WIDTH = Constants.get<int>("vision", "MIN_BLOB_WIDTH");
             MAX_BLOB_HEIGHT = Constants.get<int>("vision", "MAX_BLOB_HEIGHT");
             MAX_BLOB_WIDTH = Constants.get<int>("vision", "MAX_BLOB_WIDTH");
+
+            CAMERA_ID = Constants.get<int>("vision", "CAMERA_ID");
 
             _paramsLoaded = true;
         }
@@ -335,7 +338,7 @@ namespace Vision
 
         private void FrameProcessedCallback(IAsyncResult processFrameHandle) {
             //GameObjects gameObjects = new GameObjects();
-            VisionMessage visionMessage = new VisionMessage();
+            VisionMessage visionMessage = new VisionMessage(CAMERA_ID);
 
             // Extract the delegate from the AsyncResult.  
             ProcessFrameDelegate processFrameDelegate = (ProcessFrameDelegate)((AsyncResult)processFrameHandle).AsyncDelegate;

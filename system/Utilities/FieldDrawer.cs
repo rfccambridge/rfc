@@ -154,7 +154,7 @@ namespace Robocup.Utilities
             b = new SolidBrush(Color.GreenYellow);
             string playName;
             Dictionary<int, string> playNames;
-            if ((OUR_TEAM == Team.YELLOW && r.YellowTeam) || (OUR_TEAM == Team.BLUE && !r.YellowTeam))
+            if ((OUR_TEAM == Team.YELLOW && r.Team == 0) || (OUR_TEAM == Team.BLUE && r.Team == 1))
             {
                 playNames = ourPlayNames;
             }

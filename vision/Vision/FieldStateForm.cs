@@ -91,8 +91,9 @@ namespace Vision {
                 botsOnField++;                
             }
             
-            if (visionMessage.BallPosition != null && (visionMessage.BallPosition.X != 0 && visionMessage.BallPosition.Y != 0)) {
-                DrawBall(visionMessage.BallPosition);
+            if (visionMessage.Ball != null && visionMessage.Ball.Position != null &&
+                (visionMessage.Ball.Position.X != 0 && visionMessage.Ball.Position.Y != 0)) {
+                DrawBall(visionMessage.Ball.Position);
                 ballsOnField++;              
             }
 

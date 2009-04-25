@@ -86,7 +86,8 @@ namespace SoccerSim
             if (counter % 100 == 0)
                 Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
 
-            vm = new VisionMessage(new Vector2(-physics_engine.getBallInfo().Position.Y,physics_engine.getBallInfo().Position.X));
+            vm = new VisionMessage(0);
+            vm.Ball = new BallInfo(new Vector2(-physics_engine.getBallInfo().Position.Y, physics_engine.getBallInfo().Position.X));
             bots = physics_engine.getOurTeamInfo();
             foreach (RobotInfo ourRobot in bots)
             {

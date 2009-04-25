@@ -244,8 +244,7 @@ namespace Robocup.ControlForm {
             this.Controls.Add(this.visionTopHost);
             this.KeyPreview = true;
             this.Name = "ControlForm";
-            this.Text = "ControlForm";
-            this.Load += new System.EventHandler(this.ControlForm_Load);
+            this.Text = "ControlForm";            
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

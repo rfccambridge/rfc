@@ -44,7 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicPredictor.cs" />
+    <Compile Include="AveragingPredictor.cs" />
+    <Compile Include="BasicPredictor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="StaticPredictor.cs" />
     <Compile Include="FourWheeledMovement.cs" />
     <Compile Include="MulticastRefBoxListener.cs" />

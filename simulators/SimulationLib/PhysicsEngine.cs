@@ -110,19 +110,33 @@ namespace Robocup.Simulation
             return ball_info;
         }
 
-        public void setBallMark()
+        // TO REPLACE THE ABOVE
+        public List<RobotInfo> GetRobots(int team)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public RobotInfo GetRobot(int team, int id)
+        {
+            throw new NotImplementedException("not implemented");
+        }
+        public BallInfo GetBall()
+        {
+            throw new NotImplementedException("not implemented");
+        }
+
+        public void SetBallMark()
         {
             throw new ApplicationException("PhysicsEngine.setBallMark: not implemented");
         }
-        public void clearBallMark()
+        public void ClearBallMark()
         {
             throw new ApplicationException("PhysicsEngine.clearBallMark: not implemented");
         }
-        public bool hasBallMoved()
+        public bool HasBallMoved()
         {
             throw new ApplicationException("PhysicsEngine.hasBallMoved: not implemented");
         }
-        public void setPlayType(PlayTypes newPlayType)
+        public void SetPlayType(PlayTypes newPlayType)
         {
             throw new ApplicationException("PhysicsEngine.setPlayType: not implemented");
         }
@@ -309,6 +323,9 @@ namespace Robocup.Simulation
         public void setMotorSpeeds(int robotID, WheelSpeeds speeds)
         {
             this.speeds[robotID] = speeds;
+        }
+        public void charge(int i) {
+            throw new NotImplementedException("not implemented");
         }
         #endregion
     }

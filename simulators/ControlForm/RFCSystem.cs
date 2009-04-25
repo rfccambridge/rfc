@@ -22,10 +22,10 @@ namespace Robocup.ControlForm
     public class RFCSystem
     {        
         IPredictor _predictor;
+        IVisionInfoAcceptor _acceptor;
         RFCController _controller;
         Interpreter _interpreter;
-        IRobots _commander;
-        ISplitInfoAcceptor _acceptor;
+        IRobots _commander;        
 
         RefBoxState _refbox;
 
@@ -33,7 +33,7 @@ namespace Robocup.ControlForm
         {
             get { return _predictor; }
         }
-        public ISplitInfoAcceptor Acceptor
+        public IVisionInfoAcceptor Acceptor
         {
             get { return _acceptor; }
         }
@@ -59,8 +59,7 @@ namespace Robocup.ControlForm
         public RFCSystem()
         {
             initialized = false;
-            running = false;            
-        }
+            running = false;                    }
 
         public void LoadConstants() {            
             REFBOX_PORT = Constants.get<int>("default","REFBOX_PORT");
@@ -69,6 +68,11 @@ namespace Robocup.ControlForm
             _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
             isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
             IS_OUR_GOAL_LEFT = Constants.get<bool>("plays", "IS_OUR_GOAL_LEFT");
+
+            if (_controller != null)
+            {
+                _controller.LoadConstants();
+            }
         }
 
         public void setRefBoxListener() {
@@ -93,16 +97,16 @@ namespace Robocup.ControlForm
             if (_predictor == null && _acceptor == null)
             {
                 BasicPredictor basicPredictor = new BasicPredictor();
-                _predictor = basicPredictor;
-                _acceptor = basicPredictor;
+                _predictor = basicPredictor as IPredictor;
+                _acceptor = basicPredictor as IVisionInfoAcceptor;
             }
             else if (_predictor == null)
             {
-                _predictor = new BasicPredictor();
+                _predictor = new BasicPredictor() as IPredictor;
             }
             else if (_acceptor == null)
             {
-                _acceptor = new BasicPredictor();
+                _acceptor = new BasicPredictor() as IVisionInfoAcceptor;
             }
 
             _refbox = new RefBoxState(new MulticastRefBoxListener(REFBOX_ADDR, REFBOX_PORT), _predictor, isYellow);
@@ -206,7 +210,7 @@ namespace Robocup.ControlForm
                 _predictor = predictor;
         }
 
-        public void registerAcceptor(ISplitInfoAcceptor acceptor)
+        public void registerAcceptor(IVisionInfoAcceptor acceptor)
         {
             if (!initialized)
                 _acceptor = acceptor;

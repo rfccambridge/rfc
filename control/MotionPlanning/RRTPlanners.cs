@@ -204,7 +204,7 @@ namespace Robocup.MotionControl
         /// <summary>
         /// Reloads PID constants from file
         /// </summary>
-        public void ReloadConstants() {
+        public void LoadConstants() {
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
         }
@@ -334,7 +334,7 @@ namespace Robocup.MotionControl
             set { planner.MaxExtends = value; }
         }
 
-        public void ReloadConstants() {}
+        public void LoadConstants() {}
 
         BidirectionalRRTPlanner<RobotInfo, Vector2, RobotInfoTree, Vector2Tree> planner;
 
@@ -425,7 +425,7 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID] = new Feedback(robotID);
 
-            ReloadConstants();
+            LoadConstants();
         }
         
          
@@ -562,7 +562,7 @@ namespace Robocup.MotionControl
         /// <summary>
         /// Reloads PID constants from file
         /// </summary>
-        public void ReloadConstants() {
+        public void LoadConstants() {
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
 
@@ -573,6 +573,7 @@ namespace Robocup.MotionControl
 
         private string _logFile = null;
         private bool _logging = false;
+        private int _logRobotID = 0;
         private DateTime _lastLogEntry;
         private LogWriter _logWriter = new LogWriter();
 
@@ -590,7 +591,7 @@ namespace Robocup.MotionControl
             }
         }
 
-        public void StartLogging()
+        public void StartLogging(int id)
         {
             if (_logging)
                 return;
@@ -602,6 +603,7 @@ namespace Robocup.MotionControl
 
             _logWriter.OpenLogFile(_logFile);
             _logging = true;
+            _logRobotID = id;
         }
 
         public void StopLogging()
@@ -666,7 +668,7 @@ namespace Robocup.MotionControl
         /// <summary>
         /// Reloads PID constants from file
         /// </summary>
-        public void ReloadConstants() {
+        public void LoadConstants() {
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
         }
@@ -829,7 +831,7 @@ namespace Robocup.MotionControl
     public class SmoothVector2BiRRTMotionPlanner : IMotionPlanner
     {
 
-        public void ReloadConstants() { }
+        public void LoadConstants() { }
 
         // keep track of waypoints to draw
         private List<Vector2> waypointslist = new List<Vector2>();
