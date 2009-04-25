@@ -153,7 +153,7 @@ namespace Robocup.Simulation
             const double collisionradius = .10;
             //the fraction of the ball velocity that it loses every second
             //well, roughly, because compounding counts, so it's off by about a factor of 2.5
-            const double balldecay = .8;
+            const double balldecay = 6;
 
             BallInfo ball = getBallInfo();
             // run one step of tester
@@ -279,21 +279,6 @@ namespace Robocup.Simulation
             this.ball_info = new_info;
         }
 
-        public void setBallMark() {
-            throw new ApplicationException("PhysicsEngine.setBallMark: not implemented");
-        }
-
-        public void clearBallMark() {
-            throw new ApplicationException("PhysicsEngine.clearBallMark: not implemented");
-        }
-
-        public bool hasBallMoved() {
-            throw new ApplicationException("PhysicsEngine.hasBallMoved: not implemented");
-        }
-
-        public void setPlayType(PlayTypes newPlayType) {
-            throw new ApplicationException("PhysicsEngine.setPlayType: not implemented");
-        }
         #region IRobot members
         const double initial_ball_speed = 0.1f;
         readonly Random r = new Random();
@@ -316,7 +301,9 @@ namespace Robocup.Simulation
         }
         public void beamKick(int robotID) 
         {
-            throw new NotImplementedException("Should be implemented in the simulator as well!!!");
+            // for now, just kick!
+            kick(robotID);
+            //throw new NotImplementedException("Should be implemented in the simulator as well!!!");
         }
         Dictionary<int, WheelSpeeds> speeds = new Dictionary<int, WheelSpeeds>();
         public void setMotorSpeeds(int robotID, WheelSpeeds speeds)
