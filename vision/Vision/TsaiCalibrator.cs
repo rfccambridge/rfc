@@ -335,6 +335,7 @@ namespace Vision {
 
             // default
             _imageSize = new System.Drawing.Size(1024, 768);
+            //_imageSize = new System.Drawing.Size(800, 600);
 
             //CreateDefaultTsaiPoints();
             LoadParameters();
