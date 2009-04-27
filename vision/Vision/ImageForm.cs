@@ -603,7 +603,7 @@ namespace Vision
                         _highlights.Add(HighlightBlob(_blobber.blobs[i]));
                     }
 
-                    int totalObjects = ((visionMessageLocal.Ball.Position == null) ? 0 : 1) + 
+                    int totalObjects = ((visionMessageLocal.Ball == null) ? 0 : 1) + 
                                         visionMessageLocal.Robots.Count;
                     ChangeStatus("Frame processed. Found " + _blobber.totalBlobs.ToString() + " blobs and " +
                                   totalObjects.ToString() + " objects.");

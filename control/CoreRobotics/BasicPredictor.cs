@@ -521,8 +521,8 @@ namespace Robocup.CoreRobotics
                 splitName = "lambda";
             }
 
-            updatePartOurRobotInfo(ours, "omega");
-            updatePartOurRobotInfo(ours, "omega");
+            updatePartOurRobotInfo(ours, splitName);
+            updatePartTheirRobotInfo(theirs, splitName);
         }
         #endregion
     }
