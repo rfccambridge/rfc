@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Robocup.Core
 {
+    [Serializable]
     public class BallInfo
     {
         private Vector2 position;

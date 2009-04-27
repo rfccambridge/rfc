@@ -1214,19 +1214,14 @@ namespace VisionStatic
 					bestBallAreaError = currBallAreaError;
 				}
             }
-			
-			Vector2 ballPos;
+						
             if (goBall == null)
-                ballPos = null;
+                visionMessage.Ball = null;
             else {
-                ballPos = VisionToGeneralCoords(goBall.X, goBall.Y);
+                visionMessage.Ball = new BallInfo(VisionToGeneralCoords(goBall.X, goBall.Y));
             }
 
-            visionMessage.Ball = new BallInfo(ballPos);
-
-
             return visionMessage;
-
         }
 
         // Vision coord system  (units: mm)
