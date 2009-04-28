@@ -1255,7 +1255,6 @@ namespace Robocup.MotionControl
         // Each robot has a feedback object
         private Feedback[] _feedbackObjs;
         public Feedback GetFeedbackObj(int robotID) { return _feedbackObjs[robotID]; }
-        private Vector2[] waypoint;
 
         const int NUM_ROBOTS = 5;
 
@@ -1265,10 +1264,8 @@ namespace Robocup.MotionControl
 
         public PositionFeedbackDriver() {
 
-            waypoint = new Vector2[NUM_ROBOTS];
             _feedbackObjs = new Feedback[NUM_ROBOTS];
             
-
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID] = new Feedback(robotID);
 
@@ -1282,51 +1279,37 @@ namespace Robocup.MotionControl
 
             List<Object> itemsToLog = new List<Object>();
 
-            RobotInfo curinfo;
+            RobotInfo curInfo;
             try {
-                curinfo = predictor.getCurrentInformation(id);
+                curInfo = predictor.getCurrentInformation(id);
             }
             catch (ApplicationException e) {
                 throw e;
             }
 
-            waypoint[id] = path.findNearestWaypoint(curinfo).Position;
+            Vector2 pathWaypoint = path.findNearestWaypoint(curInfo).Position;
+            RobotInfo nextWaypoint = new RobotInfo(pathWaypoint, desiredState.Orientation, curInfo.ID);
 
-            itemsToLog.Add(DateTime.Now);
-            itemsToLog.Add(curinfo);
-            itemsToLog.Add(desiredState);
-            RobotInfo nextWaypoint = new RobotInfo(waypoint[id], 0, 0);
-            itemsToLog.Add(nextWaypoint);
+            double wpDistanceSq = curInfo.Position.distanceSq(nextWaypoint.Position);
+            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(curInfo.Orientation, nextWaypoint.Orientation));
 
-            RobotInfo rInfo = new RobotInfo(waypoint[id], desiredState.Orientation, curinfo.ID);
-
-            
-            List<RobotInfo> waypoints = new List<RobotInfo>();
-            waypoints.Add(rInfo);
-            List<Vector2> desState = new List<Vector2>();
-            desState.Add(desiredState.Position);
-
-            double wpDistanceSq = curinfo.Position.distanceSq(waypoints[0].Position);
-            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(curinfo.Orientation, waypoints[0].Orientation));
-
-
-
-            MotionPlanningResults mpResults;
             WheelSpeeds wheelSpeeds;
 
             if (wpDistanceSq > MIN_SQ_DIST_TO_WP || angleDiff > MIN_ANGLE_DIFF_TO_WP) {
-                wheelSpeeds = _feedbackObjs[id].ComputeWheelSpeeds(curinfo, waypoints[0]);
+                wheelSpeeds = _feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
             }
             else {
-
                 Console.WriteLine("Close enough to point, stopping now.");
                 wheelSpeeds = new WheelSpeeds();
             }
 
+            #region Looging code
+            itemsToLog.Add(DateTime.Now);
+            itemsToLog.Add(curInfo);
+            itemsToLog.Add(desiredState);          
+            itemsToLog.Add(nextWaypoint);
             itemsToLog.Add(wheelSpeeds);
-
-            RobotPath robotPath = new RobotPath(waypoints);
-            itemsToLog.Add(robotPath);
+            itemsToLog.Add(path);
 
             DateTime now = DateTime.Now;
             TimeSpan timeSinceLastLog = now.Subtract(_lastLogEntry);
@@ -1334,6 +1317,7 @@ namespace Robocup.MotionControl
                 _logWriter.LogItems(itemsToLog);
                 _lastLogEntry = now;
             }
+            #endregion
 
             return wheelSpeeds;
 
