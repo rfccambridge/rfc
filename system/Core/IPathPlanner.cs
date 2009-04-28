@@ -26,7 +26,7 @@ namespace Robocup.CoreRobotics
         /// <summary>
         /// Reloads constants for planner and driver
         /// </summary>
-        public void LoadConstants()
+        public virtual void LoadConstants()
         {
             _planner.ReloadConstants();
             _driver.ReloadConstants();

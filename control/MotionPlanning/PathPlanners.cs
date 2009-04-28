@@ -140,7 +140,7 @@ namespace Robocup.MotionControl
         double LOOK_AHEAD_DIST;
         double AVOID_DIST;
         double MIN_ABS_VAL_STICK;
-        double WAYPOINT_DIST;
+        public double WAYPOINT_DIST;
         double EXTRA_GOAL_DIST;
         double BOUNDARY_AVOID;
 

@@ -71,6 +71,10 @@ namespace Robocup.MotionControl
             ReloadConstants();
         }
 
+        public void LoadConstants() {
+            ReloadConstants();
+        }
+
         public KickPlanningResults kick(int id, Vector2 target, IPredictor predictor) {
             // default break beam not on
             bool breakBeamOn = false;
@@ -244,8 +248,8 @@ namespace Robocup.MotionControl
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
-            regularPlanner.ReloadConstants();
-            slowPlanner.ReloadConstants();
+            regularPlanner.LoadConstants();
+            slowPlanner.LoadConstants();
             loop.ReloadConstants();
         }
 

@@ -181,7 +181,7 @@ namespace Robocup.MotionControl
             //Store feedback for each robot
             _feedbackObjs = new Feedback[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-                _feedbackObjs[robotID] = new Feedback(robotID);
+                _feedbackObjs[robotID] = new Feedback(robotID, "control");
 
             //Set empty paths
             _paths = new RobotPath[NUM_ROBOTS];
@@ -423,7 +423,7 @@ namespace Robocup.MotionControl
 
             _feedbackObjs = new Feedback[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-                _feedbackObjs[robotID] = new Feedback(robotID);
+                _feedbackObjs[robotID] = new Feedback(robotID, "control");
 
             LoadConstants();
         }
@@ -541,7 +541,7 @@ namespace Robocup.MotionControl
 
             DateTime now = DateTime.Now;
             TimeSpan timeSinceLastLog = now.Subtract(_lastLogEntry);
-            if (_logging && timeSinceLastLog.TotalMilliseconds > 500)
+            if (_logging && timeSinceLastLog.TotalMilliseconds > LOG_EVERY_MSEC && id == _logRobotID)
             {
                 _logWriter.LogItems(itemsToLog);
                 _lastLogEntry = now;
@@ -575,7 +575,7 @@ namespace Robocup.MotionControl
         private bool _logging = false;
         private int _logRobotID = 0;
         private DateTime _lastLogEntry;
-        private LogWriter _logWriter = new LogWriter();
+        private LogWriter _logWriter = new LogWriter();        
 
         public string LogFile
         {
@@ -591,7 +591,7 @@ namespace Robocup.MotionControl
             }
         }
 
-        public void StartLogging(int id)
+        public void StartLogging(int robotID)
         {
             if (_logging)
                 return;
@@ -603,7 +603,7 @@ namespace Robocup.MotionControl
 
             _logWriter.OpenLogFile(_logFile);
             _logging = true;
-            _logRobotID = id;
+            _logRobotID = robotID;
         }
 
         public void StopLogging()
@@ -650,7 +650,7 @@ namespace Robocup.MotionControl
             //Store feedback for each robot
             _feedbackObjs = new Feedback[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-                _feedbackObjs[robotID] = new Feedback(robotID);
+                _feedbackObjs[robotID] = new Feedback(robotID, "control");
 
             //Store time last called
             _timesLastCalled = new DateTime[NUM_ROBOTS];

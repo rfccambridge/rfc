@@ -1252,9 +1252,13 @@ namespace Robocup.MotionControl
     /// </summary>
     public class PositionFeedbackDriver : IPathDriver, ILogger {
 
-        // Each robot has a feedback object
-        private Feedback[] _feedbackObjs;
-        public Feedback GetFeedbackObj(int robotID) { return _feedbackObjs[robotID]; }
+        // Each robot has two feedback objects (for long and short distances). The differences are in the
+        // setup for each object
+        private Feedback[] feedbackObjs;
+        public Feedback GetFeedbackObj(int robotID) { return feedbackObjs[robotID]; }
+
+        private Feedback[] shortFeedbackObjs;
+        public Feedback GetShortFeedbackObj(int robotID) { return shortFeedbackObjs[robotID]; }
 
         const int NUM_ROBOTS = 5;
 
@@ -1262,12 +1266,17 @@ namespace Robocup.MotionControl
         private const double MIN_ANGLE_DIFF_TO_WP = 0.01;
         private int LOG_EVERY_MSEC;
 
+        public double PLANNER_WAYPOINT_DISTANCE;
+
         public PositionFeedbackDriver() {
 
-            _feedbackObjs = new Feedback[NUM_ROBOTS];
-            
-            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-                _feedbackObjs[robotID] = new Feedback(robotID);
+            feedbackObjs = new Feedback[NUM_ROBOTS];
+            shortFeedbackObjs = new Feedback[NUM_ROBOTS];
+
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
+                feedbackObjs[robotID] = new Feedback(robotID, "control");
+                shortFeedbackObjs[robotID] = new Feedback(robotID, "control-short");
+            }
 
             ReloadConstants();
         }
@@ -1296,7 +1305,23 @@ namespace Robocup.MotionControl
             WheelSpeeds wheelSpeeds;
 
             if (wpDistanceSq > MIN_SQ_DIST_TO_WP || angleDiff > MIN_ANGLE_DIFF_TO_WP) {
-                wheelSpeeds = _feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
+                //If we are far enough from actual destination (carrot on a stick), 
+                //calculate speeds using default feedback loop
+                if (wpDistanceSq >= PLANNER_WAYPOINT_DISTANCE * PLANNER_WAYPOINT_DISTANCE) {
+                    wheelSpeeds = feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
+
+                    //NOTE: This may look redundant, but the second feedback is also called (disregarding the result)
+                    //to ensure that any state in the unused loop is properly updated. Hopefully this can ensure smoother
+                    //transitions between the two types of motion. This line may be debatable -> TEST, TEST, TEST!!!
+                    shortFeedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
+                }
+                //If we are close enough to actual destination, use another (hopefully more precise) feedback loop.
+                else {
+                    wheelSpeeds = shortFeedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
+
+                    //See NOTE above
+                    feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
+                }
             }
             else {
                 Console.WriteLine("Close enough to point, stopping now.");
@@ -1320,16 +1345,16 @@ namespace Robocup.MotionControl
             #endregion
 
             return wheelSpeeds;
-
-
-
         }
 
         //reload all necessary constants from files, for now just PID reload
         public void ReloadConstants() {
             Constants.Load("control");
-            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-                _feedbackObjs[robotID].ReloadConstants();
+            Constants.Load("control-short");
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
+                feedbackObjs[robotID].ReloadConstants();
+                shortFeedbackObjs[robotID].ReloadConstants();
+            }
 
             LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
         }

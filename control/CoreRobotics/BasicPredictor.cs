@@ -356,10 +356,10 @@ namespace Robocup.CoreRobotics
             switch (playType) {
                 case PlayTypes.PenaltyKick_Ours:
                 case PlayTypes.PenaltyKick_Ours_Setup:
-                //sign = (IS_OUR_GOAL_LEFT) ? -1 : 1;
-                //ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
-                //                                          BALL_POS_PENALTY.Position.Y));
-                //return ballPos;                    
+                    sign = (IS_OUR_GOAL_LEFT) ? -1 : 1;
+                    ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
+                                                              BALL_POS_PENALTY.Position.Y));
+                    return ballPos;                    
                 case PlayTypes.PenaltyKick_Theirs:
                     sign = (IS_OUR_GOAL_LEFT) ? 1 : -1;
                     ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,

@@ -1023,13 +1023,43 @@ namespace Robocup.MotionControl
         public Feedback GetFeedbackObj(int robotID) { return pathdriver.GetFeedbackObj(robotID); }
     }
 
-    public class TangentBugFeedbackMotionPlanner : PlannerDriver {
+    public class TangentBugFeedbackMotionPlanner : PlannerDriver, ILogger {
         static TangentBugPlanner pathplanner = new TangentBugPlanner();
         static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
 
-        public TangentBugFeedbackMotionPlanner() : base(pathplanner, pathdriver) { }
+        public TangentBugFeedbackMotionPlanner() : base(pathplanner, pathdriver) {
+            LoadConstants();
+        }
 
         public Feedback GetFeedbackObj(int robotID) { return pathdriver.GetFeedbackObj(robotID); }
+
+        override public void LoadConstants()
+        {
+            base.LoadConstants();
+
+            pathdriver.PLANNER_WAYPOINT_DISTANCE = pathplanner.WAYPOINT_DIST;
+        }
+
+        #region ILogger
+        public string LogFile {
+            get { return pathdriver.LogFile; }
+            set { pathdriver.LogFile = value; }
+        }
+
+        public bool Logging {
+            get {
+                return pathdriver.Logging;
+            }
+        }
+
+        public void StartLogging(int robotID) {
+            pathdriver.StartLogging(robotID);
+        }
+
+        public void StopLogging() {
+            pathdriver.StopLogging();
+        }
+        #endregion
     }
 
 }

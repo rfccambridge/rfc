@@ -47,10 +47,10 @@ namespace Robocup.MotionControl {
         public delegate void UpdateErrorsDelegate(double xError, double yError, double thetaError);
         public UpdateErrorsDelegate OnUpdateErrors;
 
-        public Feedback(int robotID) {
-            xPID = new DOF_Numbers(robotID, DOFType.X);
-            yPID = new DOF_Numbers(robotID, DOFType.Y);
-            thetaPID = new DOF_Numbers(robotID, DOFType.THETA);
+        public Feedback(int robotID, string constFile) {
+            xPID = new DOF_Numbers(robotID, DOFType.X, constFile);
+            yPID = new DOF_Numbers(robotID, DOFType.Y, constFile);
+            thetaPID = new DOF_Numbers(robotID, DOFType.THETA, constFile);
         }
 
 
@@ -88,8 +88,17 @@ namespace Robocup.MotionControl {
                 OnUpdateErrors(xError, yError, thetaError);
             }
 
+
+
             //converts from x speed, y speed and angular speed to wheel speeds
-            return convert(xCommand, yCommand, angularVCommand, currentOrientation);
+            WheelSpeeds ws = convert(xCommand, yCommand, angularVCommand, currentOrientation);
+            if (currentState.ID == 4 && Math.Abs(ws.lb) == 57 || Math.Abs(ws.lf) == 57 || Math.Abs(ws.rb) == 57 || Math.Abs(ws.rf) == 57) {
+                Console.WriteLine("ComputeWheelSpeeds(id=" + currentState.ID.ToString() +
+                                   "pos=" + currentState.Position.ToString() + "o=" +
+                                   currentState.Orientation.ToString() + "vel=" + currentState.Velocity.ToString() +
+                                   "avel=" + currentState.AngularVelocity.ToString() + ")=" + ws.ToString());
+            }
+            return ws;
         }
 
         private double angleCheck(double angle) {
@@ -133,53 +142,42 @@ namespace Robocup.MotionControl {
             double _lb =  (-sing*lateral + cosg*forward - wheelR*angularV);
             double _rb =  -(-sing*lateral - cosg *forward - wheelR * angularV);
 
+            
+            /*int scaleUpFactor = 2;
+            if (Math.Abs(_lf) < 10 && Math.Abs(_rf) < 10 && Math.Abs(_lb) < 10 && Math.Abs(_rb) < 10) {
+                _lf *= scaleUpFactor;
+                _rf *= scaleUpFactor;
+                _lb *= scaleUpFactor;
+                _rb *= scaleUpFactor;
+            }*/
+            
             int lf, rf, lb, rb;
-
-
             lf = (int)_lf;
-            if (lf > 57) 
+            rf = (int)_rf;
+            lb = (int)_lb;
+            rb = (int)_rb;
+
+            
+            /*if (lf > 57) 
                 lf = 57;
             if (lf < -57)
                 lf = -57;
-            rf = (int)_rf;
+                        
             if (rf > 57) 
                 rf = 57;
             if (rf < -57)
                 rf = -57;
-            lb = (int)_lb;
+                        
             if (lb > 57) 
                 lb = 57;
             if (lb < -57)
                 lb = -57;
-            rb = (int)_rb;
+                        
             if (rb > 57) 
                 rb = 57;
             if (rb < -57)
                 rb = -57;
-
-            int scaleUpFactor = 2;
-            if (Math.Abs(lf) < 10 && Math.Abs(rf) < 10 && Math.Abs(lb) < 10 && Math.Abs(rb) < 10) {
-                lf *= scaleUpFactor;
-                rf *= scaleUpFactor;
-                lb *= scaleUpFactor;
-                rb *= scaleUpFactor;
-            }
-
-
-            //double _scaleDown = 1;
-            //if (_lf > 5 && _rf > 5 && _lb > 5 && _rb > 5) {
-            //    lf = (int)(_lf * _scaleDown);
-            //    rf = (int)(_rf * _scaleDown);
-            //    lb = (int)(_lb * _scaleDown);
-            //    rb = (int)(_rb * _scaleDown);
-            //}
-            //else {
-            //    lf = (int) _lf;
-            //   rf = (int) _rf;
-            //    lb = (int) _lb;
-            //    rb = (int) _rb;
-            //}
-
+            */
 
             return new WheelSpeeds(lf, rf, lb, rb);
             //Note somewhere we need to check and ensure that wheel speeds being 
@@ -227,14 +225,17 @@ namespace Robocup.MotionControl {
             private DOFType dofType;
             private int robotID;
 
+            private string constantsFile;
+
             /// <summary>
             /// Initialize parameters for a robot from a text file of parameters
             /// </summary>
             /// <param name="robotID">ID of the current robot</param>
             /// <param name="DOF">DOF the degree of freedom this is for either X Y or THETA</param>
-            public DOF_Numbers(int robot_id, DOFType dof){
+            public DOF_Numbers(int robot_id, DOFType dof, string _constantsFile){
 
                 //pull out values for constants from a text file
+                constantsFile = _constantsFile;
                 dofType = dof;
                 robotID=robot_id;
                 //init error window with zeros
@@ -284,10 +285,10 @@ namespace Robocup.MotionControl {
                 Ierror = 0;
 
                 Constants.Load();
-                constants.P = Constants.get<double>("control", "P_" + dofType.ToString() + "_" + robotID.ToString());
-                constants.I = Constants.get<double>("control", "I_" + dofType.ToString() + "_" + robotID.ToString());
-                constants.D = Constants.get<double>("control", "D_" + dofType.ToString() + "_" + robotID.ToString());
-                constants.ALPHA = Constants.get<double>("control", "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.P = Constants.get<double>(constantsFile, "P_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.I = Constants.get<double>(constantsFile, "I_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.D = Constants.get<double>(constantsFile, "D_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.ALPHA = Constants.get<double>(constantsFile, "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
             
                 
             }

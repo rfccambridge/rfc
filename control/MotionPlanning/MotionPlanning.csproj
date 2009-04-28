@@ -9,6 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Robocup.MotionControl</RootNamespace>
     <AssemblyName>RRTPlanner</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,9 +41,11 @@
     <Compile Include="CirclePlanner.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Feedback.cs" />
+    <Compile Include="KickPlanners.cs" />
     <Compile Include="NavigationPlanner.cs" />
     <Compile Include="NewPlanners.cs" />
-    <Compile Include="NumberRange.cs" />    <Compile Include="PathDrivers.cs" />
+    <Compile Include="NumberRange.cs" />
+    <Compile Include="PathDrivers.cs" />
     <Compile Include="PathPlanners.cs" />
     <Compile Include="PIDLoop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -70,6 +74,9 @@
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="rfc.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

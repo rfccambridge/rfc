@@ -15,7 +15,7 @@ namespace Robocup.Core {
             get;
         }
 
-        void StartLogging(int id);
+        void StartLogging(int robotID);
         void StopLogging();
 
     }

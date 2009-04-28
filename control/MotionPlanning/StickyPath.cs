@@ -61,7 +61,7 @@ namespace Robocup.MotionControl {
             this.planner = planner;
 
             // initialize its own feedback PID loop
-            feedback_loop = new Feedback(id);
+            feedback_loop = new Feedback(id, "control");
         }
 
         /// <summary>
