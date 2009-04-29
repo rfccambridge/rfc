@@ -461,8 +461,11 @@ namespace Robocup.Plays
             {
                 return ((double)objects[0]) < ((double)objects[1]);
             });
-            addFunction(">", "double, double - Greater than", "~ < ~", typeof(bool), new Type[] { typeof(double), typeof(double) }, delegate(EvaluatorState state, object[] objects) {
+            addFunction(">", "double, double - Greater than", "~ > ~", typeof(bool), new Type[] { typeof(double), typeof(double) }, delegate(EvaluatorState state, object[] objects) {
                 return ((double)objects[0]) > ((double)objects[1]);
+            });
+            addFunction("=", "int, int - equals", "~ = ~", typeof(bool), new Type[] { typeof(double), typeof(double) }, delegate(EvaluatorState state, object[] objects) {
+                return ((double)objects[0]) == ((double)objects[1]);
             });
             addFunction("intadd", "int, int - Add", "~ + ~", typeof(int), new Type[] { typeof(int), typeof(int) }, delegate(EvaluatorState state, object[] objects)
             {
@@ -585,7 +588,9 @@ namespace Robocup.Plays
                 {
                     Vector2 target = (Vector2)objects[1];
                     Vector2 facing = (Vector2)objects[2];
-                    a.Move(robot.getID(), target, facing);
+                    int id = robot.getID();
+                    a.Move(id, target, facing);
+                    Console.WriteLine("robotpointpointmove: r=" + id.ToString() + "target=" + target.ToString() + " facing=" + facing.ToString());
                 }, robot.getID());
             });
             addFunction("robotpointpointmovecharge", "Robot, Point, Point - Move", "Have robot ~ move to ~, and face ~ and charge", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
@@ -613,6 +618,18 @@ namespace Robocup.Plays
                 {
                     Constants.Load("plays");
                 });
+            });
+
+
+            // Special action- tells the Play Selector to assign a play to the field
+            // CAN ONLY BE USED IN THE MAIN PLAY
+            addFunction("assignPlay", "String - assign play", "Assign play ~ to field", typeof(ActionDefinition), new Type[] { typeof(String) }, delegate(EvaluatorState state, object[] objects) {
+                return new ActionDefinition((string)objects[0]);
+            });
+
+            // Special action- tells the play selector to ignore this action
+            addFunction("nullAction", "String - assign play", "Assign play ~ to field", typeof(ActionDefinition), new Type[] { }, delegate(EvaluatorState state, object[] objects) {
+                return new ActionDefinition();
             });
             #endregion
         }
