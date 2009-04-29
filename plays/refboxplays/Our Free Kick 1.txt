@@ -1,6 +1,6 @@
 Metadata:
-type SetupPlay_Ours
-name Refbox_Our_Free_Kick (setup) 1
+type SetPlay_Ours
+name Our_Free_Kick_1
 score 10
 
 Objects:

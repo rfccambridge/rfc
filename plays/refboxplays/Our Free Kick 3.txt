@@ -1,6 +1,6 @@
 Metadata:
-type NormalPlay
-name Refbox_Our_Free_Kick_kicker 3
+type SetPlay_Ours
+name Our_Free_Kick_3
 score 30
 
 Objects:
