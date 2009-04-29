@@ -78,7 +78,6 @@ kick (if_Action ballinrange kickinrange kickoutrange)
 support (if_Action ballinrange supportstandby supportrelay)
 
 Conditions:
-(< GOAL_MINIMUM (pointpointdistance robot0point ourgoal))
 
 Actions:
 kick

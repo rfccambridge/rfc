@@ -101,12 +101,8 @@ support (if_Action ballinrange supportstandby supportrelay)
 backup (robotpointmove backuprobot backupstandbypoint)
 
 Conditions:
-(< GOAL_MINIMUM (pointpointdistance robot0point ourgoal))
-(< GOAL_MINIMUM (pointpointdistance robot1point ourgoal))
-(< GOAL_MINIMUM (pointpointdistance robot2point ourgoal))
 
 Actions:
 kick
 support
 backup
-(reloadConstants)

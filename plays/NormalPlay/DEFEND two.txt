@@ -1,6 +1,6 @@
 Metadata:
 type NormalPlay
-name Defense_with_two_men
+name DefendTwoGuys
 score 200
 
 Objects:
@@ -19,7 +19,7 @@ ourgoalcloseperim (circle ourgoal 0.4)
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)
 
-numRobots (doublecast (numourbots))
+numRobots (numourbots)
 
 closestenemyg (closest enemy ourgoal loose)
 closestenemygpt (pointof closestenemyg)
