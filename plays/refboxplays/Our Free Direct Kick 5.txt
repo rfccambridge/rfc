@@ -1,0 +1,62 @@
+Metadata:
+type NormalPlay
+name Refbox_Our_Free_Kick 5
+score 50
+
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.15 0)
+theirgoal (point 3.15 0)
+robot1 (closest friendly point1 loose)
+point0 (pointof robot1)
+point1 (pointof ball)
+robot2 (closest friendly point5 loose)
+point2 (pointof robot2)
+circle3 (circle theirgoal 1.96786686541544)
+line4 (line theirgoal point1)
+point5 (linecircleintersection line4 circle3 1)
+line7 (line point2 theirgoal)
+point8 (linecircleintersection line7 circle3 0)
+robot3 (closest friendly ourgoal loose)
+point9 (pointof robot3)
+point10 (point -2.88 0.4)
+point11 (point -2.89 -0.42)
+line12 (line point10 point11)
+line13 (line ourgoal point1)
+point14 (linelineintersection line12 line13)
+circle15 (circle point5 (pointpointdistance point5 point5))
+circle16 (circle point1 (pointpointdistance point1 point1))
+circle17 (circle point5 (pointpointdistance point5 point5))
+point18 (point 0.01 -0.03)
+circle19 (circle point18 1.30115333454593)
+point20 (point 1.29 -0.24)
+robot4 (closest friendly point18 loose)
+point21 (pointof robot4)
+point22 (point -1.68 2.06)
+point23 (point -1.58 -2.07)
+line24 (line point22 point23)
+point25 (linelineintersection line13 line24)
+robot5 (closest friendly point25 loose)
+point26 (pointof robot5)
+
+Conditions:
+
+Actions:
+(robotpointpointmove robot1 point3 point1)
+(robotpointpointmove robot2 point8 point1)
+(robotpointpointmove robot3 point14 point1)
+(robotpointpointmove robot4 point20 point1)
+(robotpointpointmove robot5 point25 point1)
+(robotpointkick robot1 point2)
+
+DesignerData:
+ball <-0.32,-0.46>
+robot1 <-0.33,-0.78>
+robot2 <0.55,1.32>
+robot3 <-2.49,0.46>
+robot4 <-0.3,0.55>
+robot5 <-1.84,0.03>
+
