@@ -1,6 +1,6 @@
 Metadata:
 type SetPlay_Theirs
-name UNNAMED? - indirect_free_kick_4_vs_5
+name indirect_free_kick_4_vs_5
 score 440
 Objects:
 topLeftCorner (point -3.05 2.1)
