@@ -1,0 +1,77 @@
+Metadata:
+type SetPlay_Theirs
+name indirect_free_kick_4_vs_5
+score 440
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.15 0)
+theirgoal (point 3.15 0)
+robot1 (closest friendly ourgoal loose)
+point0 (pointof robot1)
+point3 (pointof ball)
+circle5 (circle point3 0.6)
+line4 (line point3 ourgoal)
+point6 (linecircleintersection line4 circle5 1)
+robot6 (closest enemy ourgoal loose)
+point5 (pointof robot6)
+line6 (line point5 ourgoal)
+circle14 (circle ourgoal 0.7)
+point20 (linecircleintersection line6 circle14 0)
+circle12 (circle point5 0.4)
+point19 (linecircleintersection line6 circle12 1)
+robot12 (closest enemy point5 loose)
+point14 (pointof robot12)
+robot2 (closest friendly point14 loose)
+point1 (pointof robot2)
+point18 (linecircleintersection line6 circle14 0)
+robot14 (closest enemy point14 loose)
+point8 (pointof robot14)
+robot3 (closest friendly point8 loose)
+point2 (pointof robot3)
+circle10 (circle ourgoal 0.4)
+point11 (linecircleintersection line4 circle10 1)
+robot5 (closest enemy point3 loose)
+point4 (pointof robot5)
+point7 (linecircleintersection line6 circle10 0)
+robot8 (closest friendly point5 loose)
+point10 (pointof robot8)
+line11 (line point5 point3)
+point13 (linecircleintersection line11 circle12 1)
+point15 (linecircleintersection line4 circle14 1)
+line21 (line point14 ourgoal)
+point42 (linecircleintersection line21 circle14 0)
+robot10 (closest enemy theirgoal loose)
+point12 (pointof robot10)
+circle15 (circle point14 0.4)
+line16 (line point14 point3)
+point17 (linecircleintersection line16 circle15 1)
+circle9 (circle point8 0.4)
+line10 (line point8 ourgoal)
+line12 (line point8 point3)
+point16 (linecircleintersection line12 circle9 1)
+point21 (linecircleintersection line10 circle14 0)
+robot16 (closest friendly point6 loose)
+point9 (pointof robot16)
+Conditions:
+Actions:
+(robotpointmove robot1 point11)
+(if_Action (< 0.6 (pointpointdistance point13 point3)) (robotpointmove robot8 point13) (robotpointmove robot8 point20))
+(if_Action (< 0.6 (pointpointdistance point17 point3)) (robotpointmove robot2 point17) (robotpointmove robot2 point42))
+(if_Action (< 0.6 (pointpointdistance point16 point3)) (robotpointmove robot3 point16) (robotpointmove robot3 point21))
+(robotpointmove robot16 point6)
+DesignerData:
+ball <-1.25,-1.05>
+robot1 <-2.75,-0.03>
+robot2 <-1.62,-0.21>
+robot3 <-2.15,0.24>
+robot5 <-1.02,-1.19>
+robot6 <-0.83,0.98>
+robot8 <-1.63,0.98>
+robot10 <2.78,0.02>
+robot12 <-0.43,0>
+robot14 <-2.16,1>
+robot16 <-2.06,-0.8>
+
