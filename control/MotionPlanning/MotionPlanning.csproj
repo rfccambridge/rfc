@@ -50,6 +50,7 @@
     <Compile Include="PIDLoop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotInfoNNFinder.cs" />
+    <Compile Include="RobotSpinner.cs" />
     <Compile Include="RRTPlanners.cs" />
     <Compile Include="SearchTree.cs" />
     <Compile Include="Smoother.cs" />

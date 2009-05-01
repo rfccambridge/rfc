@@ -24,6 +24,7 @@ namespace Robocup.MotionControl
         bool goingToPoint1 = true;
 
         IMotionPlanner regularPlanner;
+        TangentBugFeedbackMotionPlanner dumbPlanner = new TangentBugFeedbackMotionPlanner();
         DefaultMotionPlanner slowPlanner = new DefaultMotionPlanner();
 
         // Constants
@@ -40,12 +41,18 @@ namespace Robocup.MotionControl
         double DIST_ACTIVATE_KICK_PLANNER;
 
         double MAX_DIST_POINT_1;
+        double MAX_DIST_MOVE_TRANSLATE_POINT_1;
         double MAX_DIFF_ORIENTATION_POINT_1;
+        int SPEED_LATERAL;
 
         int SPIN_SPEED_CAP;
 
+        double BALL_AVOID_RADIUS;
+
         WheelSpeeds CWSpeeds;
         WheelSpeeds CCWSpeeds;
+        WheelSpeeds LeftSpeed;
+        WheelSpeeds RightSpeed;
 
         int WHEEL_SPEED_TURN;
 
@@ -57,10 +64,16 @@ namespace Robocup.MotionControl
 
         PIDLoop loop;
 
+        bool usingRegularPlanner = true;
+
+        // Planner for spinning
+        DirectRobotSpinner spinplanner;
+
         public FeedbackVeerKickPlanner(IMotionPlanner regularPlanner)
         {
             this.regularPlanner = regularPlanner;
             loop = new PIDLoop("kickplanning", "point1orientation");
+            spinplanner = new DirectRobotSpinner();
 
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
             {
@@ -68,14 +81,12 @@ namespace Robocup.MotionControl
                 _timesStartedCharging[robotID] = arbitraryPastTime;
             }
 
-            ReloadConstants();
-        }
-
-        public void LoadConstants() {
-            ReloadConstants();
+            LoadConstants();
         }
 
         public KickPlanningResults kick(int id, Vector2 target, IPredictor predictor) {
+            WheelSpeeds speeds = new WheelSpeeds();
+            
             // default break beam not on
             bool breakBeamOn = false;
 
@@ -105,8 +116,8 @@ namespace Robocup.MotionControl
             double lateralDistance = distRobotToBall * Math.Sin(ballToRobotAngle);
             double parallelDistance = distRobotToBall * Math.Cos(ballToRobotAngle);
 
-            Console.WriteLine("Parallel distance " + parallelDistance);
-            Console.WriteLine("Lateral distance " + lateralDistance);
+            //Console.WriteLine("Parallel distance " + parallelDistance);
+            //Console.WriteLine("Lateral distance " + lateralDistance);
 
             // check whether robot is in necessary range to go to point 2
             bool inRangeContinue = (lateralDistance < MAX_LATERAL_GO_THROUGH &&
@@ -117,33 +128,42 @@ namespace Robocup.MotionControl
             // switch to go to point 2
             double diffOrientation = UsefulFunctions.angleDifference(desiredOrientation, thisrobot.Orientation);
 
-            Console.WriteLine("diffOrientation: " + diffOrientation);
+            //Console.WriteLine("diffOrientation: " + diffOrientation);
 
+            bool pointCloseTranslate = (distToPoint1 <= MAX_DIST_MOVE_TRANSLATE_POINT_1);
             bool pointClose = (distToPoint1 <= MAX_DIST_POINT_1);
+            bool orientationCorrect = (Math.Abs(diffOrientation) < MAX_DIFF_ORIENTATION_POINT_1);
 
-            bool pointSwitch = (pointClose && 
-                                Math.Abs(diffOrientation) < MAX_DIFF_ORIENTATION_POINT_1);
+            bool pointSwitch = (pointClose && orientationCorrect);
 
-            // if close to point but orientation is off, use PID loop to correct orientation
-            if ((pointClose && !pointSwitch))
+            // if close enough to point for dumb planning but not for final, switch to dumb planner
+            if ((pointCloseTranslate && !pointClose && goingToPoint1))
             {
-                WheelSpeeds tempSpeeds = new WheelSpeeds();
-                if (diffOrientation < 0) { tempSpeeds = CCWSpeeds; }
-                else { tempSpeeds = CWSpeeds; };
-
-                /*int spinSpeed = (int)loop.compute(diffOrientation, 0);
-
-                if (spinSpeed > SPIN_SPEED_CAP){ spinSpeed = SPIN_SPEED_CAP; }
-                if (spinSpeed < -SPIN_SPEED_CAP) { spinSpeed = -SPIN_SPEED_CAP; }
-
-                //Console.WriteLine("spinSpeed: " + spinSpeed);
-
-                WheelSpeeds tempSpeeds = new WheelSpeeds(spinSpeed, -spinSpeed, spinSpeed, -spinSpeed);*/
-
-                breakBeamOn = true;
-
-                return new KickPlanningResults(tempSpeeds);
+                RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
+                speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
+                return new KickPlanningResults(speeds, false);
             }
+
+            // if close enough to point but orientation is off,
+            // first use IRobotSpinner to correct orientation
+            //if (pointCloseLateral && !orientationCorrect)
+            if (pointClose && !orientationCorrect && goingToPoint1)
+            {
+                speeds = spinplanner.spinTo(id, desiredOrientation, MAX_DIFF_ORIENTATION_POINT_1, predictor);
+                // DO NOT CHARGE WHILE SPINNING
+                return new KickPlanningResults(speeds, false);
+            }
+
+            // if orientation is correct, move laterally
+           /* if (pointCloseLateral && !pointClose && orientationCorrect)
+            {
+                // positive means robot moves left, negative menas robot moves right
+                if (lateralDistance > 0)
+                    speeds = LeftSpeed;
+                else
+                    speeds = RightSpeed;
+                return new KickPlanningResults(speeds, false);
+            }*/
 
             // if close to point and orientation is on but haven't started charging yet, wait
             DateTime nowCached = DateTime.Now;
@@ -179,17 +199,17 @@ namespace Robocup.MotionControl
             }
 
             // go to the appropriate point
-            WheelSpeeds speeds = new WheelSpeeds();
             if (goingToPoint1)
             {
                 RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
-                speeds = regularPlanner.PlanMotion(id, desiredState, predictor, .3).wheel_speeds;
+                speeds = regularPlanner.PlanMotion(id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
+                usingRegularPlanner = true;
             }
             else
             {
                 RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, id);
-                speeds = slowPlanner.PlanMotion(id, desiredState, predictor, .3).wheel_speeds;
-
+                speeds = slowPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
+                usingRegularPlanner = false;
                 breakBeamOn = true;
             }
 
@@ -220,9 +240,11 @@ namespace Robocup.MotionControl
             double lateralDistance = distRobotToBall * Math.Sin(theta);*/
         }
 
-        public void DrawLast(Graphics g, ICoordinateConverter c) { }
+        public void DrawLast(Graphics g, ICoordinateConverter c) {
+            Console.WriteLine("DRAWING");
+        }
 
-        public void ReloadConstants() {
+        public void LoadConstants() {
             Constants.Load("kickplanning");
 
             DIST_BEHIND_BALL = Constants.get<double>("kickplanning", "DIST_BEHIND_BALL");
@@ -238,19 +260,25 @@ namespace Robocup.MotionControl
 
             DIST_ACTIVATE_KICK_PLANNER = Constants.get<double>("kickplanning", "DIST_ACTIVATE_KICK_PLANNER");
 
+            MAX_DIST_MOVE_TRANSLATE_POINT_1 = Constants.get<double>("kickplanning", "MAX_DIST_MOVE_TRANSLATE_POINT_1");
             MAX_DIST_POINT_1 = Constants.get<double>("kickplanning", "MAX_DIST_POINT_1");
             MAX_DIFF_ORIENTATION_POINT_1 = Constants.get<double>("kickplanning", "MAX_DIFF_ORIENTATION_POINT_1");
+            
+            SPEED_LATERAL = Constants.get<int>("kickplanning", "SPEED_LATERAL");
 
             SPIN_SPEED_CAP = Constants.get<int>("kickplanning", "SPIN_SPEED_CAP");
+
+            BALL_AVOID_RADIUS = Constants.get<double>("kickplanning", "BALL_AVOID_RADIUS");
+
+            LeftSpeed = new WheelSpeeds(-SPEED_LATERAL, SPEED_LATERAL, SPEED_LATERAL, -SPEED_LATERAL);
+            RightSpeed = new WheelSpeeds(-SPEED_LATERAL, SPEED_LATERAL, SPEED_LATERAL, -SPEED_LATERAL);
 
             WHEEL_SPEED_TURN = SPIN_SPEED_CAP;
 
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
-            regularPlanner.LoadConstants();
-            slowPlanner.LoadConstants();
-            loop.ReloadConstants();
+            regularPlanner.LoadConstants();            slowPlanner.LoadConstants();            spinplanner.ReloadConstants();            loop.ReloadConstants();
         }
 
         /// <summary>

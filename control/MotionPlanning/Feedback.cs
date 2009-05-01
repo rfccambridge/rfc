@@ -252,6 +252,7 @@ namespace Robocup.MotionControl {
             //assume orientations are between 0 and 2 pi.
             //it usese the PID constants stored in this instance and incorporates both the velocity and current valud i.e. x and dx/dt
             public double Compute(double current, double desired, double current_dot, double desired_dot) {
+                //Console.WriteLine("P = " + constants.P + " I = " + constants.I + " D = " + constants.D + " " + dofType.ToString());
 
                 double diff = desired - current;
                 if (dofType == DOFType.THETA) {//need to pick the smallest angle
