@@ -1,6 +1,7 @@
 Metadata:
-type NormalPlay
-score 1.006146264433
+type SetPlay_Theirs
+name TheirFreeKick_3_0
+score 300
 Objects:
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
