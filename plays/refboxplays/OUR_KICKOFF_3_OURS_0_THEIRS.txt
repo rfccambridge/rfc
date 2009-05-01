@@ -1,0 +1,36 @@
+Metadata:
+type Kickoff_Ours
+score 300
+name O_KFF_3x0
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+theirgoal (point 3.13 0)
+ourgoal (point -3.13 0)
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+recpoint (point -0.2 -1.0)
+midfieldpt (point -1 0)
+
+
+topbot (closest friendly centertop loose)
+topbotpt (pointof topbot)
+
+receiverbot (closest friendly centerbottom loose)
+receiverbotpt (pointof receiverbot)
+
+centerbot (closest friendly center loose)
+centerbotpt (pointof centerbot)
+
+
+Conditions:
+Actions:
+(robotpointkick topbot recpoint)
+(robotpointmove receiverbot recpoint)
+(robotpointmove centerbot midfieldpt)

@@ -1,0 +1,32 @@
+Metadata:
+type PenaltyKick_Theirs
+name main
+score 1
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+theirgoal (point 3.13 0)
+ourgoal (point -3.13 0)
+middle_theirgoal (point 2 0)
+
+numRobots (numourbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+(if_Action (= numRobots 1) (assignPlay Penalty_Their) nothing)
+
+(if_Action (= numRobots 2) (assignPlay Penalty_Their) nothing)
+
+(if_Action (= numRobots 3) (assignPlay Penalty_Their) nothing)
+
+(if_Action (= numRobots 4) (assignPlay Penalty_Their) nothing)
+
+(if_Action (= numRobots 5) (assignPlay Penalty_Their) nothing)
+
