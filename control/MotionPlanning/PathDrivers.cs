@@ -1262,8 +1262,8 @@ namespace Robocup.MotionControl
 
         const int NUM_ROBOTS = 5;
 
-        private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
-        private const double MIN_ANGLE_DIFF_TO_WP = 0.01;
+        private double MIN_SQ_DIST_TO_WP;
+        private double MIN_ANGLE_DIFF_TO_WP;
         private int LOG_EVERY_MSEC;
 
         public double PLANNER_WAYPOINT_DISTANCE;
@@ -1308,6 +1308,7 @@ namespace Robocup.MotionControl
                 //If we are far enough from actual destination (carrot on a stick), 
                 //calculate speeds using default feedback loop
                 if (wpDistanceSq >= PLANNER_WAYPOINT_DISTANCE * PLANNER_WAYPOINT_DISTANCE) {
+                    Console.WriteLine("Planning long distance");
                     wheelSpeeds = feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
 
                     //NOTE: This may look redundant, but the second feedback is also called (disregarding the result)
@@ -1317,6 +1318,7 @@ namespace Robocup.MotionControl
                 }
                 //If we are close enough to actual destination, use another (hopefully more precise) feedback loop.
                 else {
+                    Console.WriteLine("Planning short distance");
                     wheelSpeeds = shortFeedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
 
                     //See NOTE above
@@ -1357,6 +1359,10 @@ namespace Robocup.MotionControl
             }
 
             LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
+            PLANNER_WAYPOINT_DISTANCE = Constants.get<double>("motionplanning", "PLANNER_WAYPOINT_DISTANCE");
+
+            MIN_SQ_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_SQ_DIST_TO_WP");
+            MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
         }
 
         #region ILogger
