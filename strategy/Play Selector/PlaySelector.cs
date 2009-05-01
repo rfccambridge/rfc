@@ -143,7 +143,17 @@ namespace Robocup.Plays
             }
 
             // get main play
-            InterpreterPlay mainplay = getPlay(plays, "main");
+            InterpreterPlay mainplay;
+
+            try
+            {
+                mainplay = getPlay(plays, "main");
+            }
+            catch (Exception e)
+            {
+                // no main play
+                return new SelectorResults(rtnActions, assignments);
+            }
 
             // get actions from main play
 
