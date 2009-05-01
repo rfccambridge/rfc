@@ -1,5 +1,5 @@
 Metadata:
-type SetupPlay_Theirs
+type SetPlay_Theirs
 name main
 
 score 1
@@ -14,7 +14,7 @@ ourgoal (point -3.13 0)
 middle_theirgoal (point 2 0)
 
 numRobots (numourbots)
-numTheir (numtheirrobots)
+numTheir (numtheirbots)
 
 nothing (nullAction)
 
