@@ -1,5 +1,5 @@
 Metadata:
-type NormalPlay
+type SetPlay_Ours
 name Refbox_Our_Free_Kick_3
 score 30
 

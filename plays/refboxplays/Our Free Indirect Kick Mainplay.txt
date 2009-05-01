@@ -1,5 +1,5 @@
 Metadata:
-type SetupPlay_Ours
+type SetPlay_Ours
 name main_Freekick_Indir
 score 1
 

@@ -1,5 +1,5 @@
 Metadata:
-type NormalPlay
+type SetPlay_Ours
 name Refbox_Our_Free_Indir_Kick_4
 score 40
 
