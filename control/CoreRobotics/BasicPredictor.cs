@@ -162,7 +162,7 @@ namespace Robocup.CoreRobotics
                             }
                             else
                                 position = matched.Position;
-                            newInfoList.Add(new RobotInfo(position, velocity, matched.AngularVelocity, matched.Orientation, oldInfo.ID));
+                            newInfoList.Add(new RobotInfo(position, velocity, matched.AngularVelocity, matched.Orientation, matched.Team, oldInfo.ID));
                         }
                     }
                     foreach (RobotInfo info in newInfoList)
@@ -182,7 +182,7 @@ namespace Robocup.CoreRobotics
                                 curID++;
                             }
                             newInfos.Remove(info);
-                            newInfoList.Add(new RobotInfo(info.Position, info.Orientation, curID));
+                            newInfoList.Add(new RobotInfo(info.Position, info.Orientation, info.Team, curID));
                         }
                     }
                     else
@@ -245,7 +245,7 @@ namespace Robocup.CoreRobotics
 
         protected BallInfo ballInfo = new BallInfo(new Vector2(0, 0));
         private readonly BasicPredictorHelper our_helper = new BasicPredictorHelper(true);
-        private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(true);
+        private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(false);
 
         // Should really be a generalized game state
         private PlayTypes playType;
@@ -348,6 +348,9 @@ namespace Robocup.CoreRobotics
             if (ballInfo == null)                
                 throw new ApplicationException("BasicPredictor.getBallInfo: internal ball is null!");
 
+            if (ballInfo.Position.X == double.NaN || ballInfo.Position.Y == double.NaN)
+                return null;
+            
             if (!ASSUME_BALL)
                 return ballInfo;
 
@@ -466,7 +469,11 @@ namespace Robocup.CoreRobotics
                     double weightOld = BALL_POSITION_WEIGHT_OLD;
                     double weightNew = BALL_POSITION_WEIGHT_NEW;
 
-                    Vector2 position = weightOld * this.ballInfo.Position + weightNew * ballInfo.Position;
+                    Vector2 position;
+                    if (double.IsNaN(ballInfo.Position.X) || double.IsNaN(ballInfo.Position.Y))
+                        position = this.ballInfo.Position;
+                    else 
+                        position = weightOld * this.ballInfo.Position + weightNew * ballInfo.Position;
                     Vector2 velocity = (1 / dt) * (ballInfo.Position - this.ballInfo.Position);
 
                     this.ballInfo = new BallInfo(position, velocity);
