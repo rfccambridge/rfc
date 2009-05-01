@@ -34,7 +34,8 @@ namespace Robocup.ControlForm {
         bool systemStarted = false;
         RFCSystem _system;
 
-        IPredictor _predictor;
+        //IPredictor _predictor;
+        BasicPredictor _predictor;
         //ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(420,610, 5, 5);
         ICoordinateConverter converter;
 
@@ -109,9 +110,17 @@ namespace Robocup.ControlForm {
 
             // playSelectorForm
             playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
-        }        
-       
-        private void handleVisionUpdate(VisionMessage msg) {
+        }
+
+        private void handleVisionUpdateTop(VisionMessage msg) {
+            handleVisionUpdate(msg, TOP_CAMERA);
+        }
+
+        private void handleVisionUpdateBottom(VisionMessage msg) {
+            handleVisionUpdate(msg, BOTTOM_CAMERA);
+        }
+        
+        /*private void handleVisionUpdate(VisionMessage msg, string cameraName) {
                   
             lock (predictor_lock)
             {
@@ -124,13 +133,47 @@ namespace Robocup.ControlForm {
                 drawer.setPlayType(_system.getCurrentPlayType());
                 _system.drawCurrent(drawer.CreateGraphics(), converter);
             }
+         }*/
+
+        private void handleVisionUpdate(VisionMessage msg, String cameraName) {
+          
+            List<RobotInfo> ours = new List<RobotInfo>();
+            List<RobotInfo> theirs = new List<RobotInfo>();
+
+            foreach (VisionMessage.RobotData robot in msg.Robots)
+            {
+                RobotInfo robotInfo = new RobotInfo(robot.Position, robot.Orientation, robot.ID);
+                robotInfo.Team = (robot.Team == VisionMessage.Team.YELLOW) ? 0 : 1;
+                (robot.Team == OUR_TEAM ? ours : theirs).Add(robotInfo);
+            }
+
+            lock (predictor_lock)
+            {
+                _predictor.updatePartOurRobotInfo(ours, cameraName);
+                _predictor.updatePartTheirRobotInfo(theirs, cameraName);
+                if (msg.Ball != null) {
+                    //Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
+                    _predictor.updateBallInfo(new BallInfo(msg.Ball.Position));
+                }
+                else {
+                    _predictor.updateBallInfo(null);
+                }
+            }
+            drawer.Invalidate();
+
+            lock (field_lock)
+            {
+                //_system.drawCurrent(_field.getGraphics(), converter);                
+                drawer.setPlayType(_system.getCurrentPlayType());
+                _system.drawCurrent(drawer.CreateGraphics(), converter);
+            }
         }
 
         private void visionTopConnect_Click(object sender, EventArgs e) {
             try {
                 if (!visionTopConnected) {
                     _visionTop = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionTopHost.Text, MESSAGE_SENDER_PORT);
-                    _visionTop.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdate);
+                    _visionTop.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateTop);
 
                     visionTopStatus.BackColor = Color.Green;
                     visionTopConnect.Text = "Disconnect";
@@ -155,7 +198,7 @@ namespace Robocup.ControlForm {
                 if (!visionBottomConnected)
                 {
                     _visionBottom = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionBottomHost.Text, MESSAGE_SENDER_PORT);
-                    _visionBottom.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdate);
+                    _visionBottom.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateBottom);
 
                     visionBottomStatus.BackColor = Color.Green;
                     visionBottomConnect.Text = "Disconnect";
@@ -231,10 +274,10 @@ namespace Robocup.ControlForm {
                 if (_predictor is BasicPredictor) {
                     ((BasicPredictor)_predictor).LoadConstants();
                 }
-                else if (_predictor is AveragingPredictor)
-                {
-                    ((AveragingPredictor)_predictor).LoadConstants();
-                }
+                //else if (_predictor is AveragingPredictor)
+                //{
+                //    ((AveragingPredictor)_predictor).LoadConstants();
+                //}
 
                 _system.LoadConstants();
                 _system.reloadPlays();
