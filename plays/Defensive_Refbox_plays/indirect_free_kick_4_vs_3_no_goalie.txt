@@ -1,6 +1,6 @@
 Metadata:
 type SetPlay_Theirs
-name UNNAMED? - UNNAMED?
+name TheirFreeKick_4_3_ng
 score 440
 Objects:
 topLeftCorner (point -3.05 2.1)
