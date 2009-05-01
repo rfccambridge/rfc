@@ -162,7 +162,7 @@ namespace Robocup.Utilities
             {
                 playNames = theirPlayNames;
             }
-            if (ourPlayNames.TryGetValue(r.ID, out playName)) {
+            if (playNames.TryGetValue(r.ID, out playName)) {
                 g.DrawString(r.ID.ToString() + playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
             }
             b.Dispose();
