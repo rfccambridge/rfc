@@ -23,7 +23,7 @@ namespace Robocup.MotionControl
         // Class variables
         bool goingToPoint1 = true;
 
-        IMotionPlanner regularPlanner;
+        IMotionPlanner regularPlanner; //why is this and dumb planner both used!!!? WTF? they're both tangent bug's ???
         TangentBugFeedbackMotionPlanner dumbPlanner = new TangentBugFeedbackMotionPlanner();
         DefaultMotionPlanner slowPlanner = new DefaultMotionPlanner();
 
@@ -71,6 +71,7 @@ namespace Robocup.MotionControl
 
         public FeedbackVeerKickPlanner(IMotionPlanner regularPlanner)
         {
+            //why is this here?! it's passed a tangent bug planner, just like dumbPlanner (terrible naming conventiosn by the way)
             this.regularPlanner = regularPlanner;
             loop = new PIDLoop("kickplanning", "point1orientation");
             spinplanner = new DirectRobotSpinner();
@@ -147,12 +148,15 @@ namespace Robocup.MotionControl
             // if close enough to point but orientation is off,
             // first use IRobotSpinner to correct orientation
             //if (pointCloseLateral && !orientationCorrect)
+
+
+            /*Ben commented this out
             if (pointClose && !orientationCorrect && goingToPoint1)
             {
                 speeds = spinplanner.spinTo(id, desiredOrientation, MAX_DIFF_ORIENTATION_POINT_1, predictor);
                 // DO NOT CHARGE WHILE SPINNING
                 return new KickPlanningResults(speeds, false);
-            }
+            }*/
 
             // if orientation is correct, move laterally
            /* if (pointCloseLateral && !pointClose && orientationCorrect)
@@ -202,13 +206,19 @@ namespace Robocup.MotionControl
             if (goingToPoint1)
             {
                 RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
-                speeds = regularPlanner.PlanMotion(id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
+                speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
+                //why was regular Planner being used here? it seems inconsistent, sometimes using one instance of the bugNavigator and sometimes another.
+                    //regularPlanner.PlanMotion(id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
                 usingRegularPlanner = true;
             }
             else
             {
                 RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, id);
-                speeds = slowPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
+                speeds = slowPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;// This is the "normal one"
+               
+
+                // FOR NOW!!! Go forwards rather than use PID feedback. Meant to fix forward curving problem
+                //speeds = new WheelSpeeds(10, 10, 10, 10);
                 usingRegularPlanner = false;
                 breakBeamOn = true;
             }
