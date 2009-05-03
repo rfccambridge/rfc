@@ -17,27 +17,23 @@
 #i=1
 #d=150
 
+double P_X_0 240
+double P_X_1 240
+double P_X_2 240
+double P_X_3 240
+double P_X_4 240
 
-double P_X_0 300
-#double P_X_0 0
-double P_X_1 300
-double P_X_2 300
-double P_X_3 300
-double P_X_4 300
+double I_X_0 1
+double I_X_1 1
+double I_X_2 1
+double I_X_3 1
+double I_X_4 1
 
-double I_X_0 0.4
-#double I_X_0 0
-double I_X_1 0.4
-double I_X_2 0.4
-double I_X_3 0.4
-double I_X_4 0.4
-
-double D_X_0 240
-#double D_X_0 0
-double D_X_1 240
-double D_X_2 240
-double D_X_3 240 
-double D_X_4 240
+double D_X_0 116
+double D_X_1 116
+double D_X_2 116
+double D_X_3 116
+double D_X_4 116
 
 double ALPHA_X_0 1
 double ALPHA_X_1 1
@@ -45,27 +41,23 @@ double ALPHA_X_2 1
 double ALPHA_X_3 1
 double ALPHA_X_4 1
 
+double P_Y_0 240
+double P_Y_1 240
+double P_Y_2 240
+double P_Y_3 240
+double P_Y_4 240
 
-#double P_Y_0 0
-double P_Y_0 300
-double P_Y_1 300
-double P_Y_2 300
-double P_Y_3 300
-double P_Y_4 300
+double I_Y_0 1
+double I_Y_1 1
+double I_Y_2 1
+double I_Y_3 1
+double I_Y_4 1
 
-#double I_Y_0 0
-double I_Y_0 0.4
-double I_Y_1 0.4
-double I_Y_2 0.4
-double I_Y_3 0.4
-double I_Y_4 .4
-
-double D_Y_0 240
-#double D_Y_0 0
-double D_Y_1 240
-double D_Y_2 240
-double D_Y_3 240
-double D_Y_4 240
+double D_Y_0 116
+double D_Y_1 116
+double D_Y_2 116
+double D_Y_3 116
+double D_Y_4 116
 
 double ALPHA_Y_0 1
 double ALPHA_Y_1 1
@@ -73,25 +65,23 @@ double ALPHA_Y_2 1
 double ALPHA_Y_3 1
 double ALPHA_Y_4 1
 
-double P_THETA_0 60
-double P_THETA_1 60
-double P_THETA_2 60
-double P_THETA_3 60
+double P_THETA_0 90
+double P_THETA_1 90
+double P_THETA_2 90
+double P_THETA_3 90
 double P_THETA_4 90
 
-double I_THETA_0 0.5
-#double I_THETA_0 0
-double I_THETA_1 0.5
-double I_THETA_2 0.5
-double I_THETA_3 0.5
-double I_THETA_4 0.5
+double I_THETA_0 0.1
+double I_THETA_1 0.1
+double I_THETA_2 0.1
+double I_THETA_3 0.1
+double I_THETA_4 0.1
 
-double D_THETA_0 50
-#double D_THETA_0 0
-double D_THETA_1 50
-double D_THETA_2 50
-double D_THETA_3 50
-double D_THETA_4 50
+double D_THETA_0 80
+double D_THETA_1 80
+double D_THETA_2 80
+double D_THETA_3 80
+double D_THETA_4 80
 
 double ALPHA_THETA_0 1
 double ALPHA_THETA_1 1
