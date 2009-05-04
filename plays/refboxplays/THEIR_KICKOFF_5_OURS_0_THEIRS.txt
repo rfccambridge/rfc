@@ -50,7 +50,7 @@ centercirclept (linecircleintersection centergoalline centercircle 1)
 Conditions:
 Actions:
 (robotpointpointmove goaliebot goaliept center)
-(robotpointpointmove middlerbot middlerbotpt center)
+(robotpointpointmove middlerbot middlerpt center)
 (robotpointpointmove centerbot centercirclept center)
 (robotpointpointmove topbot toppt topptfwd)
 (robotpointpointmove bottombot botpt botptfwd)

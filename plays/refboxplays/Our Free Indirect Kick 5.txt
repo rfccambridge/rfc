@@ -45,12 +45,12 @@ point26 (pointof robot5)
 Conditions:
 
 Actions:
-(robotpointpointmove robot1 point3 point1)
+(robotpointkick robot1 point2)
 (robotpointpointmove robot2 point8 point1)
 (robotpointpointmove robot3 point14 point1)
 (robotpointpointmove robot4 point20 point1)
 (robotpointpointmove robot5 point25 point1)
-(robotpointkick robot1 point2)
+
 
 DesignerData:
 ball <-0.32,-0.46>

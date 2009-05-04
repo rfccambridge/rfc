@@ -29,6 +29,7 @@ Actions:
 (if_Action (and (= numRobots 3) (= numTheir 1)) (assignPlay TheirFreeKick_3_0) nothing)
 (if_Action (and (= numRobots 3) (> numTheir 1)) (assignPlay TheirFreeKick_3_2) nothing)
 
+(if_Action (and (= numRobots 4) (= numTheir 0)) (assignPlay TheirFreeKick_3_0) nothing)
 (if_Action (and (= numRobots 4) (= numTheir 2)) (assignPlay TheirFreeKick_4_2) nothing)
 (if_Action (and (= numRobots 4) (> numTheir 2)) (assignPlay TheirFreeKick_4_3_ng) nothing)
 

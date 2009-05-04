@@ -25,5 +25,5 @@ receiverbotpt (pointof receiverbot)
 
 Conditions:
 Actions:
-(robotpointkick centerbot recpoint)
+(robotpointkick centerbot theirgoal)
 (robotpointmove receiverbot recpoint)

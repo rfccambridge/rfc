@@ -24,9 +24,9 @@ point8 (linecircleintersection line7 circle3 0)
 Conditions:
 
 Actions:
-(robotpointpointmove robot1 point3 point1)
-(robotpointpointmove robot2 point8 point1)
 (robotpointkick robot1 point2)
+(robotpointpointmove robot2 point8 point1)
+
 
 DesignerData:
 ball <-0.35,-0.01>

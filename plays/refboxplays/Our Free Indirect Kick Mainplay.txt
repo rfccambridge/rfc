@@ -1,6 +1,6 @@
 Metadata:
 type SetPlay_Ours
-name main_Freekick_Indir
+name main
 score 1
 
 Objects:

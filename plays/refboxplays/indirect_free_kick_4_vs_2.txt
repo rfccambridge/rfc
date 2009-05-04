@@ -1,6 +1,6 @@
 Metadata:
 type SetPlay_Theirs
-name assignPlay TheirFreeKick_4_2
+name TheirFreeKick_4_2
 score 420
 Objects:
 topLeftCorner (point -3.05 2.1)
