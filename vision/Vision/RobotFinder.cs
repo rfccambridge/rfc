@@ -848,8 +848,11 @@ namespace VisionStatic
             rr = arrangement[3];
             
             // ORIENTATION
-            Vector orientV;
-            orientV = Vector.Add(pattern.ctrVectors[fl], pattern.ctrVectors[fr]);
+            Vector orientV, frontOrientV, backOrientV;
+            frontOrientV = Vector.Add(pattern.ctrVectors[fl], pattern.ctrVectors[fr]);
+	    backOrientV = Vector.Add(pattern.ctrVectors[rl],pattern.ctrVectors[rr]);
+	    orientV = Vector.Substract(frontOrientV, backOrientV);
+
             orientV.Normalize();            
             robot.Orientation = (float)Math.Atan2(orientV.Y, orientV.X);
             
