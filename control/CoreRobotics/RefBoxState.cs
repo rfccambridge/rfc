@@ -87,6 +87,7 @@ namespace Robocup.CoreRobotics
                         {
                             playsToRun = PlayTypes.KickOff_Ours_Setup;
                         }
+                        _predictor.SetBallMark();
                         break;
                     case MulticastRefBoxListener.INDIRECT_BLUE:
                     case MulticastRefBoxListener.DIRECT_BLUE:
@@ -109,6 +110,7 @@ namespace Robocup.CoreRobotics
                         {
                             playsToRun = PlayTypes.KickOff_Ours_Setup;
                         }
+                        _predictor.SetBallMark();
                         break;
                     case MulticastRefBoxListener.INDIRECT_YELLOW:
                     case MulticastRefBoxListener.DIRECT_YELLOW:

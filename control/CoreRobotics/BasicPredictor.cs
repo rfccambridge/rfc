@@ -434,7 +434,7 @@ namespace Robocup.CoreRobotics
                 throw new ApplicationException("BasicPredictor.hasBallMoved: internal ball is null!");
             }
 
-            if (!marking) return true;
+            if (!marking) return false;
             bool ret = markedPosition.distanceSq(ballInfo.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST;
             return ret;
         }
