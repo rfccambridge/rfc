@@ -141,8 +141,11 @@ namespace Robocup.Plays
 		Vector2 robotToBall = ball - thisrobot.Position;
 		Vector2 robotToDest = destination - thisrobot.Position;
 
-		if(thisRobot.Position.distanceSq(destination) <= bumpDistance * bumpDistance 
-				&& Math.Abs(robotToBall.angleDifference(robotToDest)) <= angleTolerance){
+        double angleDiff = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), robotToDest.cartesianAngle()));
+        bool nearLine = thisrobot.Position.distanceSq(destination) <= bumpDistance * bumpDistance && angleDiff <= 3 * angleTolerance;
+        bool tooClose = thisrobot.Position.distanceSq(destination) <= 0.01 * bumpDistance * bumpDistance && angleDiff <= Math.PI / 2;
+		
+        if(nearLine || tooClose){
 			commander.move(robotID,
 					false,
 					destinationBehind,

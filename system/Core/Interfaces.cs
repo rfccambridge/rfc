@@ -168,9 +168,10 @@ namespace Robocup.Core {
     {
         void Charge(int robotID);
         void Kick(int robotID, Vector2 target);
+        void Bump(int robotID, Vector2 point);
         void Move(int robotID, Vector2 target);
         void Move(int robotID, Vector2 target, Vector2 facing);
-        void Stop(int robotID);
+        void Stop(int robotID);        
         void Dribble(int robotID, Vector2 target);
     }
 

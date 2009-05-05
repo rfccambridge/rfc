@@ -34,8 +34,8 @@ namespace Robocup.ControlForm {
         bool systemStarted = false;
         RFCSystem _system;
 
-        //IPredictor _predictor;
-        BasicPredictor _predictor;
+        IPredictor _predictor;
+        //BasicPredictor _predictor;
         //ICoordinateConverter converter = new Robocup.Utilities.ControlFormConverter(420,610, 5, 5);
         ICoordinateConverter converter;
 
@@ -50,9 +50,6 @@ namespace Robocup.ControlForm {
         Timer timer;
         bool logging;
         string LOG_FILE;
-
-        String TOP_CAMERA = "top_cam";
-        String BOTTOM_CAMERA = "bottom_cam";
 
         public ControlForm() {
             InitializeComponent();
@@ -87,7 +84,8 @@ namespace Robocup.ControlForm {
             _serial = new RemoteRobots();
             _system = new RFCSystem();
 
-            _predictor = new BasicPredictor();
+            //_predictor = new BasicPredictor();
+            _predictor = new AveragingPredictor();
             // add vision predictor hooked up to vision
             _system.registerAcceptor(_predictor as IVisionInfoAcceptor);
             _system.registerPredictor(_predictor);
@@ -112,15 +110,15 @@ namespace Robocup.ControlForm {
             playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
         }
 
-        private void handleVisionUpdateTop(VisionMessage msg) {
+        /*private void handleVisionUpdateTop(VisionMessage msg) {
             handleVisionUpdate(msg, TOP_CAMERA);
         }
 
         private void handleVisionUpdateBottom(VisionMessage msg) {
             handleVisionUpdate(msg, BOTTOM_CAMERA);
-        }
+        }*/
         
-        /*private void handleVisionUpdate(VisionMessage msg, string cameraName) {
+        private void handleVisionUpdate(VisionMessage msg) {
                   
             lock (predictor_lock)
             {
@@ -133,9 +131,9 @@ namespace Robocup.ControlForm {
                 drawer.setPlayType(_system.getCurrentPlayType());
                 _system.drawCurrent(drawer.CreateGraphics(), converter);
             }
-         }*/
+         }
 
-        private void handleVisionUpdate(VisionMessage msg, String cameraName) {
+      /*  private void handleVisionUpdate(VisionMessage msg, String cameraName) {
           
             List<RobotInfo> ours = new List<RobotInfo>();
             List<RobotInfo> theirs = new List<RobotInfo>();
@@ -167,13 +165,13 @@ namespace Robocup.ControlForm {
                 drawer.setPlayType(_system.getCurrentPlayType());
                 _system.drawCurrent(drawer.CreateGraphics(), converter);
             }
-        }
+        }*/
 
         private void visionTopConnect_Click(object sender, EventArgs e) {
             try {
                 if (!visionTopConnected) {
                     _visionTop = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionTopHost.Text, MESSAGE_SENDER_PORT);
-                    _visionTop.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateTop);
+                    _visionTop.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdate);
 
                     visionTopStatus.BackColor = Color.Green;
                     visionTopConnect.Text = "Disconnect";
@@ -198,7 +196,7 @@ namespace Robocup.ControlForm {
                 if (!visionBottomConnected)
                 {
                     _visionBottom = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionBottomHost.Text, MESSAGE_SENDER_PORT);
-                    _visionBottom.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateBottom);
+                    _visionBottom.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdate);
 
                     visionBottomStatus.BackColor = Color.Green;
                     visionBottomConnect.Text = "Disconnect";
@@ -273,12 +271,9 @@ namespace Robocup.ControlForm {
                 LoadConstants();
                 if (_predictor is BasicPredictor) {
                     ((BasicPredictor)_predictor).LoadConstants();
+                } else if (_predictor is AveragingPredictor) {
+                    ((AveragingPredictor)_predictor).LoadConstants();
                 }
-                //else if (_predictor is AveragingPredictor)
-                //{
-                //    ((AveragingPredictor)_predictor).LoadConstants();
-                //}
-
                 _system.LoadConstants();
                 _system.reloadPlays();
                 
