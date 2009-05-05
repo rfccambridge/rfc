@@ -1028,7 +1028,8 @@ namespace VisionStatic
                         if (addRobot) {
                               
                             VisionMessage.RobotData robotData = new VisionMessage.RobotData(
-                                (yellowCtrDot) ? nextIDforPatternlessYellow++ : nextIDforPatternlessBlue++, 
+                                //(yellowCtrDot) ? nextIDforPatternlessYellow++ : nextIDforPatternlessBlue++, 
+                                    -1,
                                     (yellowCtrDot) ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE,
                                     VisionToGeneralCoords(blobs[i].CenterWorldX, blobs[i].CenterWorldY), 0);
                             visionMessage.Robots.Add(robotData);

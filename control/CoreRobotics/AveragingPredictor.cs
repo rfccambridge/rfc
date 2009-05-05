@@ -22,6 +22,10 @@ namespace Robocup.CoreRobotics
             private List<RobotInfo>[] robots = new List<RobotInfo>[] { new List<RobotInfo>(), 
                                                                        new List<RobotInfo>() };
 
+            // For synching the above
+            private object ballLock = new object();
+            private object robotsLock = new object();
+
             // Tools for velocity measurement
             double ballDtStart;
             BallInfo ballAtDtStart = null;
@@ -49,7 +53,7 @@ namespace Robocup.CoreRobotics
                 #region Update ball
                 if (msg.Ball != null)
                 {
-                    lock (ball) {
+                    lock (ballLock) {
                         // If we see the ball for the fist time, just record it; otherwise update
                         if (ball == null)
                         {
@@ -84,11 +88,12 @@ namespace Robocup.CoreRobotics
                 #endregion
 
                 #region Update robots   
-                lock (robots) {
+                lock (robotsLock) {
                     foreach (Robocup.Core.VisionMessage.RobotData newRobotData in msg.Robots)
                     {
+                        int team = newRobotData.Team == VisionMessage.Team.YELLOW ? 0 : 1;
                         RobotInfo newRobot = new RobotInfo(newRobotData.Position, new Vector2(0, 0), 0,
-                            newRobotData.Orientation, newRobotData.ID, -1);
+                            newRobotData.Orientation, team, newRobotData.ID);
 
                         // Keep track of nextID
                         if (newRobot.ID > nextID[newRobot.Team])
@@ -98,7 +103,7 @@ namespace Robocup.CoreRobotics
 
                         // Match with existing info either by ID (if vision gave it one) or by position
                         Predicate<RobotInfo> matchPredicate;
-                        if (newRobot.ID < 0)
+                        if (newRobot.ID > 0)
                         {
                             matchPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
                             {
@@ -171,9 +176,11 @@ namespace Robocup.CoreRobotics
             public BallInfo GetBall()
             {
                 BallInfo retBall;
-                lock (ball) {
+                lock (ballLock) {
+                    double time = HighResTimer.SecondsSinceStart();
+
                     // Reconsider our belief
-                    if (ball.LastSeen > MAX_SECONDS_TO_KEEP_INFO)
+                    if (ball != null && time - ball.LastSeen > MAX_SECONDS_TO_KEEP_INFO)
                     {
                         ball = null;
                     }
@@ -187,19 +194,20 @@ namespace Robocup.CoreRobotics
             public List<RobotInfo> GetRobots(int team)
             {
                 List<RobotInfo> retRobots;
-                lock (robots) {
+                lock (robotsLock) {
+                    double time = HighResTimer.SecondsSinceStart();
+
                     // Reconsider our belief
-                    List<int> idxToRemove = new List<int>();
+                    List<RobotInfo> tempRobots = new List<RobotInfo>(robots[team].Count);
                     for (int i = 0; i < robots[team].Count; i++)
                     {
-                        if (robots[team][i].LastSeen > MAX_SECONDS_TO_KEEP_INFO)
+                        if (time - robots[team][i].LastSeen < MAX_SECONDS_TO_KEEP_INFO)
                         {
-                            idxToRemove.Add(i);
-                        }
+                            tempRobots.Add(robots[team][i]);
+                        }                 
                     }
-                    foreach (int idx in idxToRemove) {
-                        robots[team].RemoveAt(idx);
-                    }
+                    robots[team].Clear();
+                    robots[team].AddRange(tempRobots);
 
                     // Copy data for returning               
                     retRobots = new List<RobotInfo>(robots[team].Count);
@@ -220,6 +228,9 @@ namespace Robocup.CoreRobotics
         private bool marking = false;          
         private Vector2 markedPosition = null;
 
+        // Game state
+        PlayTypes playType = PlayTypes.Halt;
+
         // "Constants"
         private static double DELTA_DIST_SQ_MERGE;
         private static double MAX_SECONDS_TO_KEEP_INFO;
@@ -228,10 +239,16 @@ namespace Robocup.CoreRobotics
 
         public AveragingPredictor()
         {
+            for (int i = 0; i < NUM_CAMERAS; i++)
+            {
+                fieldStates[i] = new FieldState();
+            }
+
             LoadConstants();
         }
 
-        public void LoadConstants() {
+        public void LoadConstants()
+        {
             MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
             VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");            
             BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
@@ -255,29 +272,42 @@ namespace Robocup.CoreRobotics
             double time = HighResTimer.SecondsSinceStart();
 
             // Return the average from all the cameras that see it weighted 
-            // by the time since they last saw it            
-            BallInfo ball0 = fieldStates[0].GetBall();
-            Vector2 avgPosition = new Vector2(ball0.Position);
-            Vector2 avgVelocity = new Vector2(ball0.Velocity);
-            double avgLastSeen = ball0.LastSeen;
-            double sum = time - ball0.LastSeen;
+            // by the time since they last saw it                 
+   
+            Vector2 avgPosition = null;
+            Vector2 avgVelocity = null;
+            double avgLastSeen = 0;
+            double sum = 0;
             for (int i = 1; i < fieldStates.Length; i++)
             {
                 BallInfo ball = fieldStates[i].GetBall();                                
                 if (ball != null)
                 {
                     double t = time - ball.LastSeen;
+                    // First time, we don't add, just initialize
+                    if (avgPosition == null)
+                    {
+                        avgPosition = t * ball.Position;
+                        avgVelocity = t * ball.Velocity;
+                        avgLastSeen = t * ball.LastSeen;
+                        sum = t;                    
+                    }
                     avgPosition += t * ball.Position;
                     avgVelocity += t * ball.Velocity;
                     avgLastSeen += t * ball.LastSeen;
                     sum += t;                    
                 }
             }
-            avgPosition /= sum;
-            avgVelocity /= sum;
-            avgLastSeen /= sum; 
 
-            return new BallInfo(avgPosition, avgVelocity, avgLastSeen);
+            BallInfo retBall = null;
+            if (avgPosition != null) // if we saw at least one ball
+            {
+                avgPosition /= sum;
+                avgVelocity /= sum;
+                avgLastSeen /= sum;
+                retBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
+            }
+            return retBall;
         }
 
         // For each robot return the average of info from all cameras weighed by
@@ -314,7 +344,7 @@ namespace Robocup.CoreRobotics
                 {                   
                     // Match with unique info either by ID or by position
                     Predicate<RobotInfo> matchPredicate;
-                    if (fsRobot.ID < 0)
+                    if (fsRobot.ID > 0)
                     {
                         matchPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
                         {
@@ -370,15 +400,16 @@ namespace Robocup.CoreRobotics
 
                 }
 
-                Vector2 avgPosition = new Vector2(avgRobot.Position);
-                Vector2 avgVelocity = new Vector2(avgRobot.Velocity);
-                double avgOrientation = avgRobot.Orientation;
-                double avgAngVel = avgRobot.AngularVelocity;
-                double avgLastSeen = avgRobot.LastSeen;
-                double sum = time - avgRobot.LastSeen;
+                double t = time - avgRobot.LastSeen;
+                Vector2 avgPosition = t * (new Vector2(avgRobot.Position));
+                Vector2 avgVelocity = t * (new Vector2(avgRobot.Velocity));                
+                double avgOrientation = t * avgRobot.Orientation;
+                double avgAngVel = t * avgRobot.AngularVelocity;
+                double avgLastSeen = t * avgRobot.LastSeen;
+                double sum = t;
                 for (int i = 1; i < sList.Count; i++)
                 {
-                    double t = time - sList[i].LastSeen;
+                    t = time - sList[i].LastSeen;
                     avgPosition += t * sList[i].Position;
                     avgVelocity += t * sList[i].Velocity;
                     avgAngVel += t * sList[i].AngularVelocity;
@@ -418,9 +449,10 @@ namespace Robocup.CoreRobotics
         public void SetBallMark() {     
             BallInfo ball = GetBall();
             if (ball == null) {
-                throw new ApplicationException("Cannot mark ball position because no ball is seen.");
+                //throw new ApplicationException("Cannot mark ball position because no ball is seen.");
+                return;
             }
-            markedPosition = new Vector2(ball.Position);
+            markedPosition = ball != null ? new Vector2(ball.Position) : null;
             marking = true;
         }
 
@@ -431,14 +463,15 @@ namespace Robocup.CoreRobotics
 
         public bool HasBallMoved() {
             if (!marking) return false;
-            BallInfo ball = GetBall();           
-            bool ret = markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST;
+            BallInfo ball = GetBall();
+            bool ret = (ball != null && markedPosition == null) || (ball != null && 
+                        markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
             return ret;
         }
 
         public void SetPlayType(PlayTypes newPlayType)
         {
-            throw new ApplicationException("StaticPredictor.setPlayType: not implemented");
+            playType = newPlayType;            
         }
 
         // TO BE REMOVED

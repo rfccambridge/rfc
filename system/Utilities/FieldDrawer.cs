@@ -171,7 +171,7 @@ namespace Robocup.Utilities
         public void paintField(Graphics g)
         {
             Color ourColor = (OUR_TEAM == Team.YELLOW) ? Color.Yellow : Color.Blue;
-            Color theirColor = (OUR_TEAM == Team.YELLOW) ? Color.Blue : Color.Yellow;            
+            //Color theirColor = (OUR_TEAM == Team.YELLOW) ? Color.Blue : Color.Yellow;            
 
             // Team color information
             g.DrawString(OUR_TEAM.ToString() + " PLAYER", _font, new SolidBrush(ourColor),
@@ -215,20 +215,17 @@ namespace Robocup.Utilities
             );
             p.Dispose();
 
-            List<RobotInfo> ourInfos = predictor.getOurTeamInfo();
-            foreach (RobotInfo r in ourInfos)
-            {
-                //drawRobotOurs(r, g, Color.Black);
-                drawRobot(r, ourColor, g);
+
+            List<RobotInfo> robots = new List<RobotInfo>();            
+            robots.AddRange(predictor.GetRobots(0));
+            robots.AddRange(predictor.GetRobots(1));
+
+            foreach (RobotInfo r in robots)
+            {                
+                Color color = (r.Team == 0) ? Color.Yellow : Color.Blue;
+                drawRobot(r, color, g);
             }
-            
-            List<RobotInfo> theirInfos = predictor.getTheirTeamInfo();
-            foreach (RobotInfo r in theirInfos)
-            {
-                //drawRobotTheirs(r, g, Color.Red);
-                drawRobot(r, theirColor, g);
-            }
-            
+                    
             // draw arrows
 
             lock (_arrowsLock)
@@ -246,7 +243,7 @@ namespace Robocup.Utilities
             }
 
             // draw ball
-            BallInfo ballInfo = predictor.getBallInfo();
+            BallInfo ballInfo = predictor.GetBall();
 
             if (ballInfo != null) {
 
