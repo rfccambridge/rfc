@@ -334,8 +334,8 @@ namespace Vision {
             //tsaiPoints = new TsaiPoint[TSAI_ROWS * TSAI_COLS * 4];
 
             // default
-            //_imageSize = new System.Drawing.Size(1024, 768);
-            _imageSize = new System.Drawing.Size(800, 600);
+            _imageSize = new System.Drawing.Size(1024, 768);
+            //_imageSize = new System.Drawing.Size(800, 600);
 
             //CreateDefaultTsaiPoints();
             LoadParameters();
