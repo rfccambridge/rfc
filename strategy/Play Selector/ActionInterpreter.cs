@@ -112,7 +112,54 @@ namespace Robocup.Plays
             commander.charge(robotID);
         }
 
-        /// <summary>
+        
+	private readonly double bumpDistance = 0.2;
+	private readonly double bumpOrientationOffset = Math.PI / 6;
+	/// <summary>
+	/// This is a fail-safe replacement of kicking - just go to the ball and bump it hard with the side of the robot
+	/// </summary>
+	public void Bump(int robotID, Vector2 target){
+		
+		RobotInfo thisrobot;
+		Vector2 ball;
+		BallInfo ballinfo;
+		try {
+		    thisrobot = getOurRobotFromID(robotID);
+                    ballinfo = predictor.getBallInfo();
+                    ball = ballinfo.Position;
+                }
+                catch (ApplicationException e) {
+	                Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
+	                return;
+	        }
+
+		Vector2 destination = extend(target, ball, bumpDistance);
+		double destinationAngle = targetAngle(ball, target) + bumpOrientationOffset;
+
+		Vector2 destinationBehind = extend(target, ball, -bumpDistance);
+
+		Vector2 robotToBall = ball - thisrobot.Position;
+		Vector2 robotToDest = destination - thisrobot.Position;
+
+		if(thisRobot.Position.distanceSq(destination) <= bumpDistance * bumpDistance 
+				&& Math.Abs(robotToBall.angleDifference(robotToDest)) <= angleTolerance){
+			commander.move(robotID,
+					false,
+					destinationBehind,
+					destinationAngle);
+		}
+		else{
+			commander.move(robotID,
+			               true,
+			               destination,
+		        	       destinationAngle);
+		}
+
+		return;
+	}
+	
+	
+	/// <summary>
         /// This method does all the necessary work to get a robot to kick the ball to a certain point.
         /// This should make other functions easier, such as a moving pass.
         /// </summary>
