@@ -14,8 +14,8 @@ int YELLOW_ID_OFFSET 0
 #string DOTS_R_0 GGPP
 
 string DOTS_R_0 GPPG
-string DOTS_R_1 GGPP
-string DOTS_R_2 PPGG
+string DOTS_R_2 GGPP
+string DOTS_R_1 PPGG
 string DOTS_R_3 PGPG
 string DOTS_R_4 PGGP
 string DOTS_R_5 GGGP
