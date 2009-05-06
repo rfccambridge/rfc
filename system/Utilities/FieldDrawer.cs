@@ -119,18 +119,23 @@ namespace Robocup.Utilities
 
         private void drawRobot(RobotInfo r, Color color, Graphics g)
         {
+            Vector2 offset;
+
             // draw robot
             Brush b = new SolidBrush(color);
             Vector2 center = converter.fieldtopixelPoint(r.Position);
             g.FillEllipse(b, (float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2), (float)(ROBOT_SIZE), (float)(ROBOT_SIZE));
+            g.DrawString(r.ID.ToString(), _font, new SolidBrush(Color.Red), 
+                (float)(center.X - ROBOT_SIZE / 3), (float)(center.Y - ROBOT_SIZE / 3));
             b.Dispose();
 
 
-            // draw velocity arrow            
+            // draw velocity arrow              
             if (r.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
             {
-                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();                                
-                Arrow velArrow = new Arrow(r.Position, r.Position + velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
+                offset = 0.04 * r.Velocity.normalize();
+                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();                
+                Arrow velArrow = new Arrow(r.Position + offset, r.Position+ velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
                 velArrow.drawConvertToPixels(g, converter);
             }
 
@@ -146,9 +151,11 @@ namespace Robocup.Utilities
             b.Dispose();
 
             // draw an arrow showing the robot orientation
-            Vector2 orientVect = new Vector2(Math.Cos(r.Orientation), Math.Sin(r.Orientation));
+            
+            Vector2 orientVect = new Vector2(Math.Cos(r.Orientation), Math.Sin(r.Orientation));            
             orientVect = orientVect.normalizeToLength(ORIENT_ARROW_LEN);
-            new Arrow(r.Position, r.Position + orientVect,
+            offset = 0.04 * orientVect.normalize();
+            new Arrow(r.Position + offset, r.Position + orientVect,
                 Color.Cyan, .04).drawConvertToPixels(g, converter);
 
             b = new SolidBrush(Color.GreenYellow);
