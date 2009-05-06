@@ -189,7 +189,7 @@ namespace Robocup.Plays
                 InterpreterPlay play = assignedPlays[playnum];
                 //Console.Write("Evaluating play " + play.Name + "......     ");
                 try {
-                    if (play.NumOurRobots <= ourteaminfo.Length && play.Actions.Count <= numOurRobotsAvailable &&
+                    if (play.NumOurRobots <= ourteaminfo.Length &&
                         play.NumTheirRobots <= theirteaminfo.Length) {
                         int[] assignedIDs = null;
                         // Evaluator returns (if play accepted): the actions [not sure about them] and 
@@ -217,6 +217,12 @@ namespace Robocup.Plays
                         for (int j = 0; j < actions.Length; j++) {
                             ActionDefinition action = actiondefinitions[j];
                             {
+                                if (action.isEmpty)
+                                {
+                                    // this is a null action, skip it
+                                    continue;
+                                }
+
                                 foreach (int id in action.RobotsInvolved) {
                                     for (int i = 0; i < ourteaminfo.Length; i++) {
                                         if (id == ourteaminfo[i].ID) {
