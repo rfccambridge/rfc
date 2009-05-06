@@ -11,6 +11,9 @@ namespace Robocup.Plays
     {
         private static readonly Random r = new Random();
         private static readonly List<Function> Functions = new List<Function>();
+
+        private static Dictionary<String, Object> session = new Dictionary<string, object>();
+
         static public Function getFunction(string name)
         {
             foreach (Function f in Functions)
@@ -417,6 +420,10 @@ namespace Robocup.Plays
                 GreaterLessThan glt = (GreaterLessThan)(objects[1]);
                 return doubleComparer.compare(f1, f2, glt);
             });
+            addFunction("doublecast", "int - Cast to double", "Cast ~ to a double", typeof(double), new Type[] { typeof(int) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return ((double) ((int) objects[0]));
+            });
             addFunction("or", "Bool, Bool - Or", "~ or ~", typeof(bool), new Type[] { typeof(bool), typeof(bool) }, delegate(EvaluatorState state, object[] objects)
             {
                 return ((bool)objects[0]) || ((bool)objects[1]);
@@ -543,6 +550,37 @@ namespace Robocup.Plays
             addFunction("sameRobot", "Robot, Robot - Same", "~ == ~", typeof(bool), new Type[] { typeof(Robot), typeof(Robot) }, delegate(EvaluatorState state, object[] objects)
             {
                 return ((Robot)objects[0]).getID() == ((Robot)objects[1]).getID();
+            });
+
+            addFunction("setSession", "String, Object", "Set ~ to ~", typeof(bool), new Type[] { typeof(string), typeof(object) }, delegate(EvaluatorState state, object[] objects)
+            {
+                session[(string)objects[0]] = objects[1];
+                return true;
+            });
+
+            // Set a session constant if it is not already set
+            addFunction("setSessionInit", "String, Object", "Set ~ to ~ if doesn't yet exist", typeof(bool), new Type[] { typeof(string), typeof(object) }, delegate(EvaluatorState state, object[] objects)
+            {
+                if (!session.ContainsKey((string)objects[0]))
+                {
+                    session[(string)objects[0]] = objects[1];
+                }
+                return true;
+            });
+
+            addFunction("getSessionDouble", "String", "Get session double ~", typeof(double), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return (double)session[(string)objects[0]];
+            });
+
+            addFunction("getSessionRobot", "String", "Get session robot ~", typeof(Robot), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return (Robot)session[(string)objects[0]];
+            });
+
+            addFunction("getSessionPoint", "String", "Get session point ~", typeof(Vector2), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return (Vector2)session[(string)objects[0]];
             });
 
             #endregion
