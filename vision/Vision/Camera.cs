@@ -10,10 +10,10 @@ namespace VisionStatic
 {
     public static class ImageSettings
     {
-        //public const int IMAGE_RES_X = 1024;
-        //public const int IMAGE_RES_Y = 768;
-        public const int IMAGE_RES_X = 800;
-        public const int IMAGE_RES_Y = 600;
+        public const int IMAGE_RES_X = 1024;
+        public const int IMAGE_RES_Y = 768;
+        //public const int IMAGE_RES_X = 800;
+        //public const int IMAGE_RES_Y = 600;
     }
 }
 
@@ -219,10 +219,10 @@ namespace VisionCamera {
             // Start FlyCapture.
             if (!started) {
                 ret = flycaptureStart(flycapContext,                    
-                    FlyCaptureVideoMode.FLYCAPTURE_VIDEOMODE_800x600YUV422,
-                    //FlyCaptureVideoMode.FLYCAPTURE_VIDEOMODE_1024x768YUV422,
-                    FlyCaptureFrameRate.FLYCAPTURE_FRAMERATE_30);
-                    //FlyCaptureFrameRate.FLYCAPTURE_FRAMERATE_15);
+                    //FlyCaptureVideoMode.FLYCAPTURE_VIDEOMODE_800x600YUV422,
+                    FlyCaptureVideoMode.FLYCAPTURE_VIDEOMODE_1024x768YUV422,
+                    //FlyCaptureFrameRate.FLYCAPTURE_FRAMERATE_30);
+                    FlyCaptureFrameRate.FLYCAPTURE_FRAMERATE_15);
                 if (ret != 0) {
                     reportError(ret, "flycaptureStart");
                     return 1;
