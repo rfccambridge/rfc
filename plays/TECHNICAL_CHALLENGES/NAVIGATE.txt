@@ -1,0 +1,40 @@
+Metadata:
+type NormalPlay
+name NAVIGATE
+score 2.002615
+
+Objects:
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.13 0)
+theirgoal (point 3.13 0)
+
+SWITCH_DISTANCE (const-double SWITCH_DISTANCE)
+
+point1 (point 1 1)
+point2 (point 1 -1)
+point3 (point -1 -1)
+point4 (point -1 1)
+
+navRobot (closest friendly point1 loose)
+robotpoint (pointof navRobot)
+
+close1 (< (pointpointdistance robotpoint point1) SWITCH_DISTANCE)
+close2 (< (pointpointdistance robotpoint point2) SWITCH_DISTANCE)
+close3 (< (pointpointdistance robotpoint point3) SWITCH_DISTANCE)
+close4 (< (pointpointdistance robotpoint point4) SWITCH_DISTANCE)
+
+SAVED_GOTO (getSessionPoint SAVE_GOTO)
+
+GOTO (if_point close1 point2 (if_point close2 point3 (if_point close3 point4 (if_point close4 point1 SAVED_GOTO))))
+
+Conditions:
+(setSessionInit SAVE_GOTO point1)
+
+Actions:
+(robotpointmove navRobot GOTO)
+(if_Action (setSession SAVE_GOTO GOTO) (nullAction) (nullAction))
