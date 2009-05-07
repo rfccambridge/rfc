@@ -1037,7 +1037,7 @@ namespace Robocup.MotionControl
         {
             base.LoadConstants();
 
-            pathdriver.PLANNER_WAYPOINT_DISTANCE = pathplanner.WAYPOINT_DIST;
+            pathdriver.PLANNER_WAYPOINT_DISTANCE = 0.6 * pathplanner.WAYPOINT_DIST;
         }
 
         #region ILogger
