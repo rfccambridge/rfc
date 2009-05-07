@@ -91,9 +91,9 @@ double DEFAULT_DIST_SLOW_DOWN .25
 int DEFAULT_WHEEL_SPEED_STRAIGHT 15
 int DEFAULT_WHEEL_SPEED_TURN 5
 
-double DEFAULT_P 5
+double DEFAULT_P 20
 double DEFAULT_I 0
-double DEFAULT_D 3
+double DEFAULT_D 12
 #3
 double DEFAULT_STOP_DISTANCE .05
 
@@ -101,7 +101,7 @@ double DEFAULT_STOP_DISTANCE .05
 string LOG_FILE ../../resources/motionplanning_log.txt
 
 # IRobotSpinner
-int DIRECT_SPIN_SPEED 5
+int DIRECT_SPIN_SPEED 4
 
 double MIN_SQ_DIST_TO_WP 0.0
 #0.04
