@@ -195,7 +195,7 @@ namespace Robocup.Plays
                 //it has no parse method
             }
 
-            throw new ApplicationException("there are no remaining definitions for this object.  most likely cause: circular definition");
+            throw new ApplicationException("there are no remaining definitions for object " + definition + ".  most likely cause: circular definition");
         }
 
         private E treatAsFunction(string definition, Type wantedType)

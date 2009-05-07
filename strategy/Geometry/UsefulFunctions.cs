@@ -57,5 +57,12 @@ namespace Robocup.Geometry
             else
                 return anglediff - Math.PI * 2;
         }
+
+        public static Vector2 extend(Vector2 p1, Vector2 p2, double distance)
+        {
+            return p2 + (p2 - p1).normalizeToLength(distance);
+        }
     }
+
+
 }
