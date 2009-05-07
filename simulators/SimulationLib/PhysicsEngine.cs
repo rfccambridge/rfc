@@ -292,10 +292,12 @@ namespace Robocup.Simulation
         {
             this.ball_info = new_info;
         }
-
         #region IRobot members
         const double initial_ball_speed = 0.1f;
         readonly Random r = new Random();
+        public void beamKick(int robotID, bool something) {
+            throw new NotImplementedException("PhysicsEnginge: beamKick not implemented");
+        }
         public void kick(int robotID)
         {
             RobotInfo robot = getCurrentInformation(robotID);
@@ -324,8 +326,8 @@ namespace Robocup.Simulation
         {
             this.speeds[robotID] = speeds;
         }
-        public void charge(int i) {
-            throw new NotImplementedException("not implemented");
+        public void charge(int robotID) {
+            throw new NotImplementedException("PhysicsEngine: charge() not implemented");
         }
         #endregion
     }

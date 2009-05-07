@@ -165,6 +165,9 @@ namespace Robocup.Utilities
             if (playNames.TryGetValue(r.ID, out playName)) {
                 g.DrawString(r.ID.ToString() + playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
             }
+            else
+                g.DrawString(r.ID.ToString(), _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
+
             b.Dispose();
         }
 
@@ -248,7 +251,7 @@ namespace Robocup.Utilities
             // draw ball
             BallInfo ballInfo = predictor.getBallInfo();
 
-            if (ballInfo != null) {
+            if (ballInfo != null && !double.IsNaN(ballInfo.Position.X)) {
 
                 Brush b = new SolidBrush(Color.Orange);
                 g.FillEllipse(

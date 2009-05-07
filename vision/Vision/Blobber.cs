@@ -343,7 +343,7 @@ namespace Vision
             // Extract the delegate from the AsyncResult.  
             ProcessFrameDelegate processFrameDelegate = (ProcessFrameDelegate)((AsyncResult)processFrameHandle).AsyncDelegate;
             
-            // Obtain the result
+            // Obtain the resultF
             processFrameDelegate.EndInvoke(out visionMessage, processFrameHandle);
 
             //try

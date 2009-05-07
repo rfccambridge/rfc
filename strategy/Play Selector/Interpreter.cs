@@ -112,7 +112,8 @@ namespace Robocup.Plays
             List<InterpreterPlay> plays_to_run = plays.FindAll(
                 delegate(InterpreterPlay play) { return play.PlayType == type && play.isEnabled; });
             //find all the actions we want to do
-            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, lastRunPlays, lastAssignments, ourPlayNames);
+            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, 
+                                                           lastRunPlays, lastAssignments, ourPlayNames);
 
             lastAssignments = results.Assignments;
 

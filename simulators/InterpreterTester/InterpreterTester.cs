@@ -636,18 +636,16 @@ namespace InterpreterTester
             infos[robotID] = new RobotInfo(prev.Position + (new Vector2(-ballvx * recoil, -ballvy * recoil)), prev.Orientation, prev.ID);
             //throw new Exception("The method or operation is not implemented.");
         }
-        public void beamKick(int robotID, bool b) 
-        {
-            throw new NotImplementedException("Beam kick needs to be implemented in the InterpreterTester!!!");
+        public void charge(int robotID) {
+            throw new NotImplementedException("InterpereterTester: charge() not implemented.");
+        }
+        public void beamKick(int robotID, bool somethign) {
+            throw new NotImplementedException("InterpereterTester: beamKick() not implemented.");
         }
 
         public void stop(int robotID)
         {
             throw new NotImplementedException("The method or operation is not implemented.");
-        }
-        public void charge(int i)
-        {
-            throw new NotImplementedException("not implemented");
         }
         public void moveKick(int i, Vector2 pt)
         {

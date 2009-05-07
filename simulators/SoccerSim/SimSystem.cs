@@ -85,12 +85,18 @@ namespace SoccerSim
             // refboxlistener
             //referee = new RefBoxState(_listener, _predictor, isYellow);
 
-            // create interpreter from file                                    _interpreter = new Interpreter(false, _predictor, _controller);            Dictionary<InterpreterPlay, string> plays = PlayUtils.loadPlays(PLAY_DIR);            _interpreter.LoadPlays(new List<InterpreterPlay>(plays.Keys));
+            // create interpreter from file
+            _interpreter = new Interpreter(false, _predictor, _controller);
+            Dictionary<InterpreterPlay, string> plays = PlayUtils.loadPlays(PLAY_DIR);
+            _interpreter.LoadPlays(new List<InterpreterPlay>(plays.Keys));
+
             running = false;
             if (wasRunning)
             {
                 start();
             }
+
+
 
             initialized = true;
         }

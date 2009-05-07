@@ -38,9 +38,9 @@ namespace SimplePathFollower
         public Interpreter Interpreter { get { return interpreter; } set { interpreter = value; } }
 
         public delegate void EndLapDelegate(bool success, bool invokeStop);
-        public EndLapDelegate OnEndLap;
+        public EndLapDelegate OnEndLap = null;
         public delegate void StartLapDelegate();
-        public StartLapDelegate OnStartLap;
+        public StartLapDelegate OnStartLap = null;
 
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
 
@@ -160,7 +160,7 @@ namespace SimplePathFollower
                     waypointIndex = (waypointIndex + 1) % waypoints.Count;
                 }
 			
-				System.Threading.Thread.Sleep(10);
+				System.Threading.Thread.Sleep(50);
             } while (running);
 
             return false;
@@ -175,7 +175,7 @@ namespace SimplePathFollower
             do {
 
                 interpreter.Kick(robotID, new Vector2(0, 0));
-                System.Threading.Thread.Sleep(10);
+                System.Threading.Thread.Sleep(50);
             } while (running);
         }
         public void BeamKick() {
@@ -185,7 +185,7 @@ namespace SimplePathFollower
             do {
 
                 interpreter.BeamKick(robotID, new Vector2(0, 0));
-                System.Threading.Thread.Sleep(10);
+                System.Threading.Thread.Sleep(50);
             } while (running);
         }
 

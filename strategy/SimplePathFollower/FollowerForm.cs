@@ -229,15 +229,18 @@ namespace SimplePathFollower {
                 }
             }
 
-            if (_stopwatch.ElapsedMilliseconds > 200) {
-                _fieldDrawerForm.Invalidate();
-                _stopwatch.Start();
-                _stopwatch.Reset();
-                _stopwatch.Start();
-            }
+            _fieldDrawerForm.Invalidate();
+            //if (_stopwatch.ElapsedMilliseconds > 200) {
+            //    _fieldDrawerForm.Invalidate();
+            //    _stopwatch.Start();
+            //    _stopwatch.Reset();
+            //    _stopwatch.Start();
+            //}
             lock (_drawingLock) {
-                if(_fieldDrawerForm != null)
+                if (_fieldDrawerForm != null) {
+                    _fieldDrawerForm.setPlayType(PlayTypes.Halt);
                     _pathFollower.drawCurrent(_fieldDrawerForm.CreateGraphics(), _converter);
+                }
                 //_pathFollower.clearArrows();
             }
 
