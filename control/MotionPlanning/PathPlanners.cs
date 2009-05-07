@@ -178,33 +178,7 @@ namespace Robocup.MotionControl
             // add direction to goal
             Vector2 directionToGoal = (end - start);
 
-            /*// KICK BALL HACK!
-            if (avoidBallRadius == 0.12) {
-                BallInfo ball = predictor.getBallInfo();
-                Vector2 ballPosition = ball.Position;
-                Vector2 ballVector = (ballPosition - currentState.Position);
-                double sqDistToBall = ballVector.magnitudeSq();
-                if (sqDistToBall < .2 && Math.Abs(ballVector.cartesianAngle() - currentState.Orientation) < .3) {
-                    Console.WriteLine("ACTIVATED!!!!!");
-                    List<Vector2> tempWaypoints = new List<Vector2>();
-                    lastWaypoint = start + ballVector.normalizeToLength(20);
-                    tempWaypoints.Add(lastWaypoint);
-
-                    return new RobotPath(id, tempWaypoints);
-                }
-            }
-
-            
-            // if close to the goal, use a little beyond that as a waypoint
-            if (directionToGoal.magnitudeSq() < WAYPOINT_DIST * WAYPOINT_DIST) {
-                List<Vector2> tempWaypoints = new List<Vector2>();
-                lastWaypoint = start + directionToGoal.normalizeToLength(Math.Sqrt(directionToGoal.magnitudeSq()) + EXTRA_GOAL_DIST);
-                tempWaypoints.Add(lastWaypoint);
-
-                return new RobotPath(id, tempWaypoints);
-            }*/
-
-            // if close to the goal, use that
+            // if close to the goal, decrease look ahead distance
             if (directionToGoal.magnitudeSq() < WAYPOINT_DIST * WAYPOINT_DIST) {
                 return new RobotPath(id, desiredState.Position);
             }

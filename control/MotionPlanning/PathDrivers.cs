@@ -168,10 +168,10 @@ namespace Robocup.MotionControl
             }
 
             //print speeds that are set
-            //Console.WriteLine(speeds.toString());
-            //Console.WriteLine(angle_diff.ToString());
-            //Console.WriteLine("Distance to goal squared: " +
-            //    currentState.Position.distanceSq(desiredState.Position).ToString());
+            Console.WriteLine(speeds.toString());
+            Console.WriteLine(angle_diff.ToString());
+            Console.WriteLine("Distance to goal squared: " +
+                currentState.Position.distanceSq(desiredState.Position).ToString());
 
             // return speeds as set
             return speeds;
@@ -305,7 +305,7 @@ namespace Robocup.MotionControl
             // Remember that this has been called
             called = true;
 
-            //Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());
+            Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());
 
             WheelSpeeds speeds;
             //get wheel speeds using appropriate method
@@ -348,8 +348,8 @@ namespace Robocup.MotionControl
             double angle_diff = UsefulFunctions.angleDifference(angle_to_goal, currentState.Orientation);
             double sqDistToGoal = currentState.Position.distanceSq(desiredState.Position);
 
-            //Console.WriteLine("ORIENTATION " + currentState.Orientation);
-            //Console.WriteLine("ANGLE DIFFERENCE " + angle_diff);
+            Console.WriteLine("ORIENTATION " + currentState.Orientation);
+            Console.WriteLine("ANGLE DIFFERENCE " + angle_diff);
 
             //If close enough, spin to face correct orientation and stop
             if (sqDistToGoal < STOP_DISTANCE * STOP_DISTANCE)
@@ -464,7 +464,7 @@ namespace Robocup.MotionControl
 
             double veerAmount = angular_loops.compute(goal_angle_difference, 0, id);
 
-            //Console.WriteLine("VEER AMOUNT: " + veerAmount);
+            Console.WriteLine("VEER AMOUNT: " + veerAmount);
 
             return addAngularVeer(regularSpeed, veerAmount);
         }
@@ -1319,7 +1319,6 @@ namespace Robocup.MotionControl
                 //If we are close enough to actual destination, use another (hopefully more precise) feedback loop.
                 else {
                     Console.WriteLine("Planning short distance");
-                    Console.WriteLine("Distance from goal: " + Math.Sqrt(wpDistanceSq));
                     wheelSpeeds = shortFeedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
 
                     //See NOTE above
