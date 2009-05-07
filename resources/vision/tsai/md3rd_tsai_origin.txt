@@ -1,0 +1,17 @@
+########## 800 x 600
+#TOP
+#double TSAI_ORIGIN_IMAGE_CENTER_X 803
+#double TSAI_ORIGIN_IMAGE_CENTER_Y 555
+#This is an offset we apply every time we generate an image lookup table ( = half Y-size)
+#double TSAI_TOP_OFFSET_Y 3025
+
+#BOTTOM 
+double TSAI_ORIGIN_IMAGE_CENTER_X 749
+double TSAI_ORIGIN_IMAGE_CENTER_Y 569
+double TSAI_TOP_OFFSET_Y 0
+
+#1024x768
+#BOTTOM
+double TSAI_ORIGIN_IMAGE_CENTER_X 862 
+double TSAI_ORIGIN_IMAGE_CENTER_Y 653
+double TSAI_TOP_OFFSET_Y 0
