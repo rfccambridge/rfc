@@ -1,5 +1,6 @@
 Metadata:
-type SetPlay_Theirs
+type NormalPlay
+name DEFENSE_3vs2
 score 100
 
 Objects:
@@ -31,7 +32,7 @@ twomanpt2 (circlecircleintersection circle1 ourgoalwideperim 1)
 
 goaliept (linecircleintersection closestenemyggoalline ourgoalcloseperim 1)
 
-goaliebot (closest-with-tags friendly ourgoal loose goalie)
+goaliebot (closest friendly ourgoal loose)
 goaliebotpt (pointof goaliebot)
 
 twomanbot1 (closest friendly twomanpt1 loose)
