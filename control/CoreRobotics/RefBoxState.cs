@@ -45,7 +45,7 @@ namespace Robocup.CoreRobotics
 
         public PlayTypes GetCurrentPlayType()
         {
-           if (_predictor.HasBallMoved()) {
+            if (_predictor.HasBallMoved()) {
                     playsToRun = PlayTypes.NormalPlay;                    
                     _predictor.ClearBallMark();
             }
@@ -58,9 +58,11 @@ namespace Robocup.CoreRobotics
                     case MulticastRefBoxListener.HALT:
                         // stop bots completely
                         playsToRun = PlayTypes.Halt;
+                        _predictor.ClearBallMark();
                         break;
                     case MulticastRefBoxListener.START:
                         playsToRun = PlayTypes.NormalPlay;
+                        _predictor.ClearBallMark();
                         break;
                     case MulticastRefBoxListener.CANCEL:
                     case MulticastRefBoxListener.STOP:
@@ -68,6 +70,7 @@ namespace Robocup.CoreRobotics
                     case MulticastRefBoxListener.TIMEOUT_YELLOW:
                         //go to stopped/waiting state
                         playsToRun = PlayTypes.Stopped;
+                        _predictor.ClearBallMark();
                         break;
                     case MulticastRefBoxListener.TIMEOUT_END_BLUE:
                     case MulticastRefBoxListener.TIMEOUT_END_YELLOW:
@@ -134,6 +137,7 @@ namespace Robocup.CoreRobotics
                         {
                             playsToRun = PlayTypes.PenaltyKick_Ours_Setup;
                         }
+                        _predictor.ClearBallMark();
                         break;
                     case MulticastRefBoxListener.PENALTY_YELLOW:
                         // penalty kick
@@ -146,6 +150,7 @@ namespace Robocup.CoreRobotics
                         {
                             playsToRun = PlayTypes.PenaltyKick_Ours_Setup;
                         }
+                        _predictor.ClearBallMark();
                         break;
                 }
             }
