@@ -185,12 +185,22 @@ namespace Robocup.MotionControl
 
             // get desired waypoint
             List<Vector2> obstaclePositions = new List<Vector2>();
+            List<double> obstacleSizes = new List<double>();
             foreach (RobotInfo info in predictor.getAllInfos())
             {
-                if (info.ID != id)
+                if (info.ID != id) {
                     obstaclePositions.Add(info.Position);
-                Console.WriteLine(info.ToString());
+                    obstacleSizes.Add(AVOID_DIST);
+                }
+                //Console.WriteLine(info.ToString());
             }
+
+            if (avoidBallRadius > 0){
+                Vector2 ballPosition = predictor.getBallInfo().Position;
+                obstaclePositions.Add(ballPosition);
+                obstacleSizes.Add(avoidBallRadius);
+            }
+
 
             finalDirection = finalDirection + directionToGoal;
 
@@ -207,9 +217,11 @@ namespace Robocup.MotionControl
             double angleAvoid;
 
             // remove impossible angles
-            foreach (Vector2 o in obstaclePositions) {
+            for (int i=0; i < obstaclePositions.Count; i++) {
+
+                Vector2 obstPos = obstaclePositions[i];
                 // get distance to obstacle
-                obstacleDist = start.distanceSq(o);
+                obstacleDist = start.distanceSq(obstPos);
 
                 // if it is too far away, don't worry
                 // HACK: can be same obstacle, so avoid changes that are way too low. This is a problem.
@@ -219,12 +231,12 @@ namespace Robocup.MotionControl
                 }
 
                 // get angle to obstacle
-                obstacleAngle = (o-start).cartesianAngle();
+                obstacleAngle = (obstPos-start).cartesianAngle();
                 angleDiff = UsefulFunctions.angleDifference(finalDirectionAngle, obstacleAngle);
 
                 // get amount around angle to avoid
                 // note- isn't perfect tangent
-                angleAvoid = Math.Atan(AVOID_DIST / obstacleDist);
+                angleAvoid = Math.Atan(obstacleSizes[i] / obstacleDist);
                 //Console.WriteLine("FINAL: " + finalDirectionAngle + " OBSTACLE: " + obstacleAngle);
                 //Console.WriteLine("Avoiding obstacle at distance " + obstacleDist);
                 //Console.WriteLine("Obstacle is at angle " + angleDiff);
