@@ -107,7 +107,7 @@ namespace Robocup.Plays
         }
         public void Bump(int robotID, Vector2 target) 
         {
-            actionInterpreter.Bump(robotID, target);
+            actionInterpreter.Bump(robotID, -target);
         }
         public void Move(int robotID, Vector2 target)
         {
