@@ -19,7 +19,7 @@ centercircle (circle center 0.7)
 
 ourgoalcloseperim (circle ourgoal 0.4)
 
-goaliebot (closest-with-tags friendly ourgoal loose goalie)
+goaliebot (closest friendly ourgoal loose)
 goaliebotpt (pointof goaliebot)
 
 centerbot (closest friendly center loose)

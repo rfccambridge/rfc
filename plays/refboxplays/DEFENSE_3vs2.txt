@@ -1,0 +1,48 @@
+Metadata:
+type NormalPlay
+name DEFENSE_3vs2
+score 100
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+theirgoal (point 3.13 0)
+ourgoal (point -3.13 0)
+middle_theirgoal (point 2 0)
+
+ourgoalwideperim (circle ourgoal 1.2)
+ourgoalcloseperim (circle ourgoal 0.4)
+
+ballpoint (pointof ball)
+ballgoalline (line ballpoint ourgoal)
+
+closestenemyg (closest enemy ourgoal loose)
+closestenemygpt (pointof closestenemyg)
+closestenemyggoalline (line closestenemygpt ourgoal)
+
+closestenemyb (closest enemy ballpoint loose)
+
+point1 (linecircleintersection ballgoalline ourgoalwideperim -1)
+circle1 (circle point1 0.11)
+twomanpt1 (circlecircleintersection circle1 ourgoalwideperim -1)
+twomanpt2 (circlecircleintersection circle1 ourgoalwideperim 1)
+
+goaliept (linecircleintersection closestenemyggoalline ourgoalcloseperim 1)
+
+goaliebot (closest friendly ourgoal loose)
+goaliebotpt (pointof goaliebot)
+
+twomanbot1 (closest friendly twomanpt1 loose)
+twomanbot1pt (pointof twomanbot1)
+
+twomanbot2 (closest friendly twomanpt2 loose)
+twomanbot2pt (pointof twomanbot2)
+
+Conditions:
+Actions:
+(if_Action (< (pointpointdistance goaliebotpt ballpoint) 0.15) (robotpointkick goaliebot theirgoal) (robotpointmove goaliebot goaliept))
+(if_Action (< (pointpointdistance twomanbot1pt ballpoint) 0.2) (robotpointkick twomanbot1 theirgoal) (robotpointmove twomanbot1 twomanpt1))
+(if_Action (< (pointpointdistance twomanbot2pt ballpoint) 0.2) (robotpointkick twomanbot2 theirgoal) (robotpointmove twomanbot1 twomanpt2))

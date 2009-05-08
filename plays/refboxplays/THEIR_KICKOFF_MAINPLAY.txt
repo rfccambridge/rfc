@@ -28,5 +28,6 @@ Actions:
 
 (if_Action (= numRobots 4) (assignPlay TH_KOFF_4x0) nothing)
 
-(if_Action (= numRobots 5) (assignPlay TH_KOFF_5x0) nothing)
+(if_Action (and (= numRobots 5) (< numTheir 3)) (assignPlay TH_KOFF_5x0) nothing)
+(if_Action (and (= numRobots 5) (>= numTheir 3)) (assignPlay TH_KOFF_5x3) nothing)
 

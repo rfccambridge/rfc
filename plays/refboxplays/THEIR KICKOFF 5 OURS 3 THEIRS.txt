@@ -1,7 +1,7 @@
 Metadata:
 type Kickoff_Theirs
 score 530
-name TH KICKOFF 5x3
+name TH_KOFF_5x3
 
 Objects:
 
@@ -36,7 +36,7 @@ centerenemypt (pointof centerenemy)
 topenemypt (pointof topenemy)
 bottomenemypt (pointof bottomenemy)
 
-goaliebot (closest-with-tags friendly ourgoal loose goalie)
+goaliebot (closest friendly ourgoal loose)
 goaliebotpt (pointof goaliebot)
 
 centerbot (closest friendly center loose)
