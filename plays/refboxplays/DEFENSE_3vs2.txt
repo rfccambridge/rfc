@@ -30,7 +30,13 @@ circle1 (circle point1 0.11)
 twomanpt1 (circlecircleintersection circle1 ourgoalwideperim -1)
 twomanpt2 (circlecircleintersection circle1 ourgoalwideperim 1)
 
-goaliept (linecircleintersection closestenemyggoalline ourgoalcloseperim 1)
+
+endtopgoalpt (point -2.85 2)
+endbottomgoalpt (point -2.85 -2)
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+goaliept (linelineintersection ballgoalline vertgoalline)
+goaltoppt (point -2.85 0.35)
+goalbotpt (point -2.85 -0.35)
 
 goaliebot (closest friendly ourgoal loose)
 goaliebotpt (pointof goaliebot)
@@ -43,6 +49,6 @@ twomanbot2pt (pointof twomanbot2)
 
 Conditions:
 Actions:
-(if_Action (< (pointpointdistance goaliebotpt ballpoint) 0.15) (robotpointkick goaliebot theirgoal) (robotpointmove goaliebot goaliept))
+(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointmove goaliebot goalbotpt) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointmove goaliebot goaltoppt) (robotpointmove goaliebot goaliept)))
 (if_Action (< (pointpointdistance twomanbot1pt ballpoint) 0.2) (robotpointkick twomanbot1 theirgoal) (robotpointmove twomanbot1 twomanpt1))
 (if_Action (< (pointpointdistance twomanbot2pt ballpoint) 0.2) (robotpointkick twomanbot2 theirgoal) (robotpointmove twomanbot1 twomanpt2))

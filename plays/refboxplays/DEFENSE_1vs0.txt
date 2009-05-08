@@ -4,29 +4,28 @@ name DEFENSE_1vs0
 score 150
 
 Objects:
-
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
 theirgoal (point 3.13 0)
 ourgoal (point -3.13 0)
-middle_theirgoal (point 2 0)
-
-numRobots (numourbots)
-
-ourgoalwideperim (circle ourgoal 0.7)
-ourgoalcloseperim (circle ourgoal 0.4)
 
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)
 
-goaliept (linecircleintersection ballgoalline ourgoalcloseperim -1)
+endtopgoalpt (point -2.85 2)
+endbottomgoalpt (point -2.85 -2)
 
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+
+goaliept (linelineintersection ballgoalline vertgoalline)
 goaliebot (closest friendly ourgoal loose)
 goaliebotpt (pointof goaliebot)
+goaltoppt (point -2.85 0.35)
+goalbotpt (point -2.85 -0.35)
 
 Conditions:
-
 Actions:
-(if_Action (< (pointpointdistance goaliebotpt ballpoint) 0.3) (robotpointkick goaliebot theirgoal) (robotpointmove goaliebot goaliept))
+(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointmove goaliebot goalbotpt) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointmove goaliebot goaltoppt) (robotpointmove goaliebot goaliept)))
+
