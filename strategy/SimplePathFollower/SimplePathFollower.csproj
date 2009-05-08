@@ -36,14 +36,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\strategy\SimplePathFollower\FollowerForm.cs">
-      <SubType>Form</SubType>
-      <Link>FollowerForm.cs</Link>
-    </Compile>
-    <Compile Include="..\..\strategy\SimplePathFollower\FollowerForm.Designer.cs">
-      <DependentUpon>FollowerForm.cs</DependentUpon>
-      <Link>FollowerForm.Designer.cs</Link>
-    </Compile>
     <Compile Include="FollowerForm.cs">
       <SubType>Form</SubType>
     </Compile>

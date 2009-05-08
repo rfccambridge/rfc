@@ -119,18 +119,23 @@ namespace Robocup.Utilities
 
         private void drawRobot(RobotInfo r, Color color, Graphics g)
         {
+            Vector2 offset;
+
             // draw robot
             Brush b = new SolidBrush(color);
             Vector2 center = converter.fieldtopixelPoint(r.Position);
             g.FillEllipse(b, (float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2), (float)(ROBOT_SIZE), (float)(ROBOT_SIZE));
+            g.DrawString(r.ID.ToString(), _font, new SolidBrush(Color.Red), 
+                (float)(center.X - ROBOT_SIZE / 3), (float)(center.Y - ROBOT_SIZE / 3));
             b.Dispose();
 
 
-            // draw velocity arrow            
+            // draw velocity arrow              
             if (r.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
             {
-                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();                                
-                Arrow velArrow = new Arrow(r.Position, r.Position + velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
+                offset = 0.04 * r.Velocity.normalize();
+                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();                
+                Arrow velArrow = new Arrow(r.Position + offset, r.Position+ velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
                 velArrow.drawConvertToPixels(g, converter);
             }
 
@@ -146,9 +151,11 @@ namespace Robocup.Utilities
             b.Dispose();
 
             // draw an arrow showing the robot orientation
-            Vector2 orientVect = new Vector2(Math.Cos(r.Orientation), Math.Sin(r.Orientation));
+            
+            Vector2 orientVect = new Vector2(Math.Cos(r.Orientation), Math.Sin(r.Orientation));            
             orientVect = orientVect.normalizeToLength(ORIENT_ARROW_LEN);
-            new Arrow(r.Position, r.Position + orientVect,
+            offset = 0.04 * orientVect.normalize();
+            new Arrow(r.Position + offset, r.Position + orientVect,
                 Color.Cyan, .04).drawConvertToPixels(g, converter);
 
             b = new SolidBrush(Color.GreenYellow);
@@ -164,17 +171,14 @@ namespace Robocup.Utilities
             }
             if (playNames.TryGetValue(r.ID, out playName)) {
                 g.DrawString(r.ID.ToString() + playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
-            }
-            else
-                g.DrawString(r.ID.ToString(), _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
-
-            b.Dispose();
-        }
+            } else {              g.DrawString(r.ID.ToString(), _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));            }   
+            b.Dispose();            
+    }
 
         public void paintField(Graphics g)
         {
             Color ourColor = (OUR_TEAM == Team.YELLOW) ? Color.Yellow : Color.Blue;
-            Color theirColor = (OUR_TEAM == Team.YELLOW) ? Color.Blue : Color.Yellow;            
+            //Color theirColor = (OUR_TEAM == Team.YELLOW) ? Color.Blue : Color.Yellow;            
 
             // Team color information
             g.DrawString(OUR_TEAM.ToString() + " PLAYER", _font, new SolidBrush(ourColor),
@@ -218,20 +222,17 @@ namespace Robocup.Utilities
             );
             p.Dispose();
 
-            List<RobotInfo> ourInfos = predictor.getOurTeamInfo();
-            foreach (RobotInfo r in ourInfos)
-            {
-                //drawRobotOurs(r, g, Color.Black);
-                drawRobot(r, ourColor, g);
+
+            List<RobotInfo> robots = new List<RobotInfo>();            
+            robots.AddRange(predictor.GetRobots(0));
+            robots.AddRange(predictor.GetRobots(1));
+
+            foreach (RobotInfo r in robots)
+            {                
+                Color color = (r.Team == 0) ? Color.Yellow : Color.Blue;
+                drawRobot(r, color, g);
             }
-            
-            List<RobotInfo> theirInfos = predictor.getTheirTeamInfo();
-            foreach (RobotInfo r in theirInfos)
-            {
-                //drawRobotTheirs(r, g, Color.Red);
-                drawRobot(r, theirColor, g);
-            }
-            
+                    
             // draw arrows
 
             lock (_arrowsLock)
@@ -249,9 +250,9 @@ namespace Robocup.Utilities
             }
 
             // draw ball
-            BallInfo ballInfo = predictor.getBallInfo();
+            BallInfo ballInfo = predictor.GetBall();
 
-            if (ballInfo != null && !double.IsNaN(ballInfo.Position.X)) {
+            if (ballInfo != null) {
 
                 Brush b = new SolidBrush(Color.Orange);
                 g.FillEllipse(

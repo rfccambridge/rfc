@@ -457,6 +457,9 @@ namespace VisionStatic
         public static float AREA_BLUE_CENTER_DOT;
         public static float ERROR_YELLOW_CENTER_DOT;
         public static float ERROR_BLUE_CENTER_DOT;
+        public static float DIM_MIN_CENTER_DOT, DIM_MAX_CENTER_DOT;
+        public static float ERROR_RATIO_CENTER_DOT;
+
         public static float AREA_BALL;
         public static float ERROR_BALL;
     	public static float MIN_BALL_DIST_FROM_ROBOT_SQ;
@@ -499,8 +502,13 @@ namespace VisionStatic
             AREA_YELLOW_CENTER_DOT = Constants.get<float>("vision", "AREA_YELLOW_CENTER_DOT");
             AREA_BLUE_CENTER_DOT = Constants.get<float>("vision", "AREA_BLUE_CENTER_DOT");
             ERROR_YELLOW_CENTER_DOT = Constants.get<float>("vision", "ERROR_YELLOW_CENTER_DOT");
-            ERROR_BLUE_CENTER_DOT = Constants.get<float>("vision", "ERROR_BLUE_CENTER_DOT");                
- 
+            ERROR_BLUE_CENTER_DOT = Constants.get<float>("vision", "ERROR_BLUE_CENTER_DOT");
+
+            DIM_MIN_CENTER_DOT = Constants.get<float>("vision", "DIM_MIN_CENTER_DOT");
+            DIM_MAX_CENTER_DOT = Constants.get<float>("vision", "DIM_MAX_CENTER_DOT");
+
+            ERROR_RATIO_CENTER_DOT = Constants.get<float>("vision", "ERROR_RATIO_CENTER_DOT");
+
             // Which center dots should be attempted to be identified?
             YELLOW_HAS_PATTERN = Constants.get<bool>("configuration", "YELLOW_HAS_PATTERN");
             BLUE_HAS_PATTERN = Constants.get<bool>("configuration", "BLUE_HAS_PATTERN");
@@ -853,8 +861,9 @@ namespace VisionStatic
 	        backOrientV = Vector.Add(pattern.ctrVectors[rl],pattern.ctrVectors[rr]);
 	        orientV = Vector.Subtract(frontOrientV, backOrientV);
 
-            orientV.Normalize();            
-            robot.Orientation = (float)Math.Atan2(orientV.Y, orientV.X);
+            orientV.Normalize();
+            int sign = orientV.Y < 0 ? -1 : 1;
+            robot.Orientation = sign * (float)Math.Atan2(orientV.Y, orientV.X);
             
             // POSITION
             double[] front = new double[2] {
@@ -1001,11 +1010,8 @@ namespace VisionStatic
                 // Collect center dots and ball
                 
                 // Is it a center dot and if so which one:
-                bool yellowCtrDot = (blobs[i].ColorClass == (byte)ColorClasses.COLOR_YELLOW_CENTER_DOT &&
-                    Math.Abs(blobs[i].AreaScaled - AREA_YELLOW_CENTER_DOT) < ERROR_YELLOW_CENTER_DOT);
-                    
-                bool blueCtrDot = (blobs[i].ColorClass == (byte)ColorClasses.COLOR_BLUE_CENTER_DOT &&
-                    Math.Abs(blobs[i].AreaScaled - AREA_BLUE_CENTER_DOT) < ERROR_BLUE_CENTER_DOT);
+                bool yellowCtrDot = isCenterDot(blobs[i], 0);                    
+                bool blueCtrDot = isCenterDot(blobs[i], 1);
                 
                 if (yellowCtrDot || blueCtrDot) {
                     // Put the center dot either into "with patterns" list or directly into vision message
@@ -1028,7 +1034,8 @@ namespace VisionStatic
                         if (addRobot) {
                               
                             VisionMessage.RobotData robotData = new VisionMessage.RobotData(
-                                (yellowCtrDot) ? nextIDforPatternlessYellow++ : nextIDforPatternlessBlue++, 
+                                //(yellowCtrDot) ? nextIDforPatternlessYellow++ : nextIDforPatternlessBlue++, 
+                                    -1,
                                     (yellowCtrDot) ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE,
                                     VisionToGeneralCoords(blobs[i].CenterWorldX, blobs[i].CenterWorldY), 0);
                             visionMessage.Robots.Add(robotData);
@@ -1183,38 +1190,43 @@ namespace VisionStatic
                     VisionToGeneralCoords(robot.X, robot.Y),
                     VisionToGeneralOrientation(robot.Orientation));
                 visionMessage.Robots.Add(robotData);
+            }
 
-                //Check if possible ball isn't too near to center of robot 
-                //obviously a wrong blob -> should be discarded
+
+            #endregion 
+
+            Ball goBall = null;
+
+            //Check if possible ball isn't too near to center of robot 
+            //obviously a wrong blob -> should be discarded
+            foreach (VisionMessage.RobotData robot in visionMessage.Robots)
+            {
                 for (int i = 0; i < ballBlobs.Count; i++)
                 {
                     int ind = ballBlobs[i];
                     if (ind == -1) continue;
                     Vector2 tmpBallPosition = new Vector2(blobs[ind].CenterWorldX, blobs[ind].CenterWorldY);
-                    if (tmpBallPosition.distanceSq(new Vector2(robot.X, robot.Y)) < MIN_BALL_DIST_FROM_ROBOT_SQ)
+                    if (tmpBallPosition.distanceSq(GeneralToVisionCoords(robot.Position)) < MIN_BALL_DIST_FROM_ROBOT_SQ)
                         //discard this ball blob
                         ballBlobs[i] = -1;
                 }
             }
-            #endregion 
-
-            Ball goBall = null;
-			double currBallAreaError;
-			double bestBallAreaError = 1000; //initally a ridiculously big number
+            
+            double currBallAreaError;			
 
             double wx = 0;
             double wy = 0;
+            double maxBallArea = -1;
             foreach(int i in ballBlobs)
             {
-				if (i == -1) continue;
-				currBallAreaError = Math.Abs(blobs[i].AreaScaled - AREA_BALL);
-				if (currBallAreaError < ERROR_BALL && currBallAreaError < bestBallAreaError)
+				if (i == -1) continue;				
+                if (blobs[i].AreaScaled > maxBallArea)
 				{
 					tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, BALL_HEIGHT_TSAI, out wx, out wy);
 					//tsaiCalibrator.ImageCoordToWorldCoord(blobs[i].CenterX, blobs[i].CenterY, (wx - 2100) / 10, out wx, out wy);
 					goBall = new Vision.Ball(wx, wy, blobs[i].CenterX, blobs[i].CenterY);
 					//goBall = new Ball(blobs[i].CenterWorldX, blobs[i].CenterWorldY, blobs[i].CenterX, blobs[i].CenterY);
-					bestBallAreaError = currBallAreaError;
+                    maxBallArea = blobs[i].AreaScaled;
 				}
             }
 						
@@ -1225,6 +1237,33 @@ namespace VisionStatic
             }
 
             return visionMessage;
+        }
+
+        /// <summary>
+        /// Determine if blob is a center dot (of a given color) based on the blob scaled area
+        /// and its bounding box.
+        /// </summary>
+        /// <param name="blob"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        static private bool isCenterDot(Blob blob, int color)
+        {
+            byte[] colors = new byte[] { (byte)ColorClasses.COLOR_YELLOW_CENTER_DOT,
+                                          (byte)ColorClasses.COLOR_BLUE_CENTER_DOT };
+            double[] areas = new double[] { AREA_YELLOW_CENTER_DOT,
+                                            AREA_BLUE_CENTER_DOT };
+            double[] areaErrors = new double[] { ERROR_YELLOW_CENTER_DOT, 
+                                                 ERROR_BLUE_CENTER_DOT };
+            double width = blob.Right - blob.Left;
+            double height = blob.Bottom - blob.Top;
+
+            return blob.ColorClass == colors[color] &&
+                   Math.Abs(blob.AreaScaled - areas[color]) < areaErrors[color] &&
+                   width < DIM_MAX_CENTER_DOT &&
+                   width > DIM_MIN_CENTER_DOT &&
+                   height < DIM_MAX_CENTER_DOT &&
+                   height > DIM_MIN_CENTER_DOT &&
+                   Math.Abs(1 - ((float)width) / height) < ERROR_RATIO_CENTER_DOT;
         }
 
         // Vision coord system  (units: mm)

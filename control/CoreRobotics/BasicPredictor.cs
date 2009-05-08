@@ -376,7 +376,6 @@ namespace Robocup.CoreRobotics
                 default:
                     return ballInfo;
             }
-            return ballInfo;
         }
 
         public List<RobotInfo> GetRobots(int team)
