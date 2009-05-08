@@ -862,8 +862,12 @@ namespace VisionStatic
 	        orientV = Vector.Subtract(frontOrientV, backOrientV);
 
             orientV.Normalize();
+            
+            robot.Orientation = (float)Math.Atan2(orientV.Y, orientV.X);
+
             int sign = orientV.Y < 0 ? -1 : 1;
-            robot.Orientation = sign * (float)Math.Atan2(orientV.Y, orientV.X);
+            if (sign < 0)
+                robot.Orientation += 2 * Math.PI;
             
             // POSITION
             double[] front = new double[2] {
