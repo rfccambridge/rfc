@@ -186,7 +186,7 @@ namespace Robocup.CoreRobotics
                 beamKick(robotID, false);
             }
 
-            Console.WriteLine("KickPlanner sent back speeds of " + wheelSpeeds.toString());
+            //Console.WriteLine("KickPlanner sent back speeds of " + wheelSpeeds.toString());
 
             Commander.setMotorSpeeds(robotID, wheelSpeeds);
         }

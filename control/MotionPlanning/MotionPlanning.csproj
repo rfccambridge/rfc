@@ -42,7 +42,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Feedback.cs" />
     <Compile Include="KickPlanners.cs" />
-    <Compile Include="NavigationPlanner.cs" />
+    <Compile Include="Properties\NavigationPlanner.cs" />
     <Compile Include="NewPlanners.cs" />
     <Compile Include="NumberRange.cs" />
     <Compile Include="PathDrivers.cs" />

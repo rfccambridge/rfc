@@ -117,7 +117,7 @@ namespace Robocup.CoreRobotics
                 packet.setVals(so.buffer);
                 /*Console.WriteLine("command: " + packet.cmd + " counter: " + packet.cmd_counter
                     + " blue: " + packet.goals_blue + " yellow: " + packet.goals_yellow+
-                    " time left: " + packet.time_remaining);*/
+                    " time left: " + packet.time_remaining);//*/
                 
             }
 
