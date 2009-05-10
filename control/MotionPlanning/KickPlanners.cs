@@ -70,8 +70,11 @@ namespace Robocup.MotionControl
 
         int[] saturation_counters;
 
+        bool spinSatisfied = false;
+
         // Planner for spinning
-        DirectRobotSpinner spinplanner;
+        //DirectRobotSpinner spinplanner;
+        PIDRobotSpinner spinplanner;
 
         public FeedbackVeerKickPlanner(IMotionPlanner regularPlanner)
         {
@@ -82,7 +85,7 @@ namespace Robocup.MotionControl
 
             this.regularPlanner = regularPlanner;
             loop = new PIDLoop("kickplanning", "point1orientation");
-            spinplanner = new DirectRobotSpinner();
+            spinplanner = new PIDRobotSpinner();
 
             saturation_counters = new int[NUM_ROBOTS];
 
@@ -107,6 +110,9 @@ namespace Robocup.MotionControl
             RobotInfo thisrobot = predictor.getCurrentInformation(id);
             BallInfo ballinfo = predictor.getBallInfo();
             Vector2 ball = ballinfo.Position;
+
+            Vector2 robotToBall = ball - thisrobot.Position;
+
             double distRobotToBall = Math.Sqrt(ball.distanceSq(thisrobot.Position));
 
             Vector2 ballToTarget = target - ball;
@@ -115,10 +121,13 @@ namespace Robocup.MotionControl
 
             // Define points to go to at different stages
             Vector2 p1 = extend(target, ball, DIST_BEHIND_BALL);
-            Vector2 p2 = extend(thisrobot.Position, ball, DIST_THROUGH_BALL);
+            //Vector2 p2 = extend(thisrobot.Position, ball, DIST_THROUGH_BALL);
             //Vector2 p2 = ball;
-            //Vector2 p2 = extend(target, ball, -DIST_THROUGH_BALL);
-            double desiredOrientation = ballToTarget.cartesianAngle();
+            Vector2 p2 = extend(target, ball, -DIST_THROUGH_BALL);
+            //double desiredOrientation = ballToTarget.cartesianAngle();
+
+            // CHANGE!
+            double desiredOrientation = robotToBall.cartesianAngle();
 
             double distToPoint1 = Math.Sqrt(thisrobot.Position.distanceSq(p1));
 
@@ -143,7 +152,7 @@ namespace Robocup.MotionControl
             // switch to go to point 2
             double diffOrientation = UsefulFunctions.angleDifference(desiredOrientation, thisrobot.Orientation);
 
-            Console.WriteLine("diffOrientation: " + diffOrientation);
+            //Console.WriteLine("diffOrientation: " + diffOrientation);
 
             bool pointCloseTranslate = (distToPoint1 <= MAX_DIST_MOVE_TRANSLATE_POINT_1);
             bool pointClose = (distToPoint1 <= MAX_DIST_POINT_1);
@@ -163,16 +172,23 @@ namespace Robocup.MotionControl
             // first use IRobotSpinner to correct orientation
             //if (pointCloseLateral && !orientationCorrect)
 
-
-            //Ben commented this out
-            if (pointClose && !orientationCorrect && goingToPoint1)
+            Console.WriteLine(" orientationDiff " + diffOrientation + "Robot position: " + thisrobot.Position + " ball position " + ball);
+            
+            // spin robot to correct orientation
+            if (pointClose && (!orientationCorrect) && goingToPoint1)
             {
+                Console.WriteLine("SPINNING: distance is " + distToPoint1 + "\t Angle difference is " + diffOrientation);
                 speeds = spinplanner.spinTo(id, desiredOrientation, MAX_DIFF_ORIENTATION_POINT_1, predictor);
                 //RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
                 //speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
                 // DO NOT CHARGE WHILE SPINNING
                 return new KickPlanningResults(speeds, false);
             }
+            if (pointClose && goingToPoint1) {
+                //spinSatisfied = true;
+                //return new KickPlanningResults(new WheelSpeeds(), false);
+            }
+            
 
             // if orientation is correct, move laterally
             /*if (pointCloseLateral && !pointClose && orientationCorrect)
@@ -209,7 +225,6 @@ namespace Robocup.MotionControl
             {
                 if (saturation_counters[id] >= SATURATION_LIMIT) {
                     goingToPoint1 = false;
-                    Console.WriteLine("IN RANGE!!! Orientation diff is " + diffOrientation);
                 }
                 else {
                     goingToPoint1 = true;
@@ -220,6 +235,8 @@ namespace Robocup.MotionControl
             {
                 goingToPoint1 = true;
                 saturation_counters[id] = 0;
+
+                spinSatisfied = false;
             }
 
             // go to the appropriate point
