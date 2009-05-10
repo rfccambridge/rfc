@@ -16,8 +16,11 @@ numRobots (numourbots)
 
 nothing (nullAction)
 
+#navigateAction (if_Action (= numRobots 1) (assignPlay NAVIGATE_1) (if_Action (= numRobots 2) (assignPlay NAVIGATE_2) (if_Action (= numRobots 3) (assignPlay NAVIGATE_3) nothing)))
+navigateAction (assignPlay NAVIGATE_1)
+
 Conditions:
 
 Actions:
 
-(if_Action true (assignPlay NAVIGATE) (assignPlay KICK))
+(if_Action true navigateAction (assignPlay KICK))
