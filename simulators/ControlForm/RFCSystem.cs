@@ -75,10 +75,11 @@ namespace Robocup.ControlForm
             }
         }
 
-        public void setRefBoxListener() {
+        public void setRefBoxListener(string addr) {
             if (running) return;
 
-            _refbox.setReferee(new MulticastRefBoxListener(REFBOX_ADDR, REFBOX_PORT));
+
+            _refbox.setReferee(new MulticastRefBoxListener(addr, REFBOX_PORT));
         }
 
         public void initialize()

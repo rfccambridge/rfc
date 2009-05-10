@@ -41,7 +41,13 @@ namespace Robocup.ControlForm {
             this.btnLogNext = new System.Windows.Forms.Button();
             this.btnLogOpenClose = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtRobotID = new System.Windows.Forms.TextBox();
             this.btnStartStopLogging = new System.Windows.Forms.Button();
+            this.txtRefbox = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btnRefbox = new System.Windows.Forms.Button();
+            this.lblRefbox = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -112,7 +118,7 @@ namespace Robocup.ControlForm {
             // 
             // rfcStart
             // 
-            this.rfcStart.Location = new System.Drawing.Point(21, 174);
+            this.rfcStart.Location = new System.Drawing.Point(22, 267);
             this.rfcStart.Name = "rfcStart";
             this.rfcStart.Size = new System.Drawing.Size(162, 21);
             this.rfcStart.TabIndex = 7;
@@ -124,7 +130,7 @@ namespace Robocup.ControlForm {
             // 
             this.rfcStatus.AutoSize = true;
             this.rfcStatus.BackColor = System.Drawing.Color.Red;
-            this.rfcStatus.Location = new System.Drawing.Point(110, 157);
+            this.rfcStatus.Location = new System.Drawing.Point(111, 250);
             this.rfcStatus.Name = "rfcStatus";
             this.rfcStatus.Size = new System.Drawing.Size(70, 13);
             this.rfcStatus.TabIndex = 29;
@@ -133,7 +139,7 @@ namespace Robocup.ControlForm {
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(18, 157);
+            this.label4.Location = new System.Drawing.Point(19, 250);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(62, 13);
             this.label4.TabIndex = 28;
@@ -184,48 +190,111 @@ namespace Robocup.ControlForm {
             // 
             // btnLogNext
             // 
-            this.btnLogNext.Location = new System.Drawing.Point(6, 78);
+            this.btnLogNext.Location = new System.Drawing.Point(7, 100);
             this.btnLogNext.Name = "btnLogNext";
             this.btnLogNext.Size = new System.Drawing.Size(75, 23);
             this.btnLogNext.TabIndex = 13;
             this.btnLogNext.Text = "Next Entry";
             this.btnLogNext.UseVisualStyleBackColor = true;
+            this.btnLogNext.Click += new System.EventHandler(this.btnLogNext_Click);
             // 
             // btnLogOpenClose
             // 
-            this.btnLogOpenClose.Location = new System.Drawing.Point(6, 48);
+            this.btnLogOpenClose.Location = new System.Drawing.Point(7, 70);
             this.btnLogOpenClose.Name = "btnLogOpenClose";
             this.btnLogOpenClose.Size = new System.Drawing.Size(75, 23);
             this.btnLogOpenClose.TabIndex = 15;
             this.btnLogOpenClose.Text = "Open log";
             this.btnLogOpenClose.UseVisualStyleBackColor = true;
+            this.btnLogOpenClose.Click += new System.EventHandler(this.btnLogOpenClose_Click);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.txtRobotID);
             this.groupBox1.Controls.Add(this.btnLogNext);
             this.groupBox1.Controls.Add(this.btnStartStopLogging);
             this.groupBox1.Controls.Add(this.btnLogOpenClose);
             this.groupBox1.Location = new System.Drawing.Point(190, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(91, 113);
+            this.groupBox1.Size = new System.Drawing.Size(91, 132);
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Logging";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 22);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(50, 13);
+            this.label3.TabIndex = 17;
+            this.label3.Text = "RobotID:";
+            // 
+            // txtRobotID
+            // 
+            this.txtRobotID.Location = new System.Drawing.Point(54, 15);
+            this.txtRobotID.Name = "txtRobotID";
+            this.txtRobotID.Size = new System.Drawing.Size(27, 20);
+            this.txtRobotID.TabIndex = 16;
+            this.txtRobotID.Text = "0";
+            // 
             // btnStartStopLogging
             // 
-            this.btnStartStopLogging.Location = new System.Drawing.Point(7, 19);
+            this.btnStartStopLogging.Location = new System.Drawing.Point(8, 41);
             this.btnStartStopLogging.Name = "btnStartStopLogging";
             this.btnStartStopLogging.Size = new System.Drawing.Size(75, 23);
             this.btnStartStopLogging.TabIndex = 14;
             this.btnStartStopLogging.Text = "Start log";
             this.btnStartStopLogging.UseVisualStyleBackColor = true;
+            this.btnStartStopLogging.Click += new System.EventHandler(this.btnStartStopLogging_Click);
+            // 
+            // txtRefbox
+            // 
+            this.txtRefbox.Location = new System.Drawing.Point(21, 183);
+            this.txtRefbox.Name = "txtRefbox";
+            this.txtRefbox.Size = new System.Drawing.Size(70, 20);
+            this.txtRefbox.TabIndex = 31;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(19, 167);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(44, 13);
+            this.label6.TabIndex = 32;
+            this.label6.Text = "Refbox:";
+            // 
+            // btnRefbox
+            // 
+            this.btnRefbox.Location = new System.Drawing.Point(105, 182);
+            this.btnRefbox.Name = "btnRefbox";
+            this.btnRefbox.Size = new System.Drawing.Size(73, 20);
+            this.btnRefbox.TabIndex = 33;
+            this.btnRefbox.Text = "Connect";
+            this.btnRefbox.UseVisualStyleBackColor = true;
+            this.btnRefbox.Visible = false;
+            this.btnRefbox.Click += new System.EventHandler(this.btnRefbox_Click);
+            // 
+            // lblRefbox
+            // 
+            this.lblRefbox.AutoSize = true;
+            this.lblRefbox.BackColor = System.Drawing.Color.Red;
+            this.lblRefbox.Location = new System.Drawing.Point(108, 167);
+            this.lblRefbox.Name = "lblRefbox";
+            this.lblRefbox.Size = new System.Drawing.Size(70, 13);
+            this.lblRefbox.TabIndex = 34;
+            this.lblRefbox.Text = "                     ";
             // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(294, 211);
+            this.ClientSize = new System.Drawing.Size(294, 300);
+            this.Controls.Add(this.lblRefbox);
+            this.Controls.Add(this.btnRefbox);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.txtRefbox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.visionBottomConnect);
             this.Controls.Add(this.visionBottomStatus);
@@ -244,8 +313,9 @@ namespace Robocup.ControlForm {
             this.Controls.Add(this.visionTopHost);
             this.KeyPreview = true;
             this.Name = "ControlForm";
-            this.Text = "ControlForm";            
+            this.Text = "ControlForm";
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -272,5 +342,11 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Button btnLogOpenClose;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnStartStopLogging;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txtRobotID;
+        private System.Windows.Forms.TextBox txtRefbox;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnRefbox;
+        private System.Windows.Forms.Label lblRefbox;
     }
 }

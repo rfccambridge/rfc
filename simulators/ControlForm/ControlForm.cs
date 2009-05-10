@@ -20,6 +20,7 @@ namespace Robocup.ControlForm {
 
         bool visionTopConnected = false;
         bool visionBottomConnected = false;
+        bool refboxConnected = false;
 
         VisionMessage.Team OUR_TEAM;
 
@@ -66,6 +67,7 @@ namespace Robocup.ControlForm {
             visionTopHost.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_TOP");
             visionBottomHost.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_BOTTOM");
             serialHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SERIAL");
+            txtRefbox.Text = Constants.get<string>("default", "REFBOX_ADDR");
 
             btnLogNext.Enabled = false;
 
@@ -292,7 +294,7 @@ namespace Robocup.ControlForm {
                     MessageBox.Show("System running. Need to stop system to set refbox listener.");
                     return false;
                 }
-                _system.setRefBoxListener();
+                _system.setRefBoxListener(txtRefbox.Text);
                 Console.WriteLine("Refbox listener set.");
             }
 
@@ -423,6 +425,30 @@ namespace Robocup.ControlForm {
         }
 
         #endregion
+
+        private void btnRefbox_Click(object sender, EventArgs e) {
+            try {
+                if (!refboxConnected) {                    
+                    _system.setRefBoxListener(txtRefbox.Text);
+                    lblRefbox.BackColor = Color.Green;
+                    btnRefbox.Text = "Disconnect";
+                    refboxConnected = true;
+                }
+                else {
+                    //_visionTop.Close();
+
+                    lblRefbox.BackColor = Color.Red;
+                    btnRefbox.Text = "Connect";
+                    refboxConnected = false;
+                }
+            }
+            catch (Exception except) {
+                MessageBox.Show("Problem connecting to refbox on host: " + txtRefbox.Text);
+                Console.WriteLine("Problem connecting to refbox: " + except.ToString());
+                Console.WriteLine(except.StackTrace);
+            }
+            
+        }
 
     }
 
