@@ -573,11 +573,6 @@ namespace Robocup.Plays
                 return (double)session[(string)objects[0]];
             });
 
-            addFunction("getSessionRobot", "String", "Get session robot ~", typeof(Robot), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return (Robot)session[(string)objects[0]];
-            });
-
             addFunction("getSessionPoint", "String", "Get session point ~", typeof(Vector2), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
                 return (Vector2)session[(string)objects[0]];
