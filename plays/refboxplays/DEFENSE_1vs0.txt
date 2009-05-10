@@ -14,16 +14,16 @@ ourgoal (point -3.13 0)
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)
 
-endtopgoalpt (point -2.85 2)
-endbottomgoalpt (point -2.85 -2)
+endtopgoalpt (point -2.65 2)
+endbottomgoalpt (point -2.65 -2)
 
 vertgoalline (line endtopgoalpt endbottomgoalpt)
 
 goaliept (linelineintersection ballgoalline vertgoalline)
 goaliebot (closest friendly ourgoal loose)
 goaliebotpt (pointof goaliebot)
-goaltoppt (point -2.85 0.35)
-goalbotpt (point -2.85 -0.35)
+goaltoppt (point -2.65 0.35)
+goalbotpt (point -2.65 -0.35)
 
 Conditions:
 Actions:
