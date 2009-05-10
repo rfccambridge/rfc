@@ -106,6 +106,10 @@ namespace Robocup.CoreRobotics
             start();
         }
 
+        void CloseListener() {
+
+        }
+
         void ReceiveRefboxPacket(IAsyncResult result)
         {
             StateObject so = (StateObject)result.AsyncState;
