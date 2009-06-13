@@ -206,9 +206,7 @@ namespace Robocup.MotionControl
         double LB_orientation;
         double RB_orientation;*/
 
-        double LOOK_AHEAD_DISTANCE;
-
-        bool called = false;
+        //double LOOK_AHEAD_DISTANCE;        
 
         double ANGLE_AXIS_TO_WHEEL;
         WheelSpeeds forwardSpeeds;
@@ -219,7 +217,7 @@ namespace Robocup.MotionControl
         MultiRobotPIDLoop loops = new MultiRobotPIDLoop("motionplanning", "VEER", NUM_ROBOTS);
         MultiRobotPIDLoop angular_loops = new MultiRobotPIDLoop("motionplanning", "ANGULAR_VEER", NUM_ROBOTS);
 
-        bool alreadySpinning = false;
+        bool alreadySpinning = false;        
 
         Vector2 lastWayPoint;
 
@@ -301,9 +299,6 @@ namespace Robocup.MotionControl
 
             lastWayPoint = path.findNearestWaypoint(currentState).Position;
             RobotInfo waypointState = new RobotInfo(lastWayPoint, 0, path.ID);
-
-            // Remember that this has been called
-            called = true;
 
             Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());
 
@@ -616,9 +611,7 @@ namespace Robocup.MotionControl
         double LB_orientation;
         double RB_orientation;*/
 
-        double LOOK_AHEAD_DISTANCE;
-
-        bool called = false;
+        //double LOOK_AHEAD_DISTANCE;        
 
         double ANGLE_AXIS_TO_WHEEL;
         WheelSpeeds forwardSpeeds;
@@ -628,8 +621,6 @@ namespace Robocup.MotionControl
         // PID loops
         MultiRobotPIDLoop loops = new MultiRobotPIDLoop("motionplanning", "VEER", NUM_ROBOTS);
         MultiRobotPIDLoop angular_loops = new MultiRobotPIDLoop("motionplanning", "ANGULAR_VEER", NUM_ROBOTS);
-
-        bool alreadySpinning = false;
 
         Vector2 lastWayPoint;
 
@@ -711,9 +702,6 @@ namespace Robocup.MotionControl
 
             lastWayPoint = path.findNearestWaypoint(currentState).Position;
             RobotInfo waypointState = new RobotInfo(lastWayPoint, 0, path.ID);
-
-            // Remember that this has been called
-            called = true;
 
             //Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());
 
@@ -871,11 +859,7 @@ namespace Robocup.MotionControl
         double LF_orientation;
         double LB_orientation;
         double RB_orientation;*/
-
-        double LOOK_AHEAD_DISTANCE;
-
-        bool called = false;
-
+        
         double ANGLE_AXIS_TO_WHEEL;
         WheelSpeeds forwardSpeeds;
         WheelSpeeds CWSpeeds;
@@ -885,9 +869,7 @@ namespace Robocup.MotionControl
         MultiRobotPIDLoop loops = new MultiRobotPIDLoop("motionplanning", "DEFAULT", NUM_ROBOTS);
         MultiRobotPIDLoop angular_loops = new MultiRobotPIDLoop("motionplanning", "DEFAULT", NUM_ROBOTS);
 
-        bool alreadySpinning = false;
-
-        Vector2 lastWayPoint;
+        Vector2 lastWayPoint;        
 
         public DefaultDriver()
         {
@@ -970,12 +952,7 @@ namespace Robocup.MotionControl
 
             lastWayPoint = desiredState.Position;
 
-            // Remember that this has been called
-            called = true;
-
-            Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());
-
-            
+            Console.WriteLine("WAYPOINT: " + lastWayPoint.ToString());          
 
             WheelSpeeds speeds;
             //get wheel speeds using appropriate method
@@ -1032,22 +1009,19 @@ namespace Robocup.MotionControl
                 WheelSpeeds veerSpeeds = getVeer(angle_diff, sqDistToGoal, id);
                 //Console.WriteLine("Going forward: " + veerSpeeds.toString());
                 speeds = veerSpeeds;
-                alreadySpinning = false;
             }
 
             // if angle is too far off, go CW or CCW
             else if (angle_diff >= 0)
             {
                 //Console.WriteLine("Going CW: " + CWSpeeds.toString());
-                speeds = CWSpeeds;
-                alreadySpinning = true;
+                speeds = CWSpeeds;                
             }
 
             else if (angle_diff < 0)
             {
                 //Console.WriteLine("Going CCW: " + CCWSpeeds.toString());
-                speeds = CCWSpeeds;
-                alreadySpinning = true;
+                speeds = CCWSpeeds;                
             }
 
             return speeds;

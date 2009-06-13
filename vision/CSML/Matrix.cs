@@ -2182,6 +2182,7 @@ namespace CSML
         {
             throw new NotImplementedException("Still buggy!");
 
+#if false
             if (!this.IsSPD())
                 throw new InvalidOperationException("CG method only works for spd matrices.");
             else if (!this.IsReal())
@@ -2232,6 +2233,7 @@ namespace CSML
 
                 return x;
             }
+#endif
         }
 
         /// <summary>
@@ -2266,6 +2268,7 @@ namespace CSML
 
             throw new NotImplementedException("Still buggy!");
 
+#if false
             if (!this.IsSquare())
                 throw new InvalidOperationException("Cannot perform QR iteration of non-square matrix.");
 
@@ -2286,6 +2289,7 @@ namespace CSML
             }
 
             return T;
+#endif
         }
 
         /// <summary>
@@ -2297,7 +2301,7 @@ namespace CSML
         {
 
             throw new NotImplementedException("Still buggy!");
-
+#if false
             Matrix H = this.Clone();
             int m = H.RowCount;
             int n = H.ColumnCount;
@@ -2315,6 +2319,7 @@ namespace CSML
             }
 
             return new Matrix[] { GivProd(c, s, n), H, c, s };
+#endif
         }
 
         /// <summary>

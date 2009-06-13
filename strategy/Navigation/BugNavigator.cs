@@ -19,12 +19,12 @@ namespace Navigation
             int[] roundsSinceTrace = new int[TEAMSIZE];
             Vector2[] lastDestination = new Vector2[TEAMSIZE];
             Vector2 lastPoint;
-            bool called = false;
+            
             double angleSweep = .01; //.1
             double avoidRobotDist = .28;
             double extraAvoidBallDist = .1;
             double lookAheadDist = .4;//.18;//.18; //.15
-            double getCloserAmount = .1;
+            //double getCloserAmount = .1;    
 
             public BugNavigator()
             {
@@ -209,9 +209,6 @@ namespace Navigation
 
                     // save last point
                     lastPoint = extend(position, direction);
-
-                    // called is now true
-                    called = true;
 
                     return new NavigationResults(lastPoint);
                 }

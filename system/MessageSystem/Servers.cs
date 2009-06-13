@@ -20,7 +20,7 @@ namespace Robocup.MessageSystem
         {
             Console.Write("creating new MessageListener...");
 
-            listener = new TcpListener(portNum);
+            listener = new TcpListener(System.Net.IPAddress.Any, portNum);
             listener.Start();
 
             Console.WriteLine("created!");

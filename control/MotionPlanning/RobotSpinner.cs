@@ -72,12 +72,12 @@ namespace Robocup.MotionControl
     /// Spins using a PID loop on orientation
     /// </summary>
     public class PIDRobotSpinner {
-        int DIRECT_SPIN_SPEED;
+        //int DIRECT_SPIN_SPEED;
         //double STOP_WITHIN_ORIENTATION;
 
-        WheelSpeeds CWSpeeds;
-        WheelSpeeds CCWSpeeds;
-
+        //WheelSpeeds CWSpeeds;
+        //WheelSpeeds CCWSpeeds;
+        
         MultiRobotPIDLoop loops;
 
         int PID_SPINNER_FEED_FORWARD;

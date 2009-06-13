@@ -349,7 +349,7 @@ namespace Robocup.CoreRobotics
                     bool doNotAdd = false;
                     for (sightingsIdx = 0; sightingsIdx < robotSightings.Count; sightingsIdx++)
                     {
-                        int sIdx = -1, sIdxByID = -1, sIdxByPos = -1;
+                        int sIdx = -1;
                         sIdx = robotSightings[sightingsIdx].FindIndex(matchByPosPredicate);
                         
                         // If position matches, but ID doesn't, the new robot is on top of one we already saw
@@ -482,30 +482,30 @@ namespace Robocup.CoreRobotics
         // TO BE REMOVED
         public BallInfo getBallInfo()
         {
-            return GetBall() ?? new BallInfo(new Vector2(0,0));
+            //return GetBall() ?? new BallInfo(new Vector2(0,0));
             throw new NotImplementedException("unimplemented");
         }
         public List<RobotInfo> getOurTeamInfo()
         {
-            return GetRobots(0);
+            //return GetRobots(0);
             throw new NotImplementedException("unimplemented");
         }
         public List<RobotInfo> getTheirTeamInfo()
         {
-            return GetRobots(1);
+            //return GetRobots(1);
             throw new NotImplementedException("unimplemented");
         }
         public RobotInfo getCurrentInformation(int id)
         {
-            return GetRobot(0,id);
+            //return GetRobot(0,id);
             throw new NotImplementedException("unimplemented");
         }
         public List<RobotInfo> getAllInfos()
         {
-            List<RobotInfo> combined = new List<RobotInfo>();
-            combined.AddRange(GetRobots(0));
-            combined.AddRange(GetRobots(1));
-            return combined;
+            //List<RobotInfo> combined = new List<RobotInfo>();
+            //combined.AddRange(GetRobots(0));
+            //combined.AddRange(GetRobots(1));
+            //return combined;
             throw new NotImplementedException("unimplemented");
         }        
 

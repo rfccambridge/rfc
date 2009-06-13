@@ -149,7 +149,7 @@ namespace Robocup.Plays
             {
                 mainplay = getPlay(plays, "main");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // no main play
                 return new SelectorResults(rtnActions, assignments);

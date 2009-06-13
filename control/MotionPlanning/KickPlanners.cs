@@ -62,15 +62,11 @@ namespace Robocup.MotionControl
 
         private DateTime[] _timesStartedCharging = new DateTime[5]; //number of robots
 
-        PIDLoop loop;
-
-        bool usingRegularPlanner = true;
+        PIDLoop loop;        
 
         int SATURATION_LIMIT;
 
         int[] saturation_counters;
-
-        bool spinSatisfied = false;
 
         // Planner for spinning
         //DirectRobotSpinner spinplanner;
@@ -236,7 +232,7 @@ namespace Robocup.MotionControl
                 goingToPoint1 = true;
                 saturation_counters[id] = 0;
 
-                spinSatisfied = false;
+               
             }
 
             // go to the appropriate point
@@ -246,7 +242,6 @@ namespace Robocup.MotionControl
                 speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
                 //why was regular Planner being used here? it seems inconsistent, sometimes using one instance of the bugNavigator and sometimes another.
                     //regularPlanner.PlanMotion(id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
-                usingRegularPlanner = true;
             }
             else
             {
@@ -256,8 +251,7 @@ namespace Robocup.MotionControl
                 //speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
 
                 // FOR NOW!!! Go forwards rather than use PID feedback. Meant to fix forward curving problem
-                //speeds = new WheelSpeeds(10, 10, 10, 10);
-                usingRegularPlanner = false;
+                //speeds = new WheelSpeeds(10, 10, 10, 10);                
                 breakBeamOn = true;
             }
 

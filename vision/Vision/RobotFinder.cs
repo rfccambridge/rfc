@@ -1214,9 +1214,7 @@ namespace VisionStatic
                         //discard this ball blob
                         ballBlobs[i] = -1;
                 }
-            }
-            
-            double currBallAreaError;			
+            }                       
 
             double wx = 0;
             double wy = 0;
