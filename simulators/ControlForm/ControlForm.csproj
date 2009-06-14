@@ -107,6 +107,10 @@
       <Name>Utilities</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\vision\SSLClientWrapper\SSLClientWrapper.vcproj">
+      <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>
+      <Name>SSLClientWrapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\vision\Vision\Vision.csproj">
       <Project>{08383292-7063-4436-ADE4-CCD3AD048D46}</Project>
       <Name>Vision</Name>

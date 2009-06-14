@@ -48,6 +48,7 @@ namespace Robocup.ControlForm {
             this.label6 = new System.Windows.Forms.Label();
             this.btnRefbox = new System.Windows.Forms.Button();
             this.lblRefbox = new System.Windows.Forms.Label();
+            this.btnSSLVision = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -286,11 +287,22 @@ namespace Robocup.ControlForm {
             this.lblRefbox.TabIndex = 34;
             this.lblRefbox.Text = "                     ";
             // 
+            // btnSSLVision
+            // 
+            this.btnSSLVision.Location = new System.Drawing.Point(207, 265);
+            this.btnSSLVision.Name = "btnSSLVision";
+            this.btnSSLVision.Size = new System.Drawing.Size(75, 23);
+            this.btnSSLVision.TabIndex = 35;
+            this.btnSSLVision.Text = "SSL Vision";
+            this.btnSSLVision.UseVisualStyleBackColor = true;
+            this.btnSSLVision.Click += new System.EventHandler(this.btnSSLVision_Click);
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(294, 300);
+            this.Controls.Add(this.btnSSLVision);
             this.Controls.Add(this.lblRefbox);
             this.Controls.Add(this.btnRefbox);
             this.Controls.Add(this.label6);
@@ -348,5 +360,6 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnRefbox;
         private System.Windows.Forms.Label lblRefbox;
+        private System.Windows.Forms.Button btnSSLVision;
     }
 }

@@ -12,9 +12,11 @@ using Robocup.CoreRobotics;
 using Robocup.Plays;
 
 using Vision;
+
 namespace Robocup.ControlForm {
-    
-    public partial class ControlForm : Form{
+
+    public partial class ControlForm : Form
+    {
         bool serialConnected = false;
         RemoteRobots _serial;
 
@@ -25,10 +27,10 @@ namespace Robocup.ControlForm {
         VisionMessage.Team OUR_TEAM;
 
         int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
-        
+
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionTop;
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionBottom;
-        
+
         FieldDrawerForm drawer;
         PlaySelectorForm playSelectorForm;
 
@@ -55,7 +57,8 @@ namespace Robocup.ControlForm {
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
 
-        public ControlForm() {
+        public ControlForm()
+        {
             InitializeComponent();
 
             LoadConstants();
@@ -79,13 +82,14 @@ namespace Robocup.ControlForm {
         }
 
         public void LoadConstants()
-        {            
-            OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? 
+        {
+            OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ?
                 VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
             LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
         }
 
-        private void createSystem() {
+        private void createSystem()
+        {
             _serial = new RemoteRobots();
             _system = new RFCSystem();
 
@@ -99,13 +103,13 @@ namespace Robocup.ControlForm {
             drawer = new FieldDrawerForm(_predictor);
             converter = drawer.Converter;
             drawer.Show();
-            
+
             // add serial commander
             _system.registerCommander(_serial);
 
             // todo
             _system.initialize();
-            _system.reloadPlays();          
+            _system.reloadPlays();
 
             drawer.drawer.ourPlayNames = _system.getInterpreter().ourPlayNames;
             drawer.drawer.theirPlayNames = _system.getInterpreter().theirPlayNames;
@@ -114,14 +118,16 @@ namespace Robocup.ControlForm {
             playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
         }
 
-        private void handleVisionUpdateTop(VisionMessage msg) {
+        private void handleVisionUpdateTop(VisionMessage msg)
+        {
             handleVisionUpdate(msg, TOP_CAMERA);
         }
 
-        private void handleVisionUpdateBottom(VisionMessage msg) {
+        private void handleVisionUpdateBottom(VisionMessage msg)
+        {
             handleVisionUpdate(msg, BOTTOM_CAMERA);
         }
-        
+
         /*private void handleVisionUpdate(VisionMessage msg, string cameraName) {
                   
             lock (predictor_lock)
@@ -137,8 +143,9 @@ namespace Robocup.ControlForm {
             }
          }*/
 
-        private void handleVisionUpdate(VisionMessage msg, String cameraName) {
-          
+        private void handleVisionUpdate(VisionMessage msg, String cameraName)
+        {
+
             List<RobotInfo> ours = new List<RobotInfo>();
             List<RobotInfo> theirs = new List<RobotInfo>();
 
@@ -153,11 +160,13 @@ namespace Robocup.ControlForm {
             {
                 _predictor.updatePartOurRobotInfo(ours, cameraName);
                 _predictor.updatePartTheirRobotInfo(theirs, cameraName);
-                if (msg.Ball != null) {
+                if (msg.Ball != null)
+                {
                     //Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
                     _predictor.updateBallInfo(new BallInfo(msg.Ball.Position));
                 }
-                else {
+                else
+                {
                     _predictor.updateBallInfo(null);
                 }
             }
@@ -171,27 +180,34 @@ namespace Robocup.ControlForm {
             }
         }
 
-        private void visionTopConnect_Click(object sender, EventArgs e) {
-            try {
-                if (!visionTopConnected) {
+        private void visionTopConnect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!visionTopConnected)
+                {
                     _visionTop = Robocup.MessageSystem.Messages.CreateClientReceiver<Robocup.Core.VisionMessage>(visionTopHost.Text, MESSAGE_SENDER_PORT);
                     _visionTop.MessageReceived += new Robocup.MessageSystem.ReceiveMessageDelegate<VisionMessage>(handleVisionUpdateTop);
 
                     visionTopStatus.BackColor = Color.Green;
                     visionTopConnect.Text = "Disconnect";
-                    visionTopConnected = true;      
-                } else {
+                    visionTopConnected = true;
+                }
+                else
+                {
                     _visionTop.Close();
                     visionTopStatus.BackColor = Color.Red;
                     visionTopConnect.Text = "Connect";
                     visionTopConnected = false;
                 }
-            } catch (Exception except) {
+            }
+            catch (Exception except)
+            {
                 MessageBox.Show("Problem connecting to vision on host: " + visionTopHost.Text);
                 Console.WriteLine("Problem connecting to vision: " + except.ToString());
                 Console.WriteLine(except.StackTrace);
             }
-            
+
         }
         private void visionBottomConnect_Click(object sender, EventArgs e)
         {
@@ -249,31 +265,39 @@ namespace Robocup.ControlForm {
             }
 
         }
-        
-        private void rfcStart_Click(object sender, EventArgs e) {
-            if (!systemStarted) {
+
+        private void rfcStart_Click(object sender, EventArgs e)
+        {
+            if (!systemStarted)
+            {
                 _system.start();
                 rfcStatus.BackColor = Color.Green;
                 rfcStart.Text = "Stop";
                 systemStarted = true;
-            } else {
+            }
+            else
+            {
                 _system.stop();
                 rfcStatus.BackColor = Color.Red;
                 rfcStart.Text = "Start";
                 systemStarted = false;
             }
         }
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            if (keyData == (Keys.Control | Keys.R)) {
-                if (systemStarted) {
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.R))
+            {
+                if (systemStarted)
+                {
                     MessageBox.Show("System running. Need to stop system to reload contants.");
                     return false;
                 }
 
                 Constants.Load();
-                
+
                 LoadConstants();
-                if (_predictor is BasicPredictor) {
+                if (_predictor is BasicPredictor)
+                {
                     ((BasicPredictor)_predictor).LoadConstants();
                 }
                 //else if (_predictor is AveragingPredictor)
@@ -283,14 +307,16 @@ namespace Robocup.ControlForm {
 
                 _system.LoadConstants();
                 _system.reloadPlays();
-                
+
                 playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
-                
+
                 Console.WriteLine("Constants and plays reloaded.");
             }
 
-            if (keyData == (Keys.Control | Keys.C)) {
-                if (systemStarted) {
+            if (keyData == (Keys.Control | Keys.C))
+            {
+                if (systemStarted)
+                {
                     MessageBox.Show("System running. Need to stop system to set refbox listener.");
                     return false;
                 }
@@ -299,10 +325,11 @@ namespace Robocup.ControlForm {
             }
 
             return false;
-        }        
+        }
 
         #region Logging
-        private void loggingInit() {
+        private void loggingInit()
+        {
             // Logging
             _logReader = new LogReader();
             _logPredictor = new StaticPredictor();
@@ -325,16 +352,19 @@ namespace Robocup.ControlForm {
             timer.Start();
         }
 
-        private void InvalidateTimerHanlder(object obj, EventArgs e) {
+        private void InvalidateTimerHanlder(object obj, EventArgs e)
+        {
             _logFieldDrawer.Invalidate();
         }
 
-        private void btnLogNext_Click(object sender, EventArgs e) {
+        private void btnLogNext_Click(object sender, EventArgs e)
+        {
 
-            if (!_logReader.LogOpen) {
+            if (!_logReader.LogOpen)
+            {
                 MessageBox.Show("Log file not open.");
                 return;
-            }            
+            }
 
             if (!_logFieldDrawer.Visible)
                 _logFieldDrawer.Show();
@@ -371,26 +401,30 @@ namespace Robocup.ControlForm {
 
         }
 
-        private void btnStartStopLogging_Click(object sender, EventArgs e) {
+        private void btnStartStopLogging_Click(object sender, EventArgs e)
+        {
             /*if (!(_pathFollower.Planner is ILogger))
             {
                 MessageBox.Show("Selected MotionPlanner does not implement ILogger interface.");
                 return;
             }*/
 
-            if (logging) {
+            if (logging)
+            {
                 logging = false;
                 btnStartStopLogging.Text = "Start log";
                 btnLogOpenClose.Enabled = true;
             }
-            else {
+            else
+            {
                 logging = true;
                 btnStartStopLogging.Text = "Stop log";
                 btnLogOpenClose.Enabled = false;
             }
 
             // if enabled, start motion planner's logging
-            if (_system.Controller is RFCController && ((RFCController)_system.Controller).Planner is ILogger) {
+            if (_system.Controller is RFCController && ((RFCController)_system.Controller).Planner is ILogger)
+            {
                 ILogger logger = ((RFCController)_system.Controller).Planner as ILogger;
 
                 //COMMENTED OUT- problems with designer...
@@ -407,14 +441,17 @@ namespace Robocup.ControlForm {
             }
         }
 
-        private void btnLogOpenClose_Click(object sender, EventArgs e) {            
-            if (_logReader.LogOpen) {
+        private void btnLogOpenClose_Click(object sender, EventArgs e)
+        {
+            if (_logReader.LogOpen)
+            {
                 _logReader.CloseLogFile();
                 btnLogOpenClose.Text = "Open log";
                 btnLogNext.Enabled = false;
                 btnStartStopLogging.Enabled = true;
             }
-            else {
+            else
+            {
                 _logReader.OpenLogFile(LOG_FILE, _logLineFormat);
                 btnLogOpenClose.Text = "Close log";
                 btnLogNext.Enabled = true;
@@ -426,15 +463,19 @@ namespace Robocup.ControlForm {
 
         #endregion
 
-        private void btnRefbox_Click(object sender, EventArgs e) {
-            try {
-                if (!refboxConnected) {                    
+        private void btnRefbox_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!refboxConnected)
+                {
                     _system.setRefBoxListener(txtRefbox.Text);
                     lblRefbox.BackColor = Color.Green;
                     btnRefbox.Text = "Disconnect";
                     refboxConnected = true;
                 }
-                else {
+                else
+                {
                     //_visionTop.Close();
 
                     lblRefbox.BackColor = Color.Red;
@@ -442,16 +483,146 @@ namespace Robocup.ControlForm {
                     refboxConnected = false;
                 }
             }
-            catch (Exception except) {
+            catch (Exception except)
+            {
                 MessageBox.Show("Problem connecting to refbox on host: " + txtRefbox.Text);
                 Console.WriteLine("Problem connecting to refbox: " + except.ToString());
                 Console.WriteLine(except.StackTrace);
             }
+
+        }
+
+
+        void printRobotInfo(SSLVision.SSL_DetectionRobotManaged robot)
+        {
+            Console.Write(String.Format("CONF={0,4:F2} ", robot.confidence()));
+            if (robot.has_robot_id())
+            {
+                Console.Write(String.Format("ID={0,3:G} ", robot.robot_id()));
+            }
+            else
+            {
+                Console.Write(String.Format("ID=N/A "));
+            }
+            Console.Write(String.Format(" HEIGHT={0,6:F2} POS=<{1,9:F2},{2,9:F2}> ", robot.height(), robot.x(), robot.y()));
+            if (robot.has_orientation())
+            {
+                Console.Write(String.Format("ANGLE={0,6:F3} ", robot.orientation()));
+            }
+            else
+            {
+                Console.Write(String.Format("ANGLE=N/A    "));
+            }
+            Console.Write(String.Format("RAW=<{0,8:F2},{1,8:F2}>\n", robot.pixel_x(), robot.pixel_y()));
+        }
+
+        private void btnSSLVision_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("Starting..");
+            SSLVision.SSL_WrapperPacketManaged packet = new SSLVision.SSL_WrapperPacketManaged();
+            SSLVision.RoboCupSSLClientManaged client = new SSLVision.RoboCupSSLClientManaged();
+            client.open(true);            
             
+            while(true) {
+                if (client.receive(packet)) {
+                Console.Write(String.Format("-----Received Wrapper Packet---------------------------------------------\n"));
+            //see if the packet contains a robot detection frame:
+            if (packet.has_detection()) {
+                SSLVision.SSL_DetectionFrameManaged detection = packet.detection();
+                //Display the contents of the robot detection results:
+                //double t_now = GetTimeSec();
+				double t_now = 0;
+
+                Console.Write(String.Format("-[Detection Data]-------\n"));
+                //Frame info:
+                Console.Write(String.Format("Camera ID={0:G} FRAME={1:G} T_CAPTURE={2:F4}\n",detection.camera_id(),detection.frame_number(),detection.t_capture()));
+
+                Console.Write(String.Format("SSL-Vision Processing Latency                   {0,7:F3}ms\n",(detection.t_sent()-detection.t_capture())*1000.0));
+                Console.Write(String.Format("Network Latency (assuming synched system clock) {0,7:F3}ms\n", (t_now - detection.t_sent()) * 1000.0));
+                Console.Write(String.Format("Total Latency   (assuming synched system clock) {0,7:F3}ms\n", (t_now - detection.t_capture()) * 1000.0));
+                int balls_n = detection.balls_size();
+                int robots_blue_n =  detection.robots_blue_size();
+                int robots_yellow_n =  detection.robots_yellow_size();
+
+                //Ball info:
+                for (int i = 0; i < balls_n; i++) {
+                    SSLVision.SSL_DetectionBallManaged ball = detection.balls(i);
+                    Console.Write(String.Format("-Ball ({0,2:G}/{1,2:G}): CONF={2,4:F2} POS=<{3,9:F2},{4,9:F2}> ", i+1, balls_n, ball.confidence(),ball.x(),ball.y()));
+                    if (ball.has_z()) {
+                        Console.Write(String.Format("Z={0,7:F2} ",ball.z()));
+                    } else {
+                        Console.Write(String.Format("Z=N/A   "));
+                    }
+                    Console.Write(String.Format("RAW=<{0,8:F2},{1,8:F2}>\n",ball.pixel_x(),ball.pixel_y()));
+                }
+
+                //Blue robot info:
+                for (int i = 0; i < robots_blue_n; i++) {
+                    SSLVision.SSL_DetectionRobotManaged robot = detection.robots_blue(i);
+                    Console.Write(String.Format("-Robot(B) ({0,2:G}/{1,2:G}): ",i+1, robots_blue_n));
+                    printRobotInfo(robot);
+                }
+
+                //Yellow robot info:
+                for (int i = 0; i < robots_yellow_n; i++) {
+                    SSLVision.SSL_DetectionRobotManaged robot = detection.robots_yellow(i);
+                    Console.Write(String.Format("-Robot(Y) ({0,2:G}/{1,2:G}): ", i + 1, robots_yellow_n));
+                    printRobotInfo(robot);
+                }
+
+            }
+
+            //see if packet contains geometry data:
+            if (packet.has_geometry()) {
+                SSLVision.SSL_GeometryDataManaged geom = packet.geometry();
+                Console.Write(String.Format("-[Geometry Data]-------\n"));
+
+                SSLVision.SSL_GeometryFieldSizeManaged field = geom.field();
+                Console.Write(String.Format("Field Dimensions:\n"));
+                Console.Write(String.Format("  -line_width={0:G} (mm)\n",field.line_width()));
+                Console.Write(String.Format("  -field_length={0:G} (mm)\n",field.field_length()));
+                Console.Write(String.Format("  -field_width={0:G} (mm)\n", field.field_width()));
+                Console.Write(String.Format("  -boundary_width={0:G} (mm)\n",field.boundary_width()));
+                Console.Write(String.Format("  -referee_width={0:G} (mm)\n",field.referee_width()));
+                Console.Write(String.Format("  -goal_width={0:G} (mm)\n",field.goal_width()));
+                Console.Write(String.Format("  -goal_depth={0:G} (mm)\n",field.goal_depth()));
+                Console.Write(String.Format("  -goal_wall_width={0:G} (mm)\n",field.goal_wall_width()));
+                Console.Write(String.Format("  -center_circle_radius={0:G} (mm)\n",field.center_circle_radius()));
+                Console.Write(String.Format("  -defense_radius={0:G} (mm)\n",field.defense_radius()));
+                Console.Write(String.Format("  -defense_stretch={0:G} (mm)\n",field.defense_stretch()));
+                Console.Write(String.Format("  -free_kick_from_defense_dist={0:G} (mm)\n",field.free_kick_from_defense_dist()));
+                Console.Write(String.Format("  -penalty_spot_from_field_line_dist={0:G} (mm)\n",field.penalty_spot_from_field_line_dist()));
+                Console.Write(String.Format("  -penalty_line_from_spot_dist={0:G} (mm)\n",field.penalty_line_from_spot_dist()));
+
+                int calib_n = geom.calib_size();
+                for (int i=0; i< calib_n; i++) {
+                    SSLVision.SSL_GeometryCameraCalibrationManaged calib = geom.calib(i);
+                    Console.Write(String.Format("Camera Geometry for Camera ID {0:G}:\n", calib.camera_id()));
+                    Console.Write(String.Format("  -focal_length={0:F2}\n",calib.focal_length()));
+                    Console.Write(String.Format("  -principal_point_x={0:F2}\n",calib.principal_point_x()));
+                    Console.Write(String.Format("  -principal_point_y={0:F2}\n",calib.principal_point_y()));
+                    Console.Write(String.Format("  -distortion={0:F2}\n",calib.distortion()));
+                    Console.Write(String.Format("  -q0={0:F2}\n",calib.q0()));
+                    Console.Write(String.Format("  -q1={0:F2}\n",calib.q1()));
+                    Console.Write(String.Format("  -q2={0:F2}\n",calib.q2()));
+                    Console.Write(String.Format("  -q3={0:F2}\n",calib.q3()));
+                    Console.Write(String.Format("  -tx={0:F2}\n",calib.tx()));
+                    Console.Write(String.Format("  -ty={0:F2}\n",calib.ty()));
+                    Console.Write(String.Format("  -tz={0:F2}\n",calib.tz()));
+
+                    if (calib.has_derived_camera_world_tx() && calib.has_derived_camera_world_ty() && calib.has_derived_camera_world_tz()) {
+                      Console.Write(String.Format("  -derived_camera_world_tx={0:F}\n",calib.derived_camera_world_tx()));
+                      Console.Write(String.Format("  -derived_camera_world_ty={0:F}\n",calib.derived_camera_world_ty()));
+                      Console.Write(String.Format("  -derived_camera_world_tz={0:F}\n",calib.derived_camera_world_tz()));
+                    }
+
+                }
+            }
+        }
+    }
         }
 
     }
-
     public class RemoteRobots : IRobots {
         int SERIAL_SENDER_PORT = Constants.get<int>("ports", "RemoteControlPort");
         Robocup.MessageSystem.MessageSender<Robocup.Core.RobotCommand> _serial;
