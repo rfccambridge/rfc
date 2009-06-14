@@ -30,6 +30,7 @@
 #include "robocup_ssl_client.h"
 
 using namespace std;
+using namespace System::Runtime::InteropServices;
 /**
 	@author Author Name
 */
@@ -44,9 +45,17 @@ public:
 		m_pRoboCupSSLClient = new RoboCupSSLClient();
 	}
     RoboCupSSLClientManaged(int port,
-                     string net_ref_address,
-					 string net_ref_interface) {
-		m_pRoboCupSSLClient = new RoboCupSSLClient(port, net_ref_address, net_ref_interface);
+		System::String *net_ref_address,
+		System::String *net_ref_interface) {
+		char *str;
+		str = (char*)(void*)Marshal::StringToHGlobalAnsi(net_ref_address);
+		string net_ref_address_str(str);
+		Marshal::FreeHGlobal(str);
+		str = (char*)(void*)Marshal::StringToHGlobalAnsi(net_ref_interface);
+		string net_ref_interface_str(str);
+		Marshal::FreeHGlobal(str);
+		
+		m_pRoboCupSSLClient = new RoboCupSSLClient(port, net_ref_address_str, net_ref_interface_str);
 	}
 
 	
