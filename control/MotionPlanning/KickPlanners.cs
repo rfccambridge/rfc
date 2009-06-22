@@ -72,6 +72,8 @@ namespace Robocup.MotionControl
         //DirectRobotSpinner spinplanner;
         PIDRobotSpinner spinplanner;
 
+        private int team;
+
         public FeedbackVeerKickPlanner(IMotionPlanner regularPlanner)
         {
             //why is this here?! it's passed a tangent bug planner, just like dumbPlanner (terrible naming conventiosn by the way)
@@ -103,8 +105,10 @@ namespace Robocup.MotionControl
             bool breakBeamOn = false;
 
             // find characteristics of field
-            RobotInfo thisrobot = predictor.getCurrentInformation(id);
-            BallInfo ballinfo = predictor.getBallInfo();
+            ///RobotInfo thisrobot = predictor.getCurrentInformation(id);
+            //BallInfo ballinfo = predictor.getBallInfo();
+            RobotInfo thisrobot = predictor.GetRobot(team, id);
+            BallInfo ballinfo = predictor.GetBall();
             Vector2 ball = ballinfo.Position;
 
             Vector2 robotToBall = ball - thisrobot.Position;
@@ -322,7 +326,12 @@ namespace Robocup.MotionControl
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
-            regularPlanner.LoadConstants();            slowPlanner.LoadConstants();            spinplanner.ReloadConstants();            loop.ReloadConstants();
+            regularPlanner.LoadConstants();
+            slowPlanner.LoadConstants();            
+            spinplanner.ReloadConstants();
+            loop.ReloadConstants();
+
+            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
 
         /// <summary>

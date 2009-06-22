@@ -1234,13 +1234,15 @@ namespace Robocup.MotionControl
         private Feedback[] shortFeedbackObjs;
         public Feedback GetShortFeedbackObj(int robotID) { return shortFeedbackObjs[robotID]; }
 
-        const int NUM_ROBOTS = 5;
+        const int NUM_ROBOTS = 10;
 
         private double MIN_SQ_DIST_TO_WP;
         private double MIN_ANGLE_DIFF_TO_WP;
         private int LOG_EVERY_MSEC;
 
         public double PLANNER_WAYPOINT_DISTANCE;
+
+        private int team;
 
         public PositionFeedbackDriver() {
 
@@ -1264,7 +1266,8 @@ namespace Robocup.MotionControl
 
             RobotInfo curInfo;
             try {
-                curInfo = predictor.getCurrentInformation(id);
+                //curInfo = predictor.getCurrentInformation(id);
+                curInfo = predictor.GetRobot(team, id);
             }
             catch (ApplicationException e) {
                 throw e;
@@ -1337,6 +1340,8 @@ namespace Robocup.MotionControl
 
             MIN_SQ_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_SQ_DIST_TO_WP");
             MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
+
+            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
 
         #region ILogger

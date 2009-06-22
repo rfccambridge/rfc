@@ -34,29 +34,36 @@ namespace Robocup.Plays
 
         public List<RobotInfo> getOurTeamInfo()
         {
-            return predictor.getOurTeamInfo().ConvertAll<RobotInfo>(flipRobotInfo);
+            //return predictor.getOurTeamInfo().ConvertAll<RobotInfo>(flipRobotInfo);
+            throw new NotImplementedException("not implemented");
         }
 
         public List<RobotInfo> getTheirTeamInfo()
         {
-            return predictor.getTheirTeamInfo().ConvertAll<RobotInfo>(flipRobotInfo);
+            //return predictor.getTheirTeamInfo().ConvertAll<RobotInfo>(flipRobotInfo);
+            throw new NotImplementedException("not implemented");
         }
 
         public List<RobotInfo> getAllInfos()
         {
-            return predictor.getAllInfos().ConvertAll<RobotInfo>(flipRobotInfo);
+            //return predictor.getAllInfos().ConvertAll<RobotInfo>(flipRobotInfo);
+            throw new NotImplementedException("not implemented");
         }
 
         public BallInfo getBallInfo()
         {
-            BallInfo info = predictor.getBallInfo();
-            return new BallInfo(-info.Position, -info.Velocity);
+            //BallInfo info = predictor.getBallInfo();
+            //return new BallInfo(-info.Position, -info.Velocity);
+            throw new NotImplementedException("not implemented");
         }
 
         // TO REPLACE THE ABOVE
         public List<RobotInfo> GetRobots(int team)
         {
-            throw new NotImplementedException("not implemented");
+            return predictor.GetRobots(team).ConvertAll<RobotInfo>(flipRobotInfo);
+        }
+        public List<RobotInfo> GetRobots() {
+            return predictor.GetRobots().ConvertAll<RobotInfo>(flipRobotInfo);
         }
         public RobotInfo GetRobot(int team, int id)
         {
@@ -64,7 +71,11 @@ namespace Robocup.Plays
         }
         public BallInfo GetBall()
         {
-            throw new NotImplementedException("not implemented");
+            BallInfo info = predictor.GetBall();
+            if (info == null)
+                return null;
+
+            return new BallInfo(-info.Position, -info.Velocity);
         }
 
         public void SetBallMark() {
@@ -175,6 +186,10 @@ namespace Robocup.Plays
         {
             throw new NotImplementedException("not implemented");
         }
+        public List<RobotInfo> GetRobots() {
+            throw new NotImplementedException("not implemented");
+        }
+        
         public RobotInfo GetRobot(int team, int id)
         {
             throw new NotImplementedException("not implemented");

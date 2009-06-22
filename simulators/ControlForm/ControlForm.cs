@@ -33,6 +33,7 @@ namespace Robocup.ControlForm
         int sslVisionPort;
 
         VisionMessage.Team OUR_TEAM;
+        double MIN_BALL_CONFIDENCE;
 
         int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
 
@@ -96,6 +97,7 @@ namespace Robocup.ControlForm
             OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ?
                 VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
             LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
+            MIN_BALL_CONFIDENCE = Constants.get<double>("default", "MIN_BALL_CONFIDENCE");
         }
 
         private void createSystem()
@@ -614,7 +616,9 @@ namespace Robocup.ControlForm
                         }
                         if (verbose) Console.Write(String.Format("RAW=<{0,8:F2},{1,8:F2}>\n", ball.pixel_x(), ball.pixel_y()));
 
-                        msg.Ball = new BallInfo(ConvertFromSSLVisionCoords(new Vector2(ball.x(), ball.y())));
+                        if (ball.has_confidence() && ball.confidence() > MIN_BALL_CONFIDENCE) {
+                            msg.Ball = new BallInfo(ConvertFromSSLVisionCoords(new Vector2(ball.x(), ball.y())));
+                        }
                     }
 
                     //Blue robot info:

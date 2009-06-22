@@ -124,6 +124,7 @@ namespace Robocup.Core {
         //returns information about the robots (position, velocity, orientation)
         //we don't care where it got its information from
         List<RobotInfo> GetRobots(int team);
+        List<RobotInfo> GetRobots();
 
         RobotInfo GetRobot(int team, int id);
         /// <summary>

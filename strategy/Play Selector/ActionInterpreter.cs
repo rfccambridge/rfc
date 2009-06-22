@@ -17,10 +17,13 @@ namespace Robocup.Plays
         private IController commander;
         private IPredictor predictor;
 
+        private int team;
+
         public ActionInterpreter(IController commander, IPredictor predictor)
         {
             this.commander = commander;
             this.predictor = predictor;
+            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
 
         
@@ -37,10 +40,13 @@ namespace Robocup.Plays
             this.ballLeading = ballLead;
             this.distanceTolerance = distTolerance;
             this.angleTolerance = angleTolerance;
+
+            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
         private RobotInfo getOurRobotFromID(int robotID)
         {            
-                return predictor.getCurrentInformation(robotID);
+            //return predictor.getCurrentInformation(robotID);
+            return predictor.GetRobot(team, robotID);
         }
 
         public void Dribble(int robotID, Vector2 target)
@@ -246,7 +252,8 @@ namespace Robocup.Plays
             BallInfo ballinfo;
             try {
                 thisrobot = getOurRobotFromID(robotID);
-                ballinfo = predictor.getBallInfo();
+                //ballinfo = predictor.getBallInfo();
+                ballinfo = predictor.GetBall();
                 ball = ballinfo.Position;
             }
             catch (ApplicationException) {

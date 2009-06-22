@@ -115,6 +115,9 @@ namespace Robocup.Simulation
         {
             throw new NotImplementedException("not implemented");
         }
+        public List<RobotInfo> GetRobots() {
+            throw new NotImplementedException("not implemented");
+        }
         public RobotInfo GetRobot(int team, int id)
         {
             throw new NotImplementedException("not implemented");

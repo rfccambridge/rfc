@@ -49,11 +49,14 @@ namespace Robocup.ControlForm
 
         private int _sleepTime;
         private bool isYellow;
+        private int team;
         bool IS_OUR_GOAL_LEFT;
 
         int REFBOX_PORT;
         string REFBOX_ADDR;
         string PLAY_DIR;
+
+
         
 
         public RFCSystem()
@@ -67,12 +70,15 @@ namespace Robocup.ControlForm
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
             _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
             isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
+            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
             IS_OUR_GOAL_LEFT = Constants.get<bool>("plays", "IS_OUR_GOAL_LEFT");
 
             if (_controller != null)
             {
                 _controller.LoadConstants();
             }
+
+
         }
 
         public void setRefBoxListener(string addr) {
@@ -254,7 +260,7 @@ namespace Robocup.ControlForm
                 //stop the timer:
                 t.Enabled = false;
                 _refbox.stop();
-                foreach (RobotInfo info in Predictor.getOurTeamInfo())
+                foreach (RobotInfo info in Predictor.GetRobots(team))
                 {
                     _controller.stop(info.ID);
                 }

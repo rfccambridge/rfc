@@ -157,6 +157,7 @@ namespace Robocup.MotionControl
         BugNavigator _navigator;
 
         Vector2 lastWaypoint;
+        private int team;
 
         public TangentBugPlanner()
         {
@@ -167,7 +168,8 @@ namespace Robocup.MotionControl
 
         public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            //RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             Vector2 start = currentState.Position;
             Vector2 end = desiredState.Position;
@@ -186,7 +188,7 @@ namespace Robocup.MotionControl
             // get desired waypoint
             List<Vector2> obstaclePositions = new List<Vector2>();
             List<double> obstacleSizes = new List<double>();
-            foreach (RobotInfo info in predictor.getAllInfos())
+            foreach (RobotInfo info in predictor.GetRobots())
             {
                 if (info.ID != id) {
                     obstaclePositions.Add(info.Position);
@@ -196,9 +198,12 @@ namespace Robocup.MotionControl
             }
 
             if (avoidBallRadius > 0){
-                Vector2 ballPosition = predictor.getBallInfo().Position;
-                obstaclePositions.Add(ballPosition);
-                obstacleSizes.Add(avoidBallRadius);
+//                Vector2 ballPosition = predictor.getBallInfo().Position;
+                BallInfo ballInfo = predictor.GetBall();
+                if (ballInfo != null) {
+                    obstaclePositions.Add(ballInfo.Position);
+                    obstacleSizes.Add(avoidBallRadius);
+                }
             }
 
 
@@ -369,6 +374,8 @@ namespace Robocup.MotionControl
             
             //ROTATE_ANGLE = Constants.get<double>("motionplanning", "ROTATE_ANGLE");
             //ITER_INCREMENT = Constants.get<double>("motionplanning", "ITER_INCREMENT");
+
+            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
 
         private bool isOutOfWay(Vector2 position, Vector2 start, Vector2 pathVector)
