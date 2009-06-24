@@ -42,6 +42,8 @@ namespace Robocup.MotionControl {
         private DOF_Numbers yPID;
         private DOF_Numbers thetaPID;
 
+        private RobotModel model;
+
         const double wheelR = 0.0782828; //distance from the center of the robot to the wheels in meters
 
         public delegate void UpdateErrorsDelegate(double xError, double yError, double thetaError);
@@ -51,6 +53,7 @@ namespace Robocup.MotionControl {
             xPID = new DOF_Numbers(robotID, DOFType.X, constFile);
             yPID = new DOF_Numbers(robotID, DOFType.Y, constFile);
             thetaPID = new DOF_Numbers(robotID, DOFType.THETA, constFile);
+            model = new FailSafeModel(robotID);
         }
 
 
@@ -62,24 +65,18 @@ namespace Robocup.MotionControl {
         /// <param name="desiredPosition">Nearest waypoint to the robot along the desired path</param>
         /// <returns></returns>
         public WheelSpeeds ComputeWheelSpeeds(RobotInfo currentState, RobotInfo desiredState){
-            //runs the math for the PID
-            double xCommand = xPID.Compute(currentState.Position.X, desiredState.Position.X, currentState.Velocity.X, desiredState.Velocity.X);
-            double yCommand = yPID.Compute(currentState.Position.Y, desiredState.Position.Y, currentState.Velocity.Y, desiredState.Velocity.Y);
+            //first go through the theoretical robot model and compute feed forward commands
+            double xForward, yForward, thetaForward;
+            model.ComputeCommand(currentState, desiredState, out xForward, out yForward, out thetaForward);
+            
+            //then simply run PID to correct errors
+            double xCommand = xPID.Compute(currentState.Position.X, desiredState.Position.X, currentState.Velocity.X, desiredState.Velocity.X, xForward);
+            double yCommand = yPID.Compute(currentState.Position.Y, desiredState.Position.Y, currentState.Velocity.Y, desiredState.Velocity.Y, yForward);
+
             //to ensure that orientations are between 0 and 2 pi.
-            double currentOrientation = angleCheck(currentState.Orientation);
-            double desiredOrientation = angleCheck(desiredState.Orientation);
-            
-            //Console.WriteLine(currentState.Position.X.ToString() + " Current X|Desired: " + desiredState.Position.X.ToString());
-            //Console.WriteLine(currentState.Position.Y.ToString() + " Current Y|Desired: " + desiredState.Position.Y.ToString());
-            //Console.WriteLine(currentOrientation.ToString() + " Current Theta|Desired: " + desiredOrientation.ToString());
-            //Console.WriteLine("current velocity: {0}", currentState.Velocity);
-            //Console.WriteLine("\nposition delta: {0}", desiredState.Position-currentState.Position);
-            //Console.WriteLine("x/y commands: {0}", new Vector2(xCommand,yCommand));
-            
-            //Console.WriteLine(xCommand.ToString() + " xCommand|yCommand: " + yCommand.ToString());
-            
-            
-            double angularVCommand = thetaPID.Compute(currentOrientation, desiredOrientation, currentState.AngularVelocity, desiredState.AngularVelocity);
+            double currentOrientation = UsefulFunctions.angleCheck(currentState.Orientation);
+            double desiredOrientation = UsefulFunctions.angleCheck(desiredState.Orientation);
+            double angularVCommand = thetaPID.Compute(currentOrientation, desiredOrientation, currentState.AngularVelocity, desiredState.AngularVelocity, thetaForward);
 
             if (OnUpdateErrors != null) {
                 double xError = currentState.Position.X - desiredState.Position.X;
@@ -88,26 +85,9 @@ namespace Robocup.MotionControl {
                 OnUpdateErrors(xError, yError, thetaError);
             }
 
-
-
             //converts from x speed, y speed and angular speed to wheel speeds
             WheelSpeeds ws = convert(xCommand, yCommand, angularVCommand, currentOrientation);
-            if (currentState.ID == 4 && Math.Abs(ws.lb) == 57 || Math.Abs(ws.lf) == 57 || Math.Abs(ws.rb) == 57 || Math.Abs(ws.rf) == 57) {
-                Console.WriteLine("ComputeWheelSpeeds(id=" + currentState.ID.ToString() +
-                                   "pos=" + currentState.Position.ToString() + "o=" +
-                                   currentState.Orientation.ToString() + "vel=" + currentState.Velocity.ToString() +
-                                   "avel=" + currentState.AngularVelocity.ToString() + ")=" + ws.ToString());
-            }
             return ws;
-        }
-
-        private double angleCheck(double angle) {
-            if (angle < 0)
-                return angleCheck(angle + 2 * Math.PI);
-            else if (angle < 2 * Math.PI)
-                return angle;
-            else
-                return angleCheck(angle - 2 * Math.PI);
         }
         
         /// <summary>
@@ -251,7 +231,7 @@ namespace Robocup.MotionControl {
             //computes a command for either the x velocity the y velocity or the angular velocity.
             //assume orientations are between 0 and 2 pi.
             //it usese the PID constants stored in this instance and incorporates both the velocity and current valud i.e. x and dx/dt
-            public double Compute(double current, double desired, double current_dot, double desired_dot) {
+            public double Compute(double current, double desired, double current_dot, double desired_dot, double feedForward) {
                 //Console.WriteLine("P = " + constants.P + " I = " + constants.I + " D = " + constants.D + " " + dofType.ToString());
 
                 double diff = desired - current;
@@ -274,7 +254,8 @@ namespace Robocup.MotionControl {
                 oldErrorsWindow.RemoveAt(0);
                 oldErrorsWindow.Add(error);
 
-                double command = desired + constants.P * error + constants.I * Ierror + constants.D * Derror;
+                //double command = desired + constants.P * error + constants.I * Ierror + constants.D * Derror;
+                double command = feedForward + constants.P * error + constants.I * Ierror + constants.D * Derror;
                 return command;
             }
 

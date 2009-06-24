@@ -62,6 +62,20 @@ namespace Robocup.Geometry
         {
             return p2 + (p2 - p1).normalizeToLength(distance);
         }
+
+        /// <summary>
+        /// Ensures that an angle is in the [0; 2PI] range
+        /// </summary>
+        public static double angleCheck(double angle)
+        {
+            if (angle < 0)
+                return angleCheck(angle + 2 * Math.PI);
+            else if (angle < 2 * Math.PI)
+                return angle;
+            else
+                return angleCheck(angle - 2 * Math.PI);
+
+        }
     }
 
 
