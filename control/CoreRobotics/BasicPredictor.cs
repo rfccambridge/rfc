@@ -389,6 +389,15 @@ namespace Robocup.CoreRobotics
                 return their_helper.getMergedInfos();
             }
         }
+        public List<RobotInfo> GetRobots() {
+            
+            List<RobotInfo> ourRobots = our_helper.getMergedInfos();            
+            List<RobotInfo> theirRobots =  their_helper.getMergedInfos();
+
+            ourRobots.AddRange(theirRobots);
+
+            return ourRobots;
+        }
 
         public RobotInfo GetRobot(int team, int id)
         {

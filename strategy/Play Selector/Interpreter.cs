@@ -20,10 +20,12 @@ namespace Robocup.Plays
         // Needs to be made private
         public Dictionary<int, string> ourPlayNames = new Dictionary<int, string>();
         public Dictionary<int, string> theirPlayNames = new Dictionary<int, string>();
+        private int team;
 
         public Interpreter(bool flipCoordinates, IPredictor predictor, IActionInterpreter actioninterpreter)
         {
             selector = new PlaySelector();           
+            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
             
             if (flipCoordinates)
             {
@@ -77,8 +79,9 @@ namespace Robocup.Plays
         /// false if it quit because it was already interpreting.</returns>
         public bool interpret(PlayTypes type)
         {
-            List<RobotInfo> ourteaminfo_base = predictor.getOurTeamInfo();
-            List<RobotInfo> theirteaminfo_base = predictor.getTheirTeamInfo();
+            List<RobotInfo> ourteaminfo_base = predictor.GetRobots(team);
+            List<RobotInfo> theirteaminfo_base = predictor.GetRobots(Math.Abs(team - 1));
+            
             InterpreterRobotInfo[] ourteaminfo = ourteaminfo_base.ConvertAll<InterpreterRobotInfo>(delegate(RobotInfo info)
             {
                 return new InterpreterRobotInfo(info);
@@ -88,7 +91,7 @@ namespace Robocup.Plays
                 return new InterpreterRobotInfo(info);
             }).ToArray();
 
-            BallInfo ballinfo = predictor.getBallInfo();
+            BallInfo ballinfo = predictor.GetBall();
             
             lock (run_lock)
             {

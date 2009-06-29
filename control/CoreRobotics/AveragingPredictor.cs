@@ -435,7 +435,12 @@ namespace Robocup.CoreRobotics
 
             return avgRobots;
         }
-
+        public List<RobotInfo> GetRobots() {
+            List<RobotInfo> combined = new List<RobotInfo>();
+            combined.AddRange(GetRobots(0));
+            combined.AddRange(GetRobots(1));
+            return combined;
+        }        
         public RobotInfo GetRobot(int team, int id)
         {
             List<RobotInfo> robots = GetRobots(team);            

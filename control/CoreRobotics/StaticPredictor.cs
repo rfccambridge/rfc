@@ -89,9 +89,12 @@ namespace Robocup.CoreRobotics
         }
         #endregion
 
-        // TO BE REMOVED
+        // TO REPLACE THE ABOVE
         public List<RobotInfo> GetRobots(int team)
         {
+            throw new NotImplementedException("not implemented");
+        }
+        public List<RobotInfo> GetRobots() {
             throw new NotImplementedException("not implemented");
         }
         public RobotInfo GetRobot(int team, int id)

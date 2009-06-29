@@ -48,20 +48,24 @@ namespace Robocup.ControlForm {
             this.label6 = new System.Windows.Forms.Label();
             this.btnRefbox = new System.Windows.Forms.Button();
             this.lblRefbox = new System.Windows.Forms.Label();
+            this.sslVisionConnect = new System.Windows.Forms.Button();
+            this.sslVisionStatus = new System.Windows.Forms.Label();
+            this.sslVisionHost = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // serialHost
             // 
-            this.serialHost.Location = new System.Drawing.Point(21, 124);
+            this.serialHost.Location = new System.Drawing.Point(2, 179);
             this.serialHost.Name = "serialHost";
-            this.serialHost.Size = new System.Drawing.Size(70, 20);
+            this.serialHost.Size = new System.Drawing.Size(132, 20);
             this.serialHost.TabIndex = 4;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 18);
+            this.label1.Location = new System.Drawing.Point(-1, 17);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(69, 13);
             this.label1.TabIndex = 20;
@@ -70,7 +74,7 @@ namespace Robocup.ControlForm {
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(18, 106);
+            this.label2.Location = new System.Drawing.Point(-1, 162);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(36, 13);
             this.label2.TabIndex = 24;
@@ -80,27 +84,27 @@ namespace Robocup.ControlForm {
             // 
             this.visionTopStatus.AutoSize = true;
             this.visionTopStatus.BackColor = System.Drawing.Color.Red;
-            this.visionTopStatus.Location = new System.Drawing.Point(111, 18);
+            this.visionTopStatus.Location = new System.Drawing.Point(140, 18);
             this.visionTopStatus.Name = "visionTopStatus";
-            this.visionTopStatus.Size = new System.Drawing.Size(70, 13);
+            this.visionTopStatus.Size = new System.Drawing.Size(76, 13);
             this.visionTopStatus.TabIndex = 21;
-            this.visionTopStatus.Text = "                     ";
+            this.visionTopStatus.Text = "                       ";
             // 
             // serialStatus
             // 
             this.serialStatus.AutoSize = true;
             this.serialStatus.BackColor = System.Drawing.Color.Red;
-            this.serialStatus.Location = new System.Drawing.Point(110, 106);
+            this.serialStatus.Location = new System.Drawing.Point(140, 162);
             this.serialStatus.Name = "serialStatus";
-            this.serialStatus.Size = new System.Drawing.Size(70, 13);
+            this.serialStatus.Size = new System.Drawing.Size(76, 13);
             this.serialStatus.TabIndex = 25;
-            this.serialStatus.Text = "                     ";
+            this.serialStatus.Text = "                       ";
             // 
             // serialConnect
             // 
-            this.serialConnect.Location = new System.Drawing.Point(105, 124);
+            this.serialConnect.Location = new System.Drawing.Point(140, 178);
             this.serialConnect.Name = "serialConnect";
-            this.serialConnect.Size = new System.Drawing.Size(78, 21);
+            this.serialConnect.Size = new System.Drawing.Size(80, 20);
             this.serialConnect.TabIndex = 5;
             this.serialConnect.Text = "Connect";
             this.serialConnect.UseVisualStyleBackColor = true;
@@ -108,9 +112,9 @@ namespace Robocup.ControlForm {
             // 
             // visionTopConnect
             // 
-            this.visionTopConnect.Location = new System.Drawing.Point(106, 34);
+            this.visionTopConnect.Location = new System.Drawing.Point(140, 33);
             this.visionTopConnect.Name = "visionTopConnect";
-            this.visionTopConnect.Size = new System.Drawing.Size(78, 20);
+            this.visionTopConnect.Size = new System.Drawing.Size(80, 20);
             this.visionTopConnect.TabIndex = 1;
             this.visionTopConnect.Text = "Connect";
             this.visionTopConnect.UseVisualStyleBackColor = true;
@@ -118,9 +122,9 @@ namespace Robocup.ControlForm {
             // 
             // rfcStart
             // 
-            this.rfcStart.Location = new System.Drawing.Point(22, 267);
+            this.rfcStart.Location = new System.Drawing.Point(2, 285);
             this.rfcStart.Name = "rfcStart";
-            this.rfcStart.Size = new System.Drawing.Size(162, 21);
+            this.rfcStart.Size = new System.Drawing.Size(214, 34);
             this.rfcStart.TabIndex = 7;
             this.rfcStart.Text = "Start";
             this.rfcStart.UseVisualStyleBackColor = true;
@@ -130,16 +134,16 @@ namespace Robocup.ControlForm {
             // 
             this.rfcStatus.AutoSize = true;
             this.rfcStatus.BackColor = System.Drawing.Color.Red;
-            this.rfcStatus.Location = new System.Drawing.Point(111, 250);
+            this.rfcStatus.Location = new System.Drawing.Point(140, 269);
             this.rfcStatus.Name = "rfcStatus";
-            this.rfcStatus.Size = new System.Drawing.Size(70, 13);
+            this.rfcStatus.Size = new System.Drawing.Size(76, 13);
             this.rfcStatus.TabIndex = 29;
-            this.rfcStatus.Text = "                     ";
+            this.rfcStatus.Text = "                       ";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(19, 250);
+            this.label4.Location = new System.Drawing.Point(-1, 269);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(62, 13);
             this.label4.TabIndex = 28;
@@ -147,9 +151,9 @@ namespace Robocup.ControlForm {
             // 
             // visionBottomConnect
             // 
-            this.visionBottomConnect.Location = new System.Drawing.Point(104, 76);
+            this.visionBottomConnect.Location = new System.Drawing.Point(140, 76);
             this.visionBottomConnect.Name = "visionBottomConnect";
-            this.visionBottomConnect.Size = new System.Drawing.Size(78, 20);
+            this.visionBottomConnect.Size = new System.Drawing.Size(80, 20);
             this.visionBottomConnect.TabIndex = 3;
             this.visionBottomConnect.Text = "Connect";
             this.visionBottomConnect.UseVisualStyleBackColor = true;
@@ -159,16 +163,16 @@ namespace Robocup.ControlForm {
             // 
             this.visionBottomStatus.AutoSize = true;
             this.visionBottomStatus.BackColor = System.Drawing.Color.Red;
-            this.visionBottomStatus.Location = new System.Drawing.Point(110, 59);
+            this.visionBottomStatus.Location = new System.Drawing.Point(140, 60);
             this.visionBottomStatus.Name = "visionBottomStatus";
-            this.visionBottomStatus.Size = new System.Drawing.Size(70, 13);
+            this.visionBottomStatus.Size = new System.Drawing.Size(76, 13);
             this.visionBottomStatus.TabIndex = 23;
-            this.visionBottomStatus.Text = "                     ";
+            this.visionBottomStatus.Text = "                       ";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(16, 59);
+            this.label5.Location = new System.Drawing.Point(-1, 59);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(83, 13);
             this.label5.TabIndex = 22;
@@ -176,16 +180,16 @@ namespace Robocup.ControlForm {
             // 
             // visionBottomHost
             // 
-            this.visionBottomHost.Location = new System.Drawing.Point(20, 76);
+            this.visionBottomHost.Location = new System.Drawing.Point(2, 75);
             this.visionBottomHost.Name = "visionBottomHost";
-            this.visionBottomHost.Size = new System.Drawing.Size(70, 20);
+            this.visionBottomHost.Size = new System.Drawing.Size(132, 20);
             this.visionBottomHost.TabIndex = 2;
             // 
             // visionTopHost
             // 
-            this.visionTopHost.Location = new System.Drawing.Point(21, 34);
+            this.visionTopHost.Location = new System.Drawing.Point(2, 33);
             this.visionTopHost.Name = "visionTopHost";
-            this.visionTopHost.Size = new System.Drawing.Size(70, 20);
+            this.visionTopHost.Size = new System.Drawing.Size(132, 20);
             this.visionTopHost.TabIndex = 0;
             // 
             // btnLogNext
@@ -215,7 +219,7 @@ namespace Robocup.ControlForm {
             this.groupBox1.Controls.Add(this.btnLogNext);
             this.groupBox1.Controls.Add(this.btnStartStopLogging);
             this.groupBox1.Controls.Add(this.btnLogOpenClose);
-            this.groupBox1.Location = new System.Drawing.Point(190, 12);
+            this.groupBox1.Location = new System.Drawing.Point(247, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(91, 132);
             this.groupBox1.TabIndex = 30;
@@ -251,15 +255,15 @@ namespace Robocup.ControlForm {
             // 
             // txtRefbox
             // 
-            this.txtRefbox.Location = new System.Drawing.Point(21, 183);
+            this.txtRefbox.Location = new System.Drawing.Point(2, 231);
             this.txtRefbox.Name = "txtRefbox";
-            this.txtRefbox.Size = new System.Drawing.Size(70, 20);
+            this.txtRefbox.Size = new System.Drawing.Size(132, 20);
             this.txtRefbox.TabIndex = 31;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(19, 167);
+            this.label6.Location = new System.Drawing.Point(-1, 215);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(44, 13);
             this.label6.TabIndex = 32;
@@ -267,9 +271,9 @@ namespace Robocup.ControlForm {
             // 
             // btnRefbox
             // 
-            this.btnRefbox.Location = new System.Drawing.Point(105, 182);
+            this.btnRefbox.Location = new System.Drawing.Point(140, 231);
             this.btnRefbox.Name = "btnRefbox";
-            this.btnRefbox.Size = new System.Drawing.Size(73, 20);
+            this.btnRefbox.Size = new System.Drawing.Size(80, 20);
             this.btnRefbox.TabIndex = 33;
             this.btnRefbox.Text = "Connect";
             this.btnRefbox.UseVisualStyleBackColor = true;
@@ -280,17 +284,57 @@ namespace Robocup.ControlForm {
             // 
             this.lblRefbox.AutoSize = true;
             this.lblRefbox.BackColor = System.Drawing.Color.Red;
-            this.lblRefbox.Location = new System.Drawing.Point(108, 167);
+            this.lblRefbox.Location = new System.Drawing.Point(140, 215);
             this.lblRefbox.Name = "lblRefbox";
-            this.lblRefbox.Size = new System.Drawing.Size(70, 13);
+            this.lblRefbox.Size = new System.Drawing.Size(76, 13);
             this.lblRefbox.TabIndex = 34;
-            this.lblRefbox.Text = "                     ";
+            this.lblRefbox.Text = "                       ";
+            // 
+            // sslVisionConnect
+            // 
+            this.sslVisionConnect.Location = new System.Drawing.Point(140, 129);
+            this.sslVisionConnect.Name = "sslVisionConnect";
+            this.sslVisionConnect.Size = new System.Drawing.Size(80, 20);
+            this.sslVisionConnect.TabIndex = 35;
+            this.sslVisionConnect.Text = "SSL Vision";
+            this.sslVisionConnect.UseVisualStyleBackColor = true;
+            this.sslVisionConnect.Click += new System.EventHandler(this.btnSSLVision_Click);
+            // 
+            // sslVisionStatus
+            // 
+            this.sslVisionStatus.AutoSize = true;
+            this.sslVisionStatus.BackColor = System.Drawing.Color.Red;
+            this.sslVisionStatus.Location = new System.Drawing.Point(140, 112);
+            this.sslVisionStatus.Name = "sslVisionStatus";
+            this.sslVisionStatus.Size = new System.Drawing.Size(76, 13);
+            this.sslVisionStatus.TabIndex = 36;
+            this.sslVisionStatus.Text = "                       ";
+            // 
+            // sslVisionHost
+            // 
+            this.sslVisionHost.Location = new System.Drawing.Point(2, 128);
+            this.sslVisionHost.Name = "sslVisionHost";
+            this.sslVisionHost.Size = new System.Drawing.Size(132, 20);
+            this.sslVisionHost.TabIndex = 37;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(-1, 112);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(61, 13);
+            this.label7.TabIndex = 38;
+            this.label7.Text = "SSL Vision:";
             // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(294, 300);
+            this.ClientSize = new System.Drawing.Size(350, 331);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.sslVisionHost);
+            this.Controls.Add(this.sslVisionStatus);
+            this.Controls.Add(this.sslVisionConnect);
             this.Controls.Add(this.lblRefbox);
             this.Controls.Add(this.btnRefbox);
             this.Controls.Add(this.label6);
@@ -348,5 +392,9 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnRefbox;
         private System.Windows.Forms.Label lblRefbox;
+        private System.Windows.Forms.Button sslVisionConnect;
+        private System.Windows.Forms.Label sslVisionStatus;
+        private System.Windows.Forms.TextBox sslVisionHost;
+        private System.Windows.Forms.Label label7;
     }
 }

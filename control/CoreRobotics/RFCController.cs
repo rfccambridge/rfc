@@ -19,6 +19,7 @@ namespace Robocup.CoreRobotics
         // Kick planner
         TangentBugFeedbackMotionPlanner regularPlanner;
         FeedbackVeerKickPlanner _kickPlanner;
+        private int team;
 
         public RFCController(
             IRobots commander,
@@ -31,6 +32,8 @@ namespace Robocup.CoreRobotics
 
             regularPlanner = new TangentBugFeedbackMotionPlanner();
             _kickPlanner = new FeedbackVeerKickPlanner(regularPlanner);
+
+            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
 
         private Dictionary<int, Arrow[]> arrows = new Dictionary<int, Arrow[]>();
@@ -104,7 +107,7 @@ namespace Robocup.CoreRobotics
             RobotInfo thisRobot;
 
             try {
-                thisRobot = Predictor.getCurrentInformation(robotID);
+                thisRobot = Predictor.GetRobot(team, robotID);
             }
             catch (ApplicationException) {
                 Console.WriteLine("Predictor did not find Robot " + robotID.ToString());
@@ -158,7 +161,9 @@ namespace Robocup.CoreRobotics
         {
             double orientation;
             try {
-                orientation = Predictor.getCurrentInformation(robotID).Orientation;
+                RobotInfo robot = Predictor.GetRobot(team, robotID);
+                orientation = robot.Orientation;
+
             } catch (ApplicationException e) {
                 Console.WriteLine("inside move: Predictor.getCurrentInformation() failed. Dumping exception:\n" + e.ToString());
                 return;
