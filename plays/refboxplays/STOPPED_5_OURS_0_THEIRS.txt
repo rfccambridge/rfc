@@ -1,0 +1,51 @@
+Metadata:
+type Stopped
+score 500
+name ST_5x0
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+theirgoal (point 3.13 0)
+ourgoal (point -3.13 0)
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+ballpoint (pointof ball)
+ballcircle (circle ballpoint 0.63)
+
+ourgoalcloseperim (circle ourgoal 0.4)
+centergoalline (line ballpoint ourgoal)
+goaliept (linecircleintersection centergoalline ourgoalcloseperim -1)
+
+ourgoalfarperim (circle ourgoal 0.7)
+ballgoalline (line ballpoint ourgoal)
+defenderpt (linecircleintersection ballgoalline ourgoalfarperim -1)
+
+goaliebot (closest friendly ourgoal loose)
+
+defenderbot (closest friendly defenderpt loose)
+
+wall1line (line ballpoint ourgoal)
+wall1point (linecircleintersection wall1line ballcircle 1)
+
+#20 deg rotation
+wall2point (rotatePointAroundAnotherPoint ballpoint wall1point 0.349065)
+wall3point (rotatePointAroundAnotherPoint ballpoint wall1point -0.349065)
+
+
+wall1bot (closest friendly wall1point loose)
+wall2bot (closest friendly wall2point loose)
+wall3bot (closest friendly wall3point loose)
+
+Conditions:
+Actions:
+(robotpointpointmove wall1bot wall1point ballpoint)
+(robotpointpointmove wall2bot wall2point ballpoint)
+(robotpointpointmove wall3bot wall3point ballpoint)
+(robotpointpointmove defenderbot defenderpt ballpoint)
+(robotpointpointmove goaliebot goaliept theirgoal)

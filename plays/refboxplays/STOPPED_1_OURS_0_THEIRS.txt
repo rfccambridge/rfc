@@ -1,0 +1,29 @@
+Metadata:
+type Stopped
+score 100
+name ST_1x0
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+theirgoal (point 3.13 0)
+ourgoal (point -3.13 0)
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+ballpoint (pointof ball)
+ballcircle (circle ballpoint 0.63)
+
+ourgoalcloseperim (circle ourgoal 0.4)
+centergoalline (line ballpoint ourgoal)
+goaliept (linecircleintersection centergoalline ourgoalcloseperim -1)
+
+goaliebot (closest friendly ourgoal loose)
+
+Conditions:
+Actions:
+(robotpointpointmove goaliebot goaliept theirgoal)
