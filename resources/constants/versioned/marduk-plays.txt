@@ -55,3 +55,6 @@ double CLEAR_DIST .25
 
 # distance robot goes from path to set up a pass when path is blocked
 double SUPPORT_SETUP_PASS 2
+
+# goalie constants
+double GOALIE_X_POS -2.87

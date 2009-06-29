@@ -1,6 +1,6 @@
 Metadata:
 type NormalPlay
-name DEFENSE_3vs2
+name DEFENSE_3vs0
 score 100
 
 Objects:
