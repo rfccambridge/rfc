@@ -990,6 +990,14 @@ namespace Robocup.MotionControl
         public TangentBugVeerMotionPlanner() : base(pathplanner, pathdriver) { }
     }
 
+    public class DumbExtenderPlanner : PlannerDriver
+    {
+        static DumbPathPlanner pathplanner = new DumbPathPlanner();
+        static ExtenderDriver pathdriver = new ExtenderDriver();
+
+        public DumbExtenderPlanner() : base(pathplanner, pathdriver) { }
+    }
+
     public class DumbTranslatePlanner : PlannerDriver
     {
         static DumbPathPlanner pathplanner = new DumbPathPlanner();
