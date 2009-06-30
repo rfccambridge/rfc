@@ -1,5 +1,5 @@
 Metadata:
-type Kickoff_Ours_Setup
+type KickOff_Ours_Setup
 score 400
 name O_KFF_STP_4x0
 
