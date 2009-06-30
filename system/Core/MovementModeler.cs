@@ -18,6 +18,7 @@ namespace Robocup.CoreRobotics
         static private Random r = new Random();
         const double rr = 0.09;
         double velocityCoe = 127 * 3 / (2 * Math.Sqrt(2)); // assuming maximum velocity is 3m/s
+        double angVelocityCoe = 20 * 3 / (2 * Math.PI); 
         public double changeConstlf = 1;//proportional constant. we set the change is proportional to the gap. 
         public double changeConstlb = 1;
         public double changeConstrf = 1;
@@ -78,7 +79,7 @@ namespace Robocup.CoreRobotics
 
         public double GetAngFromWheel(WheelsInfo<double> Wheel)
         {
-            return (-Wheel.lf - Wheel.lb + Wheel.rf + Wheel.rb) / (velocityCoe * rr);
+            return (-Wheel.lf - Wheel.lb + Wheel.rf + Wheel.rb) / (angVelocityCoe * rr);
         }
 
         public Vector2 GetVelocityFromWheel(WheelsInfo<double> Wheel, double orientation)
