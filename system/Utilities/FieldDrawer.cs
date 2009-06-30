@@ -19,6 +19,7 @@ namespace Robocup.Utilities
         int ROBOT_SIZE;
         int BALL_SIZE;
         int GOAL_DOT_SIZE;
+        double CENTER_CIRCLE_RADIUS;
         double ORIENT_ARROW_LEN;
         Color VELOCITY_ARROW_COLOR;
         double VELOCITY_ARROW_SIZE;
@@ -111,6 +112,7 @@ namespace Robocup.Utilities
 
             GOAL_WIDTH = Constants.get<double>("plays","GOAL_WIDTH");
             GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
+            CENTER_CIRCLE_RADIUS = Constants.get<double>("plays", "CENTER_CIRCLE_RADIUS");
         }
 
         public void SetPlayType(PlayTypes newPlayType) {
@@ -170,7 +172,7 @@ namespace Robocup.Utilities
                 playNames = theirPlayNames;
             }
             if (playNames.TryGetValue(r.ID, out playName)) {
-                g.DrawString(playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2)));
+                g.DrawString(playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE)));
             }
             b.Dispose();            
     }
@@ -195,7 +197,7 @@ namespace Robocup.Utilities
             g.FillEllipse(b0, converter.fieldtopixelX(FIELD_XMAX + GOAL_WIDTH) - GOAL_DOT_SIZE / 2, converter.fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
             b0.Dispose();
 
-            Pen p = new Pen(Color.Black, 3);
+            Pen p = new Pen(Color.White, 1);
             // right goal box 
             g.DrawRectangle(
                 p,
@@ -219,9 +221,18 @@ namespace Robocup.Utilities
                 converter.fieldtopixelY(FIELD_YMAX),
                 converter.fieldtopixelX(FIELD_XMAX) - converter.fieldtopixelX(FIELD_XMIN),
                 converter.fieldtopixelY(FIELD_YMIN) - converter.fieldtopixelY(FIELD_YMAX)
-            );
-            p.Dispose();
+            );            
 
+            // Center-line
+            g.DrawLine(p,
+                       converter.fieldtopixelX(0), converter.fieldtopixelY(FIELD_YMAX),
+                       converter.fieldtopixelX(0), converter.fieldtopixelY(FIELD_YMIN));
+            
+            // Center circle
+            g.DrawEllipse(p,
+                          new Rectangle(converter.fieldtopixelX(-CENTER_CIRCLE_RADIUS), converter.fieldtopixelY(CENTER_CIRCLE_RADIUS),
+                                        (int)converter.fieldtopixelDistance(2*CENTER_CIRCLE_RADIUS), (int)converter.fieldtopixelDistance(2*CENTER_CIRCLE_RADIUS)));
+            p.Dispose();
 
             List<RobotInfo> robots = new List<RobotInfo>();            
             robots.AddRange(predictor.GetRobots(0));
