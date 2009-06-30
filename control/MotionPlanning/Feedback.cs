@@ -88,6 +88,9 @@ namespace Robocup.MotionControl {
                 OnUpdateErrors(xError, yError, thetaError);
             }
 
+            //Console.WriteLine("Current theta: " + currentState.Orientation + " Desired theta: " + desiredState.Orientation);
+            Console.WriteLine("Difference in xy: " + Math.Sqrt(currentState.Position.distanceSq(desiredState.Position)));
+
             //converts from x speed, y speed and angular speed to wheel speeds
             WheelSpeeds ws = convert(xCommand, yCommand, angularVCommand, currentOrientation);
             return ws;
@@ -164,7 +167,7 @@ namespace Robocup.MotionControl {
 
             return new WheelSpeeds(lf, rf, lb, rb);
             //Note somewhere we need to check and ensure that wheel speeds being 
-            //sent do not exceed maximum values allowed by the protocol.
+            //sent do not exceed maximum values allowed by the protocol (done in SerialRobots somewhere).
         }
 
         public void ReloadConstants(){
@@ -173,10 +176,10 @@ namespace Robocup.MotionControl {
             thetaPID.ReloadConstants();
         }
 
-        public void UpdateConstants(DOF_Constants x, DOF_Constants y, DOF_Constants theta) {
-            xPID.UpdateConstants(x);
-            yPID.UpdateConstants(y);
-            thetaPID.UpdateConstants(theta);
+        public void UpdateConstants(DOF_Constants x, DOF_Constants y, DOF_Constants theta, bool save) {
+            xPID.UpdateConstants(x, save);
+            yPID.UpdateConstants(y, save);
+            thetaPID.UpdateConstants(theta, save);
         }
 
         public void GetConstants(out DOF_Constants xConst, out DOF_Constants yConst, out DOF_Constants thetaConst) {
@@ -301,7 +304,7 @@ namespace Robocup.MotionControl {
             /// <summary>
             /// Can be used to programatically update the set of constants.
             /// </summary>
-            public void UpdateConstants(DOF_Constants _constants) {
+            public void UpdateConstants(DOF_Constants _constants, bool save) {
                 //clear accumulated error
                 for (int i = 0; i < oldErrorsWindowSize; i++)
                     oldErrorsWindow[i] = 0;

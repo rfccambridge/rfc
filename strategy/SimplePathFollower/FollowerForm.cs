@@ -425,7 +425,7 @@ namespace SimplePathFollower {
                     }
                     break;
                 case MotionPlanners.BugFeedbackVeerMotionPlanner:
-                    planner = new BugFeedbackVeerMotionPlanner();
+                    planner = new TangentBugVeerMotionPlanner();
                     if (_pathFollower.setPlanner(planner)) {
                         _currentPlannerSelection = MotionPlanners.BugFeedbackVeerMotionPlanner;
                     }

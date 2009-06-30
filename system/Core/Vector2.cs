@@ -245,7 +245,7 @@ namespace Robocup.Core
         {
             string[] split = s.Trim('<', '>', ' ').Split(',');
             if (split.Length != 2)
-                throw new FormatException("invalid format for Vector2");
+                throw new FormatException("invalid format for Vector2: " + s);
             return new Vector2(double.Parse(split[0]), double.Parse(split[1]));
         }
     }

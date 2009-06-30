@@ -982,12 +982,12 @@ namespace Robocup.MotionControl
         public BugNavigatorExtendMotionPlanner() : base(pathplanner, pathdriver) { }
     }
 
-    public class BugFeedbackVeerMotionPlanner : PlannerDriver
+    public class TangentBugVeerMotionPlanner : PlannerDriver
     {
         static TangentBugPlanner pathplanner = new TangentBugPlanner();
         static FeedbackVeerDriver pathdriver = new FeedbackVeerDriver();
 
-        public BugFeedbackVeerMotionPlanner() : base(pathplanner, pathdriver) { }
+        public TangentBugVeerMotionPlanner() : base(pathplanner, pathdriver) { }
     }
 
     public class DumbTranslatePlanner : PlannerDriver
@@ -1025,7 +1025,7 @@ namespace Robocup.MotionControl
 
     public class TangentBugFeedbackMotionPlanner : PlannerDriver, ILogger {
         static TangentBugPlanner pathplanner = new TangentBugPlanner();
-        static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
+        public static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
 
         public TangentBugFeedbackMotionPlanner() : base(pathplanner, pathdriver) {
             LoadConstants();
@@ -1039,6 +1039,7 @@ namespace Robocup.MotionControl
 
             pathdriver.PLANNER_WAYPOINT_DISTANCE = 0.8 * pathplanner.WAYPOINT_DIST;
         }
+
 
         #region ILogger
         public string LogFile {

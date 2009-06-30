@@ -391,7 +391,7 @@ namespace Robotics.Commander
         {
             int lf=wheelSpeeds.lf, rf=wheelSpeeds.rf, lb=wheelSpeeds.lb, rb=wheelSpeeds.rb;
 
-            int maxspeed = 255;
+            int maxspeed = 127;
 
             double time = HighResTimer.SecondsSinceStart();
             /*if (!lastSpeeds.ContainsKey(id))

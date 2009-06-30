@@ -1245,16 +1245,20 @@ namespace Robocup.MotionControl
 
         private int team;
 
+        private IPathDriver _longRangeDriver;
+
         public PositionFeedbackDriver() {
 
             feedbackObjs = new Feedback[NUM_ROBOTS];
             shortFeedbackObjs = new Feedback[NUM_ROBOTS];
 
+            _longRangeDriver = new FeedbackVeerDriver();
+
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
                 //DEFAULT: PID on position -> no feed-forward, uses desired instead (pre 2*.06.2009)
-                //feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID));
+                feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID));
                 //TEST: for long distance PID on velocity (x & y), feed-forward constant velocity
-                feedbackObjs[robotID] = new Feedback(robotID, "control-vel", new TestModel(robotID));
+                //feedbackObjs[robotID] = new Feedback(robotID, "control-vel", new TestModel(robotID));
                 shortFeedbackObjs[robotID] = new Feedback(robotID, "control-short", new FailSafeModel(robotID));
             }
 
@@ -1289,12 +1293,18 @@ namespace Robocup.MotionControl
                 //calculate speeds using default feedback loop
                 if (wpDistanceSq >= PLANNER_WAYPOINT_DISTANCE * PLANNER_WAYPOINT_DISTANCE) {
                     Console.WriteLine("Planning long distance");
+                    
+                    // get wheel speeds from long range driver
+                    //List<RobotInfo> pathlst = new List<RobotInfo>();
+                    //pathlst.Add(nextWaypoint);
+
+                    //wheelSpeeds = _longRangeDriver.followPath(new RobotPath(pathlst), predictor);
                     wheelSpeeds = feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
 
                     //NOTE: This may look redundant, but the second feedback is also called (disregarding the result)
                     //to ensure that any state in the unused loop is properly updated. Hopefully this can ensure smoother
                     //transitions between the two types of motion. This line may be debatable -> TEST, TEST, TEST!!!
-                    shortFeedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
+                    //shortFeedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
                 }
                 //If we are close enough to actual destination, use another (hopefully more precise) feedback loop.
                 else {
@@ -1302,7 +1312,7 @@ namespace Robocup.MotionControl
                     wheelSpeeds = shortFeedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
 
                     //See NOTE above
-                    feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
+                    //feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
                 }
             }
             else {
@@ -1348,6 +1358,26 @@ namespace Robocup.MotionControl
             team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
 
+        public void UpdateConstants(int robotID, DOF_Constants newXY, DOF_Constants newTheta, bool isShort, bool save)
+        {
+            if (!isShort)
+                feedbackObjs[robotID].UpdateConstants(newXY, newXY, newTheta, save);
+            else
+                shortFeedbackObjs[robotID].UpdateConstants(newXY, newXY, newTheta, save);
+        }
+
+        public void GetConstants(int robotID, bool isShort, out DOF_Constants newXY, out DOF_Constants newTheta)
+        {
+            DOF_Constants XPID, YPID, ThPID;
+            
+            if (!isShort)
+                feedbackObjs[robotID].GetConstants(out XPID, out YPID, out ThPID);
+            else
+                shortFeedbackObjs[robotID].GetConstants(out XPID, out YPID, out ThPID);
+
+            newXY = XPID;
+            newTheta = ThPID;
+        }
         #region ILogger
 
         private string _logFile = null;

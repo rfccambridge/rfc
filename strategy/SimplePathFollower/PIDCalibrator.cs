@@ -151,7 +151,7 @@ namespace SimplePathFollower {
             DOF_Constants xConst_init, yConst_init, thetaConst_init;
             LoadState(out xConst_init, out yConst_init, out thetaConst_init);
 
-            feedbackPID.UpdateConstants(xConst_init, yConst_init, thetaConst_init);
+            feedbackPID.UpdateConstants(xConst_init, yConst_init, thetaConst_init, false);
 
             if (InitLap()) {
                 Console.WriteLine("PID Calibrator can't explore aroung a non-stable point.");
@@ -184,7 +184,7 @@ namespace SimplePathFollower {
                             thetaConst.P += k * P_TH_STEP;
                             thetaConst.D += l * D_TH_STEP;
 
-                            feedbackPID.UpdateConstants(xConst, yConst, thetaConst);
+                            feedbackPID.UpdateConstants(xConst, yConst, thetaConst, false);
 
                             Console.WriteLine("Exploring at i={0},j={1},k={2},l={3}", i, j, k, l);
                             if (InitLap()) {
@@ -218,7 +218,7 @@ namespace SimplePathFollower {
                             thetaConst.P += k * P_TH_STEP;
                             thetaConst.D += l * D_TH_STEP;
 
-                            feedbackPID.UpdateConstants(xConst, yConst, thetaConst);
+                            feedbackPID.UpdateConstants(xConst, yConst, thetaConst, false);
 
                             Console.WriteLine("Exploring at i={0},j={1},k={2},l={3}", i, j, k, l);
                             if (InitLap()) {

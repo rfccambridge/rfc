@@ -342,12 +342,12 @@ namespace Robotics.Commander {
                         break;
                     case '=':
                     case 187:
-                        speed += 10;
+                        speed += 1;
                         statusLabel.Text = "new speed: " + speed;
                         break;
                     case '-':
                     case 189:
-                        speed -= 10;
+                        speed -= 1;
                         statusLabel.Text = "new speed: " + speed;
                         break;
                     case 48:        // 0 robot0

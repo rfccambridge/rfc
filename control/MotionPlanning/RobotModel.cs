@@ -41,8 +41,8 @@ namespace Robocup.MotionControl
         {
             double xOut = 0.0, yOut = 0.0, thetaOut = 0.0;
 
-            xOut = desiredState.Position.X;
-            yOut = desiredState.Position.Y;
+            //xOut = desiredState.Position.X;
+            //yOut = desiredState.Position.Y;
             thetaCommand = UsefulFunctions.angleCheck(desiredState.Orientation);
 
             xCommand = xOut;

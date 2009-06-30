@@ -133,6 +133,7 @@ namespace Robocup.ControlForm
             //IMotionPlanner planner = new Robocup.MotionControl.FeedbackVeerMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.DefaultMotionPlanner();
             IMotionPlanner planner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.TangentBugVeerMotionPlanner();
 
             for (int i = 0; i < 10; i++)
             {

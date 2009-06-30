@@ -39,6 +39,7 @@ namespace Robocup.ControlForm {
         
         FieldDrawerForm drawer;
         PlaySelectorForm playSelectorForm;
+        PIDForm pidForm;
 
         bool systemStarted = false;
         RFCSystem _system;
@@ -68,6 +69,9 @@ namespace Robocup.ControlForm {
 
             playSelectorForm = new PlaySelectorForm();
             playSelectorForm.Show();
+
+            pidForm = new PIDForm();
+            pidForm.Show();
 
             // Defaults hosts for the GUI, for convenience only
             visionTopHost.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_TOP");
