@@ -5,23 +5,39 @@
 ##alpha should be between 0 and 1.
 
 
-double P_X_0 100
-double P_X_1 100
-double P_X_2 100
-double P_X_3 100
-double P_X_4 100
+##For X and Y
+##Lower voltage
+#p = 130
+#i = 1
+#d= 250
+
+
+##Higher voltage
+#p=100
+#i=1
+#d=150
+
+
+double P_X_0 550
+#double P_X_0 0
+double P_X_1 550
+double P_X_2 550
+double P_X_3 550
+double P_X_4 550
 
 double I_X_0 0
+#double I_X_0 0
 double I_X_1 0
 double I_X_2 0
 double I_X_3 0
 double I_X_4 0
 
-double D_X_0 0
-double D_X_1 0
-double D_X_2 0
-double D_X_3 0
-double D_X_4 0
+double D_X_0 10
+#double D_X_0 0
+double D_X_1 10
+double D_X_2 10
+double D_X_3 10
+double D_X_4 10
 
 double ALPHA_X_0 1
 double ALPHA_X_1 1
@@ -29,24 +45,27 @@ double ALPHA_X_2 1
 double ALPHA_X_3 1
 double ALPHA_X_4 1
 
-double P_Y_0 100
-double P_Y_1 100
-double P_Y_2 100
-double P_Y_3 100
-double P_Y_4 100
 
+#double P_Y_0 0
+double P_Y_0 550
+double P_Y_1 550
+double P_Y_2 550
+double P_Y_3 550
+double P_Y_4 550
+
+#double I_Y_0 0
 double I_Y_0 0
 double I_Y_1 0
 double I_Y_2 0
 double I_Y_3 0
 double I_Y_4 0
 
-
-double D_Y_0 0
-double D_Y_1 0
-double D_Y_2 0
-double D_Y_3 0
-double D_Y_4 0
+double D_Y_0 10
+#double D_Y_0 0
+double D_Y_1 10
+double D_Y_2 10
+double D_Y_3 10
+double D_Y_4 10
 
 double ALPHA_Y_0 1
 double ALPHA_Y_1 1
@@ -80,9 +99,8 @@ double ALPHA_THETA_2 1
 double ALPHA_THETA_3 1
 double ALPHA_THETA_4 1
 
-
 int CHARGE_TIME 1000
-int LOG_EVERY_MSEC 10
+int LOG_EVERY_MSEC 100
 
 double DEFAULT_VELOCITY 60
 
