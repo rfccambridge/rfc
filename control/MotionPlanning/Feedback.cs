@@ -41,6 +41,7 @@ namespace Robocup.MotionControl {
         private DOF_Numbers xPID;
         private DOF_Numbers yPID;
         private DOF_Numbers thetaPID;
+        private string constantsFile;
 
         private RobotModel model;
 
@@ -48,12 +49,14 @@ namespace Robocup.MotionControl {
 
         public delegate void UpdateErrorsDelegate(double xError, double yError, double thetaError);
         public UpdateErrorsDelegate OnUpdateErrors;
+        public string ConstantsFile { get { return constantsFile; } }
 
-        public Feedback(int robotID, string constFile) {
+        public Feedback(int robotID, string constFile, RobotModel _model) {
+            constantsFile = constFile;
             xPID = new DOF_Numbers(robotID, DOFType.X, constFile);
             yPID = new DOF_Numbers(robotID, DOFType.Y, constFile);
             thetaPID = new DOF_Numbers(robotID, DOFType.THETA, constFile);
-            model = new FailSafeModel(robotID);
+            model = _model;
         }
 
 
@@ -268,28 +271,28 @@ namespace Robocup.MotionControl {
 
                 Constants.Load();
 
-                /*
-                    constants.P = Constants.get<double>(constantsFile, "P_" + dofType.ToString() + "_" + robotID.ToString());
-                    constants.I = Constants.get<double>(constantsFile, "I_" + dofType.ToString() + "_" + robotID.ToString());
-                    constants.D = Constants.get<double>(constantsFile, "D_" + dofType.ToString() + "_" + robotID.ToString());
-                    constants.ALPHA = Constants.get<double>(constantsFile, "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
-                */
-                    if (!Constants.nondestructiveGet<double>(constantsFile, "P_" + dofType.ToString() + "_" + robotID.ToString(), out constants.P)) {
-                        Console.WriteLine("DOF_Numbers: constant not found " + "P_" + dofType.ToString() + "_" + robotID.ToString());
-                        constants.P = 0;
-                    }
-                    if (!Constants.nondestructiveGet<double>(constantsFile, "I_" + dofType.ToString() + "_" + robotID.ToString(), out constants.I)) {
-                    Console.WriteLine("DOF_Numbers: constant not found " + "I_" + dofType.ToString() + "_" + robotID.ToString());
-                        constants.I = 0;
-                    }
-                    if (!Constants.nondestructiveGet<double>(constantsFile, "D_" + dofType.ToString() + "_" + robotID.ToString(), out constants.D)) {
-                    Console.WriteLine("DOF_Numbers: constant not found " + "D_" + dofType.ToString() + "_" + robotID.ToString());
-                        constants.D = 0;
-                    }
-                    if (!Constants.nondestructiveGet<double>(constantsFile, "ALPHA_" + dofType.ToString() + "_" + robotID.ToString(), out constants.ALPHA)) {
-                        Console.WriteLine("DOF_Numbers: constant not found " + "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
-                        constants.ALPHA = 0;
-                    }
+                
+                constants.P = Constants.get<double>(constantsFile, "P_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.I = Constants.get<double>(constantsFile, "I_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.D = Constants.get<double>(constantsFile, "D_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.ALPHA = Constants.get<double>(constantsFile, "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
+                
+                    //if (!Constants.nondestructiveGet<double>(constantsFile, "P_" + dofType.ToString() + "_" + robotID.ToString(), out constants.P)) {
+                    //    Console.WriteLine("DOF_Numbers: constant not found " + "P_" + dofType.ToString() + "_" + robotID.ToString());
+                    //    constants.P = 0;
+                    //}
+                    //if (!Constants.nondestructiveGet<double>(constantsFile, "I_" + dofType.ToString() + "_" + robotID.ToString(), out constants.I)) {
+                    //Console.WriteLine("DOF_Numbers: constant not found " + "I_" + dofType.ToString() + "_" + robotID.ToString());
+                    //    constants.I = 0;
+                    //}
+                    //if (!Constants.nondestructiveGet<double>(constantsFile, "D_" + dofType.ToString() + "_" + robotID.ToString(), out constants.D)) {
+                    //Console.WriteLine("DOF_Numbers: constant not found " + "D_" + dofType.ToString() + "_" + robotID.ToString());
+                    //    constants.D = 0;
+                    //}
+                    //if (!Constants.nondestructiveGet<double>(constantsFile, "ALPHA_" + dofType.ToString() + "_" + robotID.ToString(), out constants.ALPHA)) {
+                    //    Console.WriteLine("DOF_Numbers: constant not found " + "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
+                    //    constants.ALPHA = 0;
+                    //}
                 
             
                 

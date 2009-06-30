@@ -19,6 +19,9 @@ namespace Robocup.MotionControl
             robotID = _robotID;
         }
 
+        public virtual void LoadConstants()
+        {
+        }
 
         public abstract void ComputeCommand(RobotInfo currentState, RobotInfo desiredState, out double xCommand, out double yCommand, out double thetaCommand);
     }
@@ -53,18 +56,30 @@ namespace Robocup.MotionControl
     
     public class TestModel : RobotModel
     {
+        private double DEFAULT_VELOCITY; 
+        
         public TestModel(int _robotID)
             : base(_robotID)
-        { }
+        {
+            DEFAULT_VELOCITY = 0.0;
+
+            LoadConstants();
+        }
+
+        public override void LoadConstants()
+        {
+            DEFAULT_VELOCITY = Constants.get<double>("control", "DEFAULT_VELOCITY");
+        }
 
         public override void ComputeCommand(RobotInfo currentState, RobotInfo desiredState, out double xCommand, out double yCommand, out double thetaCommand)
         {
-            double xOut = 0.0, yOut = 0.0, thetaOut = 0.0;
+            double thetaOut = desiredState.Orientation;
 
-            throw new NotImplementedException("TBD");
-
-            xCommand = xOut;
-            yCommand = yOut;
+            Vector2 positionOffset = desiredState.Position - currentState.Position;
+            Vector2 velocity = positionOffset.normalizeToLength(DEFAULT_VELOCITY);
+            
+            xCommand = velocity.X;
+            yCommand = velocity.Y;
             thetaCommand = thetaOut;
         }
         

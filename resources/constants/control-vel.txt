@@ -39,11 +39,11 @@ double D_X_2 150
 double D_X_3 150
 double D_X_4 150
 
-double ALPHA_X_0 1
-double ALPHA_X_1 1
-double ALPHA_X_2 1
-double ALPHA_X_3 1
-double ALPHA_X_4 1
+double ALPHA_X_0 0
+double ALPHA_X_1 0
+double ALPHA_X_2 0
+double ALPHA_X_3 0
+double ALPHA_X_4 0
 
 
 #double P_Y_0 0
@@ -67,11 +67,11 @@ double D_Y_2 150
 double D_Y_3 150
 double D_Y_4 150
 
-double ALPHA_Y_0 1
-double ALPHA_Y_1 1
-double ALPHA_Y_2 1
-double ALPHA_Y_3 1
-double ALPHA_Y_4 1
+double ALPHA_Y_0 0
+double ALPHA_Y_1 0
+double ALPHA_Y_2 0
+double ALPHA_Y_3 0
+double ALPHA_Y_4 0
 
 double P_THETA_0 60
 double P_THETA_1 60
@@ -100,7 +100,7 @@ double ALPHA_THETA_3 1
 double ALPHA_THETA_4 1
 
 int CHARGE_TIME 1000
-int LOG_EVERY_MSEC 10
+int LOG_EVERY_MSEC 100
 
 double DEFAULT_VELOCITY 50
 

@@ -1234,7 +1234,8 @@ namespace Robocup.MotionControl
         private Feedback[] shortFeedbackObjs;
         public Feedback GetShortFeedbackObj(int robotID) { return shortFeedbackObjs[robotID]; }
 
-        const int NUM_ROBOTS = 10;
+        // const int NUM_ROBOTS = 10;
+        const int NUM_ROBOTS = 5;
 
         private double MIN_SQ_DIST_TO_WP;
         private double MIN_ANGLE_DIFF_TO_WP;
@@ -1250,8 +1251,11 @@ namespace Robocup.MotionControl
             shortFeedbackObjs = new Feedback[NUM_ROBOTS];
 
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
-                feedbackObjs[robotID] = new Feedback(robotID, "control");
-                shortFeedbackObjs[robotID] = new Feedback(robotID, "control-short");
+                //DEFAULT: PID on position -> no feed-forward, uses desired instead (pre 2*.06.2009)
+                //feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID));
+                //TEST: for long distance PID on velocity (x & y), feed-forward constant velocity
+                feedbackObjs[robotID] = new Feedback(robotID, "control-vel", new TestModel(robotID));
+                shortFeedbackObjs[robotID] = new Feedback(robotID, "control-short", new FailSafeModel(robotID));
             }
 
             ReloadConstants();
@@ -1327,8 +1331,9 @@ namespace Robocup.MotionControl
 
         //reload all necessary constants from files, for now just PID reload
         public void ReloadConstants() {
-            Constants.Load("control");
-            Constants.Load("control-short");
+            Constants.Load(feedbackObjs[0].ConstantsFile);
+            Constants.Load(shortFeedbackObjs[0].ConstantsFile);
+
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
                 feedbackObjs[robotID].ReloadConstants();
                 shortFeedbackObjs[robotID].ReloadConstants();
