@@ -10,8 +10,8 @@ namespace Robocup.Utilities
     /// </summary>
     public class BasicCoordinateConverter : ICoordinateConverter
     {
-        static double FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-        static double FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+        public static double FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+        public static double FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
         static double FIELD_BUFFER = Constants.get<double>("plays", "FIELD_BUFFER");
         static double NORM_DIST = Math.Sqrt(FIELD_HEIGHT * FIELD_HEIGHT + FIELD_WIDTH * FIELD_WIDTH);
         int width, height;
