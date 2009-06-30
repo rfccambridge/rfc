@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using Robocup.Geometry;
 using Robocup.Core;
+using Robocup.Utilities;
 
 namespace Robocup.Plays
 {
@@ -140,145 +141,195 @@ namespace Robocup.Plays
         }*/
         public static void loadFunctions()
         {
-            addAll(addIf, typeof(int), typeof(double), typeof(Vector2), typeof(Line), typeof(Circle), typeof(ActionDefinition), typeof(Robot));
+        	addAll(addIf, typeof (int), typeof (double), typeof (Vector2), typeof (Line), typeof (Circle),
+        	       typeof (ActionDefinition), typeof (Robot));
 
-            #region geometric functions
-            addFunction("point", "X, Y - Point", "The point ~, ~", typeof(Vector2), new Type[] { typeof(double), typeof(double) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return new Vector2((double)objects[0], (double)objects[1]);
-            });
-            addFunction("getXcoord", "Point - X coordinate", "The x coordinate of point ~", typeof(double), new Type[] { typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return ((Vector2)objects[0]).X;
-            });
-            addFunction("getYcoord", "Point - Y coordinate", "The y coordinate of point ~", typeof(double), new Type[] { typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return ((Vector2)objects[0]).Y;
-            });
-            addFunction("line", "Point, Point - Line", "The line connecting ~ and ~", typeof(Line), new Type[] { typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return new Line((Vector2)objects[0], (Vector2)objects[1]);
-            });
-            addFunction("circle", "Point, Radius - Circle", "The circle with ~ as its center, and radius ~", typeof(Circle), new Type[] { typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return new Circle((Vector2)objects[0], (double)objects[1]);
-            });
-            addFunction("pointof", "Point-object - Point", "The point of ~", typeof(Vector2), new Type[] { typeof(GetPointable) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return ((GetPointable)objects[0]).getPoint();
-                //return new Vector2((GetPointable)objects[0]);
-            });
-            addFunction("linelineintersection", "Line, Line - Intersection", "The intersection of lines ~ and ~", typeof(Vector2), new Type[] { typeof(Line), typeof(Line) }, delegate(EvaluatorState state, object[] objects)
-            {
-                Line l1 = (Line)objects[0];
-                Line l2 = (Line)objects[1];
-                return Intersections.intersect(l1, l2);
-                //return new Vector2(new LineLineIntersection(l1, l2));
-            });
-            addFunction("linecircleintersection", "Line, Circle - Intersection", "The intersection of line ~ and circle ~, number ~", typeof(Vector2), new Type[] { typeof(Line), typeof(Circle), typeof(int) }, delegate(EvaluatorState state, object[] objects)
-            {
-                Line line = (Line)objects[0];
-                Circle circle = (Circle)objects[1];
-                return Intersections.intersect(line, circle, (int)objects[2]);
-                //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
-            });
-            addFunction("circlecircleintersection", "Circle, Circle - Intersection", "The intersection of circles ~ and ~, number ~", typeof(Vector2), new Type[] { typeof(Circle), typeof(Circle), typeof(int) }, delegate(EvaluatorState state, object[] objects)
-            {
-                Circle c1 = (Circle)objects[0];
-                Circle c2 = (Circle)objects[1];
-                return Intersections.intersect(c1, c2, (int)objects[2]);
-                //return new Vector2(new PlayCircleCircleIntersection(c1, c2, (int)objects[2]));
-            });
-            addFunction("pointpointdistance", "Point, Point - Distance", "The distance between ~ and ~ (in meters)", typeof(double), new Type[] { typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
-            {
-                /*Vector2 p1 = (Vector2)objects[0];
+        	#region geometric functions
+
+        	addFunction("point", "X, Y - Point", "The point ~, ~", typeof (Vector2),
+        	            new Type[] {typeof (double), typeof (double)}, delegate(EvaluatorState state, object[] objects)
+        	                                                           	{
+        	                                                           		return new Vector2((double) objects[0],
+        	                                                           		                   (double) objects[1]);
+        	                                                           	});
+        	addFunction("getXcoord", "Point - X coordinate", "The x coordinate of point ~", typeof (double),
+        	            new Type[] {typeof (Vector2)}, delegate(EvaluatorState state, object[] objects)
+        	                                           	{
+        	                                           		return ((Vector2) objects[0]).X;
+        	                                           	});
+        	addFunction("getYcoord", "Point - Y coordinate", "The y coordinate of point ~", typeof (double),
+        	            new Type[] {typeof (Vector2)}, delegate(EvaluatorState state, object[] objects)
+        	                                           	{
+        	                                           		return ((Vector2) objects[0]).Y;
+        	                                           	});
+        	addFunction("line", "Point, Point - Line", "The line connecting ~ and ~", typeof (Line),
+        	            new Type[] {typeof (Vector2), typeof (Vector2)}, delegate(EvaluatorState state, object[] objects)
+        	                                                             	{
+        	                                                             		return new Line((Vector2) objects[0],
+        	                                                             		                (Vector2) objects[1]);
+        	                                                             	});
+        	addFunction("circle", "Point, Radius - Circle", "The circle with ~ as its center, and radius ~",
+        	            typeof (Circle), new Type[] {typeof (Vector2), typeof (double)},
+        	            delegate(EvaluatorState state, object[] objects)
+        	            	{
+        	            		return new Circle((Vector2) objects[0], (double) objects[1]);
+        	            	});
+        	addFunction("pointof", "Point-object - Point", "The point of ~", typeof (Vector2),
+        	            new Type[] {typeof (GetPointable)}, delegate(EvaluatorState state, object[] objects)
+        	                                                	{
+        	                                                		return ((GetPointable) objects[0]).getPoint();
+        	                                                		//return new Vector2((GetPointable)objects[0]);
+        	                                                	});
+        	addFunction("linelineintersection", "Line, Line - Intersection", "The intersection of lines ~ and ~",
+        	            typeof (Vector2), new Type[] {typeof (Line), typeof (Line)},
+        	            delegate(EvaluatorState state, object[] objects)
+        	            	{
+        	            		Line l1 = (Line) objects[0];
+        	            		Line l2 = (Line) objects[1];
+        	            		return Intersections.intersect(l1, l2);
+        	            		//return new Vector2(new LineLineIntersection(l1, l2));
+        	            	});
+        	addFunction("linecircleintersection", "Line, Circle - Intersection",
+        	            "The intersection of line ~ and circle ~, number ~", typeof (Vector2),
+        	            new Type[] {typeof (Line), typeof (Circle), typeof (int)},
+        	            delegate(EvaluatorState state, object[] objects)
+        	            	{
+        	            		Line line = (Line) objects[0];
+        	            		Circle circle = (Circle) objects[1];
+        	            		return Intersections.intersect(line, circle, (int) objects[2]);
+        	            		//return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
+        	            	});
+        	addFunction("circlecircleintersection", "Circle, Circle - Intersection",
+        	            "The intersection of circles ~ and ~, number ~", typeof (Vector2),
+        	            new Type[] {typeof (Circle), typeof (Circle), typeof (int)},
+        	            delegate(EvaluatorState state, object[] objects)
+        	            	{
+        	            		Circle c1 = (Circle) objects[0];
+        	            		Circle c2 = (Circle) objects[1];
+        	            		return Intersections.intersect(c1, c2, (int) objects[2]);
+        	            		//return new Vector2(new PlayCircleCircleIntersection(c1, c2, (int)objects[2]));
+        	            	});
+        	addFunction("pointpointdistance", "Point, Point - Distance", "The distance between ~ and ~ (in meters)",
+        	            typeof (double), new Type[] {typeof (Vector2), typeof (Vector2)},
+        	            delegate(EvaluatorState state, object[] objects)
+        	            	{
+        	            		/*Vector2 p1 = (Vector2)objects[0];
                 Vector2 p2 = (Vector2)objects[1];
                 return CommonFunctions.distance(p1.getPoint(), p2.getPoint());*/
-                return UsefulFunctions.distance((Vector2)objects[0], (Vector2)objects[1]);
-            });
-            addFunction("linelength", "Line - Length", "The length of line ~", typeof(double), new Type[] { typeof(Line) }, delegate(EvaluatorState state, object[] objects)
-            {
-                Vector2[] points = ((Line)objects[0]).getPoints();
-                return UsefulFunctions.distance(points[0], points[1]);
-            });
+        	            		return UsefulFunctions.distance((Vector2) objects[0], (Vector2) objects[1]);
+        	            	});
+        	addFunction("linelength", "Line - Length", "The length of line ~", typeof (double), new Type[] {typeof (Line)},
+        	            delegate(EvaluatorState state, object[] objects)
+        	            	{
+        	            		Vector2[] points = ((Line) objects[0]).getPoints();
+        	            		return UsefulFunctions.distance(points[0], points[1]);
+        	            	});
 
-            addFunction("scalepoint", "Point, double - Scale", "The point ~ scaled by ~", typeof(Vector2), new Type[] { typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return ((double)objects[1]) * ((Vector2)objects[0]);
-            });
-            addFunction("pointadd", "Point, Point - Add", "Point ~ + Point ~", typeof(Vector2), new Type[] { typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return ((Vector2)objects[0]) + ((Vector2)objects[1]);
-            });
-            addFunction("pointsubtract", "Point, Point - Subtract", "Point ~ - Point ~", typeof(Vector2), new Type[] { typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return ((Vector2)objects[0]) - ((Vector2)objects[1]);
-            });
-            addFunction("midpoint", "Point, Point - Midpoint", "The midpoint of points ~ and ~", typeof(Vector2), new Type[] { typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
-            {
-                return .5 * (((Vector2)objects[0]) + ((Vector2)objects[1]));
-            });
-            addFunction("closestRobotToLine", "Line, Team - closest robot", "The distance from the line ~ to the closest robot on team ~ (excluding the robots that are the endpoints of the line)", typeof(double), new Type[] { typeof(Line), typeof(TeamCondition) }, delegate(EvaluatorState state, object[] objects)
-            {
-                double rtn = 1000000;
+        	addFunction("scalepoint", "Point, double - Scale", "The point ~ scaled by ~", typeof (Vector2),
+        	            new Type[] {typeof (Vector2), typeof (double)}, delegate(EvaluatorState state, object[] objects)
+        	                                                            	{
+        	                                                            		return ((double) objects[1])*
+        	                                                            		       ((Vector2) objects[0]);
+        	                                                            	});
+        	addFunction("pointadd", "Point, Point - Add", "Point ~ + Point ~", typeof (Vector2),
+        	            new Type[] {typeof (Vector2), typeof (Vector2)}, delegate(EvaluatorState state, object[] objects)
+        	                                                             	{
+        	                                                             		return ((Vector2) objects[0]) +
+        	                                                             		       ((Vector2) objects[1]);
+        	                                                             	});
+        	addFunction("pointsubtract", "Point, Point - Subtract", "Point ~ - Point ~", typeof (Vector2),
+        	            new Type[] {typeof (Vector2), typeof (Vector2)}, delegate(EvaluatorState state, object[] objects)
+        	                                                             	{
+        	                                                             		return ((Vector2) objects[0]) -
+        	                                                             		       ((Vector2) objects[1]);
+        	                                                             	});
+        	addFunction("midpoint", "Point, Point - Midpoint", "The midpoint of points ~ and ~", typeof (Vector2),
+        	            new Type[] {typeof (Vector2), typeof (Vector2)}, delegate(EvaluatorState state, object[] objects)
+        	                                                             	{
+        	                                                             		return .5*
+        	                                                             		       (((Vector2) objects[0]) +
+        	                                                             		        ((Vector2) objects[1]));
+        	                                                             	});
+        	addFunction("closestRobotToLine", "Line, Team - closest robot",
+        	            "The distance from the line ~ to the closest robot on team ~ (excluding the robots that are the endpoints of the line)",
+        	            typeof (double), new Type[] {typeof (Line), typeof (TeamCondition)},
+        	            delegate(EvaluatorState state, object[] objects)
+        	            	{
+        	            		double rtn = 1000000;
 #if DEBUG
-                if (state == null) throw new ApplicationException("tried to call a function that needed an evaluatorState without one!");
+        	            		if (state == null)
+        	            			throw new ApplicationException(
+        	            				"tried to call a function that needed an evaluatorState without one!");
 #endif
-                Line line = (Line)objects[0];
-                TeamCondition condition = (TeamCondition)objects[1];
-                List<RobotInfo> allinfos = new List<RobotInfo>();
-                if (condition.maybeOurs())
-                    allinfos.AddRange(state.OurTeamInfo);
-                if (condition.maybeTheirs())
-                    allinfos.AddRange(state.TheirTeamInfo);
-                Vector2[] endpoints = line.getPoints();
-                foreach (RobotInfo r in allinfos)
-                {
-                    Vector2 position = r.Position;
-                    if (position == endpoints[0] || position == endpoints[1])
-                        continue;
-                    rtn = Math.Min(rtn, line.distFromSegment(position));
-                }
-                return rtn;
-            });
+        	            		Line line = (Line) objects[0];
+        	            		TeamCondition condition = (TeamCondition) objects[1];
+        	            		List<RobotInfo> allinfos = new List<RobotInfo>();
+        	            		if (condition.maybeOurs())
+        	            			allinfos.AddRange(state.OurTeamInfo);
+        	            		if (condition.maybeTheirs())
+        	            			allinfos.AddRange(state.TheirTeamInfo);
+        	            		Vector2[] endpoints = line.getPoints();
+        	            		foreach (RobotInfo r in allinfos)
+        	            		{
+        	            			Vector2 position = r.Position;
+        	            			if (position == endpoints[0] || position == endpoints[1])
+        	            				continue;
+        	            			rtn = Math.Min(rtn, line.distFromSegment(position));
+        	            		}
+        	            		return rtn;
+        	            	});
 
 
 
-            addFunction("pointAboveLine", "Point, Line - Above", "Whether point ~ is above line ~", typeof(bool), new Type[] { typeof(Vector2), typeof(Line) }, delegate(EvaluatorState state, object[] objects)
-            {
-                Vector2 point = (Vector2)objects[0];
-                Line line = (Line)objects[1];
+        	addFunction("pointAboveLine", "Point, Line - Above", "Whether point ~ is above line ~", typeof (bool),
+        	            new Type[] {typeof (Vector2), typeof (Line)}, delegate(EvaluatorState state, object[] objects)
+        	                                                          	{
+        	                                                          		Vector2 point = (Vector2) objects[0];
+        	                                                          		Line line = (Line) objects[1];
 
-                return pointAboveLine(point, line);
-            });
+        	                                                          		return pointAboveLine(point, line);
+        	                                                          	});
 
-            addFunction("pathClear", "Point, Point, double - Path clear", "Whether the path from point ~ to point ~ has no obstacles within distance ~", typeof(bool), new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
-            {
-                Vector2 p1 = (Vector2)objects[0];
-                Vector2 p2 = (Vector2)objects[1];
-                double mindist = (double)objects[2];
+        	addFunction("pathClear", "Point, Point, double - Path clear",
+        	            "Whether the path from point ~ to point ~ has no obstacles within distance ~", typeof (bool),
+        	            new Type[] {typeof (Vector2), typeof (Vector2), typeof (double)},
+        	            delegate(EvaluatorState state, object[] objects)
+        	            	{
+        	            		Vector2 p1 = (Vector2) objects[0];
+        	            		Vector2 p2 = (Vector2) objects[1];
+        	            		double mindist = (double) objects[2];
 
-                Line line = new Line(p1, p2);
+        	            		Line line = new Line(p1, p2);
 
-                // get distance of closest robot to line
-                List<RobotInfo> allinfos = new List<RobotInfo>();
-                allinfos.AddRange(state.OurTeamInfo);
-                allinfos.AddRange(state.TheirTeamInfo);
-                Vector2[] endpoints = line.getPoints();
+        	            		// get distance of closest robot to line
+        	            		List<RobotInfo> allinfos = new List<RobotInfo>();
+        	            		allinfos.AddRange(state.OurTeamInfo);
+        	            		allinfos.AddRange(state.TheirTeamInfo);
+        	            		Vector2[] endpoints = line.getPoints();
 
-                double rtn = 10000;
+        	            		double rtn = 10000;
 
-                foreach (RobotInfo r in allinfos)
-                {
-                    Vector2 position = r.Position;
-                    if (Math.Sqrt(position.distanceSq(endpoints[0])) < mindist || Math.Sqrt(position.distanceSq(endpoints[1])) < mindist)
-                        continue;
-                    rtn = Math.Min(rtn, line.distFromSegment(position));
-                }
+        	            		foreach (RobotInfo r in allinfos)
+        	            		{
+        	            			Vector2 position = r.Position;
+        	            			if (Math.Sqrt(position.distanceSq(endpoints[0])) < mindist ||
+        	            			    Math.Sqrt(position.distanceSq(endpoints[1])) < mindist)
+        	            				continue;
+        	            			rtn = Math.Min(rtn, line.distFromSegment(position));
+        	            		}
 
-                return (rtn >= mindist);
+        	            		return (rtn >= mindist);
 
-            });
+        	            	});
+
+        	addFunction("inField", "Point inside field boundaries", "Whether the point ~ is inside the field",
+        	            typeof (bool), new Type[] {typeof (Vector2)}, delegate(EvaluatorState state, object[] objects)
+			{
+				Vector2 point = (Vector2) objects[0];
+				bool result = ((point.X <= BasicCoordinateConverter.FIELD_WIDTH/2) && (point.X >= - BasicCoordinateConverter.FIELD_WIDTH/2)
+					&& (point.Y <= BasicCoordinateConverter.FIELD_HEIGHT/2) && (point.Y >= - BasicCoordinateConverter.FIELD_HEIGHT/2));
+				return result;
+			});
 
             /*addFunction("closest_now", "Team, point - closest robot", "return the nearest robot to the point", typeof(Robot), new Type[] { typeof(TeamCondition), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
             {
