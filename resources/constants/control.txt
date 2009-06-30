@@ -155,3 +155,5 @@ double ALPHA_LATV_1 1
 double ALPHA_LATV_2 1
 double ALPHA_LATV_3 1
 double ALPHA_LATV_4 1
+
+double MOVE_PID_MAX 40
