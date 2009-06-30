@@ -14,6 +14,8 @@ namespace Robocup.CoreRobotics
     {
         const int NUM_CAMERAS = 2;
 
+    	private int team;
+
         // The state of the field believed in by a camera
         private class FieldState
         {
@@ -230,6 +232,8 @@ namespace Robocup.CoreRobotics
             {
                 fieldStates[i] = new FieldState();
             }
+
+        	team = Constants.get<int>("configuration", "OUR_TEAM_INT");
 
             LoadConstants();
         }
@@ -487,8 +491,8 @@ namespace Robocup.CoreRobotics
         // TO BE REMOVED
         public BallInfo getBallInfo()
         {
-            //return GetBall() ?? new BallInfo(new Vector2(0,0));
-            throw new NotImplementedException("unimplemented");
+            return GetBall() ?? new BallInfo(new Vector2(0,0));
+            //throw new NotImplementedException("unimplemented");
         }
         public List<RobotInfo> getOurTeamInfo()
         {
@@ -503,7 +507,7 @@ namespace Robocup.CoreRobotics
         public RobotInfo getCurrentInformation(int id)
         {
             //return GetRobot(0,id);
-            throw new NotImplementedException("unimplemented");
+        	return GetRobot(team, id);
         }
         public List<RobotInfo> getAllInfos()
         {
