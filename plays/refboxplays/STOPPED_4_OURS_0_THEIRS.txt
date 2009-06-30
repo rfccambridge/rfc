@@ -17,7 +17,7 @@ centerbottom (point 0 -2.1)
 
 ballpoint (pointof ball)
 ballcircle (circle ballpoint 0.63)
-ballgoalline (line ball ourgoal)
+ballgoalline (line ballpoint ourgoal)
 
 wall1line (line ballpoint ourgoal)
 wall1point (linecircleintersection wall1line ballcircle 1)
