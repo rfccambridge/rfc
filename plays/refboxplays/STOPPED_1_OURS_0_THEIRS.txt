@@ -24,6 +24,8 @@ ourgoalcloseperim (circle ourgoal 0.4)
 
 defenderpoint (linecircleintersection ballgoalline ourgoalwideperim -1)
 
+GOALIE_X_POS (const-double GOALIE_X_POS)
+
 endtopgoalpt (point GOALIE_X_POS 2)
 endbottomgoalpt (point GOALIE_X_POS -2)
 vertgoalline (line endtopgoalpt endbottomgoalpt)

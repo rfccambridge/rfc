@@ -16,6 +16,8 @@ ballgoalline (line ballpoint ourgoal)
 
 kickerbot (closest friendly ballpoint loose)
 
+GOALIE_X_POS (const-double GOALIE_X_POS)
+
 #begin 2 person defense
 ourgoalwideperim (circle ourgoal .9)
 ourgoalcloseperim (circle ourgoal 0.4)
