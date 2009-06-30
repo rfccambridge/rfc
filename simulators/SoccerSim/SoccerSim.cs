@@ -66,9 +66,9 @@ namespace SoccerSim
             // HACK
             _player1._view.ourPlayNames = _player1._interpreter.ourPlayNames;
             _player1._view.theirPlayNames = _player1._interpreter.theirPlayNames;
-            _player2._view.ourPlayNames = _player2._interpreter.ourPlayNames;
-            _player2._view.theirPlayNames = _player2._interpreter.theirPlayNames;
-
+            //_player2._view.ourPlayNames = _player2._interpreter.ourPlayNames;
+            //_player2._view.theirPlayNames = _player2._interpreter.theirPlayNames;
+            
             InitDragAndDrop();
         }
 

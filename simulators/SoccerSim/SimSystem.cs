@@ -13,6 +13,9 @@ namespace SoccerSim
 {
     class SimSystem
     {
+        private const int YELLOW = 0;
+        private const int BLUE = 1;
+
         IPredictor _predictor;
         public FieldDrawer _view;
         PhysicsEngine physics_engine;
@@ -90,8 +93,10 @@ namespace SoccerSim
                 planners.Add(info.ID, new FourWheeledMovement());*/
                 //planners.Add(info.ID, new TwoWheeledMovement(physics_engine, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight));
             // create controller
-            //_controller = new RFCController(physics_engine, planners, new Navigation.Current.CurrentNavigator(), physics_engine);
-            _controller = new RFCController(physics_engine, new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner(), physics_engine);
+            //_controller = new RFCController(physics_engine, new Robocup.MotionControl.SmoothVector2BiRRTMotionPlanner(), physics_engine);
+            _controller = new RFCController(physics_engine, new Robocup.MotionControl.BugExtendMotionPlanner(), physics_engine);
+            //_controller = new RFCController(physics_engine, new Robocup.MotionControl.DumbExtenderPlanner(), physics_engine);
+
 
             // refboxlistener
             //referee = new RefBoxState(_listener, _predictor, isYellow);
@@ -144,7 +149,6 @@ namespace SoccerSim
                     initialize();
 
                 _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
-                isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
 
                 //referee.start();
                 t = new System.Timers.Timer(_sleepTime);
@@ -185,12 +189,15 @@ namespace SoccerSim
             _controller.clearArrows();
             //interpret(referee.GetCurrentPlayType());
 			// now with real refboxstate!
-			
-        	interpret(_refbox.GetCurrentPlayType());
 
 			// add playtype to drawer
-			_view.SetPlayType(_refbox.GetCurrentPlayType());
-		}
+            // If this instance of SimSystem is for "our" team (vs. static enemies)
+            if (isYellow && team == YELLOW)
+            {
+                interpret(_refbox.GetCurrentPlayType());
+                _view.SetPlayType(_refbox.GetCurrentPlayType());
+            }
+        }
 
 
         private void interpret(PlayTypes toRun)
