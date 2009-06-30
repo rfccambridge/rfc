@@ -125,7 +125,7 @@ namespace Robocup.CoreRobotics
             {
                 Console.WriteLine("CRAP");
             }
-            return new RobotInfo(newPosition, newVelocity, newAngularVelocity, angle, info.ID);
+            return new RobotInfo(newPosition, newVelocity, newAngularVelocity, angle, info.Team, info.ID);
         }
     }
 }

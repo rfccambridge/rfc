@@ -55,7 +55,7 @@ namespace SoccerSim
 
         	string refboxAddr = Constants.get<string>("default", "REFBOX_ADDR");
 			int refboxPort = Constants.get<int>("default", "REFBOX_PORT");
-			var refboxListener = new MulticastRefBoxListener(refboxAddr, refboxPort);
+			MulticastRefBoxListener refboxListener = new MulticastRefBoxListener(refboxAddr, refboxPort);
 
             _player1 = new SimSystem(_fieldView, _physics_engine, referee, refboxListener, true);
             _player2 = new SimSystem(_fieldView, _physics_engine, referee, refboxListener, false);

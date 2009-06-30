@@ -51,25 +51,24 @@ namespace Robocup.Simulation
             UpdateBall(new BallInfo(newPosition));
         }
 
-		public void ResetPositions()
+        public void ResetPositions()
         {
-            robots = new List<RobotInfo>[] { 
-			    // YELLOW
-                new List<RobotInfo>() {
-				new RobotInfo(new Vector2(-1.0, -1), 0, YELLOW, 0),
-                new RobotInfo(new Vector2(-1.0, 0),  0, YELLOW, 1),
-                new RobotInfo(new Vector2(-1.0, 1),  0, YELLOW, 2),
-                new RobotInfo(new Vector2(-2f, -1),  0, YELLOW, 3),
-                new RobotInfo(new Vector2(-2f, 1),  0, YELLOW, 4) },
+            List<RobotInfo> ourRobots = new List<RobotInfo>();
+            List<RobotInfo> theirRobots = new List<RobotInfo>();
 
-				// BLUE
-				new List<RobotInfo>() {
-                new RobotInfo(new Vector2(1.0, -1),  0, BLUE, 5),
-				new RobotInfo(new Vector2(1.0, 0),  0, BLUE, 6),
-                new RobotInfo(new Vector2(1.0, 1),  0, BLUE, 7),
-                new RobotInfo(new Vector2(2f, -1),  0, BLUE, 8),
-                new RobotInfo(new Vector2(2f, 1),  0, BLUE, 9) }
-            };
+            ourRobots.Add(new RobotInfo(new Vector2(-1.0, -1), 0, YELLOW, 0));
+            ourRobots.Add(new RobotInfo(new Vector2(-1.0, 0), 0, YELLOW, 1));
+            ourRobots.Add(new RobotInfo(new Vector2(-1.0, 1), 0, YELLOW, 2));
+            ourRobots.Add(new RobotInfo(new Vector2(-2f, -1), 0, YELLOW, 3));
+            //ourRobots.Add(new RobotInfo(new Vector2(-2f, 1), 0, YELLOW, 4));
+
+            theirRobots.Add(new RobotInfo(new Vector2(1.0, -1), 0, BLUE, 5));
+            theirRobots.Add(new RobotInfo(new Vector2(1.0, 0), 0, BLUE, 6));
+            theirRobots.Add(new RobotInfo(new Vector2(1.0, 1), 0, BLUE, 7));
+            theirRobots.Add(new RobotInfo(new Vector2(2f, -1), 0, BLUE, 8));
+            theirRobots.Add(new RobotInfo(new Vector2(2f, 1), 0, BLUE, 9));
+
+            robots = new List<RobotInfo>[] { ourRobots, theirRobots };
             ball = new BallInfo(Vector2.ZERO);
         }
 
@@ -134,7 +133,7 @@ namespace Robocup.Simulation
 				newballlocation = new Vector2(ballInfo.Position.X + ballVx, ballInfo.Position.Y + ballVy);
 			}
 
-			var allRobots = GetRobots();
+			List<RobotInfo> allRobots = GetRobots();
 
 			// fix robot-robot collisions
 			for (int i = 0; i < allRobots.Count; i++)
@@ -282,7 +281,7 @@ namespace Robocup.Simulation
 		}
 		public List<RobotInfo> GetRobots()
 		{
-			var allRobots = new List<RobotInfo>();
+			List<RobotInfo> allRobots = new List<RobotInfo>();
 			allRobots.AddRange(robots[YELLOW]);
 			allRobots.AddRange(robots[BLUE]);
 			return allRobots;
