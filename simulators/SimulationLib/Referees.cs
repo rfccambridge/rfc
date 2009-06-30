@@ -33,11 +33,11 @@ namespace Robocup.Simulation
         int should_restart = 0;
         public void RunRef(IPredictor predictor, Action<BallInfo> move_ball)
         {
-            BallInfo ball = predictor.getBallInfo();
+            BallInfo ball = predictor.GetBall();
             // Check for goal
             if (Math.Abs(ball.Position.Y) <= .35 && Math.Abs(ball.Position.X) >= 2.4)
             {
-                Console.WriteLine("Goal Ball reset!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                Console.WriteLine("Goal Ball reset!");
                 goalScored(ball.Position.X > 0);
                 move_ball(new BallInfo(new Vector2(0, 0)));
                 return;
@@ -51,18 +51,13 @@ namespace Robocup.Simulation
             {
                 const double threshsq = .35 * .35;
                 int numTooClose = 0;
-                foreach (RobotInfo info in predictor.getOurTeamInfo())
+                foreach (RobotInfo info in predictor.GetRobots())
                 {
                     double dist = ball.Position.distanceSq(info.Position);
                     if (dist < threshsq)
                         numTooClose++;
                 }
-                foreach (RobotInfo info in predictor.getTheirTeamInfo())
-                {
-                    double dist = ball.Position.distanceSq(info.Position);
-                    if (dist < threshsq)
-                        numTooClose++;
-                }
+
                 if (numTooClose >= 4)
                     immobile = true;
             }

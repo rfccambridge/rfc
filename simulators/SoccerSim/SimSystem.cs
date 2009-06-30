@@ -24,8 +24,12 @@ namespace SoccerSim
         }
         public Interpreter _interpreter;
 
+    	private MulticastRefBoxListener _refboxListener;
+    	private RefBoxState _refbox;
+
         IReferee referee;
         //RefBoxListener _listener;
+
 
         string PLAY_DIR;
 
@@ -37,15 +41,22 @@ namespace SoccerSim
         private int _sleepTime;
         private bool isYellow;
 
-        public SimSystem(FieldDrawer view, PhysicsEngine physics_engine, IReferee referee, bool isYell)
+    	private int REFBOX_PORT;
+    	private String REFBOX_ADDR;
+
+    	private int team;
+
+        public SimSystem(FieldDrawer view, PhysicsEngine physics_engine, IReferee referee, MulticastRefBoxListener refboxListener, bool isYell)
         {
             _view = view;
+
             initialized = false;
             running = false;
             _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
             isYellow = isYell;
 
             this.referee = referee;
+        	this._refboxListener = refboxListener;
 
             this.physics_engine = physics_engine;
             //_listener = refbox;
@@ -96,7 +107,7 @@ namespace SoccerSim
                 start();
             }
 
-
+			_refbox = new RefBoxState(_refboxListener, _predictor, isYellow);
 
             initialized = true;
         }
@@ -104,6 +115,9 @@ namespace SoccerSim
         public void LoadConstants()
         {
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
+        	team = Constants.get<int>("configuration", "OUR_TEAM_INT");
+			REFBOX_PORT = Constants.get<int>("default", "REFBOX_PORT");
+			REFBOX_ADDR = Constants.get<string>("default", "REFBOX_ADDR");
         }
 
         # region Start/Stop
@@ -152,7 +166,7 @@ namespace SoccerSim
                 running = false;
                 //referee.stop();
                 t.Stop();
-                foreach (RobotInfo info in _predictor.getOurTeamInfo())
+                foreach (RobotInfo info in _predictor.GetRobots(team))
                 {
                     _controller.stop(info.ID);
                 }
@@ -169,8 +183,14 @@ namespace SoccerSim
                 Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
             counter++;
             _controller.clearArrows();
-            interpret(referee.GetCurrentPlayType());
-        }
+            //interpret(referee.GetCurrentPlayType());
+			// now with real refboxstate!
+			
+        	interpret(_refbox.GetCurrentPlayType());
+
+			// add playtype to drawer
+			_view.SetPlayType(_refbox.GetCurrentPlayType());
+		}
 
 
         private void interpret(PlayTypes toRun)

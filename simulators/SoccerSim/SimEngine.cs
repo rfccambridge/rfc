@@ -70,7 +70,7 @@ namespace SoccerSim
         /// </summary>
         public void step(double dt)
         {
-            physics_engine.step(dt);
+            physics_engine.Step(dt);
         }
 
         # endregion

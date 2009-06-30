@@ -26,8 +26,13 @@ namespace SoccerSim
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.DoubleBuffer, true);
             InitializeComponent();
 
+        	this.BackColor = Color.Green;
+
             init();
         }
+
+		int REFBOX_PORT;
+		string REFBOX_ADDR;
 
         FieldDrawer _fieldView;
         PhysicsEngine _physics_engine;
@@ -48,10 +53,12 @@ namespace SoccerSim
             _fieldView = new FieldDrawer(_physics_engine, converter);
             // TODO make configurable how many to load
 
-            //RefBoxListener refbox = new RefBoxListener(10001);
+        	string refboxAddr = Constants.get<string>("default", "REFBOX_ADDR");
+			int refboxPort = Constants.get<int>("default", "REFBOX_PORT");
+			var refboxListener = new MulticastRefBoxListener(refboxAddr, refboxPort);
 
-            _player1 = new SimSystem(_fieldView, _physics_engine, referee, true);
-            _player2 = new SimSystem(_fieldView, _physics_engine, referee, false);
+            _player1 = new SimSystem(_fieldView, _physics_engine, referee, refboxListener, true);
+            _player2 = new SimSystem(_fieldView, _physics_engine, referee, refboxListener, false);
             _engine = new SimEngine(_physics_engine, this);
 
             _vision = new SimVision(_physics_engine, this);
@@ -87,15 +94,27 @@ namespace SoccerSim
         private DragAndDropper draganddrop = new DragAndDropper();
         void InitDragAndDrop()
         {
-            draganddrop.AddDragandDrop(delegate() { return _physics_engine.getBallInfo().Position; }, .05, delegate(Vector2 v) { _physics_engine.MoveBall(v); });
-            foreach (RobotInfo info in _physics_engine.getAllInfos())
+            draganddrop.AddDragandDrop(delegate()
+                                       	{
+                                       		return _physics_engine.GetBall().Position;
+                                       	}, 
+										.05, 
+										delegate(Vector2 v)
+											{
+												_physics_engine.MoveBall(v);
+											});
+            foreach (RobotInfo info in _physics_engine.GetRobots())
             {
                 int id = info.ID;
-                draganddrop.AddDragandDrop(delegate() { return _physics_engine.getCurrentInformation(id).Position; }, .1,
+            	int team = info.Team;
+                draganddrop.AddDragandDrop(delegate()
+                                           	{
+                                           		return _physics_engine.GetRobot(team, id).Position;
+                                           	}, .1,
                     delegate(Vector2 v)
                     {
-                        RobotInfo inf = _physics_engine.getCurrentInformation(id);
-                        _physics_engine.MoveRobot(id, new RobotInfo(v, inf.Orientation, id));
+                        RobotInfo inf = _physics_engine.GetRobot(team, id);
+                        _physics_engine.MoveRobot(team, id, new RobotInfo(v, inf.Orientation, team, id));
                     }
                 );
             }
@@ -176,7 +195,7 @@ namespace SoccerSim
             }
             else if (c == 'q')
             {
-                _physics_engine.resetPositions();
+                _physics_engine.ResetPositions();
             }
             else if (c == 'v')
             {

@@ -63,7 +63,7 @@ namespace Robocup.MotionControl
                 MotionPlanningResults results = planner.PlanMotion(0, new RobotInfo(destination, 0, 0), engine, .13);
                 engine.setMotorSpeeds(0, results.wheel_speeds);
                 if (!checkBoxDisableMovement.Checked)
-                    engine.step(.025);
+                    engine.Step(.025);
                 //moveObstacles();
             }
         }
@@ -120,11 +120,12 @@ namespace Robocup.MotionControl
             foreach (RobotInfo info in engine.getAllInfos())
             {
                 int id = info.ID;
+            	int team = info.Team;
                 draganddrop.AddDragandDrop(delegate() { return engine.getCurrentInformation(id).Position; }, .1,
                     delegate(Vector2 v)
                     {
                         RobotInfo inf = engine.getCurrentInformation(id);
-                        engine.MoveRobot(id, new RobotInfo(v, inf.Orientation, id));
+                        engine.MoveRobot(team, id, new RobotInfo(v, inf.Orientation, id));
                     }
                 );
             }
