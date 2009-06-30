@@ -181,7 +181,7 @@ namespace Robocup.MotionControl
             //Store feedback for each robot
             _feedbackObjs = new Feedback[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-                _feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID));
+                _feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID), false);
 
             //Set empty paths
             _paths = new RobotPath[NUM_ROBOTS];
@@ -423,7 +423,7 @@ namespace Robocup.MotionControl
 
             _feedbackObjs = new Feedback[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-                _feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID));
+                _feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID), false);
 
             LoadConstants();
         }
@@ -650,7 +650,7 @@ namespace Robocup.MotionControl
             //Store feedback for each robot
             _feedbackObjs = new Feedback[NUM_ROBOTS];
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
-                _feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID));
+                _feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID), false);
 
             //Store time last called
             _timesLastCalled = new DateTime[NUM_ROBOTS];

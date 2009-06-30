@@ -1256,10 +1256,10 @@ namespace Robocup.MotionControl
 
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
                 //DEFAULT: PID on position -> no feed-forward, uses desired instead (pre 2*.06.2009)
-                feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID));
+                feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID), true);
                 //TEST: for long distance PID on velocity (x & y), feed-forward constant velocity
                 //feedbackObjs[robotID] = new Feedback(robotID, "control-vel", new TestModel(robotID));
-                shortFeedbackObjs[robotID] = new Feedback(robotID, "control-short", new FailSafeModel(robotID));
+                shortFeedbackObjs[robotID] = new Feedback(robotID, "control-short", new FailSafeModel(robotID), false);
             }
 
             ReloadConstants();

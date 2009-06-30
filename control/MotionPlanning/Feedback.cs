@@ -43,6 +43,11 @@ namespace Robocup.MotionControl {
         private DOF_Numbers thetaPID;
         private string constantsFile;
 
+
+    	private bool useFwdLat;
+		private DOF_Numbers forwardPID;
+    	private DOF_Numbers lateralPID;
+
         private RobotModel model;
 
         const double wheelR = 0.0782828; //distance from the center of the robot to the wheels in meters
@@ -51,12 +56,17 @@ namespace Robocup.MotionControl {
         public UpdateErrorsDelegate OnUpdateErrors;
         public string ConstantsFile { get { return constantsFile; } }
 
-        public Feedback(int robotID, string constFile, RobotModel _model) {
+        public Feedback(int robotID, string constFile, RobotModel _model, bool _useFwdLat) {
             constantsFile = constFile;
             xPID = new DOF_Numbers(robotID, DOFType.X, constFile);
             yPID = new DOF_Numbers(robotID, DOFType.Y, constFile);
             thetaPID = new DOF_Numbers(robotID, DOFType.THETA, constFile);
             model = _model;
+
+			forwardPID = new DOF_Numbers(robotID, DOFType.FWDV, constFile);
+			lateralPID = new DOF_Numbers(robotID, DOFType.LATV, constFile);
+
+        	useFwdLat = _useFwdLat;
         }
 
 
@@ -71,8 +81,23 @@ namespace Robocup.MotionControl {
             //first go through the theoretical robot model and compute feed forward commands
             double xForward, yForward, thetaForward;
             model.ComputeCommand(currentState, desiredState, out xForward, out yForward, out thetaForward);
-            
-            //then simply run PID to correct errors
+
+        	Vector2 directionVector = desiredState.Position - currentState.Position;
+            //remove me:
+        	double DESIRED_SPEED = 100;
+        	double direction = UsefulFunctions.angleCheck(directionVector.cartesianAngle());
+
+        	double currVelocity = Math.Sqrt(currentState.Velocity.magnitudeSq());
+        	double angleVelocityDirection = UsefulFunctions.angleDifference(directionVector.cartesianAngle(),
+        	                                                                currentState.Velocity.cartesianAngle());
+
+			double currVelocityForward = currVelocity * Math.Cos(angleVelocityDirection);
+			double currVelocityLateral = currVelocity * Math.Sin(angleVelocityDirection);
+
+        	double forwardCommand = forwardPID.Compute(currVelocityForward, DESIRED_SPEED, 0, 0, DESIRED_SPEED);
+        	double lateralCommand = lateralPID.Compute(currVelocityLateral, 0, 0, 0, 0);
+
+			//then simply run PID to correct errors
             double xCommand = xPID.Compute(currentState.Position.X, desiredState.Position.X, currentState.Velocity.X, desiredState.Velocity.X, xForward);
             double yCommand = yPID.Compute(currentState.Position.Y, desiredState.Position.Y, currentState.Velocity.Y, desiredState.Velocity.Y, yForward);
 
@@ -88,32 +113,40 @@ namespace Robocup.MotionControl {
                 OnUpdateErrors(xError, yError, thetaError);
             }
 
-            //Console.WriteLine("Current theta: " + currentState.Orientation + " Desired theta: " + desiredState.Orientation);
-            Console.WriteLine("Difference in xy: " + Math.Sqrt(currentState.Position.distanceSq(desiredState.Position)));
+			//change from the x and y of the field to forward and lateral(right is positive) used below
+			double robotForward = Math.Cos(currentOrientation) * xCommand + Math.Sin(currentOrientation) * yCommand;
+			double robotLateral = Math.Sin(currentOrientation) * xCommand - Math.Cos(currentOrientation) * yCommand;
 
-            //converts from x speed, y speed and angular speed to wheel speeds
-            WheelSpeeds ws = convert(xCommand, yCommand, angularVCommand, currentOrientation);
-            return ws;
+			#region From Motion frame to Robot frame
+			double frameAngleDiff = UsefulFunctions.angleDifference(direction, currentOrientation);
+
+			//change from the forward and lateral frame to the robot frame
+			double robotFwd = Math.Cos(frameAngleDiff) * forwardCommand + Math.Sin(frameAngleDiff) * lateralCommand;
+			double robotLtr = Math.Sin(frameAngleDiff) * forwardCommand - Math.Cos(frameAngleDiff) * lateralCommand;
+			#endregion
+
+        	WheelSpeeds tst = convert(robotFwd, robotLtr, angularVCommand);
+
+			//converts from x speed, y speed and angular speed to wheel speeds
+            WheelSpeeds ws = convert(robotForward, robotLateral, angularVCommand);
+            //return ws;
+
+        	return useFwdLat ? tst : ws;
         }
         
-        /// <summary>
-        /// Convert a desired x velocity, y velocity, angular velocity, and theta arguments to WheelSpeeds object
+		/// <summary>
+        /// Convert a desired velocity (in robot coordinates!!!) to WheelSpeeds object
         /// </summary>
-        /// <param name="xCommand"></param>
-        /// <param name="yCommand"></param>
+        /// <param name="forward"></param>
+        /// <param name="lateral"></param>
         /// <param name="angularV"></param>
-        /// <param name="theta"></param>
         /// <returns></returns>
-        private WheelSpeeds convert(double xCommand, double yCommand, double angularV, double theta){
+        private WheelSpeeds convert(double forward, double lateral, double angularV){
             const double ANGLE_AXIS_TO_WHEEL = 41*Math.PI/180;
             
             //I assume the x command is effectively in m/s, so r the radius of the wheels from the center of
             //the robot is in meters
-
-            //change from the x and y of the field to forward and lateral(right is positive) used below
-            double forward = Math.Cos(theta)*xCommand+Math.Sin(theta)*yCommand;
-            double lateral = Math.Sin(theta)*xCommand-Math.Cos(theta)*yCommand;
-
+         
             //Console.WriteLine(lateral.ToString() + " lateral|Forward: " + forward.ToString());
         
             //computed here to save typing, since used 4 times
@@ -190,7 +223,7 @@ namespace Robocup.MotionControl {
             
 
         //enum for the three different degrees of freedom the PID loops run for x, y and theta
-        enum DOFType { X, Y, THETA };
+        enum DOFType { X, Y, THETA, FWDV, LATV };
 
         private class DOF_Numbers{
 

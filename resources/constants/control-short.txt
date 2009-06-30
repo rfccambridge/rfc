@@ -109,3 +109,52 @@ double MOVE_VTERM_GAIN 30
 double MOVE_PTERM_MAX 80
 double MOVE_PTERM_GAIN 800
 double MOVE_DTERM_PROP 5
+
+double P_FWDV_0 0
+double P_FWDV_1 0
+double P_FWDV_2 0
+double P_FWDV_3 0
+double P_FWDV_4 0
+
+double I_FWDV_0 0
+double I_FWDV_1 0
+double I_FWDV_2 0
+double I_FWDV_3 0
+double I_FWDV_4 0
+
+double D_FWDV_0 0
+double D_FWDV_1 0
+double D_FWDV_2 0
+double D_FWDV_3 0
+double D_FWDV_4 0
+
+double ALPHA_FWDV_0 1
+double ALPHA_FWDV_1 1
+double ALPHA_FWDV_2 1
+double ALPHA_FWDV_3 1
+double ALPHA_FWDV_4 1
+
+double P_LATV_0 0
+double P_LATV_1 0
+double P_LATV_2 0
+double P_LATV_3 0
+double P_LATV_4 0
+
+double I_LATV_0 0
+#double I_LATV_0 0
+double I_LATV_1 0
+double I_LATV_2 0
+double I_LATV_3 0
+double I_LATV_4 0
+
+double D_LATV_0 0
+double D_LATV_1 0
+double D_LATV_2 0
+double D_LATV_3 0
+double D_LATV_4 0
+
+double ALPHA_LATV_0 1
+double ALPHA_LATV_1 1
+double ALPHA_LATV_2 1
+double ALPHA_LATV_3 1
+double ALPHA_LATV_4 1
