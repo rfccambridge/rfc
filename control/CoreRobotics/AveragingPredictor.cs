@@ -82,10 +82,10 @@ namespace Robocup.CoreRobotics
                                 ballDtStart = time;
                                 ballAtDtStart = new BallInfo(ball);
                             }
-
-                            // We have just seen the ball                    
-                            ball.LastSeen = time;
                         }
+
+                        // We have just seen the ball                    
+                        ball.LastSeen = time;
                     }
                 }
                 #endregion
@@ -265,7 +265,7 @@ namespace Robocup.CoreRobotics
             Vector2 avgVelocity = null;
             double avgLastSeen = 0;
             double sum = 0;
-            for (int i = 1; i < fieldStates.Length; i++)
+            for (int i = 0; i < fieldStates.Length; i++)
             {
                 BallInfo ball = fieldStates[i].GetBall();                                
                 if (ball != null)
