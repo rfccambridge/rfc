@@ -217,9 +217,6 @@ namespace Robocup.CoreRobotics
         private bool marking = false;          
         private Vector2 markedPosition = null;
 
-        // Game state
-        PlayTypes playType = PlayTypes.Halt;
-
         // "Constants"
         private static double DELTA_DIST_SQ_MERGE;
         private static double MAX_SECONDS_TO_KEEP_INFO;
@@ -485,7 +482,8 @@ namespace Robocup.CoreRobotics
 
         public void SetPlayType(PlayTypes newPlayType)
         {
-            playType = newPlayType;            
+			// Do nothing: this method is for assumed ball: returning clever values for the ball
+			// based on game state -- i.e. center of field during kick-off
         }
 
         // TO BE REMOVED
