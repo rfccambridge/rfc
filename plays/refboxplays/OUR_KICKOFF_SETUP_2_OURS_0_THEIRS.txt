@@ -1,7 +1,7 @@
 Metadata:
-type KickOff_Ours_Setup
-score 300
-name O_KFF_STP_3x0
+type Kickoff_Ours_Setup
+score 200
+name O_KFF_STP_2x0
 
 Objects:
 
@@ -17,10 +17,7 @@ centerbottom (point 0 -2.1)
 
 centerpoint (point -0.3 0)
 
-middlepoint (point -2 0.2)
-
 goaliebot (closest friendly ourgoal loose)
-middlerbot (closest friendly middlepoint loose)
 centerbot (closest friendly center loose)
 
 GOALIE_X_POS (const-double GOALIE_X_POS)
@@ -33,10 +30,7 @@ vertgoalline (line endtopgoalpt endbottomgoalpt)
 
 goaliept (linelineintersection centergoalline vertgoalline)
 
-
-
 Conditions:
 Actions:
 (robotpointpointmove goaliebot goaliept center) 
-(robotpointpointmove middlerbot middlepoint theirgoal)
 (robotpointpointmove centerbot centerpoint theirgoal)
