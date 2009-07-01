@@ -159,6 +159,10 @@ namespace Robocup.CoreRobotics
             return playsToRun;
         }
 
-    
+        public void LoadConstants()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
     }
 }

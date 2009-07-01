@@ -14,7 +14,14 @@ namespace Robocup.Simulation
 
 		private bool _marking = false;
 		private Vector2 _markedPosition;
+
 		private double BALL_MOVED_DIST;
+        static double FIELD_WIDTH;
+        static double FIELD_HEIGHT;
+        static double FIELD_XMIN;
+        static double FIELD_XMAX;
+        static double FIELD_YMIN;
+        static double FIELD_YMAX;
 
 		private BallInfo ball = null;
 		private List<RobotInfo>[] robots = new List<RobotInfo>[] { new List<RobotInfo>(), 
@@ -30,10 +37,21 @@ namespace Robocup.Simulation
 			this.referee = referee;
 			foreach (RobotInfo info in GetRobots())
 				movement_modelers.Add(info.ID, new MovementModeler());
-
-			BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
-
+            LoadConstants();
 		}
+
+        public void LoadConstants()
+        {
+            BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
+
+            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+
+            FIELD_XMIN = -FIELD_WIDTH / 2;
+            FIELD_XMAX = FIELD_WIDTH / 2;
+            FIELD_YMIN = -FIELD_HEIGHT / 2;
+            FIELD_YMAX = FIELD_HEIGHT / 2;
+        }
 
     	public void MoveRobot(int team, int robotID, RobotInfo new_info)
         {
@@ -121,13 +139,13 @@ namespace Robocup.Simulation
 				Vector2 ballPos = ballInfo.Position;
 				double ballVx = newballvelocity.X;
 				double ballVy = newballvelocity.Y;
-				if (ballPos.X < -2.45)
+				if (ballPos.X < FIELD_XMIN)
 					ballVx = Math.Abs(ballVx);
-				else if (ballPos.X > 2.45)
+                else if (ballPos.X > FIELD_XMAX)
 					ballVx = -Math.Abs(ballVx);
-				if (ballPos.Y < -1.7)
+                if (ballPos.Y < FIELD_YMIN)
 					ballVy = Math.Abs(ballVy);
-				else if (ballPos.Y > 1.7)
+                else if (ballPos.Y > FIELD_YMAX)
 					ballVy = -Math.Abs(ballVy);
 				newballvelocity = new Vector2(ballVx, ballVy);
 				newballlocation = new Vector2(ballInfo.Position.X + ballVx, ballInfo.Position.Y + ballVy);

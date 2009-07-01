@@ -44,6 +44,7 @@ namespace Robocup.Core {
     public interface IReferee
     {
         PlayTypes GetCurrentPlayType();
+        void LoadConstants();
     }
     public interface IRefBoxListener
     {

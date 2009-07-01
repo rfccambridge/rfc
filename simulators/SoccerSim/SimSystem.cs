@@ -89,6 +89,9 @@ namespace SoccerSim
 
             // motion control
             _controller.LoadConstants();
+
+            physics_engine.LoadConstants();
+            referee.LoadConstants();
         }
 
         public void initialize()
