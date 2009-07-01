@@ -66,6 +66,31 @@ namespace SoccerSim
             initialize();
         }
 
+        public void ReloadConstants()
+        {
+            // reload plays and constants
+
+            // allow only if system is not running
+            if (running)
+            {
+                Console.WriteLine("CANNOT RELOAD PLAYS WHEN SYSTEM IS RUNNING!");
+                return;
+            }
+
+            // first own constants
+            LoadConstants();
+
+            // then plays
+            Dictionary<InterpreterPlay, string> plays = PlayUtils.loadPlays(PLAY_DIR);
+            _interpreter.LoadPlays(new List<InterpreterPlay>(plays.Keys));
+
+            // constants for plays
+            Constants.Load();
+
+            // motion control
+            _controller.LoadConstants();
+        }
+
         public void initialize()
         {
             bool wasRunning = false;

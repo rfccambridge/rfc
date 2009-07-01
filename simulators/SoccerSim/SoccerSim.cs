@@ -148,7 +148,7 @@ namespace SoccerSim
                 sb.AppendLine("1-9\t advance that many frames");
                 sb.AppendLine("r  \t sets it to run continuously");
                 sb.AppendLine("a  \t toggles arrow drawing");
-                sb.AppendLine("p  \t reloads all the plays");
+                sb.AppendLine("c  \t reloads all constants and plays");
                 sb.AppendLine("v  \t starts vision service running on localhost");
                 MessageBox.Show(sb.ToString());
             }
@@ -215,9 +215,11 @@ namespace SoccerSim
                 }
 
             }
-            else if (c == 'p')
+            else if (c == 'c')
             {
-                //loadPlays();
+                // reload constants and plays
+                _player1.ReloadConstants();
+                _player2.ReloadConstants();
             }
         }
 
