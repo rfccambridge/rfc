@@ -19,6 +19,30 @@ namespace Robocup.Simulation
     {
         int _ourGoals = 0, _theirGoals = 0;
 
+        static double FIELD_WIDTH;
+        static double FIELD_HEIGHT;
+        static double FIELD_XMIN;
+        static double FIELD_XMAX;
+        static double FIELD_YMIN;
+        static double FIELD_YMAX;
+        static double GOAL_WIDTH;
+        static double GOAL_HEIGHT;
+
+        public SimpleReferee()
+        {
+             // field drawing
+            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+            
+            FIELD_XMIN = -FIELD_WIDTH / 2;
+            FIELD_XMAX = FIELD_WIDTH / 2;
+            FIELD_YMIN = -FIELD_HEIGHT / 2;
+            FIELD_YMAX = FIELD_HEIGHT/2;
+
+            GOAL_WIDTH = Constants.get<double>("plays","GOAL_WIDTH");
+            GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
+        }
+
         private void goalScored(bool scoredByLeftTeam)
         {
             if (scoredByLeftTeam)
@@ -35,10 +59,15 @@ namespace Robocup.Simulation
         {
             BallInfo ball = predictor.GetBall();
             // Check for goal
-            if (Math.Abs(ball.Position.Y) <= .35 && Math.Abs(ball.Position.X) >= 2.4)
+
+            if ((ball.Position.X <= FIELD_XMIN && ball.Position.X >= FIELD_XMIN - GOAL_WIDTH &&
+                Math.Abs(ball.Position.Y) <= GOAL_HEIGHT / 2) ||
+                (ball.Position.X >= FIELD_XMAX && ball.Position.X <= FIELD_XMAX + GOAL_WIDTH &&
+                Math.Abs(ball.Position.Y) <= GOAL_HEIGHT / 2)
+                )
             {
                 Console.WriteLine("Goal Ball reset!");
-                goalScored(ball.Position.X > 0);
+                goalScored(ball.Position.X < 0);
                 move_ball(new BallInfo(new Vector2(0, 0)));
                 return;
             }
