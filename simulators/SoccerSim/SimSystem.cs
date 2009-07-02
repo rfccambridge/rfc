@@ -8,6 +8,7 @@ using Robocup.Plays;
 using Robocup.CoreRobotics;
 using Robocup.Core;
 using Robocup.Simulation;
+using System.Drawing;
 
 namespace SoccerSim
 {
@@ -44,15 +45,13 @@ namespace SoccerSim
         private int _sleepTime;
         private bool isYellow;
 
-    	private int REFBOX_PORT;
-    	private String REFBOX_ADDR;
-
     	private int team;
 
         public SimSystem(FieldDrawer view, PhysicsEngine physics_engine, IReferee referee, MulticastRefBoxListener refboxListener, bool isYell)
         {
+            
             _view = view;
-
+            
             initialized = false;
             running = false;
             _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
@@ -142,6 +141,12 @@ namespace SoccerSim
 
 			_refbox = new RefBoxState(_refboxListener, _predictor, isYellow);
 
+            Color ourColor = (team == YELLOW ? Color.Yellow : Color.Blue);
+            string teamString = (team == YELLOW ? "YELLOW" : "BLUE");
+            _view.AddString("Team", new FieldDrawer.StringDisplayInfo("Team: " + teamString, new Point(20, 520), ourColor));
+            _view.AddString("PlayType", new FieldDrawer.StringDisplayInfo("Play type: ", new Point(20, 540), Color.White));
+            _view.AddString("RefboxCommand", new FieldDrawer.StringDisplayInfo("Refbox command: ", new Point(300, 540), Color.White));
+
             initialized = true;
         }
 
@@ -149,8 +154,6 @@ namespace SoccerSim
         {
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
         	team = Constants.get<int>("configuration", "OUR_TEAM_INT");
-			REFBOX_PORT = Constants.get<int>("default", "REFBOX_PORT");
-			REFBOX_ADDR = Constants.get<string>("default", "REFBOX_ADDR");
         }
 
         # region Start/Stop
@@ -223,7 +226,8 @@ namespace SoccerSim
             if (isYellow && team == YELLOW)
             {
                 interpret(_refbox.GetCurrentPlayType());
-                _view.SetPlayType(_refbox.GetCurrentPlayType());
+                PlayTypes playType = _refbox.GetCurrentPlayType();
+                _view.UpdateString("PlayType", "Play type: " + playType.ToString());                       
             }
         }
 

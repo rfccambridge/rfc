@@ -13,7 +13,28 @@ namespace Robocup.Utilities
         private enum Team { BLUE, YELLOW };
 
         private Team OUR_TEAM, THEIR_TEAM;
-        
+
+        public class StringDisplayInfo
+        {
+            public string Value;
+            public Point Location;
+            public Color Color;
+            public Font Font;
+
+            public StringDisplayInfo(string value, Point location) :
+                this(value, location, Color.White, new Font("Tahoma", 11)) { }
+
+            public StringDisplayInfo(string value, Point location, Color color) :
+                this(value, location, color, new Font("Tahoma", 11)) { }
+
+            public StringDisplayInfo(string value, Point location, Color color, Font font)
+            {
+                Value = value;
+                Location = location;
+                Color = color;
+                Font = font;
+            }
+        }
 
         // drawing constants
         int ROBOT_SIZE;
@@ -45,6 +66,8 @@ namespace Robocup.Utilities
 
         public Dictionary<int, string> ourPlayNames;
         public Dictionary<int, string> theirPlayNames;
+
+        private Dictionary<string, StringDisplayInfo> strings = new Dictionary<string,StringDisplayInfo>();
 
 
         IPredictor predictor;
@@ -115,8 +138,21 @@ namespace Robocup.Utilities
             CENTER_CIRCLE_RADIUS = Constants.get<double>("plays", "CENTER_CIRCLE_RADIUS");
         }
 
-        public void SetPlayType(PlayTypes newPlayType) {
-            playType = newPlayType;
+        public void AddString(string id, StringDisplayInfo value)
+        {
+            strings[id] = value;
+        }
+        public void UpdateString(string id, string newValue)
+        {
+            strings[id].Value = newValue;
+        }
+        public void RemoveString(string id)
+        {
+            strings.Remove(id);
+        }
+        public void RemoveStrings()
+        {
+            strings.Clear();
         }
 
         private void drawRobot(RobotInfo r, Color color, Graphics g)
@@ -180,16 +216,11 @@ namespace Robocup.Utilities
         public void paintField(Graphics g)
         {
             Color ourColor = (OUR_TEAM == Team.YELLOW) ? Color.Yellow : Color.Blue;
-            //Color theirColor = (OUR_TEAM == Team.YELLOW) ? Color.Blue : Color.Yellow;            
-
-            // Team color information
-            g.DrawString(OUR_TEAM.ToString() + " PLAYER", _font, new SolidBrush(ourColor),
-                         converter.fieldtopixelX(FIELD_XMIN) - 5, converter.fieldtopixelY(FIELD_YMIN) + 40);
-
-                // Game state
-            g.DrawString("GAME STATE: " + playType.ToString(), _font, new SolidBrush(ourColor),
-                            converter.fieldtopixelX(FIELD_XMIN) + 120, converter.fieldtopixelY(FIELD_YMIN) + 40);
-
+            foreach (StringDisplayInfo stringInfo in strings.Values)
+            {
+                g.DrawString(stringInfo.Value, stringInfo.Font, new SolidBrush(stringInfo.Color),
+                       stringInfo.Location.X, stringInfo.Location.Y);
+            }
 
             // goal dots
             Brush b0 = new SolidBrush(Color.YellowGreen);

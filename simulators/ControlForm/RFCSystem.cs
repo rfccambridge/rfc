@@ -77,11 +77,24 @@ namespace Robocup.ControlForm
             }
         }
 
-        public void setRefBoxListener(string addr) {
-            if (running) return;
+        public void setRefBoxListener(IRefBoxListener refboxListener) {
+            if (running)
+                throw new ApplicationException("Cannot change refbox listener while running!");
 
+            _refbox.setReferee(refboxListener);
+        }
 
-            _refbox.setReferee(new MulticastRefBoxListener(addr, REFBOX_PORT));
+        public void stopRefBoxListener()
+        {            
+            IRefBoxListener refboxListener = _refbox.getReferee();
+            refboxListener.stop();
+        }
+
+        public void closeRefBoxListener()
+        {            
+            IRefBoxListener refboxListener = _refbox.getReferee();            
+            refboxListener.close();
+            _refbox.setReferee(null);
         }
 
         public void initialize()
@@ -112,7 +125,7 @@ namespace Robocup.ControlForm
                 _acceptor = new BasicPredictor() as IVisionInfoAcceptor;
             }
 
-            _refbox = new RefBoxState(new MulticastRefBoxListener(REFBOX_ADDR, REFBOX_PORT), _predictor, isYellow);
+            _refbox = new RefBoxState(null, _predictor, isYellow);
 
 
             // create helper interfaces

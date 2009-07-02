@@ -44,7 +44,6 @@ namespace Robocup.ControlForm {
             this.label3 = new System.Windows.Forms.Label();
             this.txtRobotID = new System.Windows.Forms.TextBox();
             this.btnStartStopLogging = new System.Windows.Forms.Button();
-            this.txtRefbox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.btnRefbox = new System.Windows.Forms.Button();
             this.lblRefbox = new System.Windows.Forms.Label();
@@ -52,6 +51,7 @@ namespace Robocup.ControlForm {
             this.sslVisionStatus = new System.Windows.Forms.Label();
             this.sslVisionHost = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.txtRefbox = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -253,13 +253,6 @@ namespace Robocup.ControlForm {
             this.btnStartStopLogging.UseVisualStyleBackColor = true;
             this.btnStartStopLogging.Click += new System.EventHandler(this.btnStartStopLogging_Click);
             // 
-            // txtRefbox
-            // 
-            this.txtRefbox.Location = new System.Drawing.Point(2, 231);
-            this.txtRefbox.Name = "txtRefbox";
-            this.txtRefbox.Size = new System.Drawing.Size(132, 20);
-            this.txtRefbox.TabIndex = 31;
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -277,7 +270,6 @@ namespace Robocup.ControlForm {
             this.btnRefbox.TabIndex = 33;
             this.btnRefbox.Text = "Connect";
             this.btnRefbox.UseVisualStyleBackColor = true;
-            this.btnRefbox.Visible = false;
             this.btnRefbox.Click += new System.EventHandler(this.btnRefbox_Click);
             // 
             // lblRefbox
@@ -326,11 +318,20 @@ namespace Robocup.ControlForm {
             this.label7.TabIndex = 38;
             this.label7.Text = "SSL Vision:";
             // 
+            // txtRefbox
+            // 
+            this.txtRefbox.FormattingEnabled = true;
+            this.txtRefbox.Location = new System.Drawing.Point(2, 231);
+            this.txtRefbox.Name = "txtRefbox";
+            this.txtRefbox.Size = new System.Drawing.Size(132, 21);
+            this.txtRefbox.TabIndex = 39;
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(350, 331);
+            this.Controls.Add(this.txtRefbox);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.sslVisionHost);
             this.Controls.Add(this.sslVisionStatus);
@@ -338,7 +339,6 @@ namespace Robocup.ControlForm {
             this.Controls.Add(this.lblRefbox);
             this.Controls.Add(this.btnRefbox);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.txtRefbox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.visionBottomConnect);
             this.Controls.Add(this.visionBottomStatus);
@@ -388,7 +388,6 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Button btnStartStopLogging;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtRobotID;
-        private System.Windows.Forms.TextBox txtRefbox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnRefbox;
         private System.Windows.Forms.Label lblRefbox;
@@ -396,5 +395,6 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Label sslVisionStatus;
         private System.Windows.Forms.TextBox sslVisionHost;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox txtRefbox;
     }
 }

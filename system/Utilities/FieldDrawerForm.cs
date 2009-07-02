@@ -71,10 +71,6 @@ namespace Robocup.Utilities
             drawer.RemovePath(pathID);
         }
 
-        public void setPlayType(PlayTypes newPlayType) {
-            drawer.SetPlayType(newPlayType);
-        }
-
         private void FieldDrawerForm_KeyPress(object sender, KeyPressEventArgs e)
         {
             switch (e.KeyChar)

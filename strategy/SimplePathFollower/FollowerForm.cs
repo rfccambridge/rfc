@@ -112,8 +112,15 @@ namespace SimplePathFollower {
             if (_fieldDrawerForm != null)
                 _fieldDrawerForm.Close();
 
-            _fieldDrawerForm = new FieldDrawerForm(_predictor);
+            _fieldDrawerForm = new FieldDrawerForm(_predictor);            
             _converter = _fieldDrawerForm.Converter;
+
+            Color ourColor = (OUR_TEAM == VisionMessage.Team.YELLOW ? Color.Yellow : Color.Blue);
+            _fieldDrawerForm.drawer.AddString("Team", 
+                new FieldDrawer.StringDisplayInfo("Team: " + OUR_TEAM.ToString(), new Point(20, 420), ourColor));
+            _fieldDrawerForm.drawer.AddString("PlayType", 
+                new FieldDrawer.StringDisplayInfo("Play type: ", new Point(20, 440), Color.White));
+
             _fieldDrawerForm.Show();
 
             _stopwatch.Start();
@@ -235,10 +242,10 @@ namespace SimplePathFollower {
             //    _stopwatch.Start();
             //    _stopwatch.Reset();
             //    _stopwatch.Start();
-            //}
+            //}            
             lock (_drawingLock) {
                 if (_fieldDrawerForm != null) {
-                    _fieldDrawerForm.setPlayType(PlayTypes.Halt);
+                    _fieldDrawerForm.drawer.UpdateString("PlayType", "Play type: " + PlayTypes.Halt.ToString());                        
                     _pathFollower.drawCurrent(_fieldDrawerForm.CreateGraphics(), _converter);
                 }
                 //_pathFollower.clearArrows();

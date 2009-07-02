@@ -30,7 +30,6 @@ namespace Robocup.ControlForm {
         int sslVisionPort;
 
         VisionMessage.Team OUR_TEAM;
-        double MIN_BALL_CONFIDENCE;
 
         int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
         
@@ -62,6 +61,8 @@ namespace Robocup.ControlForm {
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
 
+        Timer refboxCommandClearTimer;
+
         public ControlForm() {
             InitializeComponent();
 
@@ -79,13 +80,25 @@ namespace Robocup.ControlForm {
             sslVisionHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SSL_VISION") + ":" +
                  Constants.get<int>("default", "DEFAULT_PORT_SSL_VISION").ToString();
             serialHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SERIAL");
-            txtRefbox.Text = Constants.get<string>("default", "REFBOX_ADDR");
+            txtRefbox.Items.Add(Constants.get<string>("default", "REFBOX_ADDR") + ":" + 
+                Constants.get<int>("default", "REFBOX_PORT"));
+            txtRefbox.Items.Add(Constants.get<string>("default", "LOCAL_REFBOX_ADDR") + ":" +
+                Constants.get<int>("default", "LOCAL_REFBOX_PORT"));
+            txtRefbox.SelectedIndex = 0;
 
             btnLogNext.Enabled = false;
 
             loggingInit();
 
             createSystem();
+
+            refboxCommandClearTimer = new Timer();
+            refboxCommandClearTimer.Interval = Constants.get<int>("default", "REFBOX_COMMAND_CLEAR_INTERVAL");
+            refboxCommandClearTimer.Tick += delegate(object sender, EventArgs e)
+            {
+                drawer.drawer.UpdateString("RefboxCommand", "Refbox command: ");
+            };
+            refboxCommandClearTimer.Enabled = true;
 
             this.Focus();
         }
@@ -95,7 +108,6 @@ namespace Robocup.ControlForm {
             OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? 
                 VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
             LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
-            MIN_BALL_CONFIDENCE = Constants.get<double>("default", "MIN_BALL_CONFIDENCE");
         }
 
         private void createSystem() {
@@ -112,14 +124,23 @@ namespace Robocup.ControlForm {
                 drawer.Close();
             drawer = new FieldDrawerForm(_predictor);
             converter = drawer.Converter;
+
+            Color ourColor = (OUR_TEAM == VisionMessage.Team.YELLOW ? Color.Yellow : Color.Blue);
+            drawer.drawer.AddString("Team", new FieldDrawer.StringDisplayInfo("Team: " + OUR_TEAM.ToString(), new Point(20, 420), ourColor));
+            drawer.drawer.AddString("PlayType", new FieldDrawer.StringDisplayInfo("Play type: ", new Point(20, 440), Color.White));
+            drawer.drawer.AddString("RefboxCommand", new FieldDrawer.StringDisplayInfo("Refbox command: ", new Point(300, 440), Color.White));
+
             drawer.Show();
             
             // add serial commander
             _system.registerCommander(_serial);
-
-            // todo
+            
             _system.initialize();
-            _system.reloadPlays();          
+
+            // Connect default refbox
+            connectRefbox();
+
+            _system.reloadPlays();           
 
             drawer.drawer.ourPlayNames = _system.getInterpreter().ourPlayNames;
             drawer.drawer.theirPlayNames = _system.getInterpreter().theirPlayNames;
@@ -223,8 +244,7 @@ namespace Robocup.ControlForm {
 
             lock (field_lock)
             {
-                //_system.drawCurrent(_field.getGraphics(), converter);                
-                drawer.setPlayType(_system.getCurrentPlayType());
+                drawer.drawer.UpdateString("PlayType", "Play type: " + _system.getCurrentPlayType().ToString());
                 _system.drawCurrent(drawer.CreateGraphics(), converter);
             }
         }
@@ -239,9 +259,11 @@ namespace Robocup.ControlForm {
             }
             drawer.Invalidate();
 
+            PlayTypes playType = _system.getCurrentPlayType();
+
             lock (field_lock)
-            {                
-                drawer.setPlayType(_system.getCurrentPlayType());
+            {
+                drawer.drawer.UpdateString("PlayType", "Play type: " + playType.ToString());                       
                 _system.drawCurrent(drawer.CreateGraphics(), converter);
             }
         }
@@ -340,6 +362,7 @@ namespace Robocup.ControlForm {
                     VisionMessage msg = new VisionMessage((int)detection.camera_id());
 
                     //Ball info:
+                    float maxBallConfidence = float.MinValue;
                     for (int i = 0; i < balls_n; i++)
                     {
                         SSLVision.SSL_DetectionBallManaged ball = detection.balls(i);
@@ -354,9 +377,10 @@ namespace Robocup.ControlForm {
                         }
                         if (verbose) Console.Write(String.Format("RAW=<{0,8:F2},{1,8:F2}>\n", ball.pixel_x(), ball.pixel_y()));
 
-                        if (ball.has_confidence() && ball.confidence() > MIN_BALL_CONFIDENCE)
+                        if (ball.has_confidence() && ball.confidence() > maxBallConfidence)
                         {
                             msg.Ball = new BallInfo(ConvertFromSSLVisionCoords(new Vector2(ball.x(), ball.y())));
+                            maxBallConfidence = ball.confidence();
                         }
                     }
 
@@ -443,6 +467,32 @@ namespace Robocup.ControlForm {
         }
         #endregion
 
+        private void connectRefbox() {
+            string[] items = txtRefbox.Text.Split(new char[] { ':' });
+            if (items.Length != 2)
+            {
+                MessageBox.Show("Refbox address must be in format: ip:port");
+                return;
+            }
+            MulticastRefBoxListener refboxListener = new MulticastRefBoxListener(items[0], int.Parse(items[1]),
+                delegate(char command)
+                {
+                    drawer.drawer.UpdateString("RefboxCommand", "Refbox command: " + MulticastRefBoxListener.CommandCharToName(command));
+                });
+            _system.setRefBoxListener(refboxListener);
+            lblRefbox.BackColor = Color.Green;
+            btnRefbox.Text = "Disconnect";
+            refboxConnected = true;
+        }
+        private void disconnectRefbox()
+        {
+            _system.stopRefBoxListener();
+            _system.closeRefBoxListener();
+            lblRefbox.BackColor = Color.Red;
+            btnRefbox.Text = "Connect";
+            refboxConnected = false;
+        }
+
         private void serialConnect_Click(object sender, EventArgs e)
         {
             try
@@ -484,17 +534,21 @@ namespace Robocup.ControlForm {
                 systemStarted = false;
             }
         }
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            if (keyData == (Keys.Control | Keys.R)) {
-                if (systemStarted) {
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.R))
+            {
+                if (systemStarted)
+                {
                     MessageBox.Show("System running. Need to stop system to reload contants.");
                     return false;
                 }
 
                 Constants.Load();
-                
+
                 LoadConstants();
-                if (_predictor is BasicPredictor) {
+                if (_predictor is BasicPredictor)
+                {
                     ((BasicPredictor)_predictor).LoadConstants();
                 }
                 else if (_predictor is AveragingPredictor)
@@ -504,23 +558,15 @@ namespace Robocup.ControlForm {
 
                 _system.LoadConstants();
                 _system.reloadPlays();
-                
+
                 playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
-                
+
                 Console.WriteLine("Constants and plays reloaded.");
+                return true;
             }
 
-            if (keyData == (Keys.Control | Keys.C)) {
-                if (systemStarted) {
-                    MessageBox.Show("System running. Need to stop system to set refbox listener.");
-                    return false;
-                }
-                _system.setRefBoxListener(txtRefbox.Text);
-                Console.WriteLine("Refbox listener set.");
-            }
-
-            return false;
-        }        
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
 
         #region Logging
         private void loggingInit() {
@@ -647,28 +693,18 @@ namespace Robocup.ControlForm {
 
         #endregion
 
-        private void btnRefbox_Click(object sender, EventArgs e) {
-            try {
-                if (!refboxConnected) {                    
-                    _system.setRefBoxListener(txtRefbox.Text);
-                    lblRefbox.BackColor = Color.Green;
-                    btnRefbox.Text = "Disconnect";
-                    refboxConnected = true;
-                }
-                else {
-                    //_visionTop.Close();
+        private void btnRefbox_Click(object sender, EventArgs e)
+        {
+            if (systemStarted)
+            {
+                MessageBox.Show("Cannot connect/disconnect from refbox while system is running");
+                return;
+            }
 
-                    lblRefbox.BackColor = Color.Red;
-                    btnRefbox.Text = "Connect";
-                    refboxConnected = false;
-                }
-            }
-            catch (Exception except) {
-                MessageBox.Show("Problem connecting to refbox on host: " + txtRefbox.Text);
-                Console.WriteLine("Problem connecting to refbox: " + except.ToString());
-                Console.WriteLine(except.StackTrace);
-            }
-            
+            if (!refboxConnected)
+                connectRefbox();
+            else
+                disconnectRefbox();
         }
     }
 

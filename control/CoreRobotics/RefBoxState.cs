@@ -29,22 +29,37 @@ namespace Robocup.CoreRobotics
             lastCmdCounter = 0;
         }
 
+        public IRefBoxListener getReferee()
+        {
+            return _referee;
+        }
         public void setReferee(IRefBoxListener listener) {
             _referee = listener;
+            lastCmdCounter = -1;
         }
 
         public void start()
         {
+            if (_referee == null)
+                return;
+
             _referee.start();
         }
 
         public void stop()
         {
+            if (_referee == null)
+                return;
+
             _referee.stop();
         }
 
         public PlayTypes GetCurrentPlayType()
         {
+            // Default game state is stopped if there is no refbox connected
+            if (_referee == null)
+                return PlayTypes.Stopped;
+
             if (_predictor.HasBallMoved()) {
                     playsToRun = PlayTypes.NormalPlay;                    
                     _predictor.ClearBallMark();

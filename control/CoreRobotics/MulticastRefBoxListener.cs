@@ -5,11 +5,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using Robocup.Core;
+using System.Threading;
 
 namespace Robocup.CoreRobotics
 {
     public class MulticastRefBoxListener : IRefBoxListener
     {
+        public delegate void OnPacketReceivedCallback(char command);
+
+        // Note: If you change these, don't forget to change the names in the map
         public const char HALT = 'H';
         public const char STOP = 'S';
         public const char READY = ' ';
@@ -27,9 +31,11 @@ namespace Robocup.CoreRobotics
         public const char INDIRECT_BLUE = 'I';
         public const char TIMEOUT_BLUE = 'T';
         public const char TIMEOUT_END_BLUE = 'Z';
-        
+
         public const char CANCEL = 'c';
 
+        private static Dictionary<char, string> COMMAND_CHAR_TO_NAME;
+        
         public struct RefboxPacket
         {
             public char cmd;
@@ -88,8 +94,43 @@ namespace Robocup.CoreRobotics
         EndPoint ep;
         StateObject so;
         RefboxPacket packet;
+        object _cvClosing = new object(); // Condition variable for closing notification
+        int receivingHeartbeat;
+        OnPacketReceivedCallback onPacketReceivedCallback;
+
+        static MulticastRefBoxListener()
+        {
+            COMMAND_CHAR_TO_NAME = new Dictionary<char, string>();
+
+            COMMAND_CHAR_TO_NAME.Add('H', "HALT");
+            COMMAND_CHAR_TO_NAME.Add('S', "STOP");
+            COMMAND_CHAR_TO_NAME.Add(' ', "READY");
+            COMMAND_CHAR_TO_NAME.Add('s', "START");
+            COMMAND_CHAR_TO_NAME.Add('k', "KICKOFF_YELLOW");
+            COMMAND_CHAR_TO_NAME.Add('p', "PENALTY_YELLOW");
+            COMMAND_CHAR_TO_NAME.Add('f', "DIRECT_YELLOW");
+            COMMAND_CHAR_TO_NAME.Add('i', "INDIRECT_YELLOW");
+            COMMAND_CHAR_TO_NAME.Add('t', "TIMEOUT_YELLOW");
+            COMMAND_CHAR_TO_NAME.Add('z', "TIMEOUT_END_YELLOW");
+
+            COMMAND_CHAR_TO_NAME.Add('K', "KICKOFF_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('P', "PENALTY_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('F', "DIRECT_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('I', "INDIRECT_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('T', "TIMEOUT_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('Z', "TIMEOUT_END_BLUE");
+
+            COMMAND_CHAR_TO_NAME.Add('c', "CANCEL");
+        }
+
+        public static string CommandCharToName(char c) {
+            return COMMAND_CHAR_TO_NAME[c];
+        }
 
         public MulticastRefBoxListener(string addr, int port)
+            : this(addr, port, null) { }
+
+        public MulticastRefBoxListener(string addr, int port, OnPacketReceivedCallback onPacketReceivedCallback)
         {
             packet = new RefboxPacket();
             packet.cmd = 'H';
@@ -97,37 +138,85 @@ namespace Robocup.CoreRobotics
             ep = (EndPoint)new IPEndPoint(IPAddress.Any, port);
             s.Bind(ep);
             s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
-
+            
             so = new StateObject();
             so.sock = s;
             so.ep = ep;
             running = false;
 
             start();
+
+            this.onPacketReceivedCallback = onPacketReceivedCallback;            
         }
 
-        void CloseListener() {
+        public void close() {
+            if (running)
+                throw new ApplicationException("Cannot close MulticastRefBoxListener while listening");
+            
+            lock (_cvClosing)
+            {
+                // Check if the receiving threads are actually running -- sort of lame..
+                int hb1 = receivingHeartbeat;
+                Thread.Sleep(100);     
+                int hb2 = receivingHeartbeat;
 
+                // "Request" closing
+                running = false;                
+
+                // If receiving threads actually run, wait until closing routines complete
+                if (hb1 != hb2)
+                {
+                    Monitor.Wait(_cvClosing);
+                }
+                else
+                {
+                    if (so.sock != null)
+                        so.sock.Close();
+                    so.sock = null;
+                }
+            }
         }
 
         void ReceiveRefboxPacket(IAsyncResult result)
         {
-            StateObject so = (StateObject)result.AsyncState;
-            packet = new RefboxPacket();
-            if (so.sock.EndReceive(result) == packet.getSize())
-            {
-                
+            receivingHeartbeat++;
 
-                packet.setVals(so.buffer);
+            if (so.sock == null)
+                return;
+
+            if (!running)
+            {
+                lock (_cvClosing)
+                {
+                    // I think multiple receiving threads are running -- only one needs to
+                    // close the socket.
+                    if (so.sock != null)
+                    {
+                        so.sock.Close();
+                        so.sock = null;
+                        Monitor.Pulse(_cvClosing);
+                    }
+                }
+                return;
+            }
+
+            StateObject sobj = (StateObject)result.AsyncState;
+            packet = new RefboxPacket();
+            if (sobj.sock.EndReceive(result) == packet.getSize())
+            {
+                packet.setVals(sobj.buffer);
+
                 /*Console.WriteLine("command: " + packet.cmd + " counter: " + packet.cmd_counter
                     + " blue: " + packet.goals_blue + " yellow: " + packet.goals_yellow+
                     " time left: " + packet.time_remaining);//*/
-                
+
+                if (onPacketReceivedCallback != null)
+                    onPacketReceivedCallback(packet.cmd);
             }
 
             if (running)
             {                
-                so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref so.ep, new AsyncCallback(ReceiveRefboxPacket), so);                
+                so.sock.BeginReceiveFrom(sobj.buffer, 0, sobj.packet.getSize(), SocketFlags.None, ref sobj.ep, new AsyncCallback(ReceiveRefboxPacket), sobj);
             }
         }
 

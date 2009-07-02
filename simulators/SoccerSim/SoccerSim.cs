@@ -53,8 +53,8 @@ namespace SoccerSim
             _fieldView = new FieldDrawer(_physics_engine, converter);
             // TODO make configurable how many to load
 
-        	string refboxAddr = Constants.get<string>("default", "REFBOX_ADDR");
-			int refboxPort = Constants.get<int>("default", "REFBOX_PORT");
+        	string refboxAddr = Constants.get<string>("default", "LOCAL_REFBOX_ADDR");
+			int refboxPort = Constants.get<int>("default", "LOCAL_REFBOX_PORT");
 			MulticastRefBoxListener refboxListener = new MulticastRefBoxListener(refboxAddr, refboxPort);
 
             _player1 = new SimSystem(_fieldView, _physics_engine, referee, refboxListener, true);

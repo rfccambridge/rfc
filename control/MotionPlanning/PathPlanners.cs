@@ -252,7 +252,7 @@ namespace Robocup.MotionControl
             
             // avoid boundary lines, but only if inside boundaries
             double dist_to_line;
-            // do not perform this loop if inside boundaries
+            // do not perform this loop if not inside boundaries
             if (start.X > MIN_X_ROBOT_BOUNDARY && start.X < MAX_X_ROBOT_BOUNDARY &&
                 start.Y > MIN_Y_ROBOT_BOUNDARY && start.Y < MAX_Y_ROBOT_BOUNDARY) {
                 foreach (Line l in boundary_lines) {
