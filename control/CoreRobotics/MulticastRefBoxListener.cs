@@ -73,7 +73,6 @@ namespace Robocup.CoreRobotics
             }
         };
 
-
         class StateObject
         {
             public Socket sock;
@@ -88,14 +87,14 @@ namespace Robocup.CoreRobotics
             }
         }
 
-
         volatile bool running;
-        Socket s;
+        volatile bool closing;
+        int receivingHeartbeat;
+        object cvClosing = new object(); // Condition variable for closing notification
+
         EndPoint ep;
         StateObject so;
-        RefboxPacket packet;
-        object _cvClosing = new object(); // Condition variable for closing notification
-        int receivingHeartbeat;
+        RefboxPacket packet;                
         OnPacketReceivedCallback onPacketReceivedCallback;
 
         static MulticastRefBoxListener()
@@ -148,7 +147,7 @@ namespace Robocup.CoreRobotics
         {
             packet = new RefboxPacket();
             packet.cmd = 'H';
-            s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             ep = (EndPoint)new IPEndPoint(IPAddress.Any, port);
             s.Bind(ep);
             s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
@@ -166,8 +165,10 @@ namespace Robocup.CoreRobotics
         public void close() {
             if (running)
                 throw new ApplicationException("Cannot close MulticastRefBoxListener while listening");
+            if (closing)
+                throw new ApplicationException("Closing already in progress!");
             
-            lock (_cvClosing)
+            lock (cvClosing)
             {
                 // Check if the receiving threads are actually running -- sort of lame..
                 int hb1 = receivingHeartbeat;
@@ -175,12 +176,12 @@ namespace Robocup.CoreRobotics
                 int hb2 = receivingHeartbeat;
 
                 // "Request" closing
-                running = false;                
+                closing = true;                
 
                 // If receiving threads actually run, wait until closing routines complete
                 if (hb1 != hb2)
                 {
-                    Monitor.Wait(_cvClosing);
+                    Monitor.Wait(cvClosing);
                 }
                 else
                 {
@@ -198,20 +199,21 @@ namespace Robocup.CoreRobotics
             if (so.sock == null)
                 return;
 
-            if (!running)
+            lock (cvClosing)
             {
-                lock (_cvClosing)
+                if (closing)
                 {
+
                     // I think multiple receiving threads are running -- only one needs to
                     // close the socket.
                     if (so.sock != null)
                     {
                         so.sock.Close();
                         so.sock = null;
-                        Monitor.Pulse(_cvClosing);
+                        Monitor.Pulse(cvClosing);
                     }
+                    return;
                 }
-                return;
             }
 
             StateObject sobj = (StateObject)result.AsyncState;
@@ -228,7 +230,7 @@ namespace Robocup.CoreRobotics
                     onPacketReceivedCallback(packet.cmd);
             }
 
-            if (running)
+            if (running && !closing)
             {                
                 so.sock.BeginReceiveFrom(sobj.buffer, 0, sobj.packet.getSize(), SocketFlags.None, ref sobj.ep, new AsyncCallback(ReceiveRefboxPacket), sobj);
             }
@@ -237,8 +239,11 @@ namespace Robocup.CoreRobotics
 
         public void start()
         {
+            if (closing)
+                throw new ApplicationException("Closing in progress, cannot start!");
+
             running = true;            
-            s.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref ep, new AsyncCallback(ReceiveRefboxPacket), so);                        
+            so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref ep, new AsyncCallback(ReceiveRefboxPacket), so);                        
         }
 
         public void stop()
