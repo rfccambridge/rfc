@@ -40,6 +40,10 @@ namespace Robocup.ControlForm
         public IController Controller {
             get { return _controller; }
         }
+        public RefBoxState Refbox
+        {
+            get { return _refbox; }
+        }
 
         System.Timers.Timer t;
 

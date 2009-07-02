@@ -51,6 +51,7 @@ namespace Robocup.Core {
         void start();
         void stop();
         void close();
+        bool isReceiving();
         int getCmdCounter();
         char getLastCommand();
     }

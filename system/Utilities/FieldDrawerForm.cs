@@ -22,7 +22,7 @@ namespace Robocup.Utilities
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
 
             drawer = new FieldDrawer(predictor, converter);
-            this.Size = new Size(560, 500);
+            this.Size = new Size(570, 500);
 
             this.BackColor = Color.Green;
         }

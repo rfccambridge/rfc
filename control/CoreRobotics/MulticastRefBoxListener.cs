@@ -126,10 +126,10 @@ namespace Robocup.CoreRobotics
             COMMAND_CHAR_TO_NAME.Add('y', "YELLOW_CARD_YELLOW");
             COMMAND_CHAR_TO_NAME.Add('r', "RED_CARD_YELLOW");
 
-            COMMAND_CHAR_TO_NAME.Add('g', "GOAL_SCORED_BLUE");
-            COMMAND_CHAR_TO_NAME.Add('d', "DECREASE_GOAL_SCORE_BLUE");
-            COMMAND_CHAR_TO_NAME.Add('y', "YELLOW_CARD_BLUE");
-            COMMAND_CHAR_TO_NAME.Add('r', "RED_CARD_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('G', "GOAL_SCORED_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('D', "DECREASE_GOAL_SCORE_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('Y', "YELLOW_CARD_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('R', "RED_CARD_BLUE");
 
         }
 
@@ -170,16 +170,14 @@ namespace Robocup.CoreRobotics
             
             lock (cvClosing)
             {
-                // Check if the receiving threads are actually running -- sort of lame..
-                int hb1 = receivingHeartbeat;
-                Thread.Sleep(100);     
-                int hb2 = receivingHeartbeat;
+                // Check if the receiving threads are actually running
+                bool isRcv = isReceiving();
 
                 // "Request" closing
                 closing = true;                
 
                 // If receiving threads actually run, wait until closing routines complete
-                if (hb1 != hb2)
+                if (isRcv)
                 {
                     Monitor.Wait(cvClosing);
                 }
@@ -190,6 +188,28 @@ namespace Robocup.CoreRobotics
                     so.sock = null;
                 }
             }
+        }        
+
+        public void start()
+        {
+            if (closing)
+                throw new ApplicationException("Closing in progress, cannot start!");
+
+            running = true;            
+            so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref ep, new AsyncCallback(ReceiveRefboxPacket), so);                        
+        }
+
+        public void stop()
+        {
+            running = false;
+        }
+
+        public bool isReceiving()
+        {
+            int hb1 = receivingHeartbeat;
+            Thread.Sleep(200);
+            int hb2 = receivingHeartbeat;
+            return hb1 != hb2;
         }
 
         void ReceiveRefboxPacket(IAsyncResult result)
@@ -231,24 +251,9 @@ namespace Robocup.CoreRobotics
             }
 
             if (running && !closing)
-            {                
+            {
                 so.sock.BeginReceiveFrom(sobj.buffer, 0, sobj.packet.getSize(), SocketFlags.None, ref sobj.ep, new AsyncCallback(ReceiveRefboxPacket), sobj);
             }
-        }
-
-
-        public void start()
-        {
-            if (closing)
-                throw new ApplicationException("Closing in progress, cannot start!");
-
-            running = true;            
-            so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref ep, new AsyncCallback(ReceiveRefboxPacket), so);                        
-        }
-
-        public void stop()
-        {
-            running = false;
         }
 
         public int getCmdCounter()
@@ -260,6 +265,5 @@ namespace Robocup.CoreRobotics
         {
             return packet.cmd;
         }
-
     }
 }

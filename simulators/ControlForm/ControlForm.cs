@@ -40,6 +40,8 @@ namespace Robocup.ControlForm {
         PlaySelectorForm playSelectorForm;
         PIDForm pidForm;
 
+        Timer refboxCommandDisplayTimer;
+
         bool systemStarted = false;
         RFCSystem _system;
 
@@ -60,8 +62,6 @@ namespace Robocup.ControlForm {
 
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
-
-        Timer refboxCommandClearTimer;
 
         public ControlForm() {
             InitializeComponent();
@@ -92,13 +92,7 @@ namespace Robocup.ControlForm {
 
             createSystem();
 
-            refboxCommandClearTimer = new Timer();
-            refboxCommandClearTimer.Interval = Constants.get<int>("default", "REFBOX_COMMAND_CLEAR_INTERVAL");
-            refboxCommandClearTimer.Tick += delegate(object sender, EventArgs e)
-            {
-                drawer.drawer.UpdateString("RefboxCommand", "Refbox command: ");
-            };
-            refboxCommandClearTimer.Enabled = true;
+            createRefboxCommandDisplayTimer();
 
             this.Focus();
         }
@@ -147,6 +141,29 @@ namespace Robocup.ControlForm {
 
             // playSelectorForm
             playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
+        }
+
+        private void createRefboxCommandDisplayTimer()
+        {
+            refboxCommandDisplayTimer = new Timer();
+            refboxCommandDisplayTimer.Interval = Constants.get<int>("default", "REFBOX_COMMAND_CLEAR_INTERVAL");
+            refboxCommandDisplayTimer.Tick += delegate(object sender, EventArgs e)
+            {
+                IRefBoxListener listener = _system.Refbox.getReferee();
+                if (listener == null)
+                {
+                    drawer.drawer.UpdateString("RefboxCommand", "Refbox command: <DISCONNECTED>");
+                    drawer.Invalidate();
+                }
+                else if (!listener.isReceiving())
+                {
+                    drawer.drawer.UpdateString("RefboxCommand", "Refbox command: <NO DATA>");
+                    drawer.Invalidate();
+                }
+                
+            };
+            refboxCommandDisplayTimer.Enabled = true;
+
         }
 
         #region RFC Vision
@@ -478,6 +495,7 @@ namespace Robocup.ControlForm {
                 delegate(char command)
                 {
                     drawer.drawer.UpdateString("RefboxCommand", "Refbox command: " + MulticastRefBoxListener.CommandCharToName(command));
+                    drawer.Invalidate();
                 });
             _system.setRefBoxListener(refboxListener);
             lblRefbox.BackColor = Color.Green;
