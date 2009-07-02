@@ -121,10 +121,24 @@ namespace Robocup.CoreRobotics
             COMMAND_CHAR_TO_NAME.Add('Z', "TIMEOUT_END_BLUE");
 
             COMMAND_CHAR_TO_NAME.Add('c', "CANCEL");
+
+            COMMAND_CHAR_TO_NAME.Add('g', "GOAL_SCORED_YELLOW");
+            COMMAND_CHAR_TO_NAME.Add('d', "DECREASE_GOAL_SCORE_YELLOW");
+            COMMAND_CHAR_TO_NAME.Add('y', "YELLOW_CARD_YELLOW");
+            COMMAND_CHAR_TO_NAME.Add('r', "RED_CARD_YELLOW");
+
+            COMMAND_CHAR_TO_NAME.Add('g', "GOAL_SCORED_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('d', "DECREASE_GOAL_SCORE_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('y', "YELLOW_CARD_BLUE");
+            COMMAND_CHAR_TO_NAME.Add('r', "RED_CARD_BLUE");
+
         }
 
         public static string CommandCharToName(char c) {
-            return COMMAND_CHAR_TO_NAME[c];
+            string name;
+            if (COMMAND_CHAR_TO_NAME.TryGetValue(c, out name))
+                return name;
+            return "";
         }
 
         public MulticastRefBoxListener(string addr, int port)
