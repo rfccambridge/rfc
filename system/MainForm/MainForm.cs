@@ -93,7 +93,7 @@ namespace Robocup.Core
         private void MainForm_Resize(object sender, EventArgs e)
         {
             dockPanel.Width = this.Width - 5;
-            dockPanel.Height = this.Height - statusStrip1.Height - 5;
+            dockPanel.Height = this.Height - statusStrip1.Height - 25;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
