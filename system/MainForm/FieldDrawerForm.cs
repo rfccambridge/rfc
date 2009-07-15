@@ -5,16 +5,28 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-
 using Robocup.Core;
 
 namespace Robocup.Utilities
 {
-    public partial class FieldDrawerForm : Form
+    public partial class FieldDrawerForm : WeifenLuo.WinFormsUI.Docking.DockContent
     {
+        private MainForm _mainForm;
         public FieldDrawer drawer;
         ICoordinateConverter converter = new BasicCoordinateConverter(500, 30, 30);
-        
+
+        public FieldDrawerForm(MainForm mainForm)
+        {
+            InitializeComponent();
+
+            _mainForm = mainForm;
+
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
+            drawer = new FieldDrawer(null, converter);
+            this.Size = new Size(570, 500);
+            this.BackColor = Color.Green;
+        }
+
         public FieldDrawerForm(IPredictor predictor)
         {
             InitializeComponent();
@@ -38,6 +50,7 @@ namespace Robocup.Utilities
         {
             get { return converter; }
         }
+
         //public void GetGraphics() {
         //    return this.cr
 

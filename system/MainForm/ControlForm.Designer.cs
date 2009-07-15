@@ -1,5 +1,5 @@
-namespace Robocup.ControlForm {
-    partial class ControlForm {
+namespace Robocup.Core {
+    public partial class ControlForm {
         /// <summary>
         /// Required designer variable.
         /// </summary>

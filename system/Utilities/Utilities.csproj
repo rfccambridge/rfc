@@ -40,12 +40,7 @@
     <Compile Include="Arrow.cs" />
     <Compile Include="Combinations.cs" />
     <Compile Include="CoordinateConverter.cs" />
-    <Compile Include="FieldDrawer.cs" />
-    <Compile Include="FieldDrawerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FieldDrawerForm.Designer.cs">
-      <DependentUpon>FieldDrawerForm.cs</DependentUpon>
+    <Compile Include="FieldDrawer.cs">
     </Compile>
     <Compile Include="GeneralPID.cs" />
     <Compile Include="GenerateOption.cs" />
@@ -68,12 +63,10 @@
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="FieldDrawerForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>FieldDrawerForm.cs</DependentUpon>
-    </EmbeddedResource>
+    <ProjectReference Include="..\WinFormsUI\WinFormsUI.csproj">
+      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

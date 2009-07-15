@@ -38,28 +38,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlForm.Designer.cs">
-      <DependentUpon>ControlForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PIDForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PIDForm.Designer.cs">
-      <DependentUpon>PIDForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ControlForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ControlForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PIDForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PIDForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -116,6 +96,10 @@
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\system\WinFormsUI\WinFormsUI.csproj">
+      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
+      <Name>WinFormsUI</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\vision\SSLClientWrapper\SSLClientWrapper.vcproj">
       <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>

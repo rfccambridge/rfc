@@ -13,9 +13,13 @@ using Robocup.Plays;
 
 using Vision;
 using System.Runtime.InteropServices;
-namespace Robocup.ControlForm {
+using Robocup.ControlForm;
+namespace Robocup.Core {
     
-    public partial class ControlForm : Form{
+    public partial class ControlForm : WeifenLuo.WinFormsUI.Docking.DockContent 
+    {
+        private MainForm _mainForm;
+
         bool verbose = false;
 
         bool serialConnected = false;
@@ -34,11 +38,7 @@ namespace Robocup.ControlForm {
         int MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
         
         Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionTop;
-        Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionBottom;
-        
-        FieldDrawerForm drawer;
-        PlaySelectorForm playSelectorForm;
-        PIDForm pidForm;
+        Robocup.MessageSystem.MessageReceiver<Robocup.Core.VisionMessage> _visionBottom;                 
 
         Timer refboxCommandDisplayTimer;
 
@@ -53,8 +53,7 @@ namespace Robocup.ControlForm {
 
         // Logging
         LogReader _logReader;
-        IPredictor _logPredictor;
-        FieldDrawerForm _logFieldDrawer;
+        IPredictor _logPredictor;        
         List<Type> _logLineFormat;
         Timer timer;
         bool logging;
@@ -63,16 +62,12 @@ namespace Robocup.ControlForm {
         String TOP_CAMERA = "top_cam";
         String BOTTOM_CAMERA = "bottom_cam";
 
-        public ControlForm() {
+        public ControlForm(MainForm mainForm) {
             InitializeComponent();
 
+            _mainForm = mainForm;
+
             LoadConstants();
-
-            playSelectorForm = new PlaySelectorForm();
-            playSelectorForm.Show();
-
-            pidForm = new PIDForm();
-            pidForm.Show();
 
             // Defaults hosts for the GUI, for convenience only
             visionTopHost.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_TOP");
@@ -113,18 +108,16 @@ namespace Robocup.ControlForm {
             // add vision predictor hooked up to vision
             _system.registerAcceptor(_predictor as IVisionInfoAcceptor);
             _system.registerPredictor(_predictor);
-
-            if (drawer != null)
-                drawer.Close();
-            drawer = new FieldDrawerForm(_predictor);
-            converter = drawer.Converter;
+            
+            converter = _mainForm.FieldDrawerForm.Converter;
+            _mainForm.FieldDrawerForm.drawer.Predictor = _predictor;
 
             Color ourColor = (OUR_TEAM == VisionMessage.Team.YELLOW ? Color.Yellow : Color.Blue);
-            drawer.drawer.AddString("Team", new FieldDrawer.StringDisplayInfo("Team: " + OUR_TEAM.ToString(), new Point(20, 420), ourColor));
-            drawer.drawer.AddString("PlayType", new FieldDrawer.StringDisplayInfo("Play type: ", new Point(20, 440), Color.White));
-            drawer.drawer.AddString("RefboxCommand", new FieldDrawer.StringDisplayInfo("Refbox command: ", new Point(300, 440), Color.White));
+            _mainForm.FieldDrawerForm.drawer.AddString("Team", new FieldDrawer.StringDisplayInfo("Team: " + OUR_TEAM.ToString(), new Point(20, 420), ourColor));
+            _mainForm.FieldDrawerForm.drawer.AddString("PlayType", new FieldDrawer.StringDisplayInfo("Play type: ", new Point(20, 440), Color.White));
+            _mainForm.FieldDrawerForm.drawer.AddString("RefboxCommand", new FieldDrawer.StringDisplayInfo("Refbox command: ", new Point(300, 440), Color.White));
 
-            drawer.Show();
+            _mainForm.FieldDrawerForm.Show();
             
             // add serial commander
             _system.registerCommander(_serial);
@@ -136,11 +129,11 @@ namespace Robocup.ControlForm {
 
             _system.reloadPlays();           
 
-            drawer.drawer.ourPlayNames = _system.getInterpreter().ourPlayNames;
-            drawer.drawer.theirPlayNames = _system.getInterpreter().theirPlayNames;
+            _mainForm.FieldDrawerForm.drawer.ourPlayNames = _system.getInterpreter().ourPlayNames;
+            _mainForm.FieldDrawerForm.drawer.theirPlayNames = _system.getInterpreter().theirPlayNames;
 
-            // playSelectorForm
-            playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
+            // _mainForm.PlaySelectorForm
+            _mainForm.PlaySelectorForm.LoadPlays(_system.getInterpreter().getPlays());
         }
 
         private void createRefboxCommandDisplayTimer()
@@ -152,13 +145,13 @@ namespace Robocup.ControlForm {
                 IRefBoxListener listener = _system.Refbox.getReferee();
                 if (listener == null)
                 {
-                    drawer.drawer.UpdateString("RefboxCommand", "Refbox command: <DISCONNECTED>");
-                    drawer.Invalidate();
+                    _mainForm.FieldDrawerForm.drawer.UpdateString("RefboxCommand", "Refbox command: <DISCONNECTED>");
+                    _mainForm.FieldDrawerForm.Invalidate();
                 }
                 else if (!listener.isReceiving())
                 {
-                    drawer.drawer.UpdateString("RefboxCommand", "Refbox command: <NO DATA>");
-                    drawer.Invalidate();
+                    _mainForm.FieldDrawerForm.drawer.UpdateString("RefboxCommand", "Refbox command: <NO DATA>");
+                    _mainForm.FieldDrawerForm.Invalidate();
                 }
                 
             };
@@ -257,12 +250,13 @@ namespace Robocup.ControlForm {
                     predictor.updateBallInfo(null);
                 }
             }
-            drawer.Invalidate();
+            _mainForm.FieldDrawerForm.Invalidate();
 
+            // TODO: This drawing needs to be revised: only arrows are drawn here and they are messed up 
             lock (field_lock)
             {
-                drawer.drawer.UpdateString("PlayType", "Play type: " + _system.getCurrentPlayType().ToString());
-                _system.drawCurrent(drawer.CreateGraphics(), converter);
+                _mainForm.FieldDrawerForm.drawer.UpdateString("PlayType", "Play type: " + _system.getCurrentPlayType().ToString());
+                _system.drawCurrent(_mainForm.FieldDrawerForm.CreateGraphics(), converter);
             }
         }
         #endregion
@@ -274,14 +268,15 @@ namespace Robocup.ControlForm {
             {
                 ((IVisionInfoAcceptor)_predictor).Update(msg);                
             }
-            drawer.Invalidate();
+            _mainForm.FieldDrawerForm.Invalidate();
 
             PlayTypes playType = _system.getCurrentPlayType();
 
+            // TODO: This drawing needs to be revised: only arrows are drawn here and they are messed up 
             lock (field_lock)
             {
-                drawer.drawer.UpdateString("PlayType", "Play type: " + playType.ToString());                       
-                _system.drawCurrent(drawer.CreateGraphics(), converter);
+                _mainForm.FieldDrawerForm.drawer.UpdateString("PlayType", "Play type: " + playType.ToString());                       
+                _system.drawCurrent(_mainForm.FieldDrawerForm.CreateGraphics(), converter);
             }
         }
         void printRobotInfo(SSLVision.SSL_DetectionRobotManaged robot)
@@ -494,8 +489,8 @@ namespace Robocup.ControlForm {
             MulticastRefBoxListener refboxListener = new MulticastRefBoxListener(items[0], int.Parse(items[1]),
                 delegate(char command)
                 {
-                    drawer.drawer.UpdateString("RefboxCommand", "Refbox command: " + MulticastRefBoxListener.CommandCharToName(command));
-                    drawer.Invalidate();
+                    _mainForm.FieldDrawerForm.drawer.UpdateString("RefboxCommand", "Refbox command: " + MulticastRefBoxListener.CommandCharToName(command));
+                    _mainForm.FieldDrawerForm.Invalidate();
                 });
             _system.setRefBoxListener(refboxListener);
             lblRefbox.BackColor = Color.Green;
@@ -577,7 +572,7 @@ namespace Robocup.ControlForm {
                 _system.LoadConstants();
                 _system.reloadPlays();
 
-                playSelectorForm.LoadPlays(_system.getInterpreter().getPlays());
+                _mainForm.PlaySelectorForm.LoadPlays(_system.getInterpreter().getPlays());
 
                 Console.WriteLine("Constants and plays reloaded.");
                 return true;
@@ -590,8 +585,7 @@ namespace Robocup.ControlForm {
         private void loggingInit() {
             // Logging
             _logReader = new LogReader();
-            _logPredictor = new StaticPredictor();
-            _logFieldDrawer = new FieldDrawerForm(_logPredictor);
+            _logPredictor = new StaticPredictor();            
 
             // Log Line format
             // timestamp current_state desired_state next_waypoint wheel_speeds path
@@ -611,7 +605,7 @@ namespace Robocup.ControlForm {
         }
 
         private void InvalidateTimerHanlder(object obj, EventArgs e) {
-            _logFieldDrawer.Invalidate();
+            _mainForm.FieldDrawerForm.Invalidate();
         }
 
         private void btnLogNext_Click(object sender, EventArgs e) {
@@ -620,10 +614,7 @@ namespace Robocup.ControlForm {
                 MessageBox.Show("Log file not open.");
                 return;
             }            
-
-            if (!_logFieldDrawer.Visible)
-                _logFieldDrawer.Show();
-
+    
             // Get logged info
 
             _logReader.Next();
@@ -643,16 +634,16 @@ namespace Robocup.ControlForm {
 
             // Draw the path, and the arrows            
 
-            // Since we are the only ones who are using this FieldDrawer, we can monopolize 
+            // Since we are the only ones who are using this Field_mainForm.FieldDrawerForm, we can monopolize 
             // its arrows and paths holder
-            _logFieldDrawer.ClearPaths();
-            _logFieldDrawer.AddPath(path);
+            _mainForm.FieldDrawerForm.ClearPaths();
+            _mainForm.FieldDrawerForm.AddPath(path);
 
-            _logFieldDrawer.ClearArrows();
-            _logFieldDrawer.AddArrow(new Arrow(curState.Position, destState.Position, Color.Red, 0.04));
-            _logFieldDrawer.AddArrow(new Arrow(curState.Position, waypointInfo.Position, Color.Yellow, 0.04));
+            _mainForm.FieldDrawerForm.ClearArrows();
+            _mainForm.FieldDrawerForm.AddArrow(new Arrow(curState.Position, destState.Position, Color.Red, 0.04));
+            _mainForm.FieldDrawerForm.AddArrow(new Arrow(curState.Position, waypointInfo.Position, Color.Yellow, 0.04));
 
-            _logFieldDrawer.Invalidate();
+            _mainForm.FieldDrawerForm.Invalidate();
 
         }
 

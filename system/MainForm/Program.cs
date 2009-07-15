@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-
-namespace Robocup.ControlForm
+namespace Robocup.Core
 {
     static class Program
     {
@@ -14,8 +13,8 @@ namespace Robocup.ControlForm
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);            
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
         }
-        
     }
 }

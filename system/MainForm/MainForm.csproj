@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{86722F67-3E08-45E8-94BC-EC1173993C39}</ProjectGuid>
+    <ProjectGuid>{2E5F4960-C765-450E-8F10-D94BB78155EA}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimplePathFollower</RootNamespace>
-    <AssemblyName>SimplePathFollower</AssemblyName>
+    <RootNamespace>MainForm</RootNamespace>
+    <AssemblyName>MainForm</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,18 +36,54 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FollowerForm.cs">
+    <Compile Include="ControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FollowerForm.Designer.cs">
-      <DependentUpon>FollowerForm.cs</DependentUpon>
+    <Compile Include="ControlForm.Designer.cs">
+      <DependentUpon>ControlForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="PathFollower.cs" />
-    <Compile Include="PIDCalibrator.cs" />
+    <Compile Include="FieldDrawerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FieldDrawerForm.Designer.cs">
+      <DependentUpon>FieldDrawerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PIDForm.cs">
+    </Compile>
+    <Compile Include="PIDForm.Designer.cs">
+      <DependentUpon>PIDForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PlaySelectorForm.cs">
+    </Compile>
+    <Compile Include="PlaySelectorForm.Designer.cs">
+      <DependentUpon>PlaySelectorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FollowerForm.resx">
-      <DependentUpon>FollowerForm.cs</DependentUpon>
+    <EmbeddedResource Include="ControlForm.resx">
+      <DependentUpon>ControlForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldDrawerForm.resx">
+      <DependentUpon>FieldDrawerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PIDForm.resx">
+      <DependentUpon>PIDForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlaySelectorForm.resx">
+      <DependentUpon>PlaySelectorForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -83,37 +119,41 @@
       <Project>{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}</Project>
       <Name>ControlForm</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\Core\Core.csproj">
-      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
-      <Name>Core</Name>
+    <ProjectReference Include="..\..\strategy\Core Play Files\CorePlayFiles.csproj">
+      <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
+      <Name>CorePlayFiles</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\MainForm\MainForm.csproj">
-      <Project>{2E5F4960-C765-450E-8F10-D94BB78155EA}</Project>
-      <Name>MainForm</Name>
+    <ProjectReference Include="..\..\strategy\Play Selector\PlaySelector.csproj">
+      <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
+      <Name>PlaySelector</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\MessageSystem\MessageSystem.csproj">
-      <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
-      <Name>MessageSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
-      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\system\WinFormsUI\WinFormsUI.csproj">
-      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
-      <Name>WinFormsUI</Name>
+    <ProjectReference Include="..\..\vision\SSLClientWrapper\SSLClientWrapper.vcproj">
+      <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>
+      <Name>SSLClientWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\vision\Vision\Vision.csproj">
       <Project>{08383292-7063-4436-ADE4-CCD3AD048D46}</Project>
       <Name>Vision</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core Play Files\CorePlayFiles.csproj">
-      <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
-      <Name>CorePlayFiles</Name>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
+      <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Play Selector\PlaySelector.csproj">
-      <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
-      <Name>PlaySelector</Name>
+    <ProjectReference Include="..\MessageSystem\MessageSystem.csproj">
+      <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
+      <Name>MessageSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SerialControl\SerialControl.csproj">
+      <Project>{3CCB17A5-8943-4535-A148-7AE8D237BA32}</Project>
+      <Name>SerialControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinFormsUI\WinFormsUI.csproj">
+      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
+      <Name>WinFormsUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

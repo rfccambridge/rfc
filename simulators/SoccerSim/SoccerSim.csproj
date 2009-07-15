@@ -111,6 +111,10 @@
       <Name>PlaySelector</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\system\WinFormsUI\WinFormsUI.csproj">
+      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimulationLib\SimulationLib.csproj">
       <Project>{A343AA15-D817-4E28-AB24-24CD4359BDF7}</Project>
       <Name>SimulationLib</Name>

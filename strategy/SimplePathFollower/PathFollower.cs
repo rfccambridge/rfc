@@ -83,7 +83,7 @@ namespace SimplePathFollower
 				return;
 			}
 
-			commander = new Robocup.ControlForm.RemoteRobots();
+			commander = new Robocup.Core.RemoteRobots();
 			predictor = new BasicPredictor();
             planner = newPlanner;
              

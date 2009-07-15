@@ -7,16 +7,20 @@ using System.Text;
 using System.Windows.Forms;
 using Robocup.MotionControl;
 using Robocup.CoreRobotics;
+using Robocup.Core;
 
 namespace Robocup.ControlForm
 {
-    public partial class PIDForm : Form
+    public partial class PIDForm : WeifenLuo.WinFormsUI.Docking.DockContent
     {
+        private MainForm _mainForm;
         RFCSystem system;
         
-        public PIDForm()
+        public PIDForm(MainForm mainForm)
         {
             InitializeComponent();
+
+            _mainForm = mainForm;
         }
 
         private void BtnSetPID_Click(object sender, EventArgs e)

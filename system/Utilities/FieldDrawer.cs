@@ -82,11 +82,17 @@ namespace Robocup.Utilities
         Object _pathsLock = new object();
         int _nextPathID;
         Font _font = new Font("Tahoma", 11);
-      
+
+        public IPredictor Predictor
+        {
+            get { return predictor; }
+            set { predictor = value; }
+        }
+
         public FieldDrawer(IPredictor predictor, ICoordinateConverter c)
         {
             this.predictor = predictor;
-            this.converter = c;
+            this.converter = new BasicCoordinateConverter(500, 30, 30);
             this.ourPlayNames = new Dictionary<int, string>();//ourPlayNames;
             this.theirPlayNames = new Dictionary<int, string>();//theirPlayNames;
 
@@ -265,53 +271,59 @@ namespace Robocup.Utilities
                                         (int)converter.fieldtopixelDistance(2*CENTER_CIRCLE_RADIUS), (int)converter.fieldtopixelDistance(2*CENTER_CIRCLE_RADIUS)));
             p.Dispose();
 
-            List<RobotInfo> robots = new List<RobotInfo>();            
-            robots.AddRange(predictor.GetRobots(0));
-            robots.AddRange(predictor.GetRobots(1));
 
-            foreach (RobotInfo r in robots)
-            {                
-                Color color = (r.Team == 0) ? Color.Yellow : Color.Blue;
-                drawRobot(r, color, g);
-            }
-                    
-            // draw arrows
-
-            lock (_arrowsLock)
+            if (predictor != null)
             {
-                foreach (Arrow arrow in _arrows.Values)
-                    arrow.drawConvertToPixels(g, converter);
-            }
+                List<RobotInfo> robots = new List<RobotInfo>();
+                robots.AddRange(predictor.GetRobots(0));
+                robots.AddRange(predictor.GetRobots(1));
 
-            // draw paths
+                foreach (RobotInfo r in robots)
+                {
+                    Color color = (r.Team == 0) ? Color.Yellow : Color.Blue;
+                    drawRobot(r, color, g);
+                }
 
-            lock (_pathsLock)
-            {
-                foreach (RobotPath path in _paths.Values)
-                    PathDrawing.DrawPath(path, Color.Blue, Color.Blue, g, converter);
-            }
+                // draw arrows
 
-            // draw ball
-            BallInfo ballInfo = predictor.GetBall();
+                lock (_arrowsLock)
+                {
+                    foreach (Arrow arrow in _arrows.Values)
+                        arrow.drawConvertToPixels(g, converter);
+                }
 
-            if (ballInfo != null) {
+                // draw paths
 
-                Brush b = new SolidBrush(Color.Orange);
-                g.FillEllipse(
-                    b,
-                    converter.fieldtopixelX(ballInfo.Position.X) - BALL_SIZE / 2,
-                    converter.fieldtopixelY(ballInfo.Position.Y) - BALL_SIZE / 2,
-                    BALL_SIZE,
-                    BALL_SIZE
-                );
-                b.Dispose();
+                lock (_pathsLock)
+                {
+                    foreach (RobotPath path in _paths.Values)
+                        PathDrawing.DrawPath(path, Color.Blue, Color.Blue, g, converter);
+                }
 
-                // draw ball velocity arrow
-                if (ballInfo.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ) {
-                    Vector2 velVector = BALL_VELOCITY_ARROW_LEN_SCALE * ballInfo.Velocity.magnitudeSq() * ballInfo.Velocity.normalize();
-                    Arrow velArrow = new Arrow(ballInfo.Position, ballInfo.Position + velVector,
-                                               VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
-                    velArrow.drawConvertToPixels(g, converter);
+                // draw ball
+                BallInfo ballInfo = predictor.GetBall();
+
+                if (ballInfo != null)
+                {
+
+                    Brush b = new SolidBrush(Color.Orange);
+                    g.FillEllipse(
+                        b,
+                        converter.fieldtopixelX(ballInfo.Position.X) - BALL_SIZE / 2,
+                        converter.fieldtopixelY(ballInfo.Position.Y) - BALL_SIZE / 2,
+                        BALL_SIZE,
+                        BALL_SIZE
+                    );
+                    b.Dispose();
+
+                    // draw ball velocity arrow
+                    if (ballInfo.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
+                    {
+                        Vector2 velVector = BALL_VELOCITY_ARROW_LEN_SCALE * ballInfo.Velocity.magnitudeSq() * ballInfo.Velocity.normalize();
+                        Arrow velArrow = new Arrow(ballInfo.Position, ballInfo.Position + velVector,
+                                                   VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
+                        velArrow.drawConvertToPixels(g, converter);
+                    }
                 }
             }
         }

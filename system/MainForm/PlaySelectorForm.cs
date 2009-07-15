@@ -5,14 +5,19 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Robocup.Core;
 
 namespace Robocup.Plays
 {
-    public partial class PlaySelectorForm : Form
+    public partial class PlaySelectorForm : WeifenLuo.WinFormsUI.Docking.DockContent
     {
-        public PlaySelectorForm()
+        private MainForm _mainForm;
+
+        public PlaySelectorForm(MainForm mainForm)
         {
-            InitializeComponent();           
+            InitializeComponent();
+
+            _mainForm = mainForm;
         }
 
         public void LoadPlays(List<InterpreterPlay> plays) {
