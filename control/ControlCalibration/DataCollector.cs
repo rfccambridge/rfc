@@ -46,6 +46,7 @@ namespace Robocup.MotionControl
             functions.Add("Ramp function", new RampFunction());
             functions.Add("Sine wave", new SineWave());
             functions.Add("Step function", new StepFunction());
+            functions.Add("Square function", new SquareWave());
 
             comboBoxFunctionList.Items.AddRange(new List<string>(functions.Keys).ToArray());
             comboBoxFunctionList.SelectedIndex = 0;
@@ -381,6 +382,43 @@ namespace Robocup.MotionControl
         {
             int num = (int)(t / waittime);
             int speed = start + num * change;
+            return new WheelSpeeds(speed, speed, speed, speed);
+        }
+    }
+    
+    /// <summary>
+    /// A square wave- goes full speed one direction to other, alternating in given period
+    /// </summary>
+    public class SquareWave : Function
+    {
+        private double amplitude = 127;
+        public double Amplitude
+        {
+            get { return amplitude; }
+            set { amplitude = value; }
+        }
+        private double period = 2.0;
+        [Description("The period of the square wave (single peak, one direction), in seconds")]
+        public double Period
+        {
+            get { return period; }
+            set { period = value; }
+        }
+
+        public WheelSpeeds eval(double t)
+        {
+            // Compute whether this is in an "odd" or an "even" phase
+            int mode = (int)(t / period) % 2;
+            int speed = 0;
+
+            if (mode == 0)
+            {
+                speed = (int) amplitude;
+            }
+            else
+            {
+                speed = - (int) amplitude;
+            }
             return new WheelSpeeds(speed, speed, speed, speed);
         }
     }
