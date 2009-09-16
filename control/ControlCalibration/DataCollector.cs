@@ -391,7 +391,8 @@ namespace Robocup.MotionControl
     /// </summary>
     public class SquareWave : Function
     {
-        private double amplitude = 127;
+        private double amplitude = 20;
+        [Description("The amplitude of the square wave- max wheel command it gives")]
         public double Amplitude
         {
             get { return amplitude; }
