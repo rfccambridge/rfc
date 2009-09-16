@@ -1022,8 +1022,8 @@ namespace Vision {
             DPoint w3 = imgToWorldLookup[(iy + 1) * _imageSize.Width + (ix - 1)];
     
 
-            Vector v1 = new Vector(w3.wx - w1.wx, w3.wy - w1.wy);
-            Vector v2 = new Vector(w2.wx - w1.wx, w2.wy - w1.wy);
+            Vector2 v1 = new Vector2(w3.wx - w1.wx, w3.wy - w1.wy);
+            Vector2 v2 = new Vector2(w2.wx - w1.wx, w2.wy - w1.wy);
             
             double area2x2 = Math.Abs(v2.X * v1.Y - v1.X * v2.Y);
 

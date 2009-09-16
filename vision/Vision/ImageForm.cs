@@ -923,20 +923,20 @@ namespace Vision
                     Console.WriteLine();
                    
                     // Find the center vectors
-                    System.Windows.Vector[] centerVectors = new System.Windows.Vector[4];
+                    Vector2[] centerVectors = new Vector2[4];
                     for (int i = 0; i < 4; i++)
                     {
-                        centerVectors[i] = new System.Windows.Vector(fourDots[i].CenterX - centerDot.CenterX, fourDots[i].CenterY - centerDot.CenterY);
+                        centerVectors[i] = new Vector2(fourDots[i].CenterX - centerDot.CenterX, fourDots[i].CenterY - centerDot.CenterY);
                     }
 
                     // Find the three vectors for each dot, and based on their length determine whether the dot a front one or a rear one
-                    System.Windows.Vector[,] vectors = new System.Windows.Vector[4, 4];
+                    Vector2[,] vectors = new Vector2[4, 4];
                     double[,] lengths = new double[4, 4];
                     for (int i = 0; i < 4; i++)
                     {
                         for (int j = 0; j < 4; j++)
                         {
-                            vectors[i, j] = new System.Windows.Vector(fourDots[j].CenterX - fourDots[i].CenterX, fourDots[j].CenterY - fourDots[i].CenterY);
+                            vectors[i, j] = new Vector2(fourDots[j].CenterX - fourDots[i].CenterX, fourDots[j].CenterY - fourDots[i].CenterY);
                             lengths[i, j] = vectors[i, j].LengthSquared;
                         }
                     }
@@ -982,14 +982,14 @@ namespace Vision
 
                     //determine left/right
                     int t;
-                    if (System.Windows.Vector.CrossProduct(centerVectors[frontLeft], centerVectors[frontRight]) < 0)
+                    if (Vector2.CrossProduct(centerVectors[frontLeft], centerVectors[frontRight]) < 0)
                     {
                         t = frontLeft;
                         frontLeft = frontRight;
                         frontRight = t;
                     }
 
-                    if (System.Windows.Vector.CrossProduct(centerVectors[rearLeft], centerVectors[rearRight]) > 0)
+                    if (Vector2.CrossProduct(centerVectors[rearLeft], centerVectors[rearRight]) > 0)
                     {
                         t = rearLeft;
                         rearLeft = rearRight;

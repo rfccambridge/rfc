@@ -198,8 +198,19 @@ namespace Robocup.Core
         }
 
         /// <summary>
-        /// Returns a vector that is parallel to this vector and has length 1.
-        /// Has no meaning for the zero vector (will return NaN).
+        /// Cross product
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
+        static public double cross(Vector2 v1, Vector2 v2)
+        {
+            return v1.X * v2.Y - v1.Y * v2.X;
+        }
+
+        /// <summary>
+        /// Returns a Vector2 that is parallel to this Vector2 and has length 1.
+        /// Has no meaning for the zero Vector2 (will return NaN).
         /// </summary>
         public Vector2 normalize()
         {

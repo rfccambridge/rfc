@@ -268,7 +268,7 @@ namespace VisionStatic
             public Blob centerDot;
             public Blob[] dots;
             public double[] ctrDistsSq;
-            public Vector[] ctrVectors;            
+            public Vector2[] ctrVectors;            
 
             public Pattern(Blob centerDotValue, IList<Blob> dotsValue)
             {
@@ -282,7 +282,7 @@ namespace VisionStatic
                 centerDot = centerDotValue;
                 dots = new Blob[dotsValue.Count];
                 ctrDistsSq = new double[dotsValue.Count];
-                ctrVectors = new Vector[dotsValue.Count];
+                ctrVectors = new Vector2[dotsValue.Count];
 
                 dotsValue.CopyTo(dots, 0);
 
@@ -291,10 +291,10 @@ namespace VisionStatic
                 {
                     ctrDistsSq[i] = RobotFinder.distanceSq(centerDotValue.CenterWorldX, centerDotValue.CenterWorldY, dot.CenterWorldX, dot.CenterWorldY);
                     //reverse X when dealing with world coordinates
-                    ctrVectors[i] = new Vector(-1 * (dot.CenterWorldX - centerDot.CenterWorldX), dot.CenterWorldY - centerDot.CenterWorldY);
+                    ctrVectors[i] = new Vector2(-1 * (dot.CenterWorldX - centerDot.CenterWorldX), dot.CenterWorldY - centerDot.CenterWorldY);
                     //uncomment to use image coordinates
                     // reverse Y to get a righthanded coord system
-                    //ctrVectors[i] = new Vector(dot.CenterX - centerDot.CenterX, -1 * (dot.CenterY - centerDot.CenterY));
+                    //ctrVectors[i] = new Vector2(dot.CenterX - centerDot.CenterX, -1 * (dot.CenterY - centerDot.CenterY));
                     i++;
                 }
 
@@ -695,7 +695,7 @@ namespace VisionStatic
                                                 pattern.dots[j].CenterWorldY - pattern.dots[i].CenterWorldY);
                     //uncomment to use image coordinates
                     // reverse Y to get a righthanded coord system
-                    //vectors[i, j] = new System.Windows.Vector(pattern.dots[j].CenterX - pattern.dots[i].CenterX, -1 * (pattern.dots[j].CenterY - pattern.dots[i].CenterY));
+                    //vectors[i, j] = new Vector2(pattern.dots[j].CenterX - pattern.dots[i].CenterX, -1 * (pattern.dots[j].CenterY - pattern.dots[i].CenterY));
                     lengths[i, j] = vectors[i, j].magnitudeSq();
                 }
             }
@@ -754,10 +754,10 @@ namespace VisionStatic
                             double term3 = Math.Abs(lengths[fl, fr] - REAR_TO_FRONT_RATIO * lengths[rl, rr]);
                             double term4 = (tempID < 0) ? 1 : 0;
                             double term5 = (lengths[fl, fr] < lengths[rl, rr]) ? 1 : 0;
-                            double term6 = (Vector.CrossProduct(pattern.ctrVectors[fr], pattern.ctrVectors[fl]) < 0) ? 1 : 0;
-                            double term7 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
-                            double term8 = (Vector.CrossProduct(pattern.ctrVectors[fl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
-                            double term9 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[fr]) < 0) ? 1 : 0;
+                            double term6 = (Vector2.cross(pattern.ctrVectors[fr], pattern.ctrVectors[fl]) < 0) ? 1 : 0;
+                            double term7 = (Vector2.cross(pattern.ctrVectors[rl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
+                            double term8 = (Vector2.cross(pattern.ctrVectors[fl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
+                            double term9 = (Vector2.cross(pattern.ctrVectors[rl], pattern.ctrVectors[fr]) < 0) ? 1 : 0;
                             double term10 = Math.Abs(lengths[fl, fr] - SIDE_TO_FRONT_RATIO * lengths[fl, rl]);
                             double term11 = Math.Abs(lengths[fl, fr] - SIDE_TO_FRONT_RATIO * lengths[fr, rr]);
                             
@@ -811,10 +811,10 @@ namespace VisionStatic
                     double term3 = Math.Abs(lengths[fl, fr] - REAR_TO_FRONT_RATIO * lengths[rl, rr]);
                     double term4 = (tempID < 0) ? 1 : 0;
                     double term5 = (lengths[fl, fr] < lengths[rl, rr]) ? 1 : 0;
-                    double term6 = (Vector.CrossProduct(pattern.ctrVectors[fr], pattern.ctrVectors[fl]) < 0) ? 1 : 0;
-                    double term7 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
-                    double term8 = (Vector.CrossProduct(pattern.ctrVectors[fl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
-                    double term9 = (Vector.CrossProduct(pattern.ctrVectors[rl], pattern.ctrVectors[fr]) < 0) ? 1 : 0;
+                    double term6 = (Vector2.cross(pattern.ctrVectors[fr], pattern.ctrVectors[fl]) < 0) ? 1 : 0;
+                    double term7 = (Vector2.cross(pattern.ctrVectors[rl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
+                    double term8 = (Vector2.cross(pattern.ctrVectors[fl], pattern.ctrVectors[rr]) < 0) ? 1 : 0;
+                    double term9 = (Vector2.cross(pattern.ctrVectors[rl], pattern.ctrVectors[fr]) < 0) ? 1 : 0;
 
                     Console.WriteLine("[FL FR RL RR] = [" + ColorClasses.GetName(pattern.dots[fl].ColorClass)[4] + "(" + pattern.dots[fl].BlobID + ") " +
                                                             ColorClasses.GetName(pattern.dots[fr].ColorClass)[4] + "(" + pattern.dots[fr].BlobID + ") " +
@@ -856,12 +856,12 @@ namespace VisionStatic
             rr = arrangement[3];
             
             // ORIENTATION
-            Vector orientV, frontOrientV, backOrientV;
-            frontOrientV = Vector.Add(pattern.ctrVectors[fl], pattern.ctrVectors[fr]);
-	        backOrientV = Vector.Add(pattern.ctrVectors[rl],pattern.ctrVectors[rr]);
-	        orientV = Vector.Subtract(frontOrientV, backOrientV);
+            Vector2 orientV, frontOrientV, backOrientV;
+            frontOrientV = pattern.ctrVectors[fl] + pattern.ctrVectors[fr];
+	        backOrientV = pattern.ctrVectors[rl] + pattern.ctrVectors[rr];
+	        orientV = frontOrientV - backOrientV;
 
-            orientV.Normalize();
+            orientV.normalize();
             
             robot.Orientation = (float)Math.Atan2(orientV.Y, orientV.X);
 
