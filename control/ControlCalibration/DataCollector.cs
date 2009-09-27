@@ -45,6 +45,7 @@ namespace Robocup.MotionControl
 
             functions.Add("Ramp function", new RampFunction());
             functions.Add("Sine wave", new SineWave());
+            functions.Add("Chanigng sine vawe", new ChangingSineWave());
             functions.Add("Step function", new StepFunction());
             functions.Add("Square function", new SquareWave());
 
@@ -260,6 +261,7 @@ namespace Robocup.MotionControl
         private void buttonStop_Click(object sender, EventArgs e)
         {
             running = false;
+            current.ClearState();
         }
 
         private void buttonSendCustomSerial_Click(object sender, EventArgs e)
@@ -299,9 +301,85 @@ namespace Robocup.MotionControl
     interface Function
     {
         WheelSpeeds eval(double t);
+        void ClearState();
+    }
+    class ChangingSineWave : Function
+    {
+        public ChangingSineWave()
+        {
+            period = startPeriod;
+        }
+        public void ClearState()
+        {
+            period = startPeriod;
+            currentIter = 0;
+        }
+
+        private double amplitude = 127;
+        public double Amplitude
+        {
+            get { return amplitude; }
+            set { amplitude = value; }
+        }
+        private double startPeriod = 2.0;
+        [Description("The initial period of the sine wave, in seconds")]
+        public double StartPeriod
+        {
+            get { return startPeriod; }
+            set { startPeriod = value; }
+        }
+
+        private double period;
+
+        private double endPeriod = 10.0;
+        [Description("The final period of the sine vawe, in seconds")]
+        public double EndPeriod
+        {
+            get { return endPeriod; }
+            set { endPeriod = value; }
+        }
+
+        private double periodStep = 1.0;
+        [Description("Increment step of period, in seconds")]
+        public double PeriodStep
+        {
+            get { return periodStep; }
+            set { periodStep = value; }
+        }
+
+        private int numIter = 5;
+        [Description("Number of periods using the same frequency")]
+        public int NumIter
+        {
+            get { return numIter; }
+            set { numIter = value; }
+        }
+
+        private int currentIter = 0;
+        private double lastPeriodTime = 0;
+
+        public WheelSpeeds eval(double t)
+        {
+            int speed;
+            if(period > endPeriod)
+                speed = 0;
+            else 
+                speed = (int)(amplitude * Math.Sin(t / period * 2 * Math.PI));
+            currentIter = Convert.ToInt32(Math.Floor((t - lastPeriodTime) / period * 2 * Math.PI));
+            if (currentIter > numIter)
+            {
+                currentIter = 0;
+                period += periodStep;
+                lastPeriodTime = t;
+            }
+            return new WheelSpeeds(speed, speed, speed, speed);
+        }
     }
     class SineWave : Function
     {
+        public void ClearState()
+        { }
+         
         private double amplitude = 127;
         public double Amplitude
         {
@@ -324,6 +402,9 @@ namespace Robocup.MotionControl
     }
     class StepFunction : Function
     {
+        public void ClearState()
+        { }
+
         private double initialpower = 0;
         public double InitialPower
         {
@@ -354,6 +435,9 @@ namespace Robocup.MotionControl
     }
     public class RampFunction : Function
     {
+        public void ClearState()
+        { }
+
         private double waittime = .1;
 
         public double WaitTime
@@ -391,8 +475,11 @@ namespace Robocup.MotionControl
     /// </summary>
     public class SquareWave : Function
     {
+        public void ClearState()
+        { }
         private double amplitude = 20;
         [Description("The amplitude of the square wave- max wheel command it gives")]
+
         public double Amplitude
         {
             get { return amplitude; }
