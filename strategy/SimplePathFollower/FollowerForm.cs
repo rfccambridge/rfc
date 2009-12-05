@@ -33,7 +33,7 @@ namespace SimplePathFollower {
 
 		private PathFollower _pathFollower;
         private PIDCalibrator _pidCalibrator;
-        private BasicPredictor _predictor;
+        private IPredictor _predictor;
         private bool _running;
     	private bool logging;
 
@@ -120,7 +120,7 @@ namespace SimplePathFollower {
             IMotionPlanner planner = new DefaultMotionPlanner();
 
             _pathFollower.Init(planner);
-            _predictor = (BasicPredictor)_pathFollower.Predictor;
+            _predictor = _pathFollower.Predictor;
 
             if (_fieldDrawerForm != null)
                 _fieldDrawerForm.Close();
@@ -162,6 +162,9 @@ namespace SimplePathFollower {
         }
 
         Timer timer;
+
+		String TOP_CAMERA = "top_cam";
+		String BOTTOM_CAMERA = "bottom_cam";
 
         private void InvalidateTimerHanlder(object obj, EventArgs e) {
             _logFieldDrawer.Invalidate();
@@ -221,34 +224,41 @@ namespace SimplePathFollower {
         }
 
         private void handleVisionUpdateTop(VisionMessage msg) {
-            // OMEGA is hard-coded
-            handleRFCVisionUpdate(msg, "OMEGA");
+            handleRFCVisionUpdate(msg, TOP_CAMERA);
         }
         private void handleVisionUpdateBottom(VisionMessage msg) {
             // OMEGA is hard-coded
-            handleRFCVisionUpdate(msg, "NOT_OMEGA");
+            handleRFCVisionUpdate(msg, BOTTOM_CAMERA);
         }
 
-        private void handleRFCVisionUpdate(VisionMessage msg, string computerName) {
+        private void handleRFCVisionUpdate(VisionMessage msg, string cameraName) {
             List<RobotInfo> ours = new List<RobotInfo>();
             List<RobotInfo> theirs = new List<RobotInfo>();
 
-            foreach (VisionMessage.RobotData robot in msg.Robots) {
-                (robot.Team == OUR_TEAM ? ours : theirs).Add(new RobotInfo(robot.Position, robot.Orientation, robot.ID));
-            }
 
-            lock (_predictorLock) {
-                _predictor.updatePartOurRobotInfo(ours, computerName);
-                _predictor.updatePartTheirRobotInfo(theirs, computerName);
-                if (msg.Ball != null && msg.Ball.Position != null) {
-                    //Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
-                    _predictor.updateBallInfo(new BallInfo(msg.Ball.Position));
-                }
-                else {
-                    _predictor.updateBallInfo(null);
-                }
-            }
+			foreach (VisionMessage.RobotData robot in msg.Robots)
+			{
+				RobotInfo robotInfo = new RobotInfo(robot.Position, robot.Orientation, robot.ID);
+				robotInfo.Team = (robot.Team == VisionMessage.Team.YELLOW) ? 0 : 1;
+				(robot.Team == OUR_TEAM ? ours : theirs).Add(robotInfo);
+			}
 
+			lock (_predictorLock)
+			{
+				ISplitInfoAcceptor predictor = _predictor as ISplitInfoAcceptor;
+				predictor.updatePartOurRobotInfo(ours, cameraName);
+				predictor.updatePartTheirRobotInfo(theirs, cameraName);
+				if (msg.Ball != null)
+				{
+					//Vector2 ballposition = new Vector2(2 + 1.01 * (msg.BallPosition.X - 2), msg.BallPosition.Y);                    
+					predictor.updateBallInfo(new BallInfo(msg.Ball.Position));
+				}
+				else
+				{
+					predictor.updateBallInfo(null);
+				}
+			}
+			
             _fieldDrawerForm.Invalidate();
             //if (_stopwatch.ElapsedMilliseconds > 200) {
             //    _fieldDrawerForm.Invalidate();
@@ -581,7 +591,8 @@ namespace SimplePathFollower {
         }
 
         enum MotionPlanners {
-            DefaultMotionPlanner, TangentBugFeedbackMotionPlanner, FeedbackVeerMotionPlanner, BugFeedbackVeerMotionPlanner,
+            DefaultMotionPlanner, TangentBugModelFeedbackMotionPlanner, TangentBugFeedbackMotionPlanner, 
+			FeedbackVeerMotionPlanner, BugFeedbackVeerMotionPlanner,
             BugExtendMotionPlanner, PointChargeExtendMotionPlanner,
             PointChargeFeedbackVeerMotionPlanner, DumbTranslatePlanner,
             DumbPlanner, DumbTurnPlanner, CircleFeedbackMotionPlanner,
@@ -684,6 +695,13 @@ namespace SimplePathFollower {
                         _currentPlannerSelection = MotionPlanners.TangentBugFeedbackMotionPlanner;
                     }
                     break;
+				case MotionPlanners.TangentBugModelFeedbackMotionPlanner:
+					planner = new TangentBugModelFeedbackMotionPlanner();
+					if (_pathFollower.setPlanner(planner))
+					{
+						_currentPlannerSelection = MotionPlanners.TangentBugModelFeedbackMotionPlanner;
+					}
+					break;
 
             }
             cmbMotionPlanner.SelectedItem = _currentPlannerSelection;

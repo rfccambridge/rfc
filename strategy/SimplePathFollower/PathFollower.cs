@@ -86,7 +86,7 @@ namespace SimplePathFollower
 			}
 
 			commander = new Robocup.ControlForm.RemoteRobots();
-			predictor = new BasicPredictor();
+			predictor = new AveragingPredictor();
             planner = newPlanner;
              
 			controller = new RFCController(commander, planner, predictor);
