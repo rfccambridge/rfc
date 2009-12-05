@@ -1071,4 +1071,43 @@ namespace Robocup.MotionControl
         #endregion
     }
 
+	public class TangentBugModelFeedbackMotionPlanner : PlannerDriver, ILogger
+	{
+		static TangentBugPlanner pathplanner = new TangentBugPlanner();
+		public static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
+
+		public TangentBugModelFeedbackMotionPlanner()
+			: base(pathplanner, pathdriver)
+		{
+			LoadConstants();
+		}
+
+
+		#region ILogger
+		public string LogFile
+		{
+			get { return pathdriver.LogFile; }
+			set { pathdriver.LogFile = value; }
+		}
+
+		public bool Logging
+		{
+			get
+			{
+				return pathdriver.Logging;
+			}
+		}
+
+		public void StartLogging(int robotID)
+		{
+			pathdriver.StartLogging(robotID);
+		}
+
+		public void StopLogging()
+		{
+			pathdriver.StopLogging();
+		}
+		#endregion
+	}
+
 }
