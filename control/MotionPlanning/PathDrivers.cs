@@ -1245,14 +1245,10 @@ namespace Robocup.MotionControl
 
         private int team;
 
-        private IPathDriver _longRangeDriver;
-
         public PositionFeedbackDriver() {
 
             feedbackObjs = new Feedback[NUM_ROBOTS];
             shortFeedbackObjs = new Feedback[NUM_ROBOTS];
-
-            _longRangeDriver = new FeedbackVeerDriver();
 
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
                 //DEFAULT: PID on position -> no feed-forward, uses desired instead (pre 2*.06.2009)
@@ -1420,4 +1416,146 @@ namespace Robocup.MotionControl
         #endregion
 
     }
+
+	public class ModelFeedbackDriver : IPathDriver, ILogger {
+		
+		private ModelFeedback[] feedbackObjs;
+		public ModelFeedback GetFeedbackObj(int robotID) { return feedbackObjs[robotID]; }
+
+		const int NUM_ROBOTS = 5;
+
+		private double MIN_SQ_DIST_TO_WP;
+		private double MIN_ANGLE_DIFF_TO_WP;
+	
+		private int LOG_EVERY_MSEC;
+		private int team;
+
+
+		public ModelFeedbackDriver()
+		{
+			feedbackObjs = new ModelFeedback[NUM_ROBOTS];
+			for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
+                feedbackObjs[robotID] = new ModelFeedback();
+
+			ReloadConstants();
+		}
+
+		public void ReloadConstants()
+		{
+			for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
+                feedbackObjs[robotID].LoadConstants();
+
+			LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
+			team = Constants.get<int>("configuration", "OUR_TEAM_INT");
+			MIN_SQ_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_SQ_DIST_TO_WP");
+			MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
+		}
+
+		public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
+		{
+			int id = path.ID;
+			RobotInfo desiredState = path.getFinalState();
+
+			RobotInfo curInfo;
+			try
+			{
+				curInfo = predictor.GetRobot(team, id);
+			}
+			catch (ApplicationException e)
+			{
+				throw e;
+			}
+
+			//Vector2 pathWaypoint = path.findNearestWaypoint(curInfo).Position;
+			//RobotInfo nextWaypoint = new RobotInfo(pathWaypoint, desiredState.Orientation, curInfo.ID);
+
+			RobotInfo nextWaypoint = path.findNearestWaypoint(curInfo);
+
+			double wpDistanceSq = curInfo.Position.distanceSq(nextWaypoint.Position);
+			double angleDiff = Math.Abs(UsefulFunctions.angleDifference(curInfo.Orientation, nextWaypoint.Orientation));
+
+			WheelSpeeds wheelSpeeds;
+
+			//Note: ModelFeeback cares about desired velocities!!!
+			//We should make sure the planner returns a plan with velocities set accordingly
+			
+			if (wpDistanceSq > MIN_SQ_DIST_TO_WP || angleDiff > MIN_ANGLE_DIFF_TO_WP)
+			{
+				wheelSpeeds = feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);				
+			}
+			else
+			{
+				Console.WriteLine("Close enough to point, stopping now.");
+				wheelSpeeds = new WheelSpeeds();
+			}
+
+
+
+			#region Looging code
+			List<Object> itemsToLog = new List<Object>();
+			itemsToLog.Add(DateTime.Now);
+			itemsToLog.Add(curInfo);
+			itemsToLog.Add(desiredState);
+			itemsToLog.Add(nextWaypoint);
+			itemsToLog.Add(wheelSpeeds);
+			itemsToLog.Add(path);
+
+			DateTime now = DateTime.Now;
+			TimeSpan timeSinceLastLog = now.Subtract(_lastLogEntry);
+			if (_logging && timeSinceLastLog.TotalMilliseconds > LOG_EVERY_MSEC && id == _logRobotID)
+			{
+				_logWriter.LogItems(itemsToLog);
+				_lastLogEntry = now;
+			}
+			#endregion
+
+			return wheelSpeeds;
+		}
+
+		#region ILogger
+		private string _logFile = null;
+		private bool _logging = false;
+		private DateTime _lastLogEntry;
+		private LogWriter _logWriter = new LogWriter();
+		private int _logRobotID;
+
+		public string LogFile
+		{
+			get { return _logFile; }
+			set { _logFile = value; }
+		}
+
+		public bool Logging
+		{
+			get
+			{
+				return _logging;
+			}
+		}
+
+		public void StartLogging(int robotID)
+		{
+			if (_logging)
+				return;
+
+			if (_logFile == null)
+			{
+				throw new ApplicationException("Logger: must set LogFile before calling start");
+			}
+
+			_logWriter.OpenLogFile(_logFile);
+			_logging = true;
+			_logRobotID = robotID;
+		}
+
+		public void StopLogging()
+		{
+			if (!_logging)
+				return;
+
+			_logWriter.CloseLogFile();
+			_logging = false;
+		}
+		#endregion
+	}
 }

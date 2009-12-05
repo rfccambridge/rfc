@@ -128,6 +128,7 @@ namespace Robocup.Core
         public double AngularVelocity
         {
             get { return angularVelocity; }
+			set { angularVelocity = value; }
         }
 
 

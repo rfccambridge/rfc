@@ -149,6 +149,8 @@ namespace Robocup.MotionControl
         double MIN_Y_ROBOT_BOUNDARY;
         double MAX_Y_ROBOT_BOUNDARY;
 
+    	double STEADY_STATE_SPEED;
+
         // line segments that must be avoided- field edges and goals
         List<Line> boundary_lines;
 
@@ -181,7 +183,8 @@ namespace Robocup.MotionControl
 
             // if close to the goal, decrease look ahead distance
             if (directionToGoal.magnitudeSq() < WAYPOINT_DIST * WAYPOINT_DIST) {
-                return new RobotPath(id, desiredState.Position);
+                //Note: this implies zero velocity!
+				return new RobotPath(id, desiredState);
             }
 
             // get desired waypoint
@@ -315,12 +318,16 @@ namespace Robocup.MotionControl
 
             lastWaypoint = start + finalDirection;
 
-            List<Vector2> waypoints = new List<Vector2>();
-            waypoints.Add(lastWaypoint);
+            List<RobotInfo> waypoints = new List<RobotInfo>();
+
+        	Vector2 velocity = finalDirection.normalizeToLength(STEADY_STATE_SPEED);
+			RobotInfo lastState = new RobotInfo(lastWaypoint, 
+				velocity, 0, desiredState.Orientation, id);
+			waypoints.Add(lastState);
 
             //Console.WriteLine("LAST WAYPOINT: " + lastWaypoint.ToString());
 
-            RobotPath path = new RobotPath(id, waypoints);
+            RobotPath path = new RobotPath(waypoints);
 
             return path;
         }
@@ -343,6 +350,7 @@ namespace Robocup.MotionControl
             WAYPOINT_DIST = Constants.get<double>("motionplanning", "WAYPOINT_DIST");
             MIN_ABS_VAL_STICK = Constants.get<double>("motionplanning", "MIN_ABS_VAL_STICK");
             EXTRA_GOAL_DIST = Constants.get<double>("motionplanning", "EXTRA_GOAL_DIST");
+        	STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
 
             
             MIN_X_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MIN_X_ROBOT_BOUNDARY");

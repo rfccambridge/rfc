@@ -57,6 +57,20 @@ namespace Robocup.Core {
             _path = waypoints;
         }
 
+		/// <summary>
+		/// Given a single RobotInfo waypoint
+		/// </summary>
+		/// <param name="waypoint"></param>
+		public RobotPath(int id, RobotInfo waypoint)
+		{
+			_id = id;
+
+			List<RobotInfo> waypoints = new List<RobotInfo>();
+			waypoints.Add(waypoint);
+
+			_path = waypoints;
+		}
+
         /// <summary>
         /// Constructed with a starting list of RobotInfo objects and ending list of Vector2 waypoints
         /// </summary>

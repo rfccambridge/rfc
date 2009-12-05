@@ -16,8 +16,10 @@ namespace SimplePathFollower
 		private bool running;
         private bool lapping;
 
-        double MIN_GOAL_DIST = .06;
-        double MIN_GOAL_DIFF_ORIENTATION = .3;
+		private int _sleepTime;
+
+        const double MIN_GOAL_DIST = .06;
+        const double MIN_GOAL_DIFF_ORIENTATION = .3;
 
         // represents whether the robot has yet reached the goal
         public bool reachedPoint = false;
@@ -88,6 +90,8 @@ namespace SimplePathFollower
             planner = newPlanner;
              
 			controller = new RFCController(commander, planner, predictor);
+
+			_sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
 		}
 
         public bool setPlanner(IMotionPlanner newPlanner) {
@@ -115,7 +119,6 @@ namespace SimplePathFollower
             do 
             {
                 RobotInfo curinfo;
-                BallInfo ballInfo;
                 // if lapping stops midway...
                 //if (waypointIndex > waypoints.Count - 1) {
                 //    waypointIndex = 0;
@@ -123,7 +126,6 @@ namespace SimplePathFollower
 
                 try {
                      curinfo = predictor.getCurrentInformation(robotID);
-                     ballInfo = predictor.getBallInfo();
                 } catch (ApplicationException e) {
                     Console.WriteLine("Failed Predictor.getCurrentInformation(). Dumping exception\n" + e.ToString());                    
                     return true;
@@ -160,7 +162,7 @@ namespace SimplePathFollower
                     waypointIndex = (waypointIndex + 1) % waypoints.Count;
                 }
 			
-				System.Threading.Thread.Sleep(50);
+				System.Threading.Thread.Sleep(_sleepTime);
             } while (running);
 
             return false;
@@ -170,22 +172,22 @@ namespace SimplePathFollower
         {
             running = true;
 
-            ActionInterpreter interpreter = new ActionInterpreter(controller, predictor);
-            interpreter.Kick(robotID, new Vector2(0, 0));
+            ActionInterpreter actionInterpreter = new ActionInterpreter(controller, predictor);
+			actionInterpreter.Kick(robotID, new Vector2(0, 0));
             do {
 
-                interpreter.Kick(robotID, new Vector2(0, 0));
-                System.Threading.Thread.Sleep(50);
+				actionInterpreter.Kick(robotID, new Vector2(0, 0));
+                System.Threading.Thread.Sleep(_sleepTime);
             } while (running);
         }
         public void BeamKick() {
             running = true;
-            ActionInterpreter interpreter = new ActionInterpreter(controller, predictor);
-            interpreter.BeamKick(robotID, new Vector2(0, 0));
+			ActionInterpreter actionInterpreter = new ActionInterpreter(controller, predictor);
+			actionInterpreter.BeamKick(robotID, new Vector2(0, 0));
             do {
 
-                interpreter.BeamKick(robotID, new Vector2(0, 0));
-                System.Threading.Thread.Sleep(50);
+				actionInterpreter.BeamKick(robotID, new Vector2(0, 0));
+                System.Threading.Thread.Sleep(_sleepTime);
             } while (running);
         }
 
@@ -201,9 +203,6 @@ namespace SimplePathFollower
 
         public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter) {            
             controller.drawCurrent(g, converter);
-        }
-        public void clearArrows() {
-            controller.clearArrows();
         }
 
         //seeks to reload any constants that this class and its own objects use from files

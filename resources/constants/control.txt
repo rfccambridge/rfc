@@ -2,6 +2,11 @@
 # these should all be initialized to their tuned value, or auto tuned
 # they should also all be positive values except maybe D            
 
+
+#Used be ModelFeedback
+string GAIN_MATRIX -1, 1, 1, -1, 1, 1; -1, -1, 1, -1, -1, 1; 1, -1, 1, 1, -1, 1; 1, 1, 1, 1, 1, 1
+
+
 ##alpha should be between 0 and 1.
 
 
