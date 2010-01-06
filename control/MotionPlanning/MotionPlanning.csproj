@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -33,6 +33,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +43,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Feedback.cs" />
     <Compile Include="KickPlanners.cs" />
+    <Compile Include="ModelFeedback.cs" />
     <Compile Include="NewPlanners.cs" />
     <Compile Include="NumberRange.cs" />
     <Compile Include="PathDrivers.cs" />
@@ -54,6 +56,7 @@
     <Compile Include="RRTPlanners.cs" />
     <Compile Include="SearchTree.cs" />
     <Compile Include="Smoother.cs" />
+    <Compile Include="SpeedTest.cs" />
     <Compile Include="StickyPath.cs" />
     <Compile Include="TestRRTPlanner.cs" />
     <Compile Include="Vector2NNFinder.cs" />
@@ -74,6 +77,10 @@
     <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\vision\CSML\CSML.csproj">
+      <Project>{8CD08024-CDBD-4FDB-9B9F-EA35B513BE92}</Project>
+      <Name>CSML</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

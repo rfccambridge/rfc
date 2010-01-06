@@ -95,6 +95,10 @@
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\vision\SSLClientWrapper\SSLClientWrapper.vcproj">
+      <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>
+      <Name>SSLClientWrapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\vision\Vision\Vision.csproj">
       <Project>{08383292-7063-4436-ADE4-CCD3AD048D46}</Project>
       <Name>Vision</Name>

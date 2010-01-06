@@ -96,8 +96,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="../../bin/$(ConfigurationName)"
-			IntermediateDirectory="../../bin/$(ConfigurationName)"
+			OutputDirectory="..\..\bin\$(ConfigurationName)"
+			IntermediateDirectory="..\..\bin\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="4"
@@ -142,6 +142,7 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool

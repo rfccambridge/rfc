@@ -57,7 +57,13 @@
     </Compile>
     <Compile Include="RunSerial.cs" />
     <Compile Include="SerialRobots.cs" />
-    <Compile Include="SerialTest.cs" />
+    <Compile Include="SpeedTest.cs" />
+    <Compile Include="SpeedTester.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpeedTester.Designer.cs">
+      <DependentUpon>SpeedTester.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="RemoteControl.resx">

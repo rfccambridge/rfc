@@ -63,6 +63,7 @@
 				AdditionalLibraryDirectories="../../bin/$(ConfigurationName)"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -134,10 +135,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\robocup\cs\merge\src\bin\Debug"
-				GenerateDebugInformation="true"
+				AdditionalOptions="&quot;..\..\bin\release\sslclientlib.lib&quot;"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\bin\$(ConfigurationName)"
+				GenerateDebugInformation="false"
 				AssemblyDebug="1"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
