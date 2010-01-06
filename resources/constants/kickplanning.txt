@@ -5,7 +5,7 @@
 # or David Robinson with questions
 
 # FeedbackVeerKickPlanner constants
-double DIST_BEHIND_BALL .26
+double DIST_BEHIND_BALL .10
 double DIST_THROUGH_BALL .3
 
 double TIME_WAIT_POINT_1 .75
@@ -18,11 +18,14 @@ double MAX_DIST_BREAK_BEAM .3
 # distance from the ball to activate this kick planner
 double DIST_ACTIVATE_KICK_PLANNER .5
 
+# distance from the ball to activate break beam
+double BALL_DISTANCE_CHARGE .20
+
 # maximum distance and orientation difference from point 1 to go to point 2
-double MAX_DIST_POINT_1 0.05
+double MAX_DIST_POINT_1 0.08
 #.030
 double MAX_DIST_MOVE_TRANSLATE_POINT_1 .25
-double MAX_DIFF_ORIENTATION_POINT_1 0.09
+double MAX_DIFF_ORIENTATION_POINT_1 0.18
 #0.07
 #.1
 
@@ -37,4 +40,4 @@ int SPIN_SPEED_CAP 6
 
 int SATURATION_LIMIT 4
 
-double BALL_AVOID_RADIUS .10
+double BALL_AVOID_RADIUS 0

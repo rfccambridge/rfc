@@ -112,6 +112,8 @@ double DEFAULT_VELOCITY 60
 int MAX_STEP 3
 int MAX_ACCELERATION 20
 
+double DESIRED_SPEED 85
+
 double P_FWDV_0 0
 double P_FWDV_1 0
 double P_FWDV_2 0
