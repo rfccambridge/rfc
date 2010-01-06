@@ -89,7 +89,7 @@ namespace Robocup.CoreRobotics
 
         volatile bool running;
         volatile bool closing;
-        int receivingHeartbeat;
+        DateTime lastReceivedTime;
         object cvClosing = new object(); // Condition variable for closing notification
 
         EndPoint ep;
@@ -179,6 +179,7 @@ namespace Robocup.CoreRobotics
                 // If receiving threads actually run, wait until closing routines complete
                 if (isRcv)
                 {
+                    // TODO: I've seen it deadlock here when trying to disconnect refbox
                     Monitor.Wait(cvClosing);
                 }
                 else
@@ -205,16 +206,15 @@ namespace Robocup.CoreRobotics
         }
 
         public bool isReceiving()
-        {
-            int hb1 = receivingHeartbeat;
-            Thread.Sleep(200);
-            int hb2 = receivingHeartbeat;
-            return hb1 != hb2;
+        {   
+            const int MAX_ELAPSED = 3; // seconds
+            TimeSpan elapsed = DateTime.Now - lastReceivedTime;
+            return elapsed.TotalSeconds <= MAX_ELAPSED;
         }
 
         void ReceiveRefboxPacket(IAsyncResult result)
         {
-            receivingHeartbeat++;
+            lastReceivedTime = DateTime.Now;
 
             if (so.sock == null)
                 return;

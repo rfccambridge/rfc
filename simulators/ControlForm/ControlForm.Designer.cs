@@ -52,6 +52,11 @@ namespace Robocup.ControlForm {
             this.sslVisionHost = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.txtRefbox = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.lblStrategyFreq = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.lblStrategyDuration = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -326,11 +331,61 @@ namespace Robocup.ControlForm {
             this.txtRefbox.Size = new System.Drawing.Size(132, 21);
             this.txtRefbox.TabIndex = 39;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(244, 162);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(49, 13);
+            this.label8.TabIndex = 40;
+            this.label8.Text = "Strategy:";
+            // 
+            // lblStrategyFreq
+            // 
+            this.lblStrategyFreq.AutoSize = true;
+            this.lblStrategyFreq.Location = new System.Drawing.Point(310, 183);
+            this.lblStrategyFreq.Name = "lblStrategyFreq";
+            this.lblStrategyFreq.Size = new System.Drawing.Size(32, 13);
+            this.lblStrategyFreq.TabIndex = 41;
+            this.lblStrategyFreq.Text = "<Hz>";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(252, 197);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(50, 13);
+            this.label9.TabIndex = 42;
+            this.label9.Text = "Duration:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(252, 182);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(60, 13);
+            this.label10.TabIndex = 43;
+            this.label10.Text = "Frequency:";
+            // 
+            // lblStrategyDuration
+            // 
+            this.lblStrategyDuration.AutoSize = true;
+            this.lblStrategyDuration.Location = new System.Drawing.Point(298, 197);
+            this.lblStrategyDuration.Name = "lblStrategyDuration";
+            this.lblStrategyDuration.Size = new System.Drawing.Size(32, 13);
+            this.lblStrategyDuration.TabIndex = 44;
+            this.lblStrategyDuration.Text = "<ms>";
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(350, 331);
+            this.ClientSize = new System.Drawing.Size(380, 331);
+            this.Controls.Add(this.lblStrategyDuration);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.lblStrategyFreq);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.txtRefbox);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.sslVisionHost);
@@ -358,6 +413,7 @@ namespace Robocup.ControlForm {
             this.KeyPreview = true;
             this.Name = "ControlForm";
             this.Text = "ControlForm";
+            this.Load += new System.EventHandler(this.ControlForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -396,5 +452,10 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.TextBox sslVisionHost;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox txtRefbox;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label lblStrategyFreq;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lblStrategyDuration;
     }
 }

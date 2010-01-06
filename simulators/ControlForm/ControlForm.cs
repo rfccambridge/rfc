@@ -39,8 +39,9 @@ namespace Robocup.ControlForm {
         FieldDrawerForm drawer;
         PlaySelectorForm playSelectorForm;
         PIDForm pidForm;
+        DebugForm debugForm;
 
-        Timer refboxCommandDisplayTimer;
+        System.Timers.Timer refboxCommandDisplayTimer;
 
         bool systemStarted = false;
         RFCSystem _system;
@@ -73,6 +74,9 @@ namespace Robocup.ControlForm {
 
             pidForm = new PIDForm();
             pidForm.Show();
+
+            debugForm = DebugConsole.getForm();
+            debugForm.Show();
 
             // Defaults hosts for the GUI, for convenience only
             visionTopHost.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_TOP");
@@ -107,6 +111,15 @@ namespace Robocup.ControlForm {
         private void createSystem() {
             _serial = new RemoteRobots();
             _system = new RFCSystem();
+
+            _system.setUpdateDurationDelegate(new DelegateVoidDouble(delegate(double val)
+            {
+                this.Invoke(new DelegateVoidDouble(updateStrategyDuration), new object[] { val });
+            }));
+            _system.setUpdateFreqDelegate(new DelegateVoidDouble(delegate(double val)
+            {
+                this.Invoke(new DelegateVoidDouble(updateStrategyFreq), new object[] { val });
+            }));
 
             //_predictor = new BasicPredictor();
             _predictor = new AveragingPredictor();
@@ -145,9 +158,10 @@ namespace Robocup.ControlForm {
 
         private void createRefboxCommandDisplayTimer()
         {
-            refboxCommandDisplayTimer = new Timer();
-            refboxCommandDisplayTimer.Interval = Constants.get<int>("default", "REFBOX_COMMAND_CLEAR_INTERVAL");
-            refboxCommandDisplayTimer.Tick += delegate(object sender, EventArgs e)
+            double interval = Constants.get<int>("default", "REFBOX_COMMAND_CLEAR_INTERVAL");                        
+            refboxCommandDisplayTimer = new System.Timers.Timer(interval);
+            refboxCommandDisplayTimer.AutoReset = true;
+            refboxCommandDisplayTimer.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
             {
                 IRefBoxListener listener = _system.Refbox.getReferee();
                 if (listener == null)
@@ -162,8 +176,18 @@ namespace Robocup.ControlForm {
                 }
                 
             };
-            refboxCommandDisplayTimer.Enabled = true;
+            refboxCommandDisplayTimer.Start();
 
+        }
+
+        private void updateStrategyDuration(double val)
+        {
+            lblStrategyDuration.Text = String.Format("{0:F2} ms", val);
+        }
+
+        private void updateStrategyFreq(double val)
+        {
+            lblStrategyFreq.Text = String.Format("{0:F2} Hz", val);
         }
 
         #region RFC Vision
@@ -276,7 +300,8 @@ namespace Robocup.ControlForm {
             }
             drawer.Invalidate();
 
-            PlayTypes playType = _system.getCurrentPlayType();
+            //PlayTypes playType = _system.getCurrentPlayType();
+            PlayTypes playType = PlayTypes.NormalPlay;
 
             lock (field_lock)
             {
@@ -394,7 +419,7 @@ namespace Robocup.ControlForm {
                         }
                         if (verbose) Console.Write(String.Format("RAW=<{0,8:F2},{1,8:F2}>\n", ball.pixel_x(), ball.pixel_y()));
 
-                        if (ball.has_confidence() && ball.confidence() > maxBallConfidence)
+                        if (ball.has_confidence() && ball.confidence() > maxBallConfidence && (!(ball.x() == 0 && ball.y() == 0)))
                         {
                             msg.Ball = new BallInfo(ConvertFromSSLVisionCoords(new Vector2(ball.x(), ball.y())));
                             maxBallConfidence = ball.confidence();
@@ -498,6 +523,7 @@ namespace Robocup.ControlForm {
                     drawer.Invalidate();
                 });
             _system.setRefBoxListener(refboxListener);
+            
             lblRefbox.BackColor = Color.Green;
             btnRefbox.Text = "Disconnect";
             refboxConnected = true;
@@ -723,6 +749,11 @@ namespace Robocup.ControlForm {
                 connectRefbox();
             else
                 disconnectRefbox();
+        }
+
+        private void ControlForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 

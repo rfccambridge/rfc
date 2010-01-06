@@ -18,6 +18,8 @@ using Robocup.MotionControl;
 
 namespace Robocup.ControlForm
 {
+    public delegate void DelegateVoidDouble(double val);
+
     // make this load/instantiate from a text file
     public class RFCSystem
     {        
@@ -46,6 +48,10 @@ namespace Robocup.ControlForm
         }
 
         System.Timers.Timer t;
+        private HighResTimer _timerFreq = new HighResTimer();
+        private HighResTimer _timerDuration = new HighResTimer();
+        private DelegateVoidDouble _updateFreqDelegate;
+        private DelegateVoidDouble _updateDurationDelegate;
 
         private volatile bool running;
         private bool initialized;
@@ -70,7 +76,6 @@ namespace Robocup.ControlForm
             REFBOX_PORT = Constants.get<int>("default","REFBOX_PORT");
             REFBOX_ADDR = Constants.get<string>("default", "REFBOX_ADDR");
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
-            _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
             isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
             team = Constants.get<int>("configuration", "OUR_TEAM_INT");
             IS_OUR_GOAL_LEFT = Constants.get<bool>("plays", "IS_OUR_GOAL_LEFT");
@@ -99,6 +104,16 @@ namespace Robocup.ControlForm
             IRefBoxListener refboxListener = _refbox.getReferee();            
             refboxListener.close();
             _refbox.setReferee(null);
+        }
+
+        public void setUpdateFreqDelegate(DelegateVoidDouble deleg)
+        {
+            _updateFreqDelegate = deleg;
+        }
+
+        public void setUpdateDurationDelegate(DelegateVoidDouble deleg)
+        {
+            _updateDurationDelegate = deleg;
         }
 
         public void initialize()
@@ -249,11 +264,13 @@ namespace Robocup.ControlForm
                 if (!initialized)
                     initialize();
 
-                _sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
                 isYellow = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW";
 
+                double freq = Constants.get<double>("default", "STRATEGY_FREQUENCY");                
+                double period = 1.0 / freq * 1000; // in ms
+
                 _refbox.start();
-                t = new System.Timers.Timer(_sleepTime);
+                t = new System.Timers.Timer(period);
                 t.AutoReset = true;
                 t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
                 {
@@ -287,15 +304,26 @@ namespace Robocup.ControlForm
 
         private void runRound()
         {
-            if (counter % 100 == 0)
-                Console.WriteLine("--------------RUNNING ROUND: " + counter + "-----------------");
-           // _controller.clearArrows();            
-            _interpreter.interpret(
-                _refbox.GetCurrentPlayType()
-            );
-            if (RoundRan != null)
-                RoundRan(this, new EventArgs());            
-            counter++;
+            _timerFreq.Stop();
+            //Console.WriteLine("Strategy loop: period = " + _timerFreq.Duration * 1000 + " ms; freq = " + 1.0/_timer.Duration + " hz");           
+            if (_updateFreqDelegate != null)
+                _updateFreqDelegate(1.0 / _timerFreq.Duration);
+            _timerFreq.Start(); 
+
+           // _controller.clearArrows();
+            _timerDuration.Start();
+            _interpreter.interpret(_refbox.GetCurrentPlayType());
+            
+            _timerDuration.Stop();           
+
+            //Console.WriteLine("Interpretation took: " + _timer2.Duration * 1000 + " ms");
+            if (_updateDurationDelegate != null)
+                _updateDurationDelegate(_timerDuration.Duration * 1000);
+
+                  
+
+           // if (RoundRan != null)
+           //     RoundRan(this, new EventArgs());            
         }
 
         public PlayTypes getCurrentPlayType() {
