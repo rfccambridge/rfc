@@ -204,7 +204,8 @@ namespace Robotics.Commander
                     {
                         doKick(robotID);
                     }
-                    return;
+                    //We want to send multiple commands because radio communication is bad
+                    //return;
                 }
                 string smsg = headsigns[robotID] + "c" + endsign;
                 //Console.WriteLine("charge:" + smsg);
@@ -252,7 +253,7 @@ namespace Robotics.Commander
                 //After 5*charge time, stop charging to save battery
                 System.Threading.Timer t = new System.Threading.Timer(delegate(object o) {
                     timers.Remove(robotID);
-                    comport.Write(msgDischarge);
+                    //comport.Write(msgStopCharge);
                     charging.Remove(robotID);
                 }, null, 5*chargeTime, System.Threading.Timeout.Infinite);
                 timers[robotID] = t;
@@ -482,7 +483,7 @@ namespace Robotics.Commander
         }
 
         public void beamKick(int robotID) {
-            breakBeamKick(robotID, "b", "k");
+            breakBeamKick(robotID, "b", "s");
         }        
 
         #endregion

@@ -196,6 +196,8 @@ namespace Robocup.MotionControl
 
         double MIN_ANGLE_SWITCH;
 
+        bool USE_INDIVIDUAL_WHEEL_SPEEDS;
+
         // Keep track of goal orientation for angular velocity veer
         // double currentGoalOrientation = 0;
         double currentForwardAngle = 0;
@@ -262,6 +264,8 @@ namespace Robocup.MotionControl
             MAX_FINAL_ANGLE_DIFFERENCE = Constants.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
 
             DIST_SLOW_DOWN = Constants.get<double>("motionplanning", "DIST_SLOW_DOWN");
+
+            USE_INDIVIDUAL_WHEEL_SPEEDS = Constants.get<bool>("motionplanning", "USE_INDIVIDUAL_WHEEL_SPEEDS");
 
             /* Wheel orientations
             double RF_ORIENTATION = Constants.get<double>("motionplanning", "RF_ORIENTATION");
@@ -429,7 +433,16 @@ namespace Robocup.MotionControl
             // current goal orientation
 
             // Get scaled speed
-            int straightSpeed = WHEEL_SPEED_STRAIGHT;
+            int straightSpeed;
+            // if it is individual, get it for the robot
+            if (USE_INDIVIDUAL_WHEEL_SPEEDS)
+            {
+                straightSpeed = Constants.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT_" + id);
+            }
+            else
+            {
+                straightSpeed = WHEEL_SPEED_STRAIGHT;
+            }
 
             // If too close, slow down
             if (sqDistToGoal < DIST_SLOW_DOWN * DIST_SLOW_DOWN)
@@ -1288,13 +1301,16 @@ namespace Robocup.MotionControl
                 //If we are far enough from actual destination (carrot on a stick), 
                 //calculate speeds using default feedback loop
                 if (wpDistanceSq >= PLANNER_WAYPOINT_DISTANCE * PLANNER_WAYPOINT_DISTANCE) {
-                    Console.WriteLine("Planning long distance");
+                    //Console.WriteLine("Planning long distance");
                     
                     // get wheel speeds from long range driver
-                    //List<RobotInfo> pathlst = new List<RobotInfo>();
-                    //pathlst.Add(nextWaypoint);
+                    List<RobotInfo> pathlst = new List<RobotInfo>();
+                    pathlst.Add(nextWaypoint);
 
+                    // TODO: What is _longRangeDriver? Doesn't compile
                     //wheelSpeeds = _longRangeDriver.followPath(new RobotPath(pathlst), predictor);
+                    
+                    // TODO: Uncommented this line instead of the above
                     wheelSpeeds = feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
 
                     //NOTE: This may look redundant, but the second feedback is also called (disregarding the result)
@@ -1350,6 +1366,9 @@ namespace Robocup.MotionControl
 
             MIN_SQ_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_SQ_DIST_TO_WP");
             MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
+
+            // TODO: What is _longRangeDriver? Doesn't compile!
+            //_longRangeDriver.ReloadConstants();
 
             team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }

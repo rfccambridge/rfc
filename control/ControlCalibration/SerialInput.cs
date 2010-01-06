@@ -59,6 +59,20 @@ namespace Robocup.MotionControl
                 set { wheelcommand = value; }
             }
 
+            private int dutyHigh;
+            public int DutyHigh
+            {
+                get { return dutyHigh; }
+                set { dutyHigh = value; }
+            }
+
+            private int dutyLow;
+            public int DutyLow
+            {
+                get { return dutyLow; }
+                set { dutyLow = value; }
+            }
+
             private int extra;
             public int Extra
             {
@@ -78,11 +92,11 @@ namespace Robocup.MotionControl
 
             static public string ToStringHeader()
             {
-                return "encoder\terror\tduty\tcommand\tencoder";
+                return "encoder\tdutyHigh\tdutyLow\tcommand";
             }
             public override string ToString()
             {
-                return encoder + "\t" + error + "\t" + wheelcommand + "\t" + extra+"\t"+extra2;
+                return encoder + "\t" + dutyHigh + "\t" + dutyLow + "\t" + wheelcommand ;
             }
         }
 
@@ -109,10 +123,9 @@ namespace Robocup.MotionControl
                 {
                     rtn[i] = new SerialInputMessage();
                     rtn[i].Encoder = 256 * (int)(data[3 + i * 8]) + (int)(data[4 + i * 8]) - (1 << 15);
-                    rtn[i].Error = (sbyte)data[5 + i * 8];
-                    rtn[i].WheelCommand = (short)(256 * (int)(data[6 + i * 8]) + (int)(data[7 + i * 8]));
-                    rtn[i].Extra = 256 * (int)(data[8 + i * 8]) + (int)(data[9 + i * 8]);
-                    rtn[i].Extra2 = (sbyte)data[10 + i * 8];
+                    rtn[i].DutyHigh = (int)(data[5 + i * 8]);
+                    rtn[i].DutyLow = (int)(data[6 + i * 8]);
+                    rtn[i].WheelCommand = (int)(data[7 + i * 8]);        
                 }
                 ValueReceived(rtn);
             }

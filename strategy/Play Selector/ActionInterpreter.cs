@@ -252,7 +252,16 @@ namespace Robocup.Plays
             try {
                 thisrobot = getOurRobotFromID(robotID);
                 ballinfo = predictor.GetBall();
-                ball = ballinfo.Position;
+                // without this if statement, throws an exception when the ball is not found 
+                // (not sure why this isn't caught in the next line)
+                if (ballinfo != null)
+                {
+                    ball = ballinfo.Position;
+                }
+                else
+                {
+                    return;
+                }
             }
             catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");

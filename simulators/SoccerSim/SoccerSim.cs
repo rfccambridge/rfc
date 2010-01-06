@@ -43,10 +43,14 @@ namespace SoccerSim
         VirtualRef referee;
         ICoordinateConverter converter = new Robocup.Utilities.BasicCoordinateConverter(650, 30, 50);
 
-        
+        // Debugging form
+        DebugForm debugForm;
 
         private void init()
         {
+            debugForm = DebugConsole.getForm();
+            debugForm.Show();
+
             referee = new SimpleReferee();
             _physics_engine = new PhysicsEngine(referee);
 
@@ -55,6 +59,11 @@ namespace SoccerSim
 
         	string refboxAddr = Constants.get<string>("default", "LOCAL_REFBOX_ADDR");
 			int refboxPort = Constants.get<int>("default", "LOCAL_REFBOX_PORT");
+
+            // State what the constants are
+            DebugConsole.Write("refboxAddr = " + refboxAddr, ProjectDomains.Refbox, "Simulator Constants");
+            DebugConsole.Write("refboxPort = " + refboxPort, ProjectDomains.Refbox, "Simulator Constants");
+
 			MulticastRefBoxListener refboxListener = new MulticastRefBoxListener(refboxAddr, refboxPort);
 
             _player1 = new SimSystem(_fieldView, _physics_engine, referee, refboxListener, true);

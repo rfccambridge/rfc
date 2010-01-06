@@ -28,6 +28,7 @@ namespace Robocup.MotionControl
         double P;
         double I;
         double D;
+        double cap;
 
         private double error = 0;
         private double olderror = 0;
@@ -59,10 +60,15 @@ namespace Robocup.MotionControl
             // Reload this constants file
             Constants.Load(category);
 
-            // Set P, I, and D
+            // Set P, I, and D, possibly a cap on the error
             P = Constants.get<double>(category, constype + "_P");
             I = Constants.get<double>(category, constype + "_I");
             D = Constants.get<double>(category, constype + "_D");
+
+            cap = 0;
+            if (Constants.isDefined(constype + "_CAP")) {
+                cap = Constants.get<double>(category, constype + "_CAP");
+            }
         }
 
         /// <summary>
@@ -87,6 +93,12 @@ namespace Robocup.MotionControl
 
             // return PID term- use negative terms to ensure P is naturally positive
             double ret = P * error + I * Ierror + D * Derror;
+
+            // if there is a cap, use it as the maximum for both positive and negative
+            if (cap != 0) // sentinel value
+            {
+                ret = Math.Max(Math.Min(ret, cap), -cap);
+            }
 
             Console.WriteLine("PIDLoop Current: " + current.ToString() + " Desired: " + 
                 desired.ToString() + " Output: " + ret.ToString());

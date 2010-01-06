@@ -49,6 +49,7 @@ namespace Robocup.MotionControl {
     	private DOF_Numbers lateralPID;
 
         private RobotModel model;
+        private double DESIRED_SPEED;
 
         const double wheelR = 0.0782828; //distance from the center of the robot to the wheels in meters
 
@@ -67,6 +68,8 @@ namespace Robocup.MotionControl {
 			lateralPID = new DOF_Numbers(robotID, DOFType.LATV, constFile);
 
         	useFwdLat = _useFwdLat;
+
+            ReloadConstants();
         }
 
 
@@ -83,8 +86,7 @@ namespace Robocup.MotionControl {
             model.ComputeCommand(currentState, desiredState, out xForward, out yForward, out thetaForward);
 
         	Vector2 directionVector = desiredState.Position - currentState.Position;
-            //remove me:
-        	double DESIRED_SPEED = 100;
+            
         	double direction = UsefulFunctions.angleCheck(directionVector.cartesianAngle());
 
         	double currVelocity = Math.Sqrt(currentState.Velocity.magnitudeSq());
@@ -207,6 +209,8 @@ namespace Robocup.MotionControl {
             xPID.ReloadConstants();
             yPID.ReloadConstants();
             thetaPID.ReloadConstants();
+
+            DESIRED_SPEED = Constants.get<double>(constantsFile, "DESIRED_SPEED");
         }
 
         public void UpdateConstants(DOF_Constants x, DOF_Constants y, DOF_Constants theta, bool save) {

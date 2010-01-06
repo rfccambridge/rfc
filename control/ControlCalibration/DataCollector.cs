@@ -148,7 +148,7 @@ namespace Robocup.MotionControl
                 if (!closing /*&& running*/)
                 {
                     csv.WriteLine(t + ", " + current.eval(t).lb + ", " +
-                        message.Encoder + ", " + message.Error + ", " + message.WheelCommand + ", " + message.Extra + ", " + message.Extra2);
+                        message.Encoder + ", " + message.DutyHigh + ", " + message.DutyLow + message.WheelCommand);
                     labelTime.Text = "t = " + t;
                 }
 

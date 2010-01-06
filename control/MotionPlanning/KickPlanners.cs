@@ -49,6 +49,8 @@ namespace Robocup.MotionControl
 
         double BALL_AVOID_RADIUS;
 
+        double BALL_DISTANCE_CHARGE;
+
         WheelSpeeds CWSpeeds;
         WheelSpeeds CCWSpeeds;
         WheelSpeeds LeftSpeed;
@@ -129,6 +131,8 @@ namespace Robocup.MotionControl
 
             double distToPoint1 = Math.Sqrt(thisrobot.Position.distanceSq(p1));
 
+            //Console.WriteLine("dist to point 1 " + distToPoint1);
+
             // Find lateral and parallel distances
             // First find angle from ball to robot, if the vector from the target through the
             // ball has angle 0
@@ -170,10 +174,10 @@ namespace Robocup.MotionControl
             // first use IRobotSpinner to correct orientation
             //if (pointCloseLateral && !orientationCorrect)
 
-            Console.WriteLine(" orientationDiff " + diffOrientation + "Robot position: " + thisrobot.Position + " ball position " + ball);
+            //Console.WriteLine(" orientationDiff " + diffOrientation + "Robot position: " + thisrobot.Position + " ball position " + ball);
             
             // spin robot to correct orientation
-            if (pointClose && (!orientationCorrect) && goingToPoint1)
+            /*if (pointClose && (!orientationCorrect) && goingToPoint1)
             {
                 Console.WriteLine("SPINNING: distance is " + distToPoint1 + "\t Angle difference is " + diffOrientation);
                 speeds = spinplanner.spinTo(id, desiredOrientation, MAX_DIFF_ORIENTATION_POINT_1, predictor);
@@ -181,7 +185,7 @@ namespace Robocup.MotionControl
                 //speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
                 // DO NOT CHARGE WHILE SPINNING
                 return new KickPlanningResults(speeds, false);
-            }
+            }*/
             if (pointClose && goingToPoint1) {
                 //spinSatisfied = true;
                 //return new KickPlanningResults(new WheelSpeeds(), false);
@@ -249,7 +253,7 @@ namespace Robocup.MotionControl
             {
                 RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, id);
                 //speeds = new WheelSpeeds();
-                speeds = slowPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;// This is the "normal one"
+                speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;// This is the "normal one"
                 //speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
 
                 // FOR NOW!!! Go forwards rather than use PID feedback. Meant to fix forward curving problem
@@ -257,7 +261,10 @@ namespace Robocup.MotionControl
                 breakBeamOn = true;
             }
 
-            
+            // ignore above code on break beam (remove later, this is at competition and we are concerned about quick
+            // reversibility), instead decide whether to turn on the break beam based on the distance to the ball
+
+            breakBeamOn = (distRobotToBall <= BALL_DISTANCE_CHARGE);
 
             // return a KickPlanningResults object with the appropriate information on
             // wheel speeds and break beam
@@ -285,7 +292,7 @@ namespace Robocup.MotionControl
         }
 
         public void DrawLast(Graphics g, ICoordinateConverter c) {
-            Console.WriteLine("DRAWING");
+            //Console.WriteLine("DRAWING");
         }
 
         public void LoadConstants() {
@@ -320,6 +327,8 @@ namespace Robocup.MotionControl
             RightSpeed = new WheelSpeeds(-SPEED_LATERAL, SPEED_LATERAL, SPEED_LATERAL, -SPEED_LATERAL);
 
             WHEEL_SPEED_TURN = SPIN_SPEED_CAP;
+
+            BALL_DISTANCE_CHARGE = Constants.get<double>("kickplanning", "BALL_DISTANCE_CHARGE");
 
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);

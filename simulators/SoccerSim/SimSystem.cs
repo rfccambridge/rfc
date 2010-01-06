@@ -88,9 +88,6 @@ namespace SoccerSim
 
             // motion control
             _controller.LoadConstants();
-
-            physics_engine.LoadConstants();
-            referee.LoadConstants();
         }
 
         public void initialize()
@@ -153,7 +150,9 @@ namespace SoccerSim
         public void LoadConstants()
         {
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
+            // In my understanding, this only works with Yellow!
         	team = Constants.get<int>("configuration", "OUR_TEAM_INT");
+            //team = 0;
         }
 
         # region Start/Stop
@@ -223,7 +222,7 @@ namespace SoccerSim
 
 			// add playtype to drawer
             // If this instance of SimSystem is for "our" team (vs. static enemies)
-            if (isYellow && team == YELLOW)
+            if (isYellow && team == YELLOW)  // This stuff was confusing...
             {
                 interpret(_refbox.GetCurrentPlayType());
                 PlayTypes playType = _refbox.GetCurrentPlayType();

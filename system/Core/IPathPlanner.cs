@@ -50,7 +50,8 @@ namespace Robocup.CoreRobotics
             path.setFinalState(desiredState);
 
             WheelSpeeds speeds = _driver.followPath(path, predictor);
-            Console.WriteLine("PlanMotion: robotID=" + id.ToString() + "; returning speeds: " + speeds);
+            // TODO: Find better output place for this
+            //Console.WriteLine("PlanMotion: robotID=" + id.ToString() + "; returning speeds: " + speeds);
             return new MotionPlanningResults(speeds);
         }
     }
