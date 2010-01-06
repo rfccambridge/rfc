@@ -15,15 +15,22 @@ center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)
 
-toppt (point -0.2 1.0)
-botpt (point -0.2 -1.0)
+centerpoint (point -0.3 0)
 
+middlepoint (point -2 0.2)
 
-topbot (closest friendly centertop loose)
-topbotpt (pointof topbot)
+goaliebot (closest friendly ourgoal loose)
+middlerbot (closest friendly middlepoint loose)
 
-receiverbot (closest friendly centerbottom loose)
-receiverbotpt (pointof receiverbot)
+GOALIE_X_POS (const-double GOALIE_X_POS)
+
+centergoalline (line center ourgoal)
+
+endtopgoalpt (point GOALIE_X_POS 2)
+endbottomgoalpt (point GOALIE_X_POS -2)
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+
+goaliept (linelineintersection centergoalline vertgoalline)
 
 centerbot (closest friendly center loose)
 centerbotpt (pointof centerbot)
@@ -31,6 +38,6 @@ centerbotpt (pointof centerbot)
 
 Conditions:
 Actions:
-(robotpointmove topbot toppt)
-(robotpointmove receiverbot botpt)
+(robotpointpointmove goaliebot goaliept center) 
+(robotpointpointmove middlerbot middlepoint theirgoal)
 (robotpointkick centerbot theirgoal)

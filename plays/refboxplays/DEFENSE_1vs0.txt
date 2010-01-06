@@ -4,20 +4,20 @@ name DEFENSE_1vs0
 score 150
 
 Objects:
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
-theirgoal (point 3.13 0)
-ourgoal (point -3.13 0)
+topLeftCorner (point -2.4 1.6)
+bottomLeftCorner (point -2.4 -1.6)
+bottomRightCorner (point 2.4 -1.6)
+topRightCorner (point 2.4 1.6)
+theirgoal (point 2.5 0)
+ourgoal (point -2.5 0)
 
 GOALIE_X_POS (const-double GOALIE_X_POS)
 
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)
 
-endtopgoalpt (point GOALIE_X_POS 2)
-endbottomgoalpt (point GOALIE_X_POS -2)
+endtopgoalpt (point GOALIE_X_POS 1.6)
+endbottomgoalpt (point GOALIE_X_POS -1.6)
 
 vertgoalline (line endtopgoalpt endbottomgoalpt)
 

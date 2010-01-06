@@ -20,6 +20,7 @@ nothing (nullAction)
 Conditions:
 
 Actions:
+
 (if_Action (= numRobots 1) (assignPlay Penalty1) nothing)
 
 (if_Action (= numRobots 2) (assignPlay Penalty2) nothing)

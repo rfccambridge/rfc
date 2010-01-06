@@ -1,37 +1,32 @@
 Metadata:
 type PenaltyKick_Theirs
 score 100
-name Penalty_Their
+name Penalty_Their1
 Objects:
-ourgoal (point -3.13 0)
-robot0 (closest-with-tags friendly ourgoal loose goalie)
-point20 (point -1 1)
-robot2 (closest friendly point20 loose)
-point21 (point -1 0)
-robot4 (closest friendly point21 loose)
-point22 (point -1 -1)
-robot6 (closest friendly point22 loose)
-point12 (pointof ball)
-robot10 (closest enemy point12 loose)
+Objects:
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
 theirgoal (point 3.13 0)
-point1 (pointof robot0)
-point3 (pointof robot2)
-point5 (pointof robot4)
-point7 (pointof robot6)
-point11 (pointof robot10)
-point13 (point -3.05 0.33)
-point14 (point -3.05 -0.34)
-line15 (line point13 point14)
-line17 (line point11 point12)
-point18 (linelineintersection line15 line17)
+ourgoal (point -3.13 0)
+
+GOALIE_X_POS (const-double GOALIE_X_POS)
+
+ballpoint (pointof ball)
+ballgoalline (line ballpoint ourgoal)
+
+endtopgoalpt (point GOALIE_X_POS 2)
+endbottomgoalpt (point GOALIE_X_POS -2)
+
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+
+goaliept (linelineintersection ballgoalline vertgoalline)
+goaliebot (closest friendly ourgoal loose)
+goaliebotpt (pointof goaliebot)
+goaltoppt (point GOALIE_X_POS 0.35)
+goalbotpt (point GOALIE_X_POS -0.35)
+
 Conditions:
 Actions:
-(robotpointmove robot0 (point -2.4 (getYcoord point18)))
-(robotpointmove robot2 point20)
-(robotpointmove robot4 point21)
-(robotpointmove robot6 point22)
-
+(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointmove goaliebot goalbotpt) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointmove goaliebot goaltoppt) (robotpointmove goaliebot goaliept)))
