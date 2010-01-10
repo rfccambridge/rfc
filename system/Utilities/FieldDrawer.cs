@@ -2,383 +2,495 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
-
+using OpenTK.Graphics.OpenGL;
 using Robocup.Core;
 
 namespace Robocup.Utilities
 {
-    public class FieldDrawer
+    public enum ArrowType
     {
-        // For internal use only
-        private enum Team { BLUE, YELLOW };
-
-        private Team OUR_TEAM, THEIR_TEAM;
-
-        public class StringDisplayInfo
-        {
-            public string Value;
-            public Point Location;
-            public Color Color;
-            public Font Font;
-
-            public StringDisplayInfo(string value, Point location) :
-                this(value, location, Color.White, new Font("Tahoma", 11)) { }
-
-            public StringDisplayInfo(string value, Point location, Color color) :
-                this(value, location, color, new Font("Tahoma", 11)) { }
-
-            public StringDisplayInfo(string value, Point location, Color color, Font font)
-            {
-                Value = value;
-                Location = location;
-                Color = color;
-                Font = font;
-            }
-        }
-
-        // drawing constants
-        int ROBOT_SIZE;
-        int BALL_SIZE;
-        int GOAL_DOT_SIZE;
-        double CENTER_CIRCLE_RADIUS;
-        double ORIENT_ARROW_LEN;
-        Color VELOCITY_ARROW_COLOR;
-        double VELOCITY_ARROW_SIZE;
-        double VELOCITY_ARROW_MIN_MAG_SQ;
-        double VELOCITY_ARROW_LEN_SCALE; // length of arrow = magnitude * this scaling factor
-        double BALL_VELOCITY_ARROW_LEN_SCALE;
-        
-        // kicker drawing
-        double OUTER_ANGLE = .6;
-        double INNER_ANGLE = 1.0;
-        double INNER_RADIUS = 7;
-        double OUTER_RADIUS = 11;
-
-        // field drawing
-        static double FIELD_WIDTH;
-        static double FIELD_HEIGHT;
-        static double FIELD_XMIN;
-        static double FIELD_XMAX;
-        static double FIELD_YMIN;
-        static double FIELD_YMAX;
-        static double GOAL_WIDTH;
-        static double GOAL_HEIGHT;
-
-        public Dictionary<int, string> ourPlayNames;
-        public Dictionary<int, string> theirPlayNames;
-
-        private Dictionary<string, StringDisplayInfo> strings = new Dictionary<string,StringDisplayInfo>();
-
-
-        IPredictor predictor;
-        ICoordinateConverter converter;
-        PlayTypes playType;
-
-        Dictionary<int, Arrow> _arrows;
-        Object _arrowsLock = new Object();
-        int _nextArrowID;
-
-        Dictionary<int, RobotPath> _paths;
-        Object _pathsLock = new object();
-        int _nextPathID;
-        Font _font = new Font("Tahoma", 11);
-      
-        public FieldDrawer(IPredictor predictor, ICoordinateConverter c)
-        {
-            this.predictor = predictor;
-            this.converter = c;
-            this.ourPlayNames = new Dictionary<int, string>();//ourPlayNames;
-            this.theirPlayNames = new Dictionary<int, string>();//theirPlayNames;
-
-
-            _arrows = new Dictionary<int, Arrow>();
-            _nextArrowID = 0;
-
-            _paths = new Dictionary<int, RobotPath>();
-            _nextPathID = 0;
-
-            playType = PlayTypes.Stopped;
-
-            LoadParameters();
-        }
-
-        public void LoadParameters()
-        {
-            OUR_TEAM = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? Team.YELLOW : Team.BLUE;
-            THEIR_TEAM = Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? Team.BLUE : Team.YELLOW;
-
-            // drawing constants
-            ROBOT_SIZE =                Constants.get<int>("drawing", "ROBOT_SIZE");
-            BALL_SIZE =                 Constants.get<int>("drawing", "BALL_SIZE");
-            GOAL_DOT_SIZE =             Constants.get<int>("drawing", "GOAL_DOT_SIZE");
-            ORIENT_ARROW_LEN =          Constants.get<double>("drawing", "ORIENT_ARROW_LEN");
-            VELOCITY_ARROW_COLOR =      Color.FromName(Constants.get<string>("drawing", "VELOCITY_ARROW_COLOR"));
-            VELOCITY_ARROW_SIZE =       Constants.get<double>("drawing", "VELOCITY_ARROW_SIZE");
-            VELOCITY_ARROW_MIN_MAG_SQ = Constants.get<double>("drawing", "VELOCITY_ARROW_MIN_MAG_SQ");
-            VELOCITY_ARROW_LEN_SCALE =  Constants.get<double>("drawing", "VELOCITY_ARROW_LEN_SCALE");
-            BALL_VELOCITY_ARROW_LEN_SCALE = Constants.get<double>("drawing", "BALL_VELOCITY_ARROW_LEN_SCALE");
-
-            // kicker drawing
-            OUTER_ANGLE =  Constants.get<double>("drawing", "OUTER_ANGLE");
-            INNER_ANGLE =  Constants.get<double>("drawing", "INNER_ANGLE");
-            INNER_RADIUS = Constants.get<double>("drawing", "INNER_RADIUS");
-            OUTER_RADIUS = Constants.get<double>("drawing", "OUTER_RADIUS");
-            
-            // field drawing
-            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
-            
-            FIELD_XMIN = -FIELD_WIDTH / 2;
-            FIELD_XMAX = FIELD_WIDTH / 2;
-            FIELD_YMIN = -FIELD_HEIGHT / 2;
-            FIELD_YMAX = FIELD_HEIGHT/2;
-
-            GOAL_WIDTH = Constants.get<double>("plays","GOAL_WIDTH");
-            GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
-            CENTER_CIRCLE_RADIUS = Constants.get<double>("plays", "CENTER_CIRCLE_RADIUS");
-        }
-
-        public void AddString(string id, StringDisplayInfo value)
-        {
-            strings[id] = value;
-        }
-        public void UpdateString(string id, string newValue)
-        {
-            strings[id].Value = newValue;
-        }
-        public void RemoveString(string id)
-        {
-            strings.Remove(id);
-        }
-        public void RemoveStrings()
-        {
-            strings.Clear();
-        }
-
-        private void drawRobot(RobotInfo r, Color color, Graphics g)
-        {
-            Vector2 offset;
-
-            // draw robot
-            Brush b = new SolidBrush(color);
-            Vector2 center = converter.fieldtopixelPoint(r.Position);
-            g.FillEllipse(b, (float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE / 2), (float)(ROBOT_SIZE), (float)(ROBOT_SIZE));
-            g.DrawString(r.ID.ToString(), _font, new SolidBrush(Color.Red), 
-                (float)(center.X - ROBOT_SIZE / 3), (float)(center.Y - ROBOT_SIZE / 3));
-            b.Dispose();
-
-
-            // draw velocity arrow              
-            if (r.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ)
-            {
-                offset = 0.04 * r.Velocity.normalize();
-                Vector2 velVector = VELOCITY_ARROW_LEN_SCALE * r.Velocity.magnitudeSq() * r.Velocity.normalize();                
-                Arrow velArrow = new Arrow(r.Position + offset, r.Position+ velVector, VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
-                velArrow.drawConvertToPixels(g, converter);
-            }
-
-            // draw kicker
-            PointF[] corners = new PointF[4];
-            double angle = -r.Orientation;
-            corners[0] = (center + (new Vector2((double)(INNER_RADIUS * Math.Cos(angle + INNER_ANGLE)), (double)(INNER_RADIUS * Math.Sin(angle + INNER_ANGLE))))).ToPointF();
-            corners[1] = (center + (new Vector2((double)(INNER_RADIUS * Math.Cos(angle - INNER_ANGLE)), (double)(INNER_RADIUS * Math.Sin(angle - INNER_ANGLE))))).ToPointF();
-            corners[2] = (center + (new Vector2((double)(OUTER_RADIUS * Math.Cos(angle - OUTER_ANGLE)), (double)(OUTER_RADIUS * Math.Sin(angle - OUTER_ANGLE))))).ToPointF();
-            corners[3] = (center + (new Vector2((double)(OUTER_RADIUS * Math.Cos(angle + OUTER_ANGLE)), (double)(OUTER_RADIUS * Math.Sin(angle + OUTER_ANGLE))))).ToPointF();
-            b = new SolidBrush(Color.Gray);
-            g.FillPolygon(b, corners);
-            b.Dispose();
-
-            // draw an arrow showing the robot orientation
-            
-            Vector2 orientVect = new Vector2(Math.Cos(r.Orientation), Math.Sin(r.Orientation));            
-            orientVect = orientVect.normalizeToLength(ORIENT_ARROW_LEN);
-            offset = 0.04 * orientVect.normalize();
-            new Arrow(r.Position + offset, r.Position + orientVect,
-                Color.Cyan, .04).drawConvertToPixels(g, converter);
-
-            b = new SolidBrush(Color.GreenYellow);
-            string playName;
-            Dictionary<int, string> playNames;
-            if ((OUR_TEAM == Team.YELLOW && r.Team == 0) || (OUR_TEAM == Team.BLUE && r.Team == 1))
-            {
-                playNames = ourPlayNames;
-            }
-            else
-            {
-                playNames = theirPlayNames;
-            }
-            if (playNames.TryGetValue(r.ID, out playName)) {
-                g.DrawString(playName, _font, b, new PointF((float)(center.X - ROBOT_SIZE / 2), (float)(center.Y - ROBOT_SIZE)));
-            }
-            b.Dispose();            
+        Destination,
+        Waypoint
     }
 
-        public void paintField(Graphics g)
+    public class FieldDrawer
+    {
+        private class RobotDrawingInfo
         {
-            Color ourColor = (OUR_TEAM == Team.YELLOW) ? Color.Yellow : Color.Blue;
-            foreach (StringDisplayInfo stringInfo in strings.Values)
+            public RobotInfo RobotInfo;
+            public Dictionary<ArrowType, Arrow> Arrows = new Dictionary<ArrowType, Arrow>();
+            public string PlayName;
+        
+            public RobotDrawingInfo(RobotInfo robotInfo)
             {
-                g.DrawString(stringInfo.Value, stringInfo.Font, new SolidBrush(stringInfo.Color),
-                       stringInfo.Location.X, stringInfo.Location.Y);
+                RobotInfo = robotInfo;
+            }
+        }
+
+        private class Marker
+        {
+            public Vector2 Location;
+            public Color Color;
+
+            public Marker(Vector2 loc, Color col)
+            {
+                Location = loc;
+                Color = col;
+            }
+        }
+
+        private class Arrow
+        {
+            public Vector2 ToPoint;
+            public Color Color;
+
+            public Arrow(Vector2 toPoint, Color color)
+            {         
+                ToPoint = toPoint;
+                Color = color;
+            }
+        }
+
+        private class State
+        {
+            public Dictionary<Team, Dictionary<int, RobotDrawingInfo>> Robots = new Dictionary<Team, Dictionary<int, RobotDrawingInfo>>();
+            public BallInfo Ball;
+            public Dictionary<int, Marker> Markers = new Dictionary<int, Marker>();
+
+            public int NextRobotHandle = 0;            
+            public int NextMarkerHandle = 0;
+
+            public State()
+            {
+                Robots.Add(Team.Yellow, new Dictionary<int, RobotDrawingInfo>());
+                Robots.Add(Team.Blue, new Dictionary<int, RobotDrawingInfo>());
             }
 
-            // goal dots
-            Brush b0 = new SolidBrush(Color.YellowGreen);
-            g.FillEllipse(b0, converter.fieldtopixelX(FIELD_XMIN - GOAL_WIDTH) - GOAL_DOT_SIZE / 2, converter.fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
-            g.FillEllipse(b0, converter.fieldtopixelX(FIELD_XMAX + GOAL_WIDTH) - GOAL_DOT_SIZE / 2, converter.fieldtopixelY(0) - GOAL_DOT_SIZE / 2, GOAL_DOT_SIZE, GOAL_DOT_SIZE);
-            b0.Dispose();
-
-            Pen p = new Pen(Color.White, 1);
-            // right goal box 
-            g.DrawRectangle(
-                p,
-                converter.fieldtopixelX(FIELD_XMAX),
-                converter.fieldtopixelY(GOAL_HEIGHT / 2),
-                converter.fieldtopixelX(FIELD_XMAX + GOAL_WIDTH) - converter.fieldtopixelX(FIELD_XMAX),
-                converter.fieldtopixelY(-GOAL_HEIGHT / 2) - converter.fieldtopixelY(GOAL_HEIGHT / 2)
-            );
-            // left goal box
-            g.DrawRectangle(
-                p,
-                converter.fieldtopixelX(FIELD_XMIN - GOAL_WIDTH),
-                converter.fieldtopixelY(GOAL_HEIGHT / 2),
-                converter.fieldtopixelX(FIELD_XMAX + GOAL_WIDTH) - converter.fieldtopixelX(FIELD_XMAX),
-                converter.fieldtopixelY(-GOAL_HEIGHT / 2) - converter.fieldtopixelY(GOAL_HEIGHT / 2)
-            );
-            // field rectangle
-            g.DrawRectangle(
-                p,
-                converter.fieldtopixelX(FIELD_XMIN),
-                converter.fieldtopixelY(FIELD_YMAX),
-                converter.fieldtopixelX(FIELD_XMAX) - converter.fieldtopixelX(FIELD_XMIN),
-                converter.fieldtopixelY(FIELD_YMIN) - converter.fieldtopixelY(FIELD_YMAX)
-            );            
-
-            // Center-line
-            g.DrawLine(p,
-                       converter.fieldtopixelX(0), converter.fieldtopixelY(FIELD_YMAX),
-                       converter.fieldtopixelX(0), converter.fieldtopixelY(FIELD_YMIN));
-            
-            // Center circle
-            g.DrawEllipse(p,
-                          new Rectangle(converter.fieldtopixelX(-CENTER_CIRCLE_RADIUS), converter.fieldtopixelY(CENTER_CIRCLE_RADIUS),
-                                        (int)converter.fieldtopixelDistance(2*CENTER_CIRCLE_RADIUS), (int)converter.fieldtopixelDistance(2*CENTER_CIRCLE_RADIUS)));
-            p.Dispose();
-
-            List<RobotInfo> robots = new List<RobotInfo>();            
-            robots.AddRange(predictor.GetRobots(0));
-            robots.AddRange(predictor.GetRobots(1));
-
-            foreach (RobotInfo r in robots)
+            public void Clear()
             {                
-                Color color = (r.Team == 0) ? Color.Yellow : Color.Blue;
-                drawRobot(r, color, g);
-            }
-                    
-            // draw arrows
+                Robots[Team.Yellow].Clear();
+                Robots[Team.Blue].Clear();
+                Ball = null;
+                Markers.Clear();
 
-            lock (_arrowsLock)
+                NextRobotHandle = 0;
+                NextMarkerHandle = 0;
+          }
+        }
+
+        double FIELD_WIDTH;
+        double FIELD_HEIGHT;
+        double REFEREE_ZONE_WIDTH;
+        double CENTER_CIRCLE_RADIUS;
+
+        FieldDrawerForm _fieldDrawerForm; 
+        State _bufferedState = new State();
+        State _state = new State();
+        object _stateLock = new object();
+        bool _collectingState = false;
+        object _collectingStateLock = new object();
+        bool _robotsAndBallUpdated = false;
+
+        IntPtr _ballQuadric, _centerCircleQuadric, _robotQuadric;
+        OpenTK.Graphics.TextPrinter _printer = new OpenTK.Graphics.TextPrinter();
+        double[] _modelViewMatrix = new double[16];
+        double[] _projectionMatrix = new double[16];
+        int[] _viewport = new int[4];
+
+        public bool Visible
+        {
+            get { return _fieldDrawerForm.Visible; }
+        }
+
+        public FieldDrawer()
+        {
+            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+
+            REFEREE_ZONE_WIDTH = Constants.get<double>("plays", "REFEREE_ZONE_WIDTH");
+            CENTER_CIRCLE_RADIUS = Constants.get<double>("plays", "CENTER_CIRCLE_RADIUS");
+
+            double ratio = FIELD_HEIGHT / FIELD_WIDTH;
+            _fieldDrawerForm = new FieldDrawerForm(this, ratio);                                
+        }
+
+        public void Init(int w, int h)
+        {
+            GL.ClearColor(Color.Green);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(-REFEREE_ZONE_WIDTH - FIELD_WIDTH / 2, FIELD_WIDTH / 2 + REFEREE_ZONE_WIDTH,
+                     -REFEREE_ZONE_WIDTH - FIELD_HEIGHT / 2, FIELD_HEIGHT / 2 + REFEREE_ZONE_WIDTH, -1, 1);
+            GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
+
+            _ballQuadric = OpenTK.Graphics.Glu.NewQuadric();
+            OpenTK.Graphics.Glu.QuadricDrawStyle(_ballQuadric, OpenTK.Graphics.QuadricDrawStyle.Fill);
+
+            _centerCircleQuadric = OpenTK.Graphics.Glu.NewQuadric();
+            OpenTK.Graphics.Glu.QuadricDrawStyle(_centerCircleQuadric, OpenTK.Graphics.QuadricDrawStyle.Silhouette);
+
+            _robotQuadric = OpenTK.Graphics.Glu.NewQuadric();
+            OpenTK.Graphics.Glu.QuadricDrawStyle(_robotQuadric, OpenTK.Graphics.QuadricDrawStyle.Line);
+
+            // For debugging
+            BuildTestScene();
+        }
+
+        public void Resize(int w, int h)
+        {
+            GL.Viewport(0, 0, w, h);
+        }
+
+        public void Show()
+        {
+            _fieldDrawerForm.Show();
+        }
+
+        public void Hide()
+        {
+            _fieldDrawerForm.Hide();
+        }
+
+        public void BeginCollectState()
+        {
+            lock (_collectingStateLock)
             {
-                foreach (Arrow arrow in _arrows.Values)
-                    arrow.drawConvertToPixels(g, converter);
+                if (!_collectingState)
+                    _collectingState = true;
+                else
+                    throw new ApplicationException("Already collecting state!");
             }
-
-            // draw paths
-
-            lock (_pathsLock)
+            _bufferedState.Clear();
+            _robotsAndBallUpdated = false;
+        }
+        public void EndCollectState()
+        {
+            lock (_collectingStateLock)
             {
-                foreach (RobotPath path in _paths.Values)
-                    PathDrawing.DrawPath(path, Color.Blue, Color.Blue, g, converter);
+                if (_collectingState)
+                    _collectingState = false;
+                else
+                    throw new ApplicationException("Never began collecting state!");
             }
 
-            // draw ball
-            BallInfo ballInfo = predictor.GetBall();
+            lock (_stateLock)
+            {
+                // Apply the modifications stored in the buffer
 
-            if (ballInfo != null) {
+                if (_robotsAndBallUpdated)
+                {
+                    _state.Ball = _bufferedState.Ball;                    
+                    foreach (Team team in Enum.GetValues(typeof(Team)))
+                    {
+                        _state.Robots[team].Clear();
+                        foreach (KeyValuePair<int, RobotDrawingInfo> pair in _bufferedState.Robots[team])
+                            _state.Robots[team].Add(pair.Key, pair.Value);
+                    }                    
+                }
 
-                Brush b = new SolidBrush(Color.Orange);
-                g.FillEllipse(
-                    b,
-                    converter.fieldtopixelX(ballInfo.Position.X) - BALL_SIZE / 2,
-                    converter.fieldtopixelY(ballInfo.Position.Y) - BALL_SIZE / 2,
-                    BALL_SIZE,
-                    BALL_SIZE
-                );
-                b.Dispose();
+                foreach (KeyValuePair<int, Marker> pair in _bufferedState.Markers)
+                {
+                    if (pair.Value != null)
+                    {
+                        if (_state.Markers.ContainsKey(pair.Key))
+                            _state.Markers[pair.Key] = pair.Value;
+                        else
+                            _state.Markers.Add(pair.Key, pair.Value);
+                    }
+                    else
+                    {
+                        if (_state.Markers.ContainsKey(pair.Key))
+                            _state.Markers.Remove(pair.Key);
+                    }
+                }
+            }
 
-                // draw ball velocity arrow
-                if (ballInfo.Velocity.magnitudeSq() >= VELOCITY_ARROW_MIN_MAG_SQ) {
-                    Vector2 velVector = BALL_VELOCITY_ARROW_LEN_SCALE * ballInfo.Velocity.magnitudeSq() * ballInfo.Velocity.normalize();
-                    Arrow velArrow = new Arrow(ballInfo.Position, ballInfo.Position + velVector,
-                                               VELOCITY_ARROW_COLOR, VELOCITY_ARROW_SIZE);
-                    velArrow.drawConvertToPixels(g, converter);
+            _fieldDrawerForm.InvalidateGLControl();
+        }
+
+        public void Paint()
+        {
+            lock (_stateLock)
+            {                
+                drawField();
+                foreach (Marker marker in _state.Markers.Values)
+                    drawMarker(marker);
+                foreach (Team team in Enum.GetValues(typeof(Team)))
+                    foreach (RobotDrawingInfo robot in _state.Robots[team].Values)                
+                        drawRobot(robot);             
+
+                if (_state.Ball != null)
+                    drawBall(_state.Ball);
+            }
+        }
+
+        public void UpdateTeam(Team team)
+        {
+            _fieldDrawerForm.UpdateTeam(team);
+        }
+
+        public void UpdateRefBoxCmd(string refBoxCmd)
+        {
+            _fieldDrawerForm.UpdateRefBoxCmd(refBoxCmd);
+        }
+
+        public void UpdatePlayType(PlayType playType)
+        {
+            _fieldDrawerForm.UpdatePlayType(playType);
+        }
+
+        public void UpdateInterpretFreq(double freq)
+        {
+            _fieldDrawerForm.UpdateInterpretFreq(freq);
+        }
+
+        public void UpdateInterpretDuration(double duration)
+        {
+            _fieldDrawerForm.UpdateInterpretDuration(duration);
+        }
+
+        public void UpdatePlayName(Team team, int robotID, string name)
+        {
+            lock (_collectingStateLock)
+            {
+                if (!_collectingState)
+                    return;
+                if (_bufferedState.Robots[team].ContainsKey(robotID))
+                    _bufferedState.Robots[team][robotID].PlayName = name;                
+            }
+        }
+
+        public void UpdateRobotsAndBall(List<RobotInfo> robots, BallInfo ball)
+        {
+            lock (_collectingStateLock)
+            {
+                if (!_collectingState)
+                    return;
+
+                _robotsAndBallUpdated = true;
+                _bufferedState.Ball = ball;
+
+                foreach (Team team in Enum.GetValues(typeof(Team)))
+                    _bufferedState.Robots[team].Clear();
+                foreach (RobotInfo robot in robots)
+                    _bufferedState.Robots[robot.Team].Add(robot.ID, new RobotDrawingInfo(robot));
+            }
+        }
+
+        public int AddMarker(Vector2 location, Color color)
+        {
+            lock (_collectingStateLock)
+            {
+                if (!_collectingState)
+                    throw new ApplicationException("Not collecting state!");
+                int handle = _bufferedState.NextMarkerHandle;
+                _bufferedState.Markers.Add(handle, new Marker(location, color));
+                unchecked { _bufferedState.NextMarkerHandle++; }
+                return handle;
+            }
+        }
+        public void RemoveMarker(int handle)
+        {
+            lock (_collectingStateLock)
+            {
+                if (!_collectingState)
+                    throw new ApplicationException("Not collecting state!");
+                if (!_state.Markers.ContainsKey(handle))
+                    throw new ApplicationException("Trying to remove an object that doesn't exist!");
+                if (_bufferedState.Markers.ContainsKey(handle))
+                    _bufferedState.Markers[handle] = null;
+                else
+                    _bufferedState.Markers.Add(handle, null);
+            }
+        }
+        public void UpdateMarker(int handle, Vector2 location, Color color)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawArrow(Team team, int robotID, ArrowType type, Vector2 toPoint)
+        {
+            Color color = Color.Black;
+
+            switch (type) {
+                case ArrowType.Destination: color = Color.Red; break;
+                case ArrowType.Waypoint: color = Color.LightPink; break;
+            }
+
+            lock (_collectingStateLock)
+            {
+                if (_bufferedState.Robots[team].ContainsKey(robotID))
+                {
+                    if (_bufferedState.Robots[team][robotID].Arrows.ContainsKey(type))
+                        _bufferedState.Robots[team][robotID].Arrows[type].ToPoint = toPoint;
+                    else
+                        _bufferedState.Robots[team][robotID].Arrows.Add(type, new Arrow(toPoint, color));
                 }
             }
         }
 
-        public int AddArrow(Arrow arrow)
+        // TODO: Paths
+
+        private void drawField()
         {
-            int arrowID;
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            lock (_arrowsLock)
-            {
-                _arrows.Add(_nextArrowID, arrow);
-                arrowID = _nextArrowID;
-                _nextArrowID++;
-            }
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
 
-            return arrowID;
+            GL.Color3(Color.White);
+
+            // Field border
+            GL.Begin(BeginMode.LineLoop);
+            GL.Vertex2(-FIELD_WIDTH / 2, -FIELD_HEIGHT / 2);
+            GL.Vertex2(FIELD_WIDTH / 2, -FIELD_HEIGHT / 2);
+            GL.Vertex2(FIELD_WIDTH / 2, FIELD_HEIGHT / 2);
+            GL.Vertex2(-FIELD_WIDTH / 2, FIELD_HEIGHT / 2);
+            GL.End();
+
+            // Center line
+            GL.Begin(BeginMode.Lines);
+            GL.Vertex2(0, FIELD_HEIGHT / 2);
+            GL.Vertex2(0, -FIELD_HEIGHT / 2);
+            GL.End();
+
+            // Center circle
+            const int SLICES = 20;
+            GL.LoadIdentity();
+            //GL.Translate(0, 0, 0);            
+            GL.Begin(BeginMode.LineLoop);
+            OpenTK.Graphics.Glu.Disk(_centerCircleQuadric, 0, CENTER_CIRCLE_RADIUS, SLICES, 1);
+            GL.End();
         }
 
-        public void ClearArrows()
+        private void drawRobot(RobotDrawingInfo drawingInfo)
         {
-            lock (_arrowsLock)
-            {
-                _arrows.Clear();
-                _nextArrowID = 0;
-            }
+            const double ROBOT_RADIUS = 0.08;
+            const double ROBOT_ARC_SWEEP = 270; // degrees
+            const int SLICES = 10;
+
+            RobotInfo robot = drawingInfo.RobotInfo;
+            double angle = (robot.Orientation + Math.PI) * 180 / Math.PI;
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.Translate(robot.Position.X, robot.Position.Y, 0);
+            GL.Rotate(angle, 0, 0, 1);
+            GL.Color3(robot.Team == Team.Yellow ? Color.Yellow : Color.Blue);            
+            GL.Begin(BeginMode.Polygon);
+            OpenTK.Graphics.Glu.PartialDisk(_robotQuadric, 0, ROBOT_RADIUS, SLICES, 1,
+                                            -(360 - ROBOT_ARC_SWEEP) / 2, ROBOT_ARC_SWEEP);
+            GL.End();
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            // TODO: Figure out the real way to render text!
+            renderString(robot.ID.ToString(), robot.Position + new Vector2(-0.03, 0.045), Color.Red, 8);
+            renderString(drawingInfo.PlayName, robot.Position + new Vector2(-0.05, -0.05), Color.Cyan, 8);
+
+            foreach (Arrow arrow in drawingInfo.Arrows.Values)                
+                drawArrow(robot.Position, arrow.ToPoint, arrow.Color);
         }
 
-        public void RemoveArrow(int arrowID)
+        private void drawBall(BallInfo ball)
         {
-            lock (_arrowsLock)
-            {
-                _arrows.Remove(arrowID);
-            }
+            const double BALL_RADIUS = 0.02;
+            const int SLICES = 8;
+            
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.Translate(ball.Position.X, ball.Position.Y, 0);
+            GL.Color3(Color.Orange);
+            GL.Begin(BeginMode.Polygon);
+            OpenTK.Graphics.Glu.Disk(_ballQuadric, 0, BALL_RADIUS, SLICES, 1);
+            GL.End();
         }
 
-
-        public int AddPath(RobotPath path)
+        private void drawMarker(Marker marker)
         {
-            int pathID;
-
-            lock (_pathsLock)
-            {
-                _paths.Add(_nextPathID, path);
-                pathID = _nextPathID;
-                _nextPathID++;
-            }
-
-            return pathID;
+            double MARKER_SIZE = 0.025;
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.Translate(marker.Location.X, marker.Location.Y, 0);
+            GL.Color3(marker.Color);
+            GL.Begin(BeginMode.Quads);
+            GL.Vertex2(-MARKER_SIZE, MARKER_SIZE);
+            GL.Vertex2(MARKER_SIZE, MARKER_SIZE);
+            GL.Vertex2(MARKER_SIZE, -MARKER_SIZE);
+            GL.Vertex2(-MARKER_SIZE, -MARKER_SIZE);
+            GL.End();
         }
 
-        public void ClearPaths()
+        private void drawArrow(Vector2 fromPoint, Vector2 toPoint, Color color)
         {
-            lock (_pathsLock)
-            {
-                _paths.Clear();
-                _nextPathID = 0;
-            }
+            const double TIP_HEIGHT = 0.15;
+            const double TIP_BASE = 0.1;
+            double angle = Math.Atan2(toPoint.Y - fromPoint.Y, toPoint.X - fromPoint.X) * 180 / Math.PI;
+            double length = Math.Sqrt(fromPoint.distanceSq(toPoint));
+            GL.Color3(color);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.Translate(fromPoint.X, fromPoint.Y, 0);
+            GL.Rotate(angle, 0, 0, 1);
+            GL.Begin(BeginMode.Triangles);
+            GL.Vertex2(0, 0);
+            GL.Vertex2(length - TIP_HEIGHT, TIP_BASE / 4);
+            GL.Vertex2(length - TIP_HEIGHT, -TIP_BASE / 4);
+            GL.Vertex2(length, 0);
+            GL.Vertex2(length - TIP_HEIGHT, TIP_BASE / 2);
+            GL.Vertex2(length - TIP_HEIGHT, -TIP_BASE / 2);
+            GL.End();
         }
 
-        public void RemovePath(int pathID)
+        private OpenTK.Vector3 worldToScreen(OpenTK.Vector3 world)
         {
-            lock (_pathsLock)
-            {
-                _paths.Remove(pathID);
-            }
+            OpenTK.Vector3 screen;          
+
+            GL.GetInteger(GetPName.Viewport, _viewport);
+            GL.GetDouble(GetPName.ModelviewMatrix, _modelViewMatrix);
+            GL.GetDouble(GetPName.ProjectionMatrix, _projectionMatrix);
+
+
+            OpenTK.Graphics.Glu.Project(world, _modelViewMatrix, _projectionMatrix, _viewport,
+                                        out screen);
+
+            screen.Y = _viewport[3] - screen.Y;
+            return screen;
         }
 
+        private void renderString(string s, Vector2 location, Color color, float size)
+        {
+            OpenTK.Vector3 screen = worldToScreen(new OpenTK.Vector3((float)location.X, (float)location.Y, 0.0f));            
+
+            _printer.Begin();
+            GL.Translate(screen);
+            _printer.Print(s, new Font(FontFamily.GenericSansSerif, size), color);
+            _printer.End();
+        }
+
+        private void BuildTestScene()
+        {
+            List<RobotInfo> robots = new List<RobotInfo>();
+            robots.Add(new RobotInfo(new Vector2(0, 0), Math.PI / 2, 2));
+            robots.Add(new RobotInfo(new Vector2(2, 1.2), Math.PI, 3));
+            BallInfo ball = new BallInfo(new Vector2(1, 2));
+
+            Vector2 marker1loc = new Vector2(-0.5, 0.5);
+            Vector2 marker2loc = new Vector2(-1.5, 1);
+
+            BeginCollectState();
+
+            UpdateRobotsAndBall(robots, ball);
+            AddMarker(marker1loc, Color.Red);
+            AddMarker(marker2loc, Color.Cyan);
+
+            DrawArrow(Team.Yellow, 2, ArrowType.Destination, marker1loc);
+            DrawArrow(Team.Blue, 2, ArrowType.Waypoint, marker2loc);
+
+            EndCollectState();
+        }
 
     }
 }

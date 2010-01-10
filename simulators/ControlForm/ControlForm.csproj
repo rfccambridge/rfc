@@ -50,6 +50,7 @@
     <Compile Include="PIDForm.Designer.cs">
       <DependentUpon>PIDForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ControlForm.resx">
@@ -79,7 +80,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="RFCSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\control\CoreRobotics\CoreRobotics.csproj">
@@ -107,11 +107,6 @@
       <Name>Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\system\MessageSystem\MessageSystem.csproj">
-      <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
-      <Name>MessageSystem</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
@@ -121,10 +116,9 @@
       <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>
       <Name>SSLClientWrapper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\vision\Vision\Vision.csproj">
-      <Project>{08383292-7063-4436-ADE4-CCD3AD048D46}</Project>
-      <Name>Vision</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\SimulationLib\SimulationLib.csproj">
+      <Project>{A343AA15-D817-4E28-AB24-24CD4359BDF7}</Project>
+      <Name>SimulationLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -136,7 +136,7 @@ namespace Robocup.Plays
                     play.ID = int.Parse(strings[1]);
                     break;
                 case "type":
-                    play.PlayType = (PlayTypes)Enum.Parse(typeof(PlayTypes), strings[1], true);
+                    play.PlayType = (PlayType)Enum.Parse(typeof(PlayType), strings[1], true);
                     break;
                 /*case "numruns":
                     play.NumRuns = int.Parse(strings[1]);

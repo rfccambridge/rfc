@@ -30,6 +30,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenTK, Version=0.9.9.5, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\FieldDrawer\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.Compatibility, Version=0.9.9.5, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\FieldDrawer\OpenTK.Compatibility.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=0.9.9.5, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\FieldDrawer\OpenTK.GLControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -37,10 +49,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arrow.cs" />
+    <Compile Include="Arrow.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Combinations.cs" />
     <Compile Include="CoordinateConverter.cs" />
-    <Compile Include="FieldDrawer.cs" />
+    <Compile Include="FieldDrawer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FieldDrawerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,8 +87,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FieldDrawerForm.resx">
-      <SubType>Designer</SubType>
       <DependentUpon>FieldDrawerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

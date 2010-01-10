@@ -11,99 +11,78 @@ namespace Robocup.CoreRobotics
     /// no matter how long ago the update happened.
     /// </summary>
     public class StaticPredictor : IPredictor, IInfoAcceptor
-    {  
-        protected BallInfo ballInfo = new BallInfo(new Vector2(0, 0));
-        protected List<RobotInfo> ourRobotsInfo = new List<RobotInfo>();
-        protected List<RobotInfo> theirRobotsInfo = new List<RobotInfo>();       
+    {          
+        BallInfo _ballInfo = new BallInfo(new Vector2(0, 0));
+        Dictionary<Team, Dictionary<int, RobotInfo>> _robots = new Dictionary<Team, Dictionary<int, RobotInfo>>();
+
+        public StaticPredictor()
+        {
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+                _robots.Add(team, new Dictionary<int,RobotInfo>());
+        }
 
         #region IPredictor Members
 
-        public BallInfo getBallInfo()
+        public List<RobotInfo> GetRobots(Team team)
         {
-            return ballInfo;
+            List<RobotInfo> robots = new List<RobotInfo>();
+            robots.AddRange(_robots[team].Values);
+            return robots;
         }
-
-        public RobotInfo getCurrentInformation(int robotID)
+        public List<RobotInfo> GetRobots()
         {
-            foreach (RobotInfo info in ourRobotsInfo)
-            {
-                if (robotID == info.ID)
-                    return info;
-            }
-            foreach (RobotInfo info in theirRobotsInfo)
-            {
-                if (robotID == info.ID)
-                    return info;
-            }
-            throw new ApplicationException("no robot seen with id " + robotID);
+            List<RobotInfo> combined = new List<RobotInfo>();
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+                combined.AddRange(_robots[team].Values);
+            return combined;
         }
-
-        public List<RobotInfo> getOurTeamInfo()
+        public RobotInfo GetRobot(Team team, int id)
         {
-            return ourRobotsInfo;
+            if (_robots[team].ContainsKey(id))
+                return _robots[team][id];
+            return null;
         }
-
-        public List<RobotInfo> getTheirTeamInfo()
+        public BallInfo GetBall()
         {
-            return theirRobotsInfo;
-        }
-
-        public List<RobotInfo> getAllInfos()
-        {
-            List<RobotInfo> rtn = new List<RobotInfo>();
-            rtn.AddRange(ourRobotsInfo);
-            rtn.AddRange(ourRobotsInfo);
-            return rtn;
+            return _ballInfo;
         }
 
         public void SetBallMark() {
-            throw new ApplicationException("StaticPredictor.setBallMark: not implemented");
+            throw new NotImplementedException();
         }
 
         public void ClearBallMark() {
-            throw new ApplicationException("StaticPredictor.clearBallMark: not implemented");
+            throw new NotImplementedException();
         }
 
         public bool HasBallMoved() {
-            throw new ApplicationException("StaticPredictor.hasBallMoved: not implemented");
+            throw new NotImplementedException();
         }
 
-        public void SetPlayType(PlayTypes newPlayType) {
-            throw new ApplicationException("StaticPredictor.setPlayType: not implemented");
+        public void SetPlayType(PlayType newPlayType) {
+            throw new NotImplementedException();
+        }
+
+        public void LoadConstants()
+        {
         }
 
         #endregion
 
         #region IInfoAcceptor Members
 
-        double ballupdate = HighResTimer.SecondsSinceStart();
-        public void updateBallInfo(BallInfo ballInfo)
+        public void UpdateBallInfo(BallInfo ballInfo)
         {
-            this.ballInfo = ballInfo;            
+            this._ballInfo = ballInfo;            
         }
 
-        public void updateRobot(int id, RobotInfo newInfo)
+        public void UpdateRobot(RobotInfo newInfo)
         {
-            ourRobotsInfo.RemoveAll(new Predicate<RobotInfo>(delegate(RobotInfo rinfo) { return rinfo.ID == id; }));
-            ourRobotsInfo.Add(newInfo);
+            if (_robots[newInfo.Team].ContainsKey(newInfo.ID))
+                _robots[newInfo.Team][newInfo.ID] = newInfo;
+            else
+                _robots[newInfo.Team].Add(newInfo.ID, newInfo);
         }
         #endregion
-
-        // TO REPLACE THE ABOVE
-        public List<RobotInfo> GetRobots(int team)
-        {
-            throw new NotImplementedException("not implemented");
-        }
-        public List<RobotInfo> GetRobots() {
-            throw new NotImplementedException("not implemented");
-        }
-        public RobotInfo GetRobot(int team, int id)
-        {
-            throw new NotImplementedException("not implemented");
-        }
-        public BallInfo GetBall()
-        {
-            throw new NotImplementedException("not implemented");
-        }
     }
 }

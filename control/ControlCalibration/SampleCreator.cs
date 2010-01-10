@@ -14,7 +14,7 @@ namespace Robocup.MotionControl
         static void WriteVisionData(RobotInfo info, LogWriter<VisionOrCommand> writer, double t)
         {
             VisionOrCommand message = new VisionOrCommand(
-                new VisionMessage.RobotData(info.ID, VisionMessage.Team.YELLOW, info.Position, info.Orientation));
+                new VisionMessage.RobotData(info.ID, Team.Yellow, info.Position, info.Orientation));
             writer.SimulateTimedLog(message, t);
         }
         static void WriteCommand(WheelSpeeds command, LogWriter<VisionOrCommand> writer, double t)

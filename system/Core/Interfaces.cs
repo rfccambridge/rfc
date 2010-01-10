@@ -25,7 +25,7 @@ using System.Text;
  */
 namespace Robocup.Core {
 
-    public enum PlayTypes
+    public enum PlayType
     {
         NormalPlay,
         Halt,
@@ -43,7 +43,7 @@ namespace Robocup.Core {
 
     public interface IReferee
     {
-        PlayTypes GetCurrentPlayType();
+        PlayType GetCurrentPlayType();
         void LoadConstants();
     }
     public interface IRefBoxListener
@@ -88,8 +88,8 @@ namespace Robocup.Core {
     /// </summary>
     public interface IInfoAcceptor
     {
-        void updateRobot(int id, RobotInfo newInfo);
-        void updateBallInfo(BallInfo ballInfo);
+        void UpdateRobot(RobotInfo newInfo);
+        void UpdateBallInfo(BallInfo ballInfo);
     }
 
     public interface IVisionInfoAcceptor {
@@ -126,10 +126,10 @@ namespace Robocup.Core {
     public interface IPredictor {       
         //returns information about the robots (position, velocity, orientation)
         //we don't care where it got its information from
-        List<RobotInfo> GetRobots(int team);
+        List<RobotInfo> GetRobots(Team team);
         List<RobotInfo> GetRobots();
 
-        RobotInfo GetRobot(int team, int id);
+        RobotInfo GetRobot(Team team, int id);
         /// <summary>
         /// Returns ball position
         /// </summary>
@@ -153,14 +153,11 @@ namespace Robocup.Core {
         /// Sets the type of play. A Predictor uses the PlayType if configured 
         /// to return an assumed ball position (based on referee box state).
         /// </summary>
-        void SetPlayType(PlayTypes newPlayType);
-
-        // TO BE REMOVED
-        BallInfo getBallInfo();
-        List<RobotInfo> getOurTeamInfo();
-        List<RobotInfo> getTheirTeamInfo();
-        RobotInfo getCurrentInformation(int id);
-        List<RobotInfo> getAllInfos();
+        void SetPlayType(PlayType newPlayType);
+        /// <summary>
+        /// Re-initialize constant values from the Constants database
+        /// </summary>
+        void LoadConstants();
     }
 
     /// <summary>

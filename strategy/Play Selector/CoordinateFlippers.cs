@@ -27,42 +27,19 @@ namespace Robocup.Plays
         }
         #region IPredictor Members
 
-        public RobotInfo getCurrentInformation(int robotID)
-        {
-            return flipRobotInfo(predictor.getCurrentInformation(robotID));
-        }
-
-        public List<RobotInfo> getOurTeamInfo()
-        {
-            throw new NotImplementedException("not implemented");
-        }
-
-        public List<RobotInfo> getTheirTeamInfo()
-        {
-            throw new NotImplementedException("not implemented");
-        }
-
-        public List<RobotInfo> getAllInfos()
-        {
-            throw new NotImplementedException("not implemented");
-        }
-
-        public BallInfo getBallInfo()
-        {
-            throw new NotImplementedException("not implemented");
-        }
-
-        // TO REPLACE THE ABOVE
-        public List<RobotInfo> GetRobots(int team)
+        public List<RobotInfo> GetRobots(Team team)
         {
             return predictor.GetRobots(team).ConvertAll<RobotInfo>(flipRobotInfo);
         }
         public List<RobotInfo> GetRobots() {
             return predictor.GetRobots().ConvertAll<RobotInfo>(flipRobotInfo);
         }
-        public RobotInfo GetRobot(int team, int id)
+        public RobotInfo GetRobot(Team team, int id)
         {
-            throw new NotImplementedException("not implemented");
+            RobotInfo robot = predictor.GetRobot(team, id);
+            if (robot != null)
+                return flipRobotInfo(robot);
+            return null;
         }
         public BallInfo GetBall()
         {
@@ -85,8 +62,12 @@ namespace Robocup.Plays
             return predictor.HasBallMoved();
         }
 
-        public void SetPlayType(PlayTypes newPlayType) {
+        public void SetPlayType(PlayType newPlayType) {
             predictor.SetPlayType(newPlayType);
+        }
+
+        public void LoadConstants()
+        {
         }
 
         #endregion
@@ -137,81 +118,4 @@ namespace Robocup.Plays
 
         #endregion
     }
-
-    /// <summary>
-    /// This class wraps an IPredictor, and switches the meaning of "our team" and "their team"
-    /// </summary>
-    public class TeamFlipperPredictor : IPredictor
-    {
-        private IPredictor predictor;
-        public TeamFlipperPredictor(IPredictor predictor)
-        {
-            this.predictor = predictor;
-        }
-        #region IPredictor Members
-
-        public RobotInfo getCurrentInformation(int robotID)
-        {
-            return predictor.getCurrentInformation(robotID);
-        }
-
-        public List<RobotInfo> getOurTeamInfo()
-        {
-            return predictor.getTheirTeamInfo();
-        }
-
-        public List<RobotInfo> getTheirTeamInfo()
-        {
-            return predictor.getOurTeamInfo();
-        }
-
-        public List<RobotInfo> getAllInfos()
-        {
-            return predictor.getAllInfos();
-        }
-
-        public BallInfo getBallInfo()
-        {
-            return predictor.getBallInfo();
-        }
-
-        // TO REPLACE THE ABOVE:
-
-        public List<RobotInfo> GetRobots(int team)
-        {
-            throw new NotImplementedException("not implemented");
-        }
-        public List<RobotInfo> GetRobots() {
-            throw new NotImplementedException("not implemented");
-        }
-        
-        public RobotInfo GetRobot(int team, int id)
-        {
-            throw new NotImplementedException("not implemented");
-        }
-        public BallInfo GetBall()
-        {
-            throw new NotImplementedException("not implemented");
-        }
-
-        public void SetBallMark() {
-            predictor.SetBallMark();
-        }
-
-        public void ClearBallMark() {
-            predictor.ClearBallMark();
-        }
-
-        public bool HasBallMoved() {
-            return predictor.HasBallMoved();
-        }
-
-        public void SetPlayType(PlayTypes newPlayType) {
-            predictor.SetPlayType(newPlayType);
-        }
-
-        #endregion
-    }
-
-
 }

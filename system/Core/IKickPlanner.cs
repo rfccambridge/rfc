@@ -14,7 +14,7 @@ namespace Robocup.CoreRobotics
     /// </summary>
     public interface IKickPlanner
     {
-        KickPlanningResults kick(int id, Vector2 target, IPredictor predictor);
+        KickPlanningResults kick(Team team, int id, Vector2 target, IPredictor predictor);
         void DrawLast(Graphics g, ICoordinateConverter c);
         void LoadConstants();
 

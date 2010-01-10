@@ -171,7 +171,7 @@ namespace Robocup.Plays
             //their own values), then you can't specify at compile time what the initial selection is.
             //toolstripPlayType.SelectedIndex = 0;
             toolstripPlayType.Items.Clear();
-            toolstripPlayType.Items.AddRange(Enum.GetNames(typeof(PlayTypes)));
+            toolstripPlayType.Items.AddRange(Enum.GetNames(typeof(PlayType)));
             toolstripPlayType.SelectedIndex = 0;
 
             showForm = new ShowExpressionsForm(this);
@@ -1230,7 +1230,7 @@ namespace Robocup.Plays
             //because that part of the toolbar doesn't have the focus.
             toolstripPlayType.Visible = false;
             toolstripPlayType.Visible = true;
-            play.PlayType = (PlayTypes)Enum.Parse(typeof(PlayTypes), ((ToolStripComboBox)sender).Text);
+            play.PlayType = (PlayType)Enum.Parse(typeof(PlayType), ((ToolStripComboBox)sender).Text, true);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

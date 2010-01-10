@@ -10,6 +10,7 @@ namespace SimplePathFollower
 {
 	public class PathFollower
 	{
+        private Team team;
 		private int robotID;
 		private List<Vector2> waypoints;
 		private int waypointIndex;
@@ -53,6 +54,8 @@ namespace SimplePathFollower
 			waypointIndex = 0;
 			running = false;
             lapping = false;
+
+            team = (Team)Enum.Parse(typeof(Team), Constants.get<string>("configuration", "OUR_TEAM"), true);
 		}
 
 		public PathFollower(int _robotID, List<Vector2> waypointList)
@@ -85,11 +88,11 @@ namespace SimplePathFollower
 				return;
 			}
 
-			commander = new Robocup.ControlForm.RemoteRobots();
+			commander = new RemoteRobots();
 			predictor = new AveragingPredictor();
             planner = newPlanner;
              
-			controller = new RFCController(commander, planner, predictor);
+			controller = new RFCController(team, commander, planner, predictor, null);
 
 			_sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
 		}
@@ -97,7 +100,7 @@ namespace SimplePathFollower
         public bool setPlanner(IMotionPlanner newPlanner) {
             if (!running) {
                 planner = newPlanner;
-                controller = new RFCController(commander, planner, predictor);
+                controller = new RFCController(team, commander, planner, predictor, null);
                 return true;
             }
 
@@ -125,9 +128,9 @@ namespace SimplePathFollower
                 //}
 
                 try {
-                     curinfo = predictor.getCurrentInformation(robotID);
+                     curinfo = predictor.GetRobot(team, robotID);
                 } catch (ApplicationException e) {
-                    Console.WriteLine("Failed Predictor.getCurrentInformation(). Dumping exception\n" + e.ToString());                    
+                    Console.WriteLine("Failed Predictor.GetRobot(). Dumping exception\n" + e.ToString());                    
                     return true;
                 }
 				/*double wpDistanceSq = curinfo.Position.distanceSq(waypoints[waypointIndex]);
@@ -172,7 +175,7 @@ namespace SimplePathFollower
         {
             running = true;
 
-            ActionInterpreter actionInterpreter = new ActionInterpreter(controller, predictor);
+            ActionInterpreter actionInterpreter = new ActionInterpreter(team, controller, predictor);
 			actionInterpreter.Kick(robotID, new Vector2(0, 0));
             do {
 
@@ -182,7 +185,7 @@ namespace SimplePathFollower
         }
         public void BeamKick() {
             running = true;
-			ActionInterpreter actionInterpreter = new ActionInterpreter(controller, predictor);
+			ActionInterpreter actionInterpreter = new ActionInterpreter(team, controller, predictor);
 			actionInterpreter.BeamKick(robotID, new Vector2(0, 0));
             do {
 
@@ -200,10 +203,6 @@ namespace SimplePathFollower
             running = false;
             lapping = false;
 		}
-
-        public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter) {            
-            controller.drawCurrent(g, converter);
-        }
 
         //seeks to reload any constants that this class and its own objects use from files
         //in particular, reloads PID and other constants for the planner

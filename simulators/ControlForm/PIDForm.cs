@@ -12,8 +12,6 @@ namespace Robocup.ControlForm
 {
     public partial class PIDForm : Form
     {
-        RFCSystem system;
-        
         public PIDForm()
         {
             InitializeComponent();
@@ -24,7 +22,6 @@ namespace Robocup.ControlForm
             DOF_Constants XYPID = new DOF_Constants(EditXYP.Text, EditXYI.Text, EditXYD.Text, XYVelocity.Checked ? "0" : "1");
             DOF_Constants ThetaPID = new DOF_Constants(EditTP.Text, EditTI.Text, EditTD.Text, "1");
 
-            //((system.Controller as RFCController).Planner as TangentBugFeedbackMotionPlanner).
             TangentBugFeedbackMotionPlanner.pathdriver.UpdateConstants(Int32.Parse(EditID.Text), XYPID, ThetaPID, IsShort.Checked, false);
         }
 

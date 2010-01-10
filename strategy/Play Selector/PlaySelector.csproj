@@ -60,12 +60,6 @@
     <Compile Include="InterpreterObjects.cs" />
     <Compile Include="PlayEvaluator.cs" />
     <Compile Include="PlaySelector.cs" />
-    <Compile Include="PlaySelectorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PlaySelectorForm.Designer.cs">
-      <DependentUpon>PlaySelectorForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="PlayUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -85,6 +79,10 @@
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
+      <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core Play Files\CorePlayFiles.csproj">
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
       <Name>CorePlayFiles</Name>
@@ -95,12 +93,6 @@
       <Name>Geometry</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="PlaySelectorForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PlaySelectorForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

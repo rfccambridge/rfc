@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Collections;
 using Robocup.Core;
 using System.IO;
+using Robocup.Utilities;
 
 namespace Robocup.Plays
 {
@@ -16,18 +17,17 @@ namespace Robocup.Plays
         private readonly IActionInterpreter actioninterpreter;
         private readonly IPredictor predictor;
         private List<InterpreterPlay> plays = new List<InterpreterPlay>();
-       
-        // Needs to be made private
-        public Dictionary<int, string> ourPlayNames = new Dictionary<int, string>();
-        public Dictionary<int, string> theirPlayNames = new Dictionary<int, string>();
-        private int team;
+        private Team team;
+        private FieldDrawer fieldDrawer;
 
-        public Interpreter(bool flipCoordinates, IPredictor predictor, IActionInterpreter actioninterpreter)
+        public Interpreter(Team ourTeam, FieldHalf fieldHalf, IPredictor predictor, IActionInterpreter actioninterpreter, FieldDrawer drawer)
         {
-            selector = new PlaySelector();           
-            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
-            
-            if (flipCoordinates)
+            team = ourTeam;
+            fieldDrawer = drawer;
+
+            selector = new PlaySelector();            
+
+            if (fieldHalf == FieldHalf.Right)
             {
                 //if we have to flip the coordinates, wrap the predictor/actioninterpreter
                 this.actioninterpreter = new FlipActionInterpreter(actioninterpreter);
@@ -39,8 +39,9 @@ namespace Robocup.Plays
                 this.predictor = predictor;
             }
         }
-        public Interpreter(bool flipCoordinates, IPredictor predictor, IController commander)
-            : this(flipCoordinates, predictor, new ActionInterpreter(commander, predictor)) { }
+        public Interpreter(Team team, FieldHalf fieldHalf, IPredictor predictor, IController commander, FieldDrawer fieldDrawer)
+            : this(team, fieldHalf, predictor, new ActionInterpreter(team, commander, predictor), fieldDrawer) { }
+
         volatile bool running = false;
         object run_lock = new object();
         private List<InterpreterPlay> lastRunPlays = new List<InterpreterPlay>();
@@ -68,19 +69,15 @@ namespace Robocup.Plays
             plays.Clear();
             plays.AddRange(newPlays);
         }
+ 
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();
-
-        public List<InterpreterPlay> getPlays()
-        {
-            return plays;
-        }
 
         /// <returns>Returns true if it actually interpreted,
         /// false if it quit because it was already interpreting.</returns>
-        public bool interpret(PlayTypes type)
+        public bool interpret(PlayType type)
         {
             List<RobotInfo> ourteaminfo_base = predictor.GetRobots(team);
-            List<RobotInfo> theirteaminfo_base = predictor.GetRobots(Math.Abs(team - 1));
+            List<RobotInfo> theirteaminfo_base = predictor.GetRobots((team == Team.Yellow) ? Team.Blue : Team.Yellow);
             
             InterpreterRobotInfo[] ourteaminfo = ourteaminfo_base.ConvertAll<InterpreterRobotInfo>(delegate(RobotInfo info)
             {
@@ -104,11 +101,15 @@ namespace Robocup.Plays
             foreach (InterpreterRobotInfo robot in ourteaminfo)
             {
                 robot.setFree();
-                ourPlayNames[robot.ID] = "N/A";
+                if (fieldDrawer != null)
+                    fieldDrawer.UpdatePlayName(team, robot.ID, "N/A");
+                
             }
             foreach (InterpreterRobotInfo robot in theirteaminfo)
             {
                 robot.setFree();
+                if (fieldDrawer != null)
+                    fieldDrawer.UpdatePlayName(team, robot.ID, "N/A");
             }
                 
 
@@ -116,7 +117,7 @@ namespace Robocup.Plays
                 delegate(InterpreterPlay play) { return play.PlayType == type && play.isEnabled; });
             //find all the actions we want to do
             SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, 
-                                                           lastRunPlays, lastAssignments, ourPlayNames);
+                                                           lastRunPlays, lastAssignments);
 
             lastAssignments = results.Assignments;
 
@@ -127,9 +128,17 @@ namespace Robocup.Plays
                     lastRunPlays.Add(action.Play);
             }
 
+            // Draw the labels with play assignments
+            foreach (ActionInfo action in results.Actions)
+                foreach (int id in action.RobotsInvolved)
+                    for (int i = 0; i < ourteaminfo.Length; i++)
+                        if (id == ourteaminfo[i].ID)
+                            fieldDrawer.UpdatePlayName(team, id, action.Play.Name);
+
             List<int> nowactive = new List<int>();
             //update the actioninterpreter with the current state
             //actioninterpreter.NewRound(ourteaminfo, theirteaminfo, ballinfo);
+            
             //do each action
             foreach (ActionInfo action in results.Actions)
             {

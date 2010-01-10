@@ -2,90 +2,98 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-
 using Robocup.Core;
+using System.Drawing;
 
 namespace Robocup.Utilities
 {
-    public partial class FieldDrawerForm : Form
+    partial class FieldDrawerForm : Form
     {
-        public FieldDrawer drawer;
-        ICoordinateConverter converter = new BasicCoordinateConverter(500, 30, 30);
-        
-        public FieldDrawerForm(IPredictor predictor)
+        private delegate void VoidDelegate();
+
+        private FieldDrawer _fieldDrawer;
+        bool _glFieldLoaded = false;
+
+        public FieldDrawerForm(FieldDrawer fieldDrawer, double heightToWidth)
         {
+            _fieldDrawer = fieldDrawer;
             InitializeComponent();
 
-            this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
-
-            drawer = new FieldDrawer(predictor, converter);
-            this.Size = new Size(570, 500);
-
-            this.BackColor = Color.Green;
+            this.Width = (int)((double)glField.Height / heightToWidth);
         }
 
-        protected override void OnPaint(PaintEventArgs e)
+        public void InvalidateGLControl()
         {
-            base.OnPaint(e);
-
-            drawer.paintField(e.Graphics);            
+            glField.Invalidate();
         }
 
-        public ICoordinateConverter Converter
+        public void UpdateTeam(Team team)
         {
-            get { return converter; }
-        }
-        //public void GetGraphics() {
-        //    return this.cr
-
-        public int AddArrow(Arrow arrow)
-        {
-            return drawer.AddArrow(arrow);
-        }
-
-        public void ClearArrows()
-        {
-            drawer.ClearArrows();
-        }
-
-        public void RemoveArrow(int arrowID)
-        {
-            drawer.RemoveArrow(arrowID);
-        }
-
-        public int AddPath(RobotPath path)
-        {
-            return drawer.AddPath(path);
-        }
-
-        public void ClearPaths()
-        {
-            drawer.ClearPaths();
-        }
-
-        public void RemovePath(int pathID)
-        {
-            drawer.RemovePath(pathID);
-        }
-
-        private void FieldDrawerForm_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            switch (e.KeyChar)
+            this.Invoke(new VoidDelegate(delegate
             {
-                case 'r': // reload constants
-                    Constants.Load();
-                    drawer.LoadParameters();
-                    break;
-            }
+                lblTeam.Text = team.ToString();
+                lblTeam.ForeColor = team == Team.Yellow ? Color.Yellow : Color.Blue;
+            }));
         }
 
-        private void FieldDrawerForm_FormClosing(object sender, FormClosingEventArgs e)
+        public void UpdateRefBoxCmd(string refBoxCmd)
         {
-            e.Cancel = true;
+            this.Invoke(new VoidDelegate(delegate
+            {
+                lblRefBoxCmd.Text = refBoxCmd;
+            }));
         }
 
+        public void UpdatePlayType(PlayType playType)
+        {
+            this.Invoke(new VoidDelegate(delegate
+            {
+                lblPlayType.Text = playType.ToString();
+            }));
+        }
+
+        public void UpdateInterpretFreq(double freq)
+        {
+            this.Invoke(new VoidDelegate(delegate
+            {
+                lblInterpretFreq.Text = String.Format("{0:F2} Hz", freq);
+            }));
+        }
+
+        public void UpdateInterpretDuration(double duration)
+        {
+            this.Invoke(new VoidDelegate(delegate
+            {
+                lblInterpretDuration.Text = String.Format("{0:F2} ms", duration);
+            }));
+        }
+
+        private void glField_Paint(object sender, PaintEventArgs e)
+        {
+            if (!_glFieldLoaded)
+                return;
+            glField.MakeCurrent();
+            _fieldDrawer.Paint();            
+            glField.SwapBuffers();
+        }
+
+        private void glField_Load(object sender, EventArgs e)
+        {
+            _glFieldLoaded = true;
+            _fieldDrawer.Init(glField.Width, glField.Height);
+        }
+
+        private void glField_Resize(object sender, EventArgs e)
+        {
+            _fieldDrawer.Resize(glField.Width, glField.Height);
+            glField.Invalidate();
+        }
+
+        private void FieldDrawerForm_Resize(object sender, EventArgs e)
+        {
+            glField.Height = panGameStatus.Top;
+        }
     }
 }

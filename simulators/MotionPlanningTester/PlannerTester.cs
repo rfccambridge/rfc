@@ -27,7 +27,10 @@ namespace Robocup.MotionControl
         {
             engine = new PhysicsEngine(new SimpleReferee());
             converter = new BasicCoordinateConverter(600, 30, 50);
-            drawer = new FieldDrawer(engine, converter);
+            
+            // TODO: Bring drawing back to PlannerTester!
+            //drawer = new FieldDrawer(engine, converter);
+            drawer = new FieldDrawer();
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
             InitializeComponent();
@@ -60,7 +63,7 @@ namespace Robocup.MotionControl
         {
             for (int i = 0; i < num; i++)
             {
-                MotionPlanningResults results = planner.PlanMotion(0, new RobotInfo(destination, 0, 0), engine, .13);
+                MotionPlanningResults results = planner.PlanMotion(Team.Yellow, 0, new RobotInfo(destination, 0, 0), engine, .13);
                 engine.setMotorSpeeds(0, results.wheel_speeds);
                 if (!checkBoxDisableMovement.Checked)
                     engine.Step(.025);
@@ -83,7 +86,8 @@ namespace Robocup.MotionControl
         private object graphicsLock = new object();
         private void RRTTester_Paint(object sender, PaintEventArgs e)
         {
-            lock (graphicsLock)
+            // TODO: Bring drawing back to PlannerTester
+            /*lock (graphicsLock)
             {
                 Graphics g = e.Graphics;
                 drawer.paintField(g);
@@ -103,7 +107,7 @@ namespace Robocup.MotionControl
                 Vector2 dest = converter.fieldtopixelPoint(destination);
                 g.FillEllipse(b, (float)(dest.X - 5), (float)(dest.Y - 5), 10, 10);
                 b.Dispose();
-            }
+            }*/
         }
         private bool debugDraw()
         {
@@ -116,15 +120,15 @@ namespace Robocup.MotionControl
         void InitDragAndDrop()
         {
             draganddrop.AddDragandDrop(delegate() { return destination; }, .05, delegate(Vector2 v) { destination = v; });
-            draganddrop.AddDragandDrop(delegate() { return engine.getBallInfo().Position; }, .05, delegate(Vector2 v) { engine.MoveBall(v); });
-            foreach (RobotInfo info in engine.getAllInfos())
+            draganddrop.AddDragandDrop(delegate() { return engine.GetBall().Position; }, .05, delegate(Vector2 v) { engine.MoveBall(v); });
+            foreach (RobotInfo info in engine.GetRobots())
             {
                 int id = info.ID;
-            	int team = info.Team;
-                draganddrop.AddDragandDrop(delegate() { return engine.getCurrentInformation(id).Position; }, .1,
+            	Team team = info.Team;
+                draganddrop.AddDragandDrop(delegate() { return engine.GetRobot(team, id).Position; }, .1,
                     delegate(Vector2 v)
                     {
-                        RobotInfo inf = engine.getCurrentInformation(id);
+                        RobotInfo inf = engine.GetRobot(team, id);
                         engine.MoveRobot(team, id, new RobotInfo(v, inf.Orientation, id));
                     }
                 );

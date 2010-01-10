@@ -25,7 +25,7 @@ namespace Robocup.CoreRobotics
 
     public interface IMotionPlanner
     {
-        MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
+        MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
         void DrawLast(Graphics g, ICoordinateConverter c);
         void LoadConstants();
         

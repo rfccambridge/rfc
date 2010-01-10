@@ -37,7 +37,7 @@ namespace SimplePathFollower {
         private bool _running;
     	private bool logging;
 
-        private FieldDrawerForm _fieldDrawerForm;
+        private FieldDrawer _fieldDrawer;
         private ICoordinateConverter _converter;
         
         private Stopwatch _stopwatch = new Stopwatch();
@@ -45,7 +45,7 @@ namespace SimplePathFollower {
         private Object _drawingLock = new Object();
 		private Object _predictorLock = new Object();
 		
-		VisionMessage.Team OUR_TEAM = (Constants.get<string>("configuration", "OUR_TEAM") == "YELLOW" ? VisionMessage.Team.YELLOW : VisionMessage.Team.BLUE);
+		Team OUR_TEAM = (Team)Enum.Parse(typeof(Team), Constants.get<string>("configuration", "OUR_TEAM"), true);
 
         bool lap = true;
         private int whichGoal = 0;
@@ -70,7 +70,7 @@ namespace SimplePathFollower {
         // Logging
         LogReader _logReader;
         IPredictor _logPredictor;
-        FieldDrawerForm _logFieldDrawer;
+        FieldDrawer _logFieldDrawer;
         List<Type> _logLineFormat;
 
         public FollowerForm() {
@@ -122,27 +122,16 @@ namespace SimplePathFollower {
             _pathFollower.Init(planner);
             _predictor = _pathFollower.Predictor;
 
-            if (_fieldDrawerForm != null)
-                _fieldDrawerForm.Close();
-
-            _fieldDrawerForm = new FieldDrawerForm(_predictor);            
-            _converter = _fieldDrawerForm.Converter;
-
-            Color ourColor = (OUR_TEAM == VisionMessage.Team.YELLOW ? Color.Yellow : Color.Blue);
-            _fieldDrawerForm.drawer.AddString("Team", 
-                new FieldDrawer.StringDisplayInfo("Team: " + OUR_TEAM.ToString(), new Point(20, 420), ourColor));
-            _fieldDrawerForm.drawer.AddString("PlayType", 
-                new FieldDrawer.StringDisplayInfo("Play type: ", new Point(20, 440), Color.White));
-
-            _fieldDrawerForm.Show();
+            _fieldDrawer = new FieldDrawer();                        
+            _fieldDrawer.Show();
+            _fieldDrawer.UpdateTeam(OUR_TEAM);
 
             _stopwatch.Start();
-
 
             // Logging
             _logReader = new LogReader();
             _logPredictor = new StaticPredictor();
-            _logFieldDrawer = new FieldDrawerForm(_logPredictor);
+            _logFieldDrawer = new FieldDrawer();
 
             // Log Line format
             // timestamp current_state desired_state next_waypoint wheel_speeds path
@@ -165,11 +154,6 @@ namespace SimplePathFollower {
 
 		String TOP_CAMERA = "top_cam";
 		String BOTTOM_CAMERA = "bottom_cam";
-
-        private void InvalidateTimerHanlder(object obj, EventArgs e) {
-            _logFieldDrawer.Invalidate();
-		}
-
 
 		#region RFC Vision
 		private void btnVisionTop_Click(object sender, EventArgs e) {
@@ -239,7 +223,7 @@ namespace SimplePathFollower {
 			foreach (VisionMessage.RobotData robot in msg.Robots)
 			{
 				RobotInfo robotInfo = new RobotInfo(robot.Position, robot.Orientation, robot.ID);
-				robotInfo.Team = (robot.Team == VisionMessage.Team.YELLOW) ? 0 : 1;
+                robotInfo.Team = robot.Team;
 				(robot.Team == OUR_TEAM ? ours : theirs).Add(robotInfo);
 			}
 
@@ -259,13 +243,14 @@ namespace SimplePathFollower {
 				}
 			}
 			
-            _fieldDrawerForm.Invalidate();
             //if (_stopwatch.ElapsedMilliseconds > 200) {
             //    _fieldDrawerForm.Invalidate();
             //    _stopwatch.Start();
             //    _stopwatch.Reset();
             //    _stopwatch.Start();
-            //}            
+            //}          
+            // TODO: Bring the drawing back to Sim
+            /*
             lock (_drawingLock) {
                 if (_fieldDrawerForm != null) {
                     _fieldDrawerForm.drawer.UpdateString("PlayType", "Play type: " + PlayTypes.Halt.ToString());                        
@@ -273,6 +258,7 @@ namespace SimplePathFollower {
                 }
                 //_pathFollower.clearArrows();
             }
+             */
 
 		}
 		#endregion
@@ -284,13 +270,6 @@ namespace SimplePathFollower {
 			lock (_predictorLock)
 			{
 				((IVisionInfoAcceptor)_predictor).Update(msg);
-			}
-			_fieldDrawerForm.Invalidate();
-
-			lock (_drawingLock)
-			{
-				_fieldDrawerForm.drawer.UpdateString("PlayType", "TEST");
-				_pathFollower.drawCurrent(_fieldDrawerForm.CreateGraphics(), _converter);
 			}
 		}
 		void printRobotInfo(SSLVision.SSL_DetectionRobotManaged robot)
@@ -416,7 +395,7 @@ namespace SimplePathFollower {
 						SSLVision.SSL_DetectionRobotManaged robot = detection.robots_blue(i);
 						if (verbose) Console.Write(String.Format("-Robot(B) ({0,2:G}/{1,2:G}): ", i + 1, robots_blue_n));
 						printRobotInfo(robot);
-						msg.Robots.Add(new VisionMessage.RobotData((int)robot.robot_id(), VisionMessage.Team.BLUE,
+						msg.Robots.Add(new VisionMessage.RobotData((int)robot.robot_id(), Team.Blue,
 							ConvertFromSSLVisionCoords(new Vector2(robot.x(), robot.y())), robot.orientation()));
 
 					}
@@ -427,7 +406,7 @@ namespace SimplePathFollower {
 						SSLVision.SSL_DetectionRobotManaged robot = detection.robots_yellow(i);
 						if (verbose) Console.Write(String.Format("-Robot(Y) ({0,2:G}/{1,2:G}): ", i + 1, robots_yellow_n));
 						printRobotInfo(robot);
-						msg.Robots.Add(new VisionMessage.RobotData((int)robot.robot_id(), VisionMessage.Team.YELLOW,
+						msg.Robots.Add(new VisionMessage.RobotData((int)robot.robot_id(), Team.Yellow,
 						  ConvertFromSSLVisionCoords(new Vector2(robot.x(), robot.y())), robot.orientation()));
 					}
 
@@ -734,20 +713,22 @@ namespace SimplePathFollower {
 
             // Update predictor (this will also draw the robot positions)
 
-            ((IInfoAcceptor)_logPredictor).updateRobot(curState.ID, curState);
+            ((IInfoAcceptor)_logPredictor).UpdateRobot(curState);
 
             // Draw the path, and the arrows            
+           
+            _logFieldDrawer.BeginCollectState();
+            
+            // TODO: Implement paths in FieldDrawer
+            /*_logFieldDrawer.ClearPaths();
+            _logFieldDrawer.AddPath(path);*/            
 
-            // Since we are the only ones who are using this FieldDrawer, we can monopolize 
-            // its arrows and paths holder
-            _logFieldDrawer.ClearPaths();
-            _logFieldDrawer.AddPath(path);
+            _logFieldDrawer.UpdateRobotsAndBall(_logPredictor.GetRobots(), _logPredictor.GetBall());
 
-            _logFieldDrawer.ClearArrows();
-            _logFieldDrawer.AddArrow(new Arrow(curState.Position, destState.Position, Color.Red, 0.04));
-            _logFieldDrawer.AddArrow(new Arrow(curState.Position, waypointInfo.Position, Color.Yellow, 0.04));
+            _logFieldDrawer.DrawArrow(curState.Team, curState.ID, ArrowType.Destination, destState.Position);
+            _logFieldDrawer.DrawArrow(curState.Team, curState.ID, ArrowType.Waypoint, waypointInfo.Position);            
 
-            _logFieldDrawer.Invalidate();
+            _logFieldDrawer.EndCollectState();
 
         }
 

@@ -4,6 +4,18 @@ using System.Text;
 
 namespace Robocup.Core
 {
+    public enum Team
+    {
+        Yellow,
+        Blue
+    }
+
+    public enum FieldHalf
+    {
+        Left,
+        Right
+    }
+
     [Serializable]
     public class BallInfo
     {
@@ -58,23 +70,23 @@ namespace Robocup.Core
         /// <summary>
         /// Creates a RobotInfo with zero velocity.
         /// </summary>
-        public RobotInfo(Vector2 position, double orientation, int team, int id)
+        public RobotInfo(Vector2 position, double orientation, Team team, int id)
             : this(position, Vector2.ZERO, 0, orientation, team, id, -1)
         { }
         public RobotInfo(Vector2 position, double orientation, int id)
-            : this(position, Vector2.ZERO, 0, orientation, -1, id, -1)
+            : this(position, Vector2.ZERO, 0, orientation, Team.Yellow, id, -1)
         { }
         public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity,
-            double orientation, int team, int id)
+            double orientation, Team team, int id)
             : this(position, velocity, angularVelocity,
             orientation, team, id, -1) { }
         public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity,
             double orientation, int id)
             : this(position, velocity, angularVelocity,
-            orientation, -1, id, -1) { }
+            orientation, Team.Yellow, id, -1) { }
         
         public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity, 
-            double orientation, int team, int id, double lastSeen)
+            double orientation, Team team, int id, double lastSeen)
         {
             this.position = position;
             this.velocity = velocity;
@@ -146,8 +158,8 @@ namespace Robocup.Core
             set { idnum = value; }
         }
 
-        private int team;
-        public int Team
+        private Team team;
+        public Team Team
         {
             get { return team; }
             set { team = value; }

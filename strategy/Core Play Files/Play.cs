@@ -18,8 +18,8 @@ namespace Robocup.Plays
             get { return actions; }
         }
 
-        private PlayTypes type = PlayTypes.NormalPlay;
-        public PlayTypes PlayType
+        private PlayType type = PlayType.NormalPlay;
+        public PlayType PlayType
         {
             get { return type; }
             set { type = value; }

@@ -8,7 +8,8 @@ namespace Robocup.Core {
     /// Describes a path to a destination as a series of RobotInfo waypoints
     /// </summary>
     public class RobotPath {
-        // Store id
+        // Store team and id
+        Team _team;
         int _id;
         bool empty = false;
 
@@ -24,8 +25,9 @@ namespace Robocup.Core {
             // Create empty path
         }
 
-        public RobotPath(int id) {
+        public RobotPath(Team team, int id) {
             // Create empty path with id
+            _team = team;
             _id = id;
             empty = true;
         }
@@ -39,6 +41,7 @@ namespace Robocup.Core {
             if (waypoints.Count == 0)
                 throw new Exception("Empty path given to path constructor");
 
+            _team = waypoints[0].Team;
             _id = waypoints[0].ID;
 
             _path = waypoints;
@@ -48,11 +51,12 @@ namespace Robocup.Core {
         /// Given a single Vector2 waypoint
         /// </summary>
         /// <param name="waypoints"></param>
-        public RobotPath(int id, Vector2 waypoint) {
+        public RobotPath(Team team, int id, Vector2 waypoint) {
+            _team = team;
             _id = id;
 
             List<RobotInfo> waypoints = new List<RobotInfo>();
-            waypoints.Add(new RobotInfo(waypoint, 0, id));
+            waypoints.Add(new RobotInfo(waypoint, 0, team, id));
 
             _path = waypoints;
         }
@@ -61,8 +65,9 @@ namespace Robocup.Core {
 		/// Given a single RobotInfo waypoint
 		/// </summary>
 		/// <param name="waypoint"></param>
-		public RobotPath(int id, RobotInfo waypoint)
+		public RobotPath(Team team, int id, RobotInfo waypoint)
 		{
+            _team = team;
 			_id = id;
 
 			List<RobotInfo> waypoints = new List<RobotInfo>();
@@ -77,6 +82,7 @@ namespace Robocup.Core {
         /// <param name="waypoints1">RobotInfo starting list of waypoints</param>
         /// <param name="waypoints2">Vector2 ending list of waypoints</param>
         public RobotPath(List<RobotInfo> waypoints1, List<Vector2> waypoints2) {
+            _team = waypoints1[0].Team;
             _id = waypoints1[0].ID;
 
             // Combine paths into a single waypoints list
@@ -90,7 +96,8 @@ namespace Robocup.Core {
         /// </summary>
         /// <param name="id">ID of robot</param>
         /// <param name="waypoints">Vector2 list of waypoints along path</param>
-        public RobotPath(int id, List<Vector2> waypoints) {
+        public RobotPath(Team team, int id, List<Vector2> waypoints) {
+            _team = team;
             _id = id;
             _path = makeRobotInfoList(_id, waypoints);
         }
@@ -99,6 +106,10 @@ namespace Robocup.Core {
         // Public interface for variables
         public int ID {
             get { return _id; }
+        }
+        public Team Team
+        {
+            get { return _team; }
         }
 
         public List<RobotInfo> Waypoints {

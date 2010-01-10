@@ -10,19 +10,16 @@ namespace Robocup.CoreRobotics
     /// <summary>
     /// A basic implementation of IPredictor that averages values from multiple cameras
     /// </summary>
-    public class AveragingPredictor : IPredictor, Robocup.Core.IVisionInfoAcceptor
+    public class AveragingPredictor : IPredictor, IVisionInfoAcceptor
     {
         const int NUM_CAMERAS = 2;
-
-    	private int team;
 
         // The state of the field believed in by a camera
         private class FieldState
         {
             // The believed state is kept here
             private BallInfo ball = null;
-            private List<RobotInfo>[] robots = new List<RobotInfo>[] { new List<RobotInfo>(), 
-                                                                       new List<RobotInfo>() };
+            private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
  
             // For synching the above
             private object ballLock = new object();
@@ -31,17 +28,25 @@ namespace Robocup.CoreRobotics
             // Tools for velocity measurement
             double ballDtStart;
             BallInfo ballAtDtStart = null;
-            List<RobotInfo>[] robotsAtDtStart = new List<RobotInfo>[NUM_CAMERAS] { new List<RobotInfo>(),
-                                                                                   new List<RobotInfo>() };
-            List<double>[] velocityDtStart = new List<double>[NUM_CAMERAS] { new List<double>(),
-                                                                             new List<double>() };
+            Dictionary<Team, List<RobotInfo>> robotsAtDtStart = new Dictionary<Team, List<RobotInfo>>();
+            Dictionary<Team, List<double>> velocityDtStart = new Dictionary<Team, List<double>>();
             
             // For assigning IDs to unidentified robots; one per team
-            int[] nextID = { -1, -1 };
+            Dictionary<Team, int> nextID = new Dictionary<Team,int>();
 
             // "Constants"
             static double VELOCITY_DT;
             static double WEIGHT_OLD, WEIGHT_NEW;
+        
+            public FieldState() {
+                foreach (Team team in Enum.GetValues(typeof(Team)))
+                {
+                    robots.Add(team, new List<RobotInfo>());                    
+                    robotsAtDtStart.Add(team, new List<RobotInfo>());
+                    velocityDtStart.Add(team, new List<double>());
+                    nextID.Add(team, -1);
+                }
+            }
 
             public void LoadConstants()
             {
@@ -95,10 +100,9 @@ namespace Robocup.CoreRobotics
                 #region Update robots   
                 lock (robotsLock) {
                     foreach (Robocup.Core.VisionMessage.RobotData newRobotData in msg.Robots)
-                    {
-                        int team = newRobotData.Team == VisionMessage.Team.YELLOW ? 0 : 1;
+                    {                        
                         RobotInfo newRobot = new RobotInfo(newRobotData.Position, new Vector2(0, 0), 0,
-                            newRobotData.Orientation, team, newRobotData.ID);
+                            newRobotData.Orientation, newRobotData.Team, newRobotData.ID);
 
                         // Keep track of nextID
                         if (newRobot.ID > nextID[newRobot.Team])
@@ -180,7 +184,7 @@ namespace Robocup.CoreRobotics
                 return retBall;
             }
 
-            public List<RobotInfo> GetRobots(int team)
+            public List<RobotInfo> GetRobots(Team team)
             {
                 List<RobotInfo> retRobots;
                 lock (robotsLock) {
@@ -229,8 +233,6 @@ namespace Robocup.CoreRobotics
             {
                 fieldStates[i] = new FieldState();
             }
-
-        	team = Constants.get<int>("configuration", "OUR_TEAM_INT");
 
             LoadConstants();
         }
@@ -301,7 +303,7 @@ namespace Robocup.CoreRobotics
 
         // For each robot return the average of info from all cameras weighed by
         // the time since it was last updated
-        public List<RobotInfo> GetRobots(int team)
+        public List<RobotInfo> GetRobots(Team team)
         {          
             // Will store resulting list of robots
             List<RobotInfo> avgRobots = new List<RobotInfo>();
@@ -438,11 +440,11 @@ namespace Robocup.CoreRobotics
         }
         public List<RobotInfo> GetRobots() {
             List<RobotInfo> combined = new List<RobotInfo>();
-            combined.AddRange(GetRobots(0));
-            combined.AddRange(GetRobots(1));
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+                combined.AddRange(GetRobots(team));            
             return combined;
         }        
-        public RobotInfo GetRobot(int team, int id)
+        public RobotInfo GetRobot(Team team, int id)
         {
             List<RobotInfo> robots = GetRobots(team);            
             RobotInfo robot = robots.Find(new Predicate<RobotInfo>(delegate(RobotInfo r)
@@ -480,42 +482,11 @@ namespace Robocup.CoreRobotics
             return ret;
         }
 
-        public void SetPlayType(PlayTypes newPlayType)
+        public void SetPlayType(PlayType newPlayType)
         {
-			// Do nothing: this method is for assumed ball: returning clever values for the ball
-			// based on game state -- i.e. center of field during kick-off
-        }
-
-        // TO BE REMOVED
-        public BallInfo getBallInfo()
-        {
-            return GetBall() ?? new BallInfo(new Vector2(0,0));
-            //throw new NotImplementedException("unimplemented");
-        }
-        public List<RobotInfo> getOurTeamInfo()
-        {
-            //return GetRobots(0);
-            throw new NotImplementedException("unimplemented");
-        }
-        public List<RobotInfo> getTheirTeamInfo()
-        {
-            //return GetRobots(1);
-            throw new NotImplementedException("unimplemented");
-        }
-        public RobotInfo getCurrentInformation(int id)
-        {
-            //return GetRobot(0,id);
-        	return GetRobot(team, id);
-        }
-        public List<RobotInfo> getAllInfos()
-        {
-            //List<RobotInfo> combined = new List<RobotInfo>();
-            //combined.AddRange(GetRobots(0));
-            //combined.AddRange(GetRobots(1));
-            //return combined;
-            throw new NotImplementedException("unimplemented");
-        }        
-
+            // Do nothing: this method is for assumed ball: returning clever values for the ball
+            // based on game state -- i.e. center of field during kick-off
+        }    
     }
 
 }

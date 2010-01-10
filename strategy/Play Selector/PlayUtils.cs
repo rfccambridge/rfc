@@ -39,7 +39,7 @@ namespace Robocup.Plays
             string[] files = System.IO.Directory.GetFiles(path);
             
             Dictionary<InterpreterPlay, string> toRet = new Dictionary<InterpreterPlay, string>();
-            
+
             foreach (string fname in files)
             {
                 string extension = fname.Substring(1 + fname.LastIndexOf('.'));
@@ -50,16 +50,9 @@ namespace Robocup.Plays
                 reader.Close();
                 reader.Dispose();
 
-                try
-                {
-                    Console.WriteLine("Loaded: " + fname);
-                    InterpreterPlay p = loader.load(filecontents, Path.GetFileNameWithoutExtension(fname));
-                    toRet.Add(p, fname);
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                Console.WriteLine("Loaded: " + fname);
+                InterpreterPlay p = loader.load(filecontents, Path.GetFileNameWithoutExtension(fname));
+                toRet.Add(p, fname);
             }
             return toRet;
         }

@@ -28,19 +28,19 @@ namespace Robocup.MotionControl
 
 
         List<Vector2> lastpath;
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos())
+            foreach (RobotInfo info in predictor.GetRobots())
             {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
             }
-            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
-                obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
+            if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
+                obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
 
-            RobotInfo curinfo = predictor.getCurrentInformation(id);
+            RobotInfo curinfo = predictor.GetRobot(team, id);
             List<Vector2> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
             lastpath = path;
 
@@ -62,19 +62,19 @@ namespace Robocup.MotionControl
         }
 
         List<RobotInfo> lastpath;
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos())
+            foreach (RobotInfo info in predictor.GetRobots(team, id))
             {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
             }
-            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
-                obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
+            if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
+                obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
 
-            RobotInfo curinfo = predictor.getCurrentInformation(id);
+            RobotInfo curinfo = predictor.GetRobot(team, id);
             List<RobotInfo> path = planner.Plan(curinfo, desiredState, obstacles);
             lastpath = path;
 
@@ -103,19 +103,19 @@ namespace Robocup.MotionControl
                 Common.ExtendVV, Common.ExtendVV, Common.ExtendVV, Common.ExtendVV, Common.RandomStateV, Common.RandomStateV);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos())
+            foreach (RobotInfo info in predictor.GetRobots())
             {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
             }
-            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
-                obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
+            if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
+                obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
 
-            RobotInfo curinfo = predictor.getCurrentInformation(id);
+            RobotInfo curinfo = predictor.GetRobot(team, id);
             Pair<List<Vector2>, List<Vector2>> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
 
             //return new MotionPlanningResults(new WheelSpeeds());
@@ -240,11 +240,11 @@ namespace Robocup.MotionControl
             return new RobotPath(retpath);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
             Console.WriteLine("desired Location: " + desiredState.Position.ToString());
             
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos()) {
+            foreach (RobotInfo info in predictor.GetRobots()) {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
@@ -257,7 +257,7 @@ namespace Robocup.MotionControl
 
             RobotInfo curinfo;
             try {
-                curinfo = predictor.getCurrentInformation(id);
+                curinfo = predictor.GetRobot(team, id);
             } catch (ApplicationException e) {
                 throw e;
             }
@@ -344,10 +344,10 @@ namespace Robocup.MotionControl
                 Common.ExtendRRThrough, Common.ExtendRVThrough, Common.ExtendVR, Common.ExtendVV, Common.RandomStateR, Common.RandomStateV);       
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos())
+            foreach (RobotInfo info in predictor.GetRobots())
             {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
@@ -360,7 +360,7 @@ namespace Robocup.MotionControl
                 obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
             }
 
-            RobotInfo curinfo = predictor.getCurrentInformation(id);
+            RobotInfo curinfo = predictor.GetRobot(team, id);
             foreach (Obstacle o in obstacles)
             {
                 if (curinfo.Position.distanceSq(o.position) < o.size * o.size)
@@ -474,11 +474,11 @@ namespace Robocup.MotionControl
             return closestWaypointIndex;
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
             List<Object> itemsToLog = new List<Object>();
             
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos()) {
+            foreach (RobotInfo info in predictor.GetRobots()) {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
@@ -491,7 +491,7 @@ namespace Robocup.MotionControl
 
             RobotInfo curinfo;
             try {
-                 curinfo = predictor.getCurrentInformation(id);
+                 curinfo = predictor.GetRobot(team, id);
             } catch (ApplicationException e) {
                 throw e;
             }
@@ -741,9 +741,9 @@ namespace Robocup.MotionControl
             return closestWaypointIndex;
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos()) {
+            foreach (RobotInfo info in predictor.GetRobots()) {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
@@ -756,7 +756,7 @@ namespace Robocup.MotionControl
 
             RobotInfo curinfo;
             try {
-                curinfo = predictor.getCurrentInformation(id);
+                curinfo = predictor.GetRobot(team, id);
             } catch (ApplicationException e) {
                 throw e;
             }
@@ -850,17 +850,17 @@ namespace Robocup.MotionControl
                 Common.ExtendVV, Common.ExtendVV, Common.ExtendVV, Common.ExtendVV, Common.RandomStateV, Common.RandomStateV);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos())
+            foreach (RobotInfo info in predictor.GetRobots())
             {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .28));
             }
-            if (avoidBallRadius > 0 && predictor.getBallInfo().Position != null)
-                obstacles.Add(new Obstacle(predictor.getBallInfo().Position, avoidBallRadius));
+            if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
+                obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
             //TODO goal hack
             if (!TagSystem.GetTags(id).Contains("goalie"))
             {
@@ -868,7 +868,7 @@ namespace Robocup.MotionControl
                 obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
             }
 
-            RobotInfo curinfo = predictor.getCurrentInformation(id);
+            RobotInfo curinfo = predictor.GetRobot(team, id);
             foreach (Obstacle o in obstacles)
             {
                 if (curinfo.Position.distanceSq(o.position) < o.size * o.size)
@@ -1012,13 +1012,13 @@ namespace Robocup.MotionControl
             return closestWaypointIndex;
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
             //Console.WriteLine("desired Location: " + desiredState.Position.ToString());
 
             List<Object> itemsToLog = new List<Object>();
 
             List<Obstacle> obstacles = new List<Obstacle>();
-            foreach (RobotInfo info in predictor.getAllInfos()) {
+            foreach (RobotInfo info in predictor.GetRobots()) {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
                     obstacles.Add(new Obstacle(info.Position, .2));
@@ -1031,7 +1031,7 @@ namespace Robocup.MotionControl
 
             RobotInfo curinfo;
             try {
-                curinfo = predictor.getCurrentInformation(id);
+                curinfo = predictor.GetRobot(team, id);
             } catch (ApplicationException e) {
                 throw e;
             }

@@ -16,14 +16,13 @@ namespace Robocup.Plays
 
         private IController commander;
         private IPredictor predictor;
+        private Team team;
 
-        private int team;
-
-        public ActionInterpreter(IController commander, IPredictor predictor)
+        public ActionInterpreter(Team team, IController commander, IPredictor predictor)
         {
+            this.team = team;
             this.commander = commander;
-            this.predictor = predictor;
-            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
+            this.predictor = predictor;            
         }
 
         
@@ -32,16 +31,16 @@ namespace Robocup.Plays
         /// <param name="ballLead">Default: 3</param>
         /// <param name="distTolerance">Default: .04</param>
         /// <param name="angleTolerance">Default: Math.PI/60</param>
-        public ActionInterpreter(IController commander, IPredictor predictor, double kickDistance, double ballLead, double distTolerance, double angleTolerance)
+        public ActionInterpreter(Team team, IController commander, IPredictor predictor, double kickDistance, double ballLead, 
+                                 double distTolerance, double angleTolerance)
         {
+            this.team = team;
             this.commander = commander;
             this.predictor = predictor;
             this.kickDistance = kickDistance;
             this.ballLeading = ballLead;
             this.distanceTolerance = distTolerance;
-            this.angleTolerance = angleTolerance;
-
-            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
+            this.angleTolerance = angleTolerance;            
         }
         private RobotInfo getOurRobotFromID(int robotID)
         {            
@@ -54,7 +53,7 @@ namespace Robocup.Plays
             Vector2 ball;
             try {
                 thisrobot = getOurRobotFromID(robotID);
-                ball = predictor.getBallInfo().Position;
+                ball = predictor.GetBall().Position;
             } catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
@@ -130,7 +129,7 @@ namespace Robocup.Plays
 		BallInfo ballinfo;
 		try {
 		    thisrobot = getOurRobotFromID(robotID);
-                    ballinfo = predictor.getBallInfo();
+                    ballinfo = predictor.GetBall();
                     ball = ballinfo.Position;
                 }
                 catch (ApplicationException) {
@@ -183,7 +182,7 @@ namespace Robocup.Plays
             BallInfo ballinfo;
             try {
                 thisrobot = getOurRobotFromID(robotID);
-                ballinfo = predictor.getBallInfo();
+                ballinfo = predictor.GetBall();
                 ball = ballinfo.Position;
             }
             catch (ApplicationException) {

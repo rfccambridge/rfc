@@ -65,6 +65,7 @@
 				AssemblyDebug="1"
 				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
+				KeyFile="$(InputDir)..\..\resources\rfc.snk"
 			/>
 			<Tool
 				Name="VCALinkTool"

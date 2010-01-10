@@ -6,10 +6,7 @@ namespace Robocup.Core
 {
     [Serializable]
     public class VisionMessage
-    {
-        [Serializable]
-        public enum Team {YELLOW, BLUE};
-
+    {        
         [Serializable]
         public class RobotData
         {
@@ -26,7 +23,7 @@ namespace Robocup.Core
                 this.orientation = orientation;
             }            
             /// <summary>
-            /// Robot's team, in terms of the VisionMessage.Team enum type
+            /// Robot's team, in terms of the Team enum type
             /// </summary>
             public Team Team
             {

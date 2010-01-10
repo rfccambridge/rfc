@@ -40,6 +40,14 @@ namespace InterpreterTester
 
         RobotInfo[] theirinfo;
 
+        Team OUR_TEAM = Team.Yellow;
+        Team THEIR_TEAM = Team.Blue;
+
+        FieldHalf OUR_FIELD_HALF = FieldHalf.Left;
+        FieldHalf THEIR_FIELD_HALF = FieldHalf.Right;
+
+        Dictionary<Team, List<RobotInfo>> _robots = new Dictionary<Team, List<RobotInfo>>();
+
         BallInfo ballinfo = new BallInfo(new Vector2(0, 0));
         double ballvx = 0, ballvy = 0;
 
@@ -54,12 +62,15 @@ namespace InterpreterTester
 
         Random r = new Random();
 
-        private PlayTypes playType = PlayTypes.NormalPlay;        
+        private PlayType playType = PlayType.NormalPlay;        
 
         PlayManager play_manager;
 
         public InterpreterTester()
-        {            
+        {
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+                _robots.Add(team, new List<RobotInfo>());            
+
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.DoubleBuffer, true);
             InitializeComponent();            
 
@@ -111,12 +122,13 @@ namespace InterpreterTester
 
             // Player 1 plays
             Dictionary<InterpreterPlay, string> offensePlays = PlayUtils.loadPlays(OFFENSE_PLAY_DIR);
-            interpreter = new Interpreter(false, this, this);
+            interpreter = new Interpreter(OUR_TEAM, OUR_FIELD_HALF, this, this, null);
             interpreter.LoadPlays(new List<InterpreterPlay>(offensePlays.Keys));
 
             // Player 2 plays
             Dictionary<InterpreterPlay, string> defensePlays = PlayUtils.loadPlays(DEFENSE_PLAY_DIR);
-            defensiveinterpreter = new Interpreter(true, new TeamFlipperPredictor(this), this);
+            // TODO: Part of fixing InterpreterTester: Flipping should not be necessary, although that depends on the implementation fo this  predictor
+            defensiveinterpreter = new Interpreter(THEIR_TEAM, THEIR_FIELD_HALF, this, this, null);
             defensiveinterpreter.LoadPlays(new List<InterpreterPlay>(defensePlays.Keys));
 
             // Play manager stuff
@@ -195,14 +207,14 @@ namespace InterpreterTester
             g.DrawRectangle(p, fieldtopixelX(-2.45), fieldtopixelY(1.7), fieldtopixelX(2.45) - fieldtopixelX(-2.45), fieldtopixelY(-1.7) - fieldtopixelY(1.7));
             p.Dispose();
             Brush b = new SolidBrush(Color.Black);
-            foreach (RobotInfo r in ourinfo)
+            foreach (RobotInfo r in GetRobots(OUR_TEAM))
             {
                 drawRobot(r, g, Color.Black);
                 //g.FillEllipse(b, fieldtopixelX(r.Position.X) - 10, fieldtopixelY(r.Position.Y) - 10, 20, 20);
             }
             b.Dispose();
             b = new SolidBrush(Color.Red);
-            foreach (RobotInfo r in theirinfo)
+            foreach (RobotInfo r in GetRobots(THEIR_TEAM))
             {
                 drawRobot(r, g, Color.Red);
                 //g.FillEllipse(b, fieldtopixelX(r.Position.X) - 10, fieldtopixelY(r.Position.Y) - 10, 20, 20);
@@ -683,57 +695,26 @@ namespace InterpreterTester
 
         #region IPredictor Members
 
-        public RobotInfo getCurrentInformation(int robotID)
+        public List<RobotInfo> GetRobots(Team team)
         {
-            foreach (RobotInfo info in ourinfo)
-            {
-                if (info.ID == robotID)
-                    return info;
-            }
-            foreach (RobotInfo info in theirinfo)
-            {
-                if (info.ID == robotID)
-                    return info;
-            }
-            throw new ApplicationException("could not find robot id " + robotID);
-        }
-
-        public List<RobotInfo> getOurTeamInfo()
-        {
-            return new List<RobotInfo>(ourinfo);
-        }
-
-        public List<RobotInfo> getTheirTeamInfo()
-        {
-            return new List<RobotInfo>(theirinfo);
-        }
-        public List<RobotInfo> getAllInfos()
-        {
-            List<RobotInfo> rtn = new List<RobotInfo>(theirinfo);
-            rtn.AddRange(ourinfo);
-            return rtn;
-        }
-
-        public BallInfo getBallInfo()
-        {
-            return ballinfo;
-        }
-
-        // TO REPLACE THE ABOVE
-        public List<RobotInfo> GetRobots(int team)
-        {
-            throw new NotImplementedException("not implemented");
+            return _robots[team];
         }
         public List<RobotInfo> GetRobots() {
-            throw new NotImplementedException("not implemented");
+            List<RobotInfo> combined = new List<RobotInfo>();
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+                combined.AddRange(_robots[team]);
+            return combined;
         }
-        public RobotInfo GetRobot(int team, int id)
+        public RobotInfo GetRobot(Team team, int id)
         {
-            throw new NotImplementedException("not implemented");
+            foreach (RobotInfo robot in _robots[team])
+                if (robot.ID == id)
+                    return robot;
+            return null;
         }
         public BallInfo GetBall()
         {
-            throw new NotImplementedException("not implemented");
+            return ballinfo;
         }
 
         public void SetBallMark()
@@ -748,7 +729,7 @@ namespace InterpreterTester
         {
             throw new ApplicationException("InterpreterTester.hasBallMoved: not implemented");
         }
-        public void SetPlayType(PlayTypes newPlayType)
+        public void SetPlayType(PlayType newPlayType)
         {
             throw new ApplicationException("InterpreterTester.setPlayType: not implemented");
         }

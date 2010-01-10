@@ -5,6 +5,7 @@ using System.Collections;
 using System.Drawing;
 using Robocup.Geometry;
 using Robocup.Core;
+using Robocup.Utilities;
 
 namespace Robocup.Plays
 {
@@ -46,17 +47,20 @@ namespace Robocup.Plays
 	
     class PlaySelector
     {
+        Team OUR_TEAM;
+
         //int tick = 0;
         PlayEvaluator evaluator;
+
         public PlaySelector()
         {
-            evaluator = new PlayEvaluator();
-        }
+            evaluator = new PlayEvaluator();            
+        }        
+
         Random r = new Random();
         public SelectorResults selectPlays(List<InterpreterPlay> plays, InterpreterRobotInfo[] ourteaminfo, 
             InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo,
-            List<InterpreterPlay> preferedPlays, List<SelectorResults.RobotAssignments> lastAssignments, 
-            Dictionary<int, string> ourPlayNames)
+            List<InterpreterPlay> preferedPlays, List<SelectorResults.RobotAssignments> lastAssignments)
         {
             evaluator.updateConditions(ourteaminfo, theirteaminfo, ballinfo);
 
@@ -135,8 +139,7 @@ namespace Robocup.Plays
                     for (int i = 0; i < ourteaminfo.Length; i++) {
                         if (id == ourteaminfo[i].ID) {
                             ourteaminfo[i].State = RobotStates.Free;
-                            ourPlayNames[id] = "N/A";
-                            break;
+                           break;
                         }
                     }
                 }
@@ -231,8 +234,7 @@ namespace Robocup.Plays
                                             //                                                throw new ApplicationException("this should never happen -- an action was assigned to a robot that wasn't free");
                                             //#endif
                                             numOurRobotsAvailable--;
-                                            ourteaminfo[i].State = RobotStates.Busy;
-                                            ourPlayNames[id] = play.ToString() + ":" + actions[j].Name + ":" + id;
+                                            ourteaminfo[i].State = RobotStates.Busy;                                            
                                             break;
                                         }
                                     }

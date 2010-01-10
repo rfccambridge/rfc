@@ -111,8 +111,8 @@ namespace Robocup.CoreRobotics
                             if (matchIDs)
                             {
                                 if (oldInfo.ID == newInfo.ID && 
-                                    (((newInfo.Team == 0) && YELLOW_HAS_PATTERN) ||
-                                     ((newInfo.Team == 1) && BLUE_HAS_PATTERN)))
+                                    (((newInfo.Team == Team.Yellow) && YELLOW_HAS_PATTERN) ||
+                                     ((newInfo.Team == Team.Blue) && BLUE_HAS_PATTERN)))
                                 {
                                     matched = newInfo;
                                     break;
@@ -248,7 +248,7 @@ namespace Robocup.CoreRobotics
         private readonly BasicPredictorHelper their_helper = new BasicPredictorHelper(false);
 
         // Should really be a generalized game state
-        private PlayTypes playType;
+        private PlayType playType;
 
         private double MAX_SECONDS_TO_KEEP_INFO;
         private double VELOCITY_DT;
@@ -256,8 +256,8 @@ namespace Robocup.CoreRobotics
         private double BALL_POSITION_WEIGHT_NEW;
         private double BALL_MOVED_DIST;
 
-        private bool IS_OUR_GOAL_LEFT;
-        private int OUR_TEAM;
+        private FieldHalf FIELD_HALF;
+        private Team OUR_TEAM;
         
         // Predefined ball positions, when in a refbox gamestate
         private bool ASSUME_BALL;
@@ -272,7 +272,7 @@ namespace Robocup.CoreRobotics
         {
             LoadConstants();
 
-            playType = PlayTypes.Stopped;      
+            playType = PlayType.Stopped;      
             marking = false;            
             markedPosition = new Vector2(0.0, 0.0);
         }
@@ -285,7 +285,8 @@ namespace Robocup.CoreRobotics
             BALL_POSITION_WEIGHT_NEW = Constants.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
             BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
 
-            IS_OUR_GOAL_LEFT = Constants.get<bool>("plays", "IS_OUR_GOAL_LEFT");
+            OUR_TEAM = (Team)Enum.Parse(typeof(Team), Constants.get<string>("configuration", "OUR_TEAM"), true);
+            FIELD_HALF = (FieldHalf)Enum.Parse(typeof(FieldHalf), Constants.get<string>("plays", "FIELD_HALF"), true);
 
             // Predefined locations of the ball  based on the play
             ASSUME_BALL = Constants.get<bool>("plays", "ASSUME_BALL");
@@ -293,9 +294,7 @@ namespace Robocup.CoreRobotics
                                                         Constants.get<double>("plays", "BALL_POS_PENALTY_Y")));
             BALL_POS_KICKOFF = new BallInfo(new Vector2(Constants.get<double>("plays", "BALL_POS_KICKOFF_X"),
                                                         Constants.get<double>("plays", "BALL_POS_KICKOFF_Y")));
-
-            OUR_TEAM = Constants.get<int>("configuration", "OUR_TEAM_INT");
-
+            
             our_helper.LoadConstants();
             their_helper.LoadConstants();
         }
@@ -357,30 +356,30 @@ namespace Robocup.CoreRobotics
             // Either return a predefined ball position or the one the vision actually
             // sees based on the current game state
             switch (playType) {
-                case PlayTypes.PenaltyKick_Ours:
-                case PlayTypes.PenaltyKick_Ours_Setup:
-                    sign = (IS_OUR_GOAL_LEFT) ? -1 : 1;
+                case PlayType.PenaltyKick_Ours:
+                case PlayType.PenaltyKick_Ours_Setup:
+                    sign = (FIELD_HALF == FieldHalf.Left) ? -1 : 1;
                     ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
                                                               BALL_POS_PENALTY.Position.Y));
                     return ballPos;                    
-                case PlayTypes.PenaltyKick_Theirs:
-                    sign = (IS_OUR_GOAL_LEFT) ? 1 : -1;
+                case PlayType.PenaltyKick_Theirs:
+                    sign = (FIELD_HALF == FieldHalf.Left) ? 1 : -1;
                     ballPos = new BallInfo(new Vector2(sign * BALL_POS_PENALTY.Position.X,
                                                        BALL_POS_PENALTY.Position.Y));
                     return ballPos;
-                case PlayTypes.KickOff_Ours:
-                case PlayTypes.KickOff_Ours_Setup:
-                case PlayTypes.KickOff_Theirs:
-                case PlayTypes.Kickoff_Theirs_Setup:
+                case PlayType.KickOff_Ours:
+                case PlayType.KickOff_Ours_Setup:
+                case PlayType.KickOff_Theirs:
+                case PlayType.Kickoff_Theirs_Setup:
                     return BALL_POS_KICKOFF;
                 default:
                     return ballInfo;
             }
         }
 
-        public List<RobotInfo> GetRobots(int team)
+        public List<RobotInfo> GetRobots(Team team)
         {
-            if (team == 0)
+            if (team == OUR_TEAM)
             {
                 return our_helper.getMergedInfos();
             }
@@ -399,10 +398,10 @@ namespace Robocup.CoreRobotics
             return ourRobots;
         }
 
-        public RobotInfo GetRobot(int team, int id)
+        public RobotInfo GetRobot(Team team, int id)
         {
             List<RobotInfo> list;
-            if (team == 0)
+            if (team == OUR_TEAM)
             {
                 list = our_helper.getMergedInfos();
             }
@@ -447,7 +446,7 @@ namespace Robocup.CoreRobotics
             return ret;
         }
 
-        public void SetPlayType(PlayTypes newPlayType)
+        public void SetPlayType(PlayType newPlayType)
         {
             playType = newPlayType;
         }
@@ -520,10 +519,9 @@ namespace Robocup.CoreRobotics
             List<RobotInfo> theirs = new List<RobotInfo>();
 
             foreach (VisionMessage.RobotData robot in msg.Robots)
-            {
-                int team = (robot.Team == VisionMessage.Team.YELLOW) ? 0 : 1;
-                RobotInfo robotInfo = new RobotInfo(robot.Position, robot.Orientation, team, robot.ID);                
-                ((team == OUR_TEAM) ? ours : theirs).Add(robotInfo);
+            {                
+                RobotInfo robotInfo = new RobotInfo(robot.Position, robot.Orientation, robot.Team, robot.ID);                
+                ((robot.Team == OUR_TEAM) ? ours : theirs).Add(robotInfo);
             }
 
             string splitName;

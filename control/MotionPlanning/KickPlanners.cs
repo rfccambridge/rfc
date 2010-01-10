@@ -58,11 +58,11 @@ namespace Robocup.MotionControl
 
         int WHEEL_SPEED_TURN;
 
-        int NUM_ROBOTS = 5; // NOT SURE WHAT CONSTANTS FILE...
+        const int NUM_ROBOTS = 10; // Both teams (when in simulation)
 
         DateTime arbitraryPastTime = new DateTime(2000, 1, 1);
 
-        private DateTime[] _timesStartedCharging = new DateTime[5]; //number of robots
+        private DateTime[] _timesStartedCharging = new DateTime[NUM_ROBOTS]; //number of robots
 
         PIDLoop loop;        
 
@@ -73,9 +73,7 @@ namespace Robocup.MotionControl
         // Planner for spinning
         //DirectRobotSpinner spinplanner;
         PIDRobotSpinner spinplanner;
-
-        private int team;
-
+        
         public FeedbackVeerKickPlanner(IMotionPlanner regularPlanner)
         {
             //why is this here?! it's passed a tangent bug planner, just like dumbPlanner (terrible naming conventiosn by the way)
@@ -100,7 +98,7 @@ namespace Robocup.MotionControl
             LoadConstants();
         }
 
-        public KickPlanningResults kick(int id, Vector2 target, IPredictor predictor) {
+        public KickPlanningResults kick(Team team, int id, Vector2 target, IPredictor predictor) {
             WheelSpeeds speeds = new WheelSpeeds();
             
             // default break beam not on
@@ -245,16 +243,16 @@ namespace Robocup.MotionControl
             if (goingToPoint1)
             {
                 RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
-                speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
+                speeds = dumbPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
                 //why was regular Planner being used here? it seems inconsistent, sometimes using one instance of the bugNavigator and sometimes another.
-                    //regularPlanner.PlanMotion(id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
+                    //regularPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
             }
             else
             {
                 RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, id);
                 //speeds = new WheelSpeeds();
-                speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;// This is the "normal one"
-                //speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
+                speeds = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0).wheel_speeds;// This is the "normal one"
+                //speeds = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0).wheel_speeds;
 
                 // FOR NOW!!! Go forwards rather than use PID feedback. Meant to fix forward curving problem
                 //speeds = new WheelSpeeds(10, 10, 10, 10);                
@@ -336,9 +334,7 @@ namespace Robocup.MotionControl
             regularPlanner.LoadConstants();
             slowPlanner.LoadConstants();            
             spinplanner.ReloadConstants();
-            loop.ReloadConstants();
-
-            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
+            loop.ReloadConstants();            
         }
 
         /// <summary>
@@ -358,11 +354,11 @@ namespace Robocup.MotionControl
         /// <param name="target"></param>
         /// <param name="predictor"></param>
         /// <returns></returns>
-        public Vector2 getDestinationPoint(int id, Vector2 target, IPredictor predictor)
+        public Vector2 getDestinationPoint(Team team, int id, Vector2 target, IPredictor predictor)
         {
             // find characteristics of field
-            RobotInfo thisrobot = predictor.getCurrentInformation(id);
-            BallInfo ballinfo = predictor.getBallInfo();
+            RobotInfo thisrobot = predictor.GetRobot(team, id);
+            BallInfo ballinfo = predictor.GetBall();
             Vector2 ball = ballinfo.Position;
 
             // return point to go to

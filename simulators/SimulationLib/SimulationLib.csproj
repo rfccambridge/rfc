@@ -38,6 +38,7 @@
     <Compile Include="PhysicsEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Referees.cs" />
+    <Compile Include="SimEngine.cs" />
     <Compile Include="TestResults.cs" />
   </ItemGroup>
   <ItemGroup>

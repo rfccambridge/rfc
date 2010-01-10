@@ -34,9 +34,9 @@ namespace Robocup.MotionControl
         WheelSpeeds CWSpeeds;
         WheelSpeeds CCWSpeeds;
 
-        public WheelSpeeds spinTo(int id, double desiredOrientation, double stopWithin, IPredictor predictor)
+        public WheelSpeeds spinTo(Team team, int id, double desiredOrientation, double stopWithin, IPredictor predictor)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             // angleDifference is positive when current robot needs to turn CW, negative when need to go CCW
             double angleDifference = UsefulFunctions.angleDifference(desiredOrientation, currentState.Orientation);
@@ -89,8 +89,8 @@ namespace Robocup.MotionControl
             loops = new MultiRobotPIDLoop("motionplanning", "PID_SPINNER", NUM_ROBOTS);
         }
 
-        public WheelSpeeds spinTo(int id, double desiredOrientation, double stopWithin, IPredictor predictor) {
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+        public WheelSpeeds spinTo(Team team, int id, double desiredOrientation, double stopWithin, IPredictor predictor) {
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             // angleDifference is positive when current robot needs to turn CW, negative when need to go CCW
             double angleDifference = UsefulFunctions.angleDifference(desiredOrientation, currentState.Orientation);

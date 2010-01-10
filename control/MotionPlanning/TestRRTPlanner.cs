@@ -12,14 +12,14 @@ namespace Robocup.MotionControl
         public void LoadConstants() { }
 
         private Dictionary<int, RRTIndvPlanner> planners = new Dictionary<int, RRTIndvPlanner>();
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             if (!planners.ContainsKey(id))
                 planners.Add(id, new RRTIndvPlanner());
             RRTIndvPlanner planner = planners[id];
             lock (planner)
             {
-                return planner.PlanMotion(id, desiredState, predictor, avoidBallRadius);
+                return planner.PlanMotion(team, id, desiredState, predictor, avoidBallRadius);
             }
         }
         public void DrawLast(Graphics g, ICoordinateConverter c)
@@ -255,17 +255,19 @@ namespace Robocup.MotionControl
                 return null;
             }
 
-            public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+            public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
             {
+                Team theirTeam = team == Team.Yellow ? Team.Blue : Team.Yellow;
+
                 extended_to = new List<Vector2>();
                 extended_from = new List<Vector2>();
 
                 this.avoidball = avoidBallRadius;
-                ball = predictor.getBallInfo();
-                RobotInfo thisinfo = predictor.getCurrentInformation(id);
-                ourinfos = predictor.getOurTeamInfo();
+                ball = predictor.GetBall();
+                RobotInfo thisinfo = predictor.GetRobot(team, id);
+                ourinfos = predictor.GetRobots(team);
                 ourinfos.Remove(thisinfo);
-                theirinfos = predictor.getTheirTeamInfo();
+                theirinfos = predictor.GetRobots(theirTeam);
                 allinfos = new List<RobotInfo>(ourinfos);
                 allinfos.AddRange(theirinfos);
                 riFinder = new RobotInfoNNFinder();

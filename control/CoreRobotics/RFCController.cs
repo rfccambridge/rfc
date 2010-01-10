@@ -19,24 +19,27 @@ namespace Robocup.CoreRobotics
         // Kick planner
         TangentBugFeedbackMotionPlanner regularPlanner;
         FeedbackVeerKickPlanner _kickPlanner;
-        private int team;
+        FieldDrawer _fieldDrawer;
+        private Team _team;
 
         public RFCController(
+            Team team,
             IRobots commander,
             IMotionPlanner planner,
-            IPredictor predictor)
+            IPredictor predictor,
+            FieldDrawer fieldDrawer)
         {
+            _team = team;
             _commander = commander;
             _planner = planner;
-            _predictor = predictor;
+            _predictor = predictor;            
+            _fieldDrawer = fieldDrawer;
 
             regularPlanner = new TangentBugFeedbackMotionPlanner();
             _kickPlanner = new FeedbackVeerKickPlanner(regularPlanner);
 
-            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
+            LoadConstants();
         }
-
-        private Dictionary<int, Arrow[]> arrows = new Dictionary<int, Arrow[]>();
 
         # region private IRobots,IMovement,INavigator and accessors
 
@@ -69,13 +72,6 @@ namespace Robocup.CoreRobotics
 
         double ballAvoidDist = .12;
 
-        public void clearArrows()
-        {
-            lock (arrows)
-            {
-                arrows.Clear();
-            }
-        }
         #region IController Members
 
         public void charge(int robotID) {
@@ -107,7 +103,7 @@ namespace Robocup.CoreRobotics
             RobotInfo thisRobot;
 
             try {
-                thisRobot = Predictor.GetRobot(team, robotID);
+                thisRobot = Predictor.GetRobot(_team, robotID);
             }
             catch (ApplicationException) {
                 Console.WriteLine("Predictor did not find Robot " + robotID.ToString());
@@ -131,7 +127,7 @@ namespace Robocup.CoreRobotics
             //Console.WriteLine("Destination in RFCController later: " + destination.ToString());
 
             try {
-                 mpResults = Planner.PlanMotion(robotID, new RobotInfo(destination, orientation, robotID),
+                 mpResults = Planner.PlanMotion(_team, robotID, new RobotInfo(destination, orientation, robotID),
                     Predictor, avoidBallDist);
             } catch (ApplicationException e) {
                 Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
@@ -140,19 +136,14 @@ namespace Robocup.CoreRobotics
 
             WheelSpeeds wheelSpeeds = mpResults.wheel_speeds;
 
-            lock (arrows)
-            {        
-                // TODO: Need to make NearestWaypoint populated inside each implementation of IMotionPlanner
-                if (mpResults.NearestWaypoint != null) {
-                    arrows[robotID] = new Arrow[] {
-                        new Arrow(thisRobot.Position, destination, Color.Red, .04),                    
-                        new Arrow(thisRobot.Position, mpResults.NearestWaypoint.Position, Color.Yellow, .04) };
-                } else {
-                    arrows[robotID] = new Arrow[] {
-                        new Arrow(thisRobot.Position, destination, Color.Red, .04) };
-                }
-            }
+            if (_fieldDrawer != null)
+            {
+                _fieldDrawer.DrawArrow(_team, robotID, ArrowType.Destination, destination);
 
+                // TODO: Need to make NearestWaypoint populated inside each implementation of IMotionPlanner
+                if (mpResults.NearestWaypoint != null)
+                    _fieldDrawer.DrawArrow(_team, robotID, ArrowType.Waypoint, mpResults.NearestWaypoint.Position);
+            }
             Commander.setMotorSpeeds(robotID, wheelSpeeds);
         }
 
@@ -161,11 +152,11 @@ namespace Robocup.CoreRobotics
         {
             double orientation;
             try {
-                RobotInfo robot = Predictor.GetRobot(team, robotID);
+                RobotInfo robot = Predictor.GetRobot(_team, robotID);
                 orientation = robot.Orientation;
 
             } catch (ApplicationException e) {
-                Console.WriteLine("inside move: Predictor.getCurrentInformation() failed. Dumping exception:\n" + e.ToString());
+                Console.WriteLine("inside move: Predictor.GetRobot() failed. Dumping exception:\n" + e.ToString());
                 return;
             }
             move(robotID, avoidBall, destination, orientation); //TODO make it the current robot position
@@ -180,7 +171,7 @@ namespace Robocup.CoreRobotics
         public void moveKick(int robotID, Vector2 target)
         {
             // Plan kick
-            KickPlanningResults kpResults = _kickPlanner.kick(robotID, target, Predictor);
+            KickPlanningResults kpResults = _kickPlanner.kick(_team, robotID, target, Predictor);
 
             WheelSpeeds wheelSpeeds = kpResults.wheel_speeds;
             bool turnOnBreakBeam = kpResults.turnOnBreakBeam;
@@ -212,21 +203,7 @@ namespace Robocup.CoreRobotics
             }
             return ret;
         }
-        public void drawCurrent(System.Drawing.Graphics g, ICoordinateConverter converter)
-        {
-            lock (arrows)
-            {
-                foreach (KeyValuePair<int, Arrow[]> pair in arrows)
-                {
-                    foreach (Arrow arrow in pair.Value)
-                    {
-                        arrow.drawConvertToPixels(g, converter);
-                    }
-                }
-            }            
-            Planner.DrawLast(g, converter);
-        }
-
+       
         public void LoadConstants()
         {
             _planner.LoadConstants();

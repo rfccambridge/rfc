@@ -29,8 +29,9 @@ namespace Robocup.MotionControl
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
             // get parameters from input
+            Team team = path.Team;
             int id = path.ID;
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             RobotInfo desiredState = path.findNearestWaypoint(currentState);
 
@@ -124,8 +125,9 @@ namespace Robocup.MotionControl
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
+            Team team = path.Team;
             int id = path.ID;
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
             RobotInfo desiredState = path.findNearestWaypoint(currentState);
 
             // speeds default to zero
@@ -299,7 +301,7 @@ namespace Robocup.MotionControl
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(path.ID);
+            RobotInfo currentState = predictor.GetRobot(path.Team, path.ID);
 
             lastWayPoint = path.findNearestWaypoint(currentState).Position;
             RobotInfo waypointState = new RobotInfo(lastWayPoint, 0, path.ID);
@@ -711,7 +713,7 @@ namespace Robocup.MotionControl
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(path.ID);
+            RobotInfo currentState = predictor.GetRobot(path.Team, path.ID);
 
             lastWayPoint = path.findNearestWaypoint(currentState).Position;
             RobotInfo waypointState = new RobotInfo(lastWayPoint, 0, path.ID);
@@ -959,7 +961,7 @@ namespace Robocup.MotionControl
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(path.ID);
+            RobotInfo currentState = predictor.GetRobot(path.Team, path.ID);
 
             RobotInfo desiredState = path.findNearestWaypoint(currentState);
 
@@ -1247,16 +1249,13 @@ namespace Robocup.MotionControl
         private Feedback[] shortFeedbackObjs;
         public Feedback GetShortFeedbackObj(int robotID) { return shortFeedbackObjs[robotID]; }
 
-        // const int NUM_ROBOTS = 10;
-        const int NUM_ROBOTS = 5;
+        const int NUM_ROBOTS = 10;        
 
         private double MIN_SQ_DIST_TO_WP;
         private double MIN_ANGLE_DIFF_TO_WP;
         private int LOG_EVERY_MSEC;
 
         public double PLANNER_WAYPOINT_DISTANCE;
-
-        private int team;
 
         public PositionFeedbackDriver() {
 
@@ -1265,10 +1264,11 @@ namespace Robocup.MotionControl
 
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
                 //DEFAULT: PID on position -> no feed-forward, uses desired instead (pre 2*.06.2009)
-                feedbackObjs[robotID] = new Feedback(robotID, "control", new FailSafeModel(robotID), true);
+                // TODO: the mod by 5 is horrible, but the quickest to make simulation work
+                feedbackObjs[robotID] = new Feedback(robotID % 5, "control", new FailSafeModel(robotID), true);
                 //TEST: for long distance PID on velocity (x & y), feed-forward constant velocity
                 //feedbackObjs[robotID] = new Feedback(robotID, "control-vel", new TestModel(robotID));
-                shortFeedbackObjs[robotID] = new Feedback(robotID, "control-short", new FailSafeModel(robotID), false);
+                shortFeedbackObjs[robotID] = new Feedback(robotID % 5, "control-short", new FailSafeModel(robotID), false);
             }
 
             ReloadConstants();
@@ -1276,6 +1276,7 @@ namespace Robocup.MotionControl
 
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
+            Team team = path.Team;
             int id = path.ID;
             RobotInfo desiredState = path.getFinalState();
 
@@ -1369,8 +1370,6 @@ namespace Robocup.MotionControl
 
             // TODO: What is _longRangeDriver? Doesn't compile!
             //_longRangeDriver.ReloadConstants();
-
-            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
 
         public void UpdateConstants(int robotID, DOF_Constants newXY, DOF_Constants newTheta, bool isShort, bool save)
@@ -1441,14 +1440,12 @@ namespace Robocup.MotionControl
 		private ModelFeedback[] feedbackObjs;
 		public ModelFeedback GetFeedbackObj(int robotID) { return feedbackObjs[robotID]; }
 
-		const int NUM_ROBOTS = 5;
+		const int NUM_ROBOTS = 10;
 
 		private double MIN_SQ_DIST_TO_WP;
 		private double MIN_ANGLE_DIFF_TO_WP;
 	
 		private int LOG_EVERY_MSEC;
-		private int team;
-
 
 		public ModelFeedbackDriver()
 		{
@@ -1464,14 +1461,14 @@ namespace Robocup.MotionControl
 			for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 feedbackObjs[robotID].LoadConstants();
 
-			LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
-			team = Constants.get<int>("configuration", "OUR_TEAM_INT");
+			LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");			
 			MIN_SQ_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_SQ_DIST_TO_WP");
 			MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
 		}
 
 		public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
 		{
+            Team team = path.Team;
 			int id = path.ID;
 			RobotInfo desiredState = path.getFinalState();
 

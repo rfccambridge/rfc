@@ -114,9 +114,9 @@ namespace Robocup.Simulation
                 should_restart = 0;
         }
 
-        public PlayTypes GetCurrentPlayType()
+        public PlayType GetCurrentPlayType()
         {
-            return PlayTypes.NormalPlay;
+            return PlayType.NormalPlay;
         }
     }
 }

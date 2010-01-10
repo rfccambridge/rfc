@@ -8,10 +8,6 @@ namespace Robocup.Simulation
 {
     public class PhysicsEngine : IPredictor, IRobots
     {
-    	private const int YELLOW = 0;
-    	private const int BLUE = 1;
-    	private const int OUR_TEAM = YELLOW;
-
 		private bool _marking = false;
 		private Vector2 _markedPosition;
 
@@ -24,8 +20,7 @@ namespace Robocup.Simulation
         static double FIELD_YMAX;
 
 		private BallInfo ball = null;
-		private List<RobotInfo>[] robots = new List<RobotInfo>[] { new List<RobotInfo>(), 
-                                                                   new List<RobotInfo>() };
+        private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
 
 		VirtualRef referee;
         Dictionary<int, MovementModeler> movement_modelers = new Dictionary<int, MovementModeler>();
@@ -33,6 +28,8 @@ namespace Robocup.Simulation
 
 		public PhysicsEngine(VirtualRef referee)
 		{
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+                robots[team] = new List<RobotInfo>();
 			ResetPositions();
 			this.referee = referee;
 			foreach (RobotInfo info in GetRobots())
@@ -50,10 +47,10 @@ namespace Robocup.Simulation
             FIELD_XMIN = -FIELD_WIDTH / 2;
             FIELD_XMAX = FIELD_WIDTH / 2;
             FIELD_YMIN = -FIELD_HEIGHT / 2;
-            FIELD_YMAX = FIELD_HEIGHT / 2;
+            FIELD_YMAX = FIELD_HEIGHT / 2;            
         }
 
-    	public void MoveRobot(int team, int robotID, RobotInfo new_info)
+    	public void MoveRobot(Team team, int robotID, RobotInfo new_info)
         {
 			if (team != new_info.Team)
 				throw new ApplicationException("old robot team and new robot team dont match!");
@@ -71,22 +68,24 @@ namespace Robocup.Simulation
 
         public void ResetPositions()
         {
-            List<RobotInfo> ourRobots = new List<RobotInfo>();
-            List<RobotInfo> theirRobots = new List<RobotInfo>();
+            List<RobotInfo> yellowRobots = new List<RobotInfo>();
+            List<RobotInfo> blueRobots = new List<RobotInfo>();
 
-            ourRobots.Add(new RobotInfo(new Vector2(-1.0, -1), 0, YELLOW, 0));
-            ourRobots.Add(new RobotInfo(new Vector2(-1.0, 0), 0, YELLOW, 1));
-            ourRobots.Add(new RobotInfo(new Vector2(-1.0, 1), 0, YELLOW, 2));
-            ourRobots.Add(new RobotInfo(new Vector2(-2f, -1), 0, YELLOW, 3));
-            //ourRobots.Add(new RobotInfo(new Vector2(-2f, 1), 0, YELLOW, 4));
+            yellowRobots.Add(new RobotInfo(new Vector2(-1.0, -1), 0, Team.Yellow, 0));
+            yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 0), 0, Team.Yellow, 1));
+            yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 1), 0, Team.Yellow, 2));
+            yellowRobots.Add(new RobotInfo(new Vector2(-2f, -1), 0, Team.Yellow, 3));
+            yellowRobots.Add(new RobotInfo(new Vector2(-2f, 1), 0, Team.Yellow, 4));
 
-            theirRobots.Add(new RobotInfo(new Vector2(1.0, -1), 0, BLUE, 5));
-            theirRobots.Add(new RobotInfo(new Vector2(1.0, 0), 0, BLUE, 6));
-            theirRobots.Add(new RobotInfo(new Vector2(1.0, 1), 0, BLUE, 7));
-            theirRobots.Add(new RobotInfo(new Vector2(2f, -1), 0, BLUE, 8));
-            theirRobots.Add(new RobotInfo(new Vector2(2f, 1), 0, BLUE, 9));
+            blueRobots.Add(new RobotInfo(new Vector2(1.0, -1), 0, Team.Blue, 5));
+            blueRobots.Add(new RobotInfo(new Vector2(1.0, 0), 0, Team.Blue, 6));
+            blueRobots.Add(new RobotInfo(new Vector2(1.0, 1), 0, Team.Blue, 7));
+            blueRobots.Add(new RobotInfo(new Vector2(2f, -1), 0, Team.Blue, 8));
+            blueRobots.Add(new RobotInfo(new Vector2(2f, 1), 0, Team.Blue, 9));
 
-            robots = new List<RobotInfo>[] { ourRobots, theirRobots };
+            robots[Team.Yellow].AddRange(yellowRobots);
+            robots[Team.Blue].AddRange(blueRobots);
+
             ball = new BallInfo(Vector2.ZERO);
         }
 
@@ -95,7 +94,7 @@ namespace Robocup.Simulation
 		/// </summary>
 		public void Step(double dt)
 		{
-			foreach (RobotInfo info in GetRobots(OUR_TEAM))
+			foreach (RobotInfo info in GetRobots())
 			{
 				int id = info.ID;
 				if (!speeds.ContainsKey(id))
@@ -210,7 +209,8 @@ namespace Robocup.Simulation
        
         public void kick(int robotID)
         {
-            RobotInfo robot = GetRobot(OUR_TEAM, robotID);
+            Team team = robotID < 5 ? Team.Yellow : Team.Blue;
+            RobotInfo robot = GetRobot(team, robotID);
         	BallInfo ballInfo = GetBall();
             // add randomness to actual robot location / direction
             //const double randomComponent = initial_ball_speed / 3;            
@@ -252,59 +252,18 @@ namespace Robocup.Simulation
 
 		#region IPredictor Members
 
-		public RobotInfo getCurrentInformation(int robotID)
-		{
-			/* foreach (RobotInfo info in getOurTeamInfo())
-			 {
-				 if (info.ID == robotID)
-				 {
-					 return info;
-				 }
-			 }
-			 foreach (RobotInfo info in getTheirTeamInfo())
-			 {
-				 if (info.ID == robotID)
-				 {
-					 return info;
-				 }
-			 }
-			 return null; */
-			//throw new ApplicationException("PhysicsEngine: not implemented");
-			return GetRobot(OUR_TEAM, robotID);
-		}
-		public List<RobotInfo> getOurTeamInfo()
-		{
-			//return new List<RobotInfo>(ourinfo);
-			throw new ApplicationException("PhysicsEngine: not implemented");
-		}
-		public List<RobotInfo> getTheirTeamInfo()
-		{
-			//return new List<RobotInfo>(theirinfo);
-			throw new ApplicationException("PhysicsEngine: not implemented");
-		}
-		public List<RobotInfo> getAllInfos()
-		{
-			return GetRobots();
-		}
-		public BallInfo getBallInfo()
-		{
-			//return ball_info;
-			return GetBall();
-		}
-
-		// TO REPLACE THE ABOVE
-		public List<RobotInfo> GetRobots(int team)
+		public List<RobotInfo> GetRobots(Team team)
 		{
 			return robots[team];
 		}
 		public List<RobotInfo> GetRobots()
 		{
 			List<RobotInfo> allRobots = new List<RobotInfo>();
-			allRobots.AddRange(robots[YELLOW]);
-			allRobots.AddRange(robots[BLUE]);
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+			    allRobots.AddRange(robots[team]);		
 			return allRobots;
 		}
-		public RobotInfo GetRobot(int team, int id)
+		public RobotInfo GetRobot(Team team, int id)
 		{
 			List<RobotInfo> teamRobots = GetRobots(team);
 			RobotInfo robot = teamRobots.Find(new Predicate<RobotInfo>(delegate(RobotInfo r)
@@ -346,7 +305,7 @@ namespace Robocup.Simulation
 						_markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
 			return ret;
 		}
-		public void SetPlayType(PlayTypes newPlayType)
+		public void SetPlayType(PlayType newPlayType)
 		{
 			// Do nothing: this method is for assumed ball: returning clever values for the ball
 			// based on game state -- i.e. center of field during kick-off

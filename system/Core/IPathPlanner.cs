@@ -37,9 +37,9 @@ namespace Robocup.CoreRobotics
             _planner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotPath path = _planner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = _planner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
 
             // if path is empty, don't move
             if (path.isEmpty()) {
@@ -61,7 +61,7 @@ namespace Robocup.CoreRobotics
     /// </summary>
     public interface IPathPlanner
     {
-        RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
+        RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
         void DrawLast(Graphics g, ICoordinateConverter c);
         void ReloadConstants();
     }
@@ -78,16 +78,15 @@ namespace Robocup.CoreRobotics
             _navigator = navigator;
         }
 
-        public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
-            int ourTeam = Constants.get<int>("configuration", "OUR_TEAM_INT");
-            int theirTeam = 1 - ourTeam;
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
 
-            
+            Team theirTeam = team == Team.Yellow ? Team.Blue : Team.Yellow;
+
             //Use navigator to get information
-            RobotInfo currentState = predictor.GetRobot(ourTeam, id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
             
             NavigationResults results = _navigator.navigate(currentState.ID, currentState.Position,
-                desiredState.Position, predictor.GetRobots(ourTeam).ToArray(), 
+                desiredState.Position, predictor.GetRobots(team).ToArray(), 
                 predictor.GetRobots(theirTeam).ToArray(), 
                 predictor.GetBall(),
                 0.15);
@@ -95,7 +94,7 @@ namespace Robocup.CoreRobotics
             List<Vector2> waypoints = new List<Vector2>();
             lastWaypoint = results.waypoint;
             waypoints.Add(lastWaypoint);
-            return new RobotPath(id, waypoints);
+            return new RobotPath(team, id, waypoints);
         }
 
         public void DrawLast(Graphics g, ICoordinateConverter c) {

@@ -3,7 +3,7 @@
 # spring 2009 CS199r class
 
 #general constants used in MotionPlanning
-int NUM_ROBOTS 5
+int NUM_ROBOTS 10
 int MIN_SINGLE_WHEEL_SPEED 0
 int MAX_SINGLE_WHEEL_SPEED 127
 

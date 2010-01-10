@@ -683,7 +683,7 @@ namespace Robocup.Plays
                     Vector2 facing = (Vector2)objects[2];
                     int id = robot.getID();
                     a.Move(id, target, facing);
-                    Console.WriteLine("robotpointpointmove: r=" + id.ToString() + "target=" + target.ToString() + " facing=" + facing.ToString());
+                    //Console.WriteLine("robotpointpointmove: r=" + id.ToString() + "target=" + target.ToString() + " facing=" + facing.ToString());
                 }, robot.getID());
             });
             addFunction("robotpointpointmovecharge", "Robot, Point, Point - Move", "Have robot ~ move to ~, and face ~ and charge", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)

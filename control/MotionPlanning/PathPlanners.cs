@@ -20,7 +20,7 @@ namespace Robocup.MotionControl
 
         }
         
-        public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
             List<RobotInfo> waypoints = new List<RobotInfo>();
             waypoints.Add(desiredState);
             return new RobotPath(waypoints);
@@ -55,15 +55,15 @@ namespace Robocup.MotionControl
             ReloadConstants();
         }
 
-        public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             Vector2 position = currentState.Position;
 
             // get list of obstacle positions
             List<Vector2> obstaclePositions = new List<Vector2>();
-            foreach (RobotInfo info in predictor.getAllInfos())
+            foreach (RobotInfo info in predictor.GetRobots())
             {
                 if (info.ID != id)
                     //TODO magic number (robot radius)
@@ -112,7 +112,7 @@ namespace Robocup.MotionControl
 
             Console.WriteLine("LAST WAYPOINT: " + lastWaypoint.ToString());
 
-            RobotPath path = new RobotPath(id, waypoints);
+            RobotPath path = new RobotPath(team, id, waypoints);
 
             return path;
         }
@@ -158,17 +158,16 @@ namespace Robocup.MotionControl
 
         BugNavigator _navigator;
 
-        Vector2 lastWaypoint;
-        private int team;
+        Vector2 lastWaypoint;        
 
         public TangentBugPlanner()
-        {
+        {            
             _navigator = new BugNavigator();
             ReloadConstants();
             previousAngle = 0;
         }
 
-        public RobotPath GetPath(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             RobotInfo currentState = predictor.GetRobot(team, id);
 
@@ -184,7 +183,7 @@ namespace Robocup.MotionControl
             // if close to the goal, decrease look ahead distance
             if (directionToGoal.magnitudeSq() < WAYPOINT_DIST * WAYPOINT_DIST) {
                 //Note: this implies zero velocity!
-				return new RobotPath(id, desiredState);
+				return new RobotPath(team, id, desiredState);
             }
 
             // get desired waypoint
@@ -300,7 +299,7 @@ namespace Robocup.MotionControl
             if (bestAngle == -1000) {
                 // no good route- return empty path
                 Console.WriteLine("NO GOOD ROUTE!");
-                return new RobotPath(id);
+                return new RobotPath(team, id);
 
             }
 
@@ -322,7 +321,7 @@ namespace Robocup.MotionControl
 
         	Vector2 velocity = finalDirection.normalizeToLength(STEADY_STATE_SPEED);
 			RobotInfo lastState = new RobotInfo(lastWaypoint, 
-				velocity, 0, desiredState.Orientation, id);
+				velocity, 0, desiredState.Orientation, team, id);
 			waypoints.Add(lastState);
 
             //Console.WriteLine("LAST WAYPOINT: " + lastWaypoint.ToString());
@@ -380,8 +379,6 @@ namespace Robocup.MotionControl
             
             //ROTATE_ANGLE = Constants.get<double>("motionplanning", "ROTATE_ANGLE");
             //ITER_INCREMENT = Constants.get<double>("motionplanning", "ITER_INCREMENT");
-
-            team = Constants.get<int>("configuration", "OUR_TEAM_INT");
         }
 
         private bool isOutOfWay(Vector2 position, Vector2 start, Vector2 pathVector)

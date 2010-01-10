@@ -40,10 +40,10 @@ namespace Robocup.MotionControl
         /// <summary>
         /// Plan motion using straightforward WheelSpeedsExtender
         /// </summary>
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState,
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState,
             IPredictor predictor, double avoidBallRadius)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             // speeds default to zero
             WheelSpeeds speeds = new WheelSpeeds();
@@ -106,10 +106,10 @@ namespace Robocup.MotionControl
         /// <summary>
         /// Plan motion using straightforward WheelSpeedsExtender
         /// </summary>
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState,
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState,
             IPredictor predictor, double avoidBallRadius)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             // speeds default to zero
             WheelSpeeds speeds = new WheelSpeeds();
@@ -338,10 +338,10 @@ namespace Robocup.MotionControl
         /// <summary>
         /// Plan motion using PID loop to control veer
         /// </summary>
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState,
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState,
             IPredictor predictor, double avoidBallRadius)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             NavigationResults results = navigator.navigate(currentState.ID, currentState.Position,
                 desiredState.Position, predictor.getOurTeamInfo().ToArray(), predictor.getTheirTeamInfo().ToArray(), predictor.getBallInfo(),
@@ -637,9 +637,9 @@ namespace Robocup.MotionControl
             ReloadConstants();
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotInfo currentState = predictor.getCurrentInformation(id);
+            RobotInfo currentState = predictor.GetRobot(team, id);
 
             // Find waypoint desired state
 
@@ -744,9 +744,9 @@ namespace Robocup.MotionControl
             pathplanner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
             WheelSpeeds speeds = pathdriver.followPath(path, predictor);
             return new MotionPlanningResults(speeds);
         }
@@ -776,9 +776,9 @@ namespace Robocup.MotionControl
             pathplanner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
             WheelSpeeds speeds = pathdriver.followPath(path, predictor);
             return new MotionPlanningResults(speeds);
         }
@@ -803,9 +803,9 @@ namespace Robocup.MotionControl
             pathplanner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
             WheelSpeeds speeds = pathdriver.followPath(path, predictor);
             return new MotionPlanningResults(speeds);
         }
@@ -830,9 +830,9 @@ namespace Robocup.MotionControl
             pathplanner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
             WheelSpeeds speeds = pathdriver.followPath(path, predictor);
             return new MotionPlanningResults(speeds);
         }
@@ -857,9 +857,9 @@ namespace Robocup.MotionControl
             pathplanner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
             WheelSpeeds speeds = pathdriver.followPath(path, predictor);
             return new MotionPlanningResults(speeds);
         }
@@ -884,9 +884,9 @@ namespace Robocup.MotionControl
             pathplanner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
             WheelSpeeds speeds = pathdriver.followPath(path, predictor);
             return new MotionPlanningResults(speeds);
         }
@@ -914,9 +914,9 @@ namespace Robocup.MotionControl
             pathplanner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotPath path = pathplanner.GetPath(id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
             WheelSpeeds speeds = pathdriver.followPath(path, predictor);
             return new MotionPlanningResults(speeds);
         }
