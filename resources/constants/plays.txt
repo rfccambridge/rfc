@@ -9,8 +9,11 @@ double BALL_RADIUS .02
 #double FIELD_HEIGHT 4.2
 
 # Practice field MD 3rd (2009-02-27)
-double FIELD_WIDTH 6.05
-double FIELD_HEIGHT 4.05
+double FIELD_WIDTH 4.80
+double FIELD_HEIGHT 3.20
+double REFEREE_ZONE_WIDTH 0.25
+double CENTER_CIRCLE_RADIUS 0.5
+
 
 double FIELD_BUFFER 0.3
 
@@ -18,21 +21,20 @@ double GOAL_WIDTH .18
 double GOAL_HEIGHT .7
 
 # Is the goal we are defending at (-FIELD_WIDTH/2 - GOAL_WIDTH)?: 0 - false, 1 - true
-bool IS_OUR_GOAL_LEFT true
-
-# Predefined ball positions when in rebox game state
-
-# for penalty: not absolute, but positive distance from center -- the sign is set in BasicPredictor
-double BALL_POS_PENALTY_X 2.575
-double BALL_POS_PENALTY_Y 0
-double BALL_POS_KICKOFF_X 0
-double BALL_POS_KICKOFF_Y 0
+string FIELD_HALF LEFT
 
 # delta distance for deciding that ball has moved
 double BALL_MOVED_DIST 0.02
 
 # Predefined ball positions when in refbox game state
-bool ASSUME_BALL false
+bool ASSUME_BALL true
+
+# for penalty: not absolute, but positive dist from center, sign set by BasicPredictor
+double BALL_POS_PENALTY_X 2.575
+double BALL_POS_PENALTY_Y 0
+
+double BALL_POS_KICKOFF_X 0
+double BALL_POS_KICKOFF_Y 0
 
 # OFFENSE PLAYS CONSTANTS
 # distance that the kicker is expected to kick the ball:
@@ -55,3 +57,5 @@ double CLEAR_DIST .25
 
 # distance robot goes from path to set up a pass when path is blocked
 double SUPPORT_SETUP_PASS 2
+
+double GOALIE_X_POS -2
