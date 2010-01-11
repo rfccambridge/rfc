@@ -6,7 +6,7 @@ int BALL_SIZE 8
 int GOAL_DOT_SIZE 10
 double ORIENT_ARROW_LEN 0.25
 string VELOCITY_ARROW_COLOR "blue"
-double VELOCITY_ARROW_SIZE 0.01
+double VELOCITY_ARROW_SIZE 0.03
 double VELOCITY_ARROW_MIN_MAG_SQ 0.01
 
 # length of arrow = magnitude * this scaling factor

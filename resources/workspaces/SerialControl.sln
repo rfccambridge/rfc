@@ -31,6 +31,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageTypes", "..\..\syste
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoystickInterface", "..\..\control\JoystickInterface\JoystickInterface.csproj", "{0D77953E-FD60-4824-A997-AF72E66EF8C1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoystickSample", "..\..\control\JoystickSample\JoystickSample.csproj", "{94C0EC44-8BBF-411F-9C86-472CD1472FDD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +69,14 @@ Global
 		{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1098547-BCE3-4276-9A6F-D7C23E62CAD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D77953E-FD60-4824-A997-AF72E66EF8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D77953E-FD60-4824-A997-AF72E66EF8C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D77953E-FD60-4824-A997-AF72E66EF8C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D77953E-FD60-4824-A997-AF72E66EF8C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94C0EC44-8BBF-411F-9C86-472CD1472FDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C0EC44-8BBF-411F-9C86-472CD1472FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C0EC44-8BBF-411F-9C86-472CD1472FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C0EC44-8BBF-411F-9C86-472CD1472FDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
