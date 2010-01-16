@@ -10,21 +10,25 @@ namespace Robocup.CoreRobotics
 {
     public class Player
     {
-        Team _team;
-        FieldHalf _fieldHalf;        
+        protected Team _team;
+        protected FieldHalf _fieldHalf;        
 
-        IPredictor _predictor;
-        Interpreter _interpreter;
+        protected IPredictor _predictor;
+        protected Interpreter _interpreter;
+        protected IController _controller;
+        protected RefBoxState _refbox;
+        protected FieldDrawer _fieldDrawer;
 
-        IController _controller;
-        
-        RefBoxState _refbox;
-        
-        FieldDrawer _fieldDrawer;
+        protected bool _running = false;
 
         System.Timers.Timer _interpretLoopTimer;
         HighResTimer _timerFreq = new HighResTimer();
         HighResTimer _timerDuration = new HighResTimer();
+
+        public bool Running
+        {
+            get { return _running; }
+        }
 
         public Player(Team team, FieldHalf fieldHalf,
                       IPredictor predictor, IRobots commander, FieldDrawer fieldDrawer) {
@@ -95,7 +99,7 @@ namespace Robocup.CoreRobotics
             }
         }
 
-        public void LoadConstants()
+        public virtual void LoadConstants()
         {
             if (_controller != null)
                 _controller.LoadConstants();
@@ -106,15 +110,17 @@ namespace Robocup.CoreRobotics
             _refbox.setReferee(refboxListener);
         }
 
-        public void LoadPlays(List<InterpreterPlay> plays)
+        public virtual void LoadPlays(List<InterpreterPlay> plays)
         {            
             _interpreter.LoadPlays(plays);
         }
 
-        public void Start()
+        public virtual void Start()
         {
             double freq = Constants.get<double>("default", "STRATEGY_FREQUENCY");
             double period = 1.0 / freq * 1000; // in ms
+
+            _running = true;
 
             _fieldDrawer.UpdateTeam(_team);
 
@@ -124,19 +130,20 @@ namespace Robocup.CoreRobotics
             _interpretLoopTimer.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
             {
                 _interpretLoopTimer.Enabled = false;
-                Thread.CurrentThread.Name = "InterpretLoopTimer thread";
+                Thread.CurrentThread.Name = "InterpretLoopTimer thread [" + _team.ToString() + "]";
                 runRound();
                 _interpretLoopTimer.Enabled = true;
             };
-            _interpretLoopTimer.Start();            
+            _interpretLoopTimer.Start();
         }
 
-        public void Stop()
+        public virtual void Stop()
         {
             _interpretLoopTimer.Stop();
             _refbox.stop();
             foreach (RobotInfo info in _predictor.GetRobots(_team))
-                _controller.stop(info.ID);            
+                _controller.stop(info.ID);
+            _running = false;
         }
 
         private void runRound()
@@ -155,12 +162,18 @@ namespace Robocup.CoreRobotics
             _fieldDrawer.UpdatePlayType(playType);            
 
             _timerDuration.Start();
-            _interpreter.interpret(playType);
+            doAction();
             _timerDuration.Stop();
 
             _fieldDrawer.EndCollectState();
 
             _fieldDrawer.UpdateInterpretDuration(_timerDuration.Duration * 1000);
+        }
+
+        protected virtual void doAction()
+        {
+            PlayType playType = _refbox.GetCurrentPlayType();
+            _interpreter.interpret(playType);
         }
     }
 }

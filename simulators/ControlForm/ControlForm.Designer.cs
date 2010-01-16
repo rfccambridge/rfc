@@ -29,7 +29,6 @@ namespace Robocup.ControlForm {
             this.serialConnect = new System.Windows.Forms.Button();
             this.rfcStart = new System.Windows.Forms.Button();
             this.rfcStatus = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.btnLogNext = new System.Windows.Forms.Button();
             this.btnLogOpenClose = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -48,8 +47,10 @@ namespace Robocup.ControlForm {
             this.lstPlays = new System.Windows.Forms.CheckedListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.chkSelectAll = new System.Windows.Forms.CheckBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.lblSimStatus = new System.Windows.Forms.Label();
+            this.btnStartStopPlayer = new System.Windows.Forms.Button();
+            this.lstSimplePlayer = new System.Windows.Forms.ComboBox();
+            this.lblSimplePlayerStatus = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,30 +94,20 @@ namespace Robocup.ControlForm {
             // 
             this.rfcStart.Location = new System.Drawing.Point(12, 186);
             this.rfcStart.Name = "rfcStart";
-            this.rfcStart.Size = new System.Drawing.Size(214, 34);
+            this.rfcStart.Size = new System.Drawing.Size(188, 34);
             this.rfcStart.TabIndex = 7;
-            this.rfcStart.Text = "Start";
+            this.rfcStart.Text = "Start Interpret";
             this.rfcStart.UseVisualStyleBackColor = true;
             this.rfcStart.Click += new System.EventHandler(this.rfcStart_Click);
             // 
             // rfcStatus
             // 
-            this.rfcStatus.AutoSize = true;
             this.rfcStatus.BackColor = System.Drawing.Color.Red;
-            this.rfcStatus.Location = new System.Drawing.Point(150, 170);
+            this.rfcStatus.Location = new System.Drawing.Point(12, 170);
             this.rfcStatus.Name = "rfcStatus";
-            this.rfcStatus.Size = new System.Drawing.Size(76, 13);
+            this.rfcStatus.Size = new System.Drawing.Size(188, 13);
             this.rfcStatus.TabIndex = 29;
-            this.rfcStatus.Text = "                       ";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 170);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(62, 13);
-            this.label4.TabIndex = 28;
-            this.label4.Text = "RFCSystem";
+            this.rfcStatus.Text = "         ";
             // 
             // btnLogNext
             // 
@@ -145,7 +136,7 @@ namespace Robocup.ControlForm {
             this.groupBox1.Controls.Add(this.btnLogNext);
             this.groupBox1.Controls.Add(this.btnStartStopLogging);
             this.groupBox1.Controls.Add(this.btnLogOpenClose);
-            this.groupBox1.Location = new System.Drawing.Point(255, 12);
+            this.groupBox1.Location = new System.Drawing.Point(260, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(91, 132);
             this.groupBox1.TabIndex = 30;
@@ -254,9 +245,9 @@ namespace Robocup.ControlForm {
             // 
             // btnStartSim
             // 
-            this.btnStartSim.Location = new System.Drawing.Point(257, 186);
+            this.btnStartSim.Location = new System.Drawing.Point(213, 186);
             this.btnStartSim.Name = "btnStartSim";
-            this.btnStartSim.Size = new System.Drawing.Size(111, 34);
+            this.btnStartSim.Size = new System.Drawing.Size(138, 34);
             this.btnStartSim.TabIndex = 45;
             this.btnStartSim.Text = "Start Sim";
             this.btnStartSim.UseVisualStyleBackColor = true;
@@ -265,7 +256,7 @@ namespace Robocup.ControlForm {
             // lstPlays
             // 
             this.lstPlays.FormattingEnabled = true;
-            this.lstPlays.Location = new System.Drawing.Point(12, 253);
+            this.lstPlays.Location = new System.Drawing.Point(12, 313);
             this.lstPlays.Name = "lstPlays";
             this.lstPlays.Size = new System.Drawing.Size(356, 169);
             this.lstPlays.TabIndex = 46;
@@ -274,7 +265,7 @@ namespace Robocup.ControlForm {
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 237);
+            this.label1.Location = new System.Drawing.Point(9, 297);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 47;
@@ -284,7 +275,7 @@ namespace Robocup.ControlForm {
             // 
             this.chkSelectAll.AutoSize = true;
             this.chkSelectAll.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkSelectAll.Location = new System.Drawing.Point(298, 233);
+            this.chkSelectAll.Location = new System.Drawing.Point(298, 290);
             this.chkSelectAll.Name = "chkSelectAll";
             this.chkSelectAll.Size = new System.Drawing.Size(70, 17);
             this.chkSelectAll.TabIndex = 48;
@@ -292,32 +283,53 @@ namespace Robocup.ControlForm {
             this.chkSelectAll.UseVisualStyleBackColor = true;
             this.chkSelectAll.CheckedChanged += new System.EventHandler(this.chkSelectAll_CheckedChanged);
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(254, 170);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(27, 13);
-            this.label5.TabIndex = 49;
-            this.label5.Text = "Sim:";
-            // 
             // lblSimStatus
             // 
-            this.lblSimStatus.AutoSize = true;
             this.lblSimStatus.BackColor = System.Drawing.Color.Red;
-            this.lblSimStatus.Location = new System.Drawing.Point(287, 170);
+            this.lblSimStatus.Location = new System.Drawing.Point(213, 170);
             this.lblSimStatus.Name = "lblSimStatus";
-            this.lblSimStatus.Size = new System.Drawing.Size(76, 13);
+            this.lblSimStatus.Size = new System.Drawing.Size(138, 13);
             this.lblSimStatus.TabIndex = 50;
-            this.lblSimStatus.Text = "                       ";
+            this.lblSimStatus.Text = "                 ";
+            // 
+            // btnStartStopPlayer
+            // 
+            this.btnStartStopPlayer.Location = new System.Drawing.Point(213, 248);
+            this.btnStartStopPlayer.Name = "btnStartStopPlayer";
+            this.btnStartStopPlayer.Size = new System.Drawing.Size(138, 21);
+            this.btnStartStopPlayer.TabIndex = 51;
+            this.btnStartStopPlayer.Text = "Start Simple Player";
+            this.btnStartStopPlayer.UseVisualStyleBackColor = true;
+            this.btnStartStopPlayer.Click += new System.EventHandler(this.btnStartStopPlayer_Click);
+            // 
+            // lstSimplePlayer
+            // 
+            this.lstSimplePlayer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.lstSimplePlayer.FormattingEnabled = true;
+            this.lstSimplePlayer.Location = new System.Drawing.Point(12, 248);
+            this.lstSimplePlayer.Name = "lstSimplePlayer";
+            this.lstSimplePlayer.Size = new System.Drawing.Size(188, 21);
+            this.lstSimplePlayer.TabIndex = 52;
+            this.lstSimplePlayer.SelectedIndexChanged += new System.EventHandler(this.lstSimplePlayer_SelectedIndexChanged);
+            // 
+            // lblSimplePlayerStatus
+            // 
+            this.lblSimplePlayerStatus.BackColor = System.Drawing.Color.Red;
+            this.lblSimplePlayerStatus.Location = new System.Drawing.Point(12, 232);
+            this.lblSimplePlayerStatus.Name = "lblSimplePlayerStatus";
+            this.lblSimplePlayerStatus.Size = new System.Drawing.Size(339, 13);
+            this.lblSimplePlayerStatus.TabIndex = 53;
+            this.lblSimplePlayerStatus.Text = "                       ";
             // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(380, 434);
+            this.ClientSize = new System.Drawing.Size(380, 492);
+            this.Controls.Add(this.lblSimplePlayerStatus);
+            this.Controls.Add(this.lstSimplePlayer);
+            this.Controls.Add(this.btnStartStopPlayer);
             this.Controls.Add(this.lblSimStatus);
-            this.Controls.Add(this.label5);
             this.Controls.Add(this.chkSelectAll);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lstPlays);
@@ -333,7 +345,6 @@ namespace Robocup.ControlForm {
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.rfcStart);
             this.Controls.Add(this.rfcStatus);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.serialConnect);
             this.Controls.Add(this.serialStatus);
             this.Controls.Add(this.label2);
@@ -356,7 +367,6 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Button serialConnect;
         private System.Windows.Forms.Button rfcStart;
         private System.Windows.Forms.Label rfcStatus;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnLogNext;
         private System.Windows.Forms.Button btnLogOpenClose;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -375,7 +385,9 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.CheckedListBox lstPlays;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkSelectAll;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblSimStatus;
+        private System.Windows.Forms.Button btnStartStopPlayer;
+        private System.Windows.Forms.ComboBox lstSimplePlayer;
+        private System.Windows.Forms.Label lblSimplePlayerStatus;
     }
 }

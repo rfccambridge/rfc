@@ -20,7 +20,6 @@ namespace Robocup.Simulation
         PhysicsEngine physics_engine;
 
         volatile bool running = false;
-        int _sleepTime;
         System.Timers.Timer t;
         int counter = 0;        
 

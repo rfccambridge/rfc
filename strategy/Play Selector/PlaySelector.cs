@@ -47,8 +47,6 @@ namespace Robocup.Plays
 	
     class PlaySelector
     {
-        Team OUR_TEAM;
-
         //int tick = 0;
         PlayEvaluator evaluator;
 

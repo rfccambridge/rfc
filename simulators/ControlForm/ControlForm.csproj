@@ -44,6 +44,7 @@
     <Compile Include="ControlForm.Designer.cs">
       <DependentUpon>ControlForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PathFollower.cs" />
     <Compile Include="PIDForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,6 +97,10 @@
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
       <Name>CorePlayFiles</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\strategy\Geometry\Geometry.csproj">
+      <Project>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</Project>
+      <Name>Geometry</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\strategy\Play Selector\PlaySelector.csproj">
       <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>

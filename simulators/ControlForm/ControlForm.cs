@@ -26,19 +26,24 @@ namespace Robocup.ControlForm {
         FieldDrawer _fieldDrawer;
         RemoteRobots _serial;
         IRefBoxListener _refboxListener;
+        VirtualRef _virtualReferee;
+        PhysicsEngine _physicsEngine;
 
         bool _serialConnected = false;
         bool _refboxConnected = false;
         bool _visionConnected = false;
-        bool _simRunning = false;
-        bool _systemRunning = false;
         
         List<InterpreterPlay> _plays;        
         Player _player;
 
+        List<InterpreterPlay> _plays1, _plays2; // Must have separate play objects!
         Player _player1, _player2;
         FieldDrawer _fieldDrawer1, _fieldDrawer2;
         SimEngine _engine;
+
+        Player _simplePlayer;
+        List<RobotInfo> _waypoints = new List<RobotInfo>();
+        Dictionary<RobotInfo, int> _waypointMarkers = new Dictionary<RobotInfo, int>();
 
         System.Timers.Timer _refboxCommandDisplayTimer;
 
@@ -74,6 +79,13 @@ namespace Robocup.ControlForm {
 
             _debugForm = DebugConsole.getForm();
             _debugForm.Show();
+            
+            _fieldDrawer = new FieldDrawer();
+            _fieldDrawer.Show();
+
+            _virtualReferee = new SimpleReferee();
+            _physicsEngine = new Robocup.Simulation.PhysicsEngine(_virtualReferee);
+            _engine = new SimEngine(_physicsEngine);
 
             loggingInit();
 
@@ -82,6 +94,7 @@ namespace Robocup.ControlForm {
 
             createSystem();
             createSim();
+            createSimple();
             
             createRefboxCommandDisplayTimer();
 
@@ -111,24 +124,58 @@ namespace Robocup.ControlForm {
             _vision.MessageReceived += new EventHandler<VisionMessageEventArgs>(_vision_MessageReceived);
             _vision.ErrorOccured += new EventHandler(_vision_ErrorOccured);
 
-            _fieldDrawer = new FieldDrawer();
-            _fieldDrawer.Show();
-
             _player = new Player(OUR_TEAM, FIELD_HALF, _predictor, _serial, _fieldDrawer);            
         }        
 
         private void createSim()
         {
-            VirtualRef virtualReferee = new SimpleReferee();
-
-            PhysicsEngine physicsEngine = new Robocup.Simulation.PhysicsEngine(virtualReferee);
-            _engine = new SimEngine(physicsEngine);
-
             _fieldDrawer1 = new FieldDrawer();
             _fieldDrawer2 = new FieldDrawer();
 
-            _player1 = new Player(Team.Yellow, FieldHalf.Left, physicsEngine, physicsEngine, _fieldDrawer1);
-            _player2 = new Player(Team.Blue, FieldHalf.Right, physicsEngine, physicsEngine, _fieldDrawer2);           
+            _player1 = new Player(Team.Yellow, FieldHalf.Left, _physicsEngine, _physicsEngine, _fieldDrawer1);
+            _player2 = new Player(Team.Blue, FieldHalf.Right, _physicsEngine, _physicsEngine, _fieldDrawer2);           
+        }
+
+        private void createSimple()
+        {
+            // Change the controller and predictor to the real ones (_predictor, _serial) to do real life
+            lstSimplePlayer.Items.Add(new PathFollowerPlayer(OUR_TEAM, FIELD_HALF, _physicsEngine, _physicsEngine, _fieldDrawer));
+            lstSimplePlayer.Items.Add(new KickPlayer(OUR_TEAM, FIELD_HALF, _physicsEngine, _physicsEngine, _fieldDrawer));
+            lstSimplePlayer.Items.Add(new BeamKickPlayer(OUR_TEAM, FIELD_HALF, _physicsEngine, _physicsEngine, _fieldDrawer));
+            lstSimplePlayer.SelectedIndex = 0;
+            
+            _fieldDrawer.WaypointAdded += _fieldDrawer_WaypointAdded;
+            _fieldDrawer.WaypointRemoved += _fieldDrawer_WaypointRemoved;
+            _fieldDrawer.WaypointMoved += _fieldDrawer_WaypointMoved;
+        }      
+
+        void _fieldDrawer_WaypointAdded(object sender, WaypointAddedEventArgs e)
+        {
+            RobotInfo waypoint = e.Object as RobotInfo;
+
+            _waypoints.Add(waypoint);
+            _fieldDrawer.BeginCollectState();
+            int markerHandle = _fieldDrawer.AddMarker(waypoint.Position, e.Color, waypoint);            
+            _waypointMarkers.Add(waypoint, markerHandle);
+            _fieldDrawer.EndCollectState();
+        }
+
+        void _fieldDrawer_WaypointRemoved(object sender, WaypointRemovedEventArgs e)
+        {
+            RobotInfo waypoint = e.Object as RobotInfo;
+
+            _fieldDrawer.BeginCollectState();
+            _fieldDrawer.RemoveMarker(_waypointMarkers[waypoint]);
+            _fieldDrawer.EndCollectState();
+
+            _waypoints.Remove(waypoint);
+            _waypointMarkers.Remove(waypoint);
+        }
+
+        void _fieldDrawer_WaypointMoved(object sender, WaypointMovedEventArgs e)
+        {
+            RobotInfo waypoint = e.Object as RobotInfo;
+            waypoint.Position = e.NewLocation;
         }
 
         private void createRefboxCommandDisplayTimer()
@@ -153,6 +200,9 @@ namespace Robocup.ControlForm {
             lstPlays.Items.Clear();
             lstPlays.Items.AddRange(_plays.ToArray());
             chkSelectAll.Checked = true;
+
+            _plays1 = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR).Keys);
+            _plays2 = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR).Keys);
         }
 
         private void connectRefbox()
@@ -252,7 +302,7 @@ namespace Robocup.ControlForm {
 
         private void btnRefbox_Click(object sender, EventArgs e)
         {
-            if (_systemRunning)
+            if (_player.Running || _player1.Running || _simplePlayer.Running)
             {
                 MessageBox.Show("Cannot connect/disconnect from refbox while system is running");
                 return;
@@ -265,30 +315,28 @@ namespace Robocup.ControlForm {
         }
 
         private void rfcStart_Click(object sender, EventArgs e) {
-            if (!_systemRunning) {
+            if (!_player.Running) {
                 _player.LoadPlays(_plays);
                 _player.SetRefBoxListener(_refboxListener);
                 _player.Start();
                 rfcStatus.BackColor = Color.Green;
                 rfcStart.Text = "Stop";
-                _systemRunning = true;
             } else {
                 _player.Stop();
                 rfcStatus.BackColor = Color.Red;
                 rfcStart.Text = "Start";
-                _systemRunning = false;
             }
         }
    
         private void btnStartSim_Click(object sender, EventArgs e)
         {
-            if (!_simRunning)
+            if (!_player1.Running && !_player2.Running)
             {
                 _fieldDrawer1.Show();
                 _fieldDrawer2.Show();
 
-                _player1.LoadPlays(_plays);
-                _player2.LoadPlays(_plays);
+                _player1.LoadPlays(_plays1);
+                _player2.LoadPlays(_plays2);
 
                 _player1.SetRefBoxListener(_refboxListener);
                 _player2.SetRefBoxListener(_refboxListener);
@@ -299,7 +347,6 @@ namespace Robocup.ControlForm {
 
                 lblSimStatus.BackColor = Color.Green;
                 btnStartSim.Text = "Stop Sim";
-                _simRunning = true;
             }
             else
             {
@@ -312,7 +359,33 @@ namespace Robocup.ControlForm {
 
                 lblSimStatus.BackColor = Color.Red;
                 btnStartSim.Text = "Start Sim";
-                _simRunning = false;
+            }
+        }
+
+        private void btnStartStopPlayer_Click(object sender, EventArgs e)
+        {            
+            if (!_simplePlayer.Running)
+            {                
+                if (_simplePlayer is PathFollowerPlayer)
+                {
+                    PathFollowerPlayer pathFollowerPlayer = _simplePlayer as PathFollowerPlayer;                    
+                    pathFollowerPlayer.ClearWaypoints();
+                    foreach (RobotInfo waypoint in _waypoints)
+                        pathFollowerPlayer.AddWaypoint(waypoint);
+                }
+                _simplePlayer.Start();
+                _engine.start();
+                lstSimplePlayer.Enabled = false;
+                lblSimplePlayerStatus.BackColor = Color.Green;
+                btnStartStopPlayer.Text = "Stop Simple Player";
+            }
+            else
+            {
+                _engine.stop();
+                _simplePlayer.Stop();
+                lstSimplePlayer.Enabled = true;
+                lblSimplePlayerStatus.BackColor = Color.Red;
+                btnStartStopPlayer.Text = "Start Simple Player";                
             }
         }
         
@@ -320,7 +393,7 @@ namespace Robocup.ControlForm {
         {
             if (keyData == (Keys.Control | Keys.R))
             {
-                if (_systemRunning)
+                if (_player.Running || _player1.Running || _player2.Running || _simplePlayer.Running)
                 {
                     MessageBox.Show("System running. Need to stop system to reload contants.");
                     return false;
@@ -335,6 +408,8 @@ namespace Robocup.ControlForm {
 
                 reloadPlays();
                 _player.LoadPlays(_plays);
+                _player1.LoadPlays(_plays1);
+                _player2.LoadPlays(_plays2);
 
                 Console.WriteLine("Constants and plays reloaded.");
                 return true;
@@ -487,5 +562,12 @@ namespace Robocup.ControlForm {
         }
 
         #endregion
+
+        private void lstSimplePlayer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_simplePlayer != null && _simplePlayer.Running)
+                throw new ApplicationException("Cannot change player while running!");
+            _simplePlayer = lstSimplePlayer.SelectedItem as Player;
+        }     
     }
 }

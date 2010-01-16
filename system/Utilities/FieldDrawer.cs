@@ -13,8 +13,43 @@ namespace Robocup.Utilities
         Waypoint
     }
 
+    public class WaypointAddedEventArgs : EventArgs
+    {
+        public Object Object;
+        public Color Color;
+        public WaypointAddedEventArgs(Object obj, Color color)
+        {
+            Object = obj;
+            Color = color;
+        }
+    }
+
+    public class WaypointRemovedEventArgs : EventArgs
+    {
+        public Object Object;
+        public WaypointRemovedEventArgs(Object obj)
+        {
+            Object = obj;
+        }
+    }
+
+    public class WaypointMovedEventArgs : EventArgs
+    {
+        public Object Object;
+        public Vector2 NewLocation;
+        public WaypointMovedEventArgs(Object obj, Vector2 newLocation)
+        {
+            Object = obj;
+            NewLocation = newLocation;
+        }
+    }
+
     public class FieldDrawer
     {
+        public event EventHandler<WaypointAddedEventArgs> WaypointAdded;
+        public event EventHandler<WaypointRemovedEventArgs> WaypointRemoved;
+        public event EventHandler<WaypointMovedEventArgs> WaypointMoved;
+
         private class RobotDrawingInfo
         {
             public RobotInfo RobotInfo;
@@ -31,11 +66,13 @@ namespace Robocup.Utilities
         {
             public Vector2 Location;
             public Color Color;
+            public object Object;
 
-            public Marker(Vector2 loc, Color col)
+            public Marker(Vector2 loc, Color col, Object obj)
             {
                 Location = loc;
                 Color = col;
+                Object = obj;
             }
         }
 
@@ -71,12 +108,14 @@ namespace Robocup.Utilities
                 Robots[Team.Yellow].Clear();
                 Robots[Team.Blue].Clear();
                 Ball = null;
-                Markers.Clear();
+                //Markers.Clear();
 
                 NextRobotHandle = 0;
-                NextMarkerHandle = 0;
+                //NextMarkerHandle = 0;
           }
         }
+
+        const double MARKER_SIZE = 0.025;
 
         double FIELD_WIDTH;
         double FIELD_HEIGHT;
@@ -90,6 +129,9 @@ namespace Robocup.Utilities
         bool _collectingState = false;
         object _collectingStateLock = new object();
         bool _robotsAndBallUpdated = false;
+        Marker _draggedMarker;
+        double _glControlWidth;
+        double _glControlHeight;
 
         IntPtr _ballQuadric, _centerCircleQuadric, _robotQuadric;
         OpenTK.Graphics.TextPrinter _printer = new OpenTK.Graphics.TextPrinter();
@@ -111,11 +153,14 @@ namespace Robocup.Utilities
             CENTER_CIRCLE_RADIUS = Constants.get<double>("plays", "CENTER_CIRCLE_RADIUS");
 
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
-            _fieldDrawerForm = new FieldDrawerForm(this, ratio);                                
+            _fieldDrawerForm = new FieldDrawerForm(this, ratio);
         }
 
         public void Init(int w, int h)
         {
+            _glControlWidth = w;
+            _glControlHeight = h;
+
             GL.ClearColor(Color.Green);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
@@ -135,13 +180,15 @@ namespace Robocup.Utilities
             OpenTK.Graphics.Glu.QuadricDrawStyle(_robotQuadric, OpenTK.Graphics.QuadricDrawStyle.Line);
 
             // For debugging
-            BuildTestScene();
+            //BuildTestScene();
         }
 
         public void Resize(int w, int h)
         {
+            _glControlWidth = w;
+            _glControlHeight = h;            
             GL.Viewport(0, 0, w, h);
-        }
+        }       
 
         public void Show()
         {
@@ -151,6 +198,57 @@ namespace Robocup.Utilities
         public void Hide()
         {
             _fieldDrawerForm.Hide();
+        }
+
+        public void MouseDown(Point loc)
+        {
+            Vector2 pt = controlToFieldCoords(loc);
+            _draggedMarker = null;
+            lock (_stateLock) {
+                foreach (Marker marker in _state.Markers.Values)
+                    if (ptInsideMarker(marker, pt))
+                        _draggedMarker = marker;
+            }
+        }
+
+        public void MouseUp(Point loc)
+        {
+            if (_draggedMarker != null)
+            {
+                if (loc.X < 0 || loc.X > _glControlWidth || loc.Y < 0 || loc.Y > _glControlHeight)
+                {
+                    if (WaypointRemoved != null)
+                        WaypointRemoved(this, new WaypointRemovedEventArgs(_draggedMarker.Object));
+                }
+                _draggedMarker = null;
+            }
+        }
+
+        public void MouseMove(Point loc)
+        {
+            if (_draggedMarker != null)
+            {
+                Vector2 pt = controlToFieldCoords(loc);
+                lock (_collectingStateLock)
+                {
+                    _draggedMarker.Location = pt;
+                    if (WaypointMoved != null)
+                        WaypointMoved(this, new WaypointMovedEventArgs(_draggedMarker.Object, pt));
+                }
+            }
+            _fieldDrawerForm.InvalidateGLControl();
+        }
+
+        public void DragDrop(object obj, Point loc)
+        {
+            if (obj.GetType() == typeof(WaypointAddedEventArgs))
+            {
+                WaypointAddedEventArgs eventArgs = obj as WaypointAddedEventArgs;
+                RobotInfo waypoint = eventArgs.Object as RobotInfo;
+                waypoint.Position = controlToFieldCoords(loc);
+                if (WaypointAdded != null)
+                    WaypointAdded(this, eventArgs);
+            }
         }
 
         public void BeginCollectState()
@@ -281,12 +379,17 @@ namespace Robocup.Utilities
 
         public int AddMarker(Vector2 location, Color color)
         {
+            return AddMarker(location, color, null);
+        }
+
+        public int AddMarker(Vector2 location, Color color, Object obj)
+        {
             lock (_collectingStateLock)
             {
                 if (!_collectingState)
                     throw new ApplicationException("Not collecting state!");
                 int handle = _bufferedState.NextMarkerHandle;
-                _bufferedState.Markers.Add(handle, new Marker(location, color));
+                _bufferedState.Markers.Add(handle, new Marker(location, color, obj));
                 unchecked { _bufferedState.NextMarkerHandle++; }
                 return handle;
             }
@@ -409,8 +512,7 @@ namespace Robocup.Utilities
         }
 
         private void drawMarker(Marker marker)
-        {
-            double MARKER_SIZE = 0.025;
+        {            
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Translate(marker.Location.X, marker.Location.Y, 0);
@@ -421,6 +523,14 @@ namespace Robocup.Utilities
             GL.Vertex2(MARKER_SIZE, -MARKER_SIZE);
             GL.Vertex2(-MARKER_SIZE, -MARKER_SIZE);
             GL.End();
+        }
+
+        private bool ptInsideMarker(Marker marker, Vector2 pt)
+        {
+            if (pt.X < marker.Location.X - MARKER_SIZE || pt.X > marker.Location.X + MARKER_SIZE
+                || pt.Y < marker.Location.Y - MARKER_SIZE || pt.Y > marker.Location.Y + MARKER_SIZE)
+                return false;
+            return true;
         }
 
         private void drawArrow(Vector2 fromPoint, Vector2 toPoint, Color color)
@@ -468,6 +578,16 @@ namespace Robocup.Utilities
             GL.Translate(screen);
             _printer.Print(s, new Font(FontFamily.GenericSansSerif, size), color);
             _printer.End();
+        }
+
+        private Vector2 controlToFieldCoords(Point loc)
+        {
+            double viewWidth = 2 * REFEREE_ZONE_WIDTH + FIELD_WIDTH;
+            double viewHeight = 2 * REFEREE_ZONE_WIDTH + FIELD_HEIGHT;
+            double translateX = -FIELD_WIDTH / 2 - REFEREE_ZONE_WIDTH;
+            double translateY = -FIELD_HEIGHT / 2 - REFEREE_ZONE_WIDTH;
+            return new Vector2((double)loc.X / _glControlWidth * viewWidth + translateX, 
+                               (1 - (double)loc.Y / _glControlHeight) * viewHeight + translateY);
         }
 
         private void BuildTestScene()

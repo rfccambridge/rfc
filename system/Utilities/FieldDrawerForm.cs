@@ -14,7 +14,9 @@ namespace Robocup.Utilities
         private delegate void VoidDelegate();
 
         private FieldDrawer _fieldDrawer;
-        bool _glFieldLoaded = false;
+        private bool _glFieldLoaded = false;
+        private Color[] _colors = { Color.Cyan, Color.Red, Color.White, Color.Pink, Color.Purple};
+        private int _currentColorIdx = 0;
 
         public FieldDrawerForm(FieldDrawer fieldDrawer, double heightToWidth)
         {
@@ -22,6 +24,7 @@ namespace Robocup.Utilities
             InitializeComponent();
 
             this.Width = (int)((double)glField.Height / heightToWidth);
+            lblMarker.BackColor = _colors[_currentColorIdx];
         }
 
         public void InvalidateGLControl()
@@ -70,6 +73,11 @@ namespace Robocup.Utilities
             }));
         }
 
+        private void FieldDrawerForm_Resize(object sender, EventArgs e)
+        {
+            glField.Height = panGameStatus.Top;
+        }
+
         private void glField_Paint(object sender, PaintEventArgs e)
         {
             if (!_glFieldLoaded)
@@ -91,9 +99,47 @@ namespace Robocup.Utilities
             glField.Invalidate();
         }
 
-        private void FieldDrawerForm_Resize(object sender, EventArgs e)
+        private void glField_MouseDown(object sender, MouseEventArgs e)
         {
-            glField.Height = panGameStatus.Top;
+            _fieldDrawer.MouseDown(e.Location);
         }
+
+        private void glField_MouseUp(object sender, MouseEventArgs e)
+        {
+            _fieldDrawer.MouseUp(e.Location);
+        }
+
+        private void glField_MouseMove(object sender, MouseEventArgs e)
+        {
+            _fieldDrawer.MouseMove(e.Location);
+        }
+
+        private void glField_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(Color)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+        }
+
+        private void lblMarker_MouseDown(object sender, MouseEventArgs e)
+        {
+            lblMarker.DoDragDrop(lblMarker.BackColor, DragDropEffects.All);
+        }
+
+        private void glField_DragDrop(object sender, DragEventArgs e)
+        {
+            // TODO: Add ability to set orientation (and id?)
+            if (e.Data.GetDataPresent(typeof(Color)))
+                _fieldDrawer.DragDrop(new WaypointAddedEventArgs(new RobotInfo(null, 0, -1), _colors[_currentColorIdx]), 
+                                      glField.PointToClient(new Point(e.X, e.Y)));
+        }
+
+        private void lblMarker_Click(object sender, EventArgs e)
+        {
+            _currentColorIdx = (_currentColorIdx + 1) % _colors.Length;
+            lblMarker.BackColor = _colors[_currentColorIdx];
+        }
+
     }
 }

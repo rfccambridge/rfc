@@ -30,21 +30,23 @@ namespace Robocup.Utilities
         {
             this.glField = new OpenTK.GLControl();
             this.panGameStatus = new System.Windows.Forms.Panel();
+            this.lblInterpretDuration = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.lblInterpretFreq = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.lblRefBoxCmd = new System.Windows.Forms.Label();
             this.lblPlayType = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblTeam = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.lblInterpretFreq = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.lblInterpretDuration = new System.Windows.Forms.Label();
+            this.lblMarker = new System.Windows.Forms.Label();
             this.panGameStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // glField
             // 
+            this.glField.AllowDrop = true;
             this.glField.BackColor = System.Drawing.Color.Black;
             this.glField.Dock = System.Windows.Forms.DockStyle.Top;
             this.glField.Location = new System.Drawing.Point(0, 0);
@@ -54,10 +56,16 @@ namespace Robocup.Utilities
             this.glField.VSync = false;
             this.glField.Load += new System.EventHandler(this.glField_Load);
             this.glField.Paint += new System.Windows.Forms.PaintEventHandler(this.glField_Paint);
+            this.glField.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glField_MouseMove);
+            this.glField.DragDrop += new System.Windows.Forms.DragEventHandler(this.glField_DragDrop);
+            this.glField.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glField_MouseDown);
             this.glField.Resize += new System.EventHandler(this.glField_Resize);
+            this.glField.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glField_MouseUp);
+            this.glField.DragEnter += new System.Windows.Forms.DragEventHandler(this.glField_DragEnter);
             // 
             // panGameStatus
             // 
+            this.panGameStatus.Controls.Add(this.lblMarker);
             this.panGameStatus.Controls.Add(this.lblInterpretDuration);
             this.panGameStatus.Controls.Add(this.label6);
             this.panGameStatus.Controls.Add(this.lblInterpretFreq);
@@ -73,6 +81,44 @@ namespace Robocup.Utilities
             this.panGameStatus.Name = "panGameStatus";
             this.panGameStatus.Size = new System.Drawing.Size(599, 94);
             this.panGameStatus.TabIndex = 8;
+            // 
+            // lblInterpretDuration
+            // 
+            this.lblInterpretDuration.AutoSize = true;
+            this.lblInterpretDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblInterpretDuration.Location = new System.Drawing.Point(119, 72);
+            this.lblInterpretDuration.Name = "lblInterpretDuration";
+            this.lblInterpretDuration.Size = new System.Drawing.Size(32, 16);
+            this.lblInterpretDuration.TabIndex = 10;
+            this.lblInterpretDuration.Text = "<?>";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 72);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(101, 13);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Interpreter Duration:";
+            // 
+            // lblInterpretFreq
+            // 
+            this.lblInterpretFreq.AutoSize = true;
+            this.lblInterpretFreq.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblInterpretFreq.Location = new System.Drawing.Point(119, 50);
+            this.lblInterpretFreq.Name = "lblInterpretFreq";
+            this.lblInterpretFreq.Size = new System.Drawing.Size(32, 16);
+            this.lblInterpretFreq.TabIndex = 8;
+            this.lblInterpretFreq.Text = "<?>";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(31, 51);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(82, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Interpreter Freq:";
             // 
             // lblRefBoxCmd
             // 
@@ -98,7 +144,7 @@ namespace Robocup.Utilities
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(405, 14);
+            this.label3.Location = new System.Drawing.Point(403, 72);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(37, 13);
             this.label3.TabIndex = 3;
@@ -118,7 +164,7 @@ namespace Robocup.Utilities
             // 
             this.lblTeam.AutoSize = true;
             this.lblTeam.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTeam.Location = new System.Drawing.Point(448, 14);
+            this.lblTeam.Location = new System.Drawing.Point(446, 72);
             this.lblTeam.Name = "lblTeam";
             this.lblTeam.Size = new System.Drawing.Size(32, 16);
             this.lblTeam.TabIndex = 2;
@@ -134,43 +180,17 @@ namespace Robocup.Utilities
             this.label5.TabIndex = 5;
             this.label5.Text = "PlayType:";
             // 
-            // label2
+            // lblMarker
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(31, 51);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Interpreter Freq:";
-            // 
-            // lblInterpretFreq
-            // 
-            this.lblInterpretFreq.AutoSize = true;
-            this.lblInterpretFreq.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInterpretFreq.Location = new System.Drawing.Point(119, 50);
-            this.lblInterpretFreq.Name = "lblInterpretFreq";
-            this.lblInterpretFreq.Size = new System.Drawing.Size(32, 16);
-            this.lblInterpretFreq.TabIndex = 8;
-            this.lblInterpretFreq.Text = "<?>";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 72);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(101, 13);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Interpreter Duration:";
-            // 
-            // lblInterpretDuration
-            // 
-            this.lblInterpretDuration.AutoSize = true;
-            this.lblInterpretDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInterpretDuration.Location = new System.Drawing.Point(119, 72);
-            this.lblInterpretDuration.Name = "lblInterpretDuration";
-            this.lblInterpretDuration.Size = new System.Drawing.Size(32, 16);
-            this.lblInterpretDuration.TabIndex = 10;
-            this.lblInterpretDuration.Text = "<?>";
+            this.lblMarker.BackColor = System.Drawing.Color.White;
+            this.lblMarker.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMarker.Location = new System.Drawing.Point(403, 11);
+            this.lblMarker.Name = "lblMarker";
+            this.lblMarker.Size = new System.Drawing.Size(15, 15);
+            this.lblMarker.TabIndex = 12;            
+            this.lblMarker.Click += new System.EventHandler(this.lblMarker_Click);
+            this.lblMarker.MouseDown += new System.Windows.Forms.MouseEventHandler(lblMarker_MouseDown);
+
             // 
             // FieldDrawerForm
             // 
@@ -204,5 +224,6 @@ namespace Robocup.Utilities
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label lblInterpretFreq;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblMarker;
     }
 }
