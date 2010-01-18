@@ -73,6 +73,14 @@ namespace Robocup.Utilities
             }));
         }
 
+        public void UpdateLapDuration(double duration)
+        {
+            this.Invoke(new VoidDelegate(delegate
+            {
+                lblLapDuration.Text = String.Format("{0:F2} s", duration);
+            }));
+        }
+
         private void FieldDrawerForm_Resize(object sender, EventArgs e)
         {
             glField.Height = panGameStatus.Top;

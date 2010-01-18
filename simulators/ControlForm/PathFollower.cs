@@ -12,9 +12,10 @@ namespace Robocup.ControlForm
     public class PathFollowerPlayer : Player
     {
         protected int _robotID = 0;
-        protected bool _lapping = false;
+        protected bool _firstLoop = true;
         protected List<RobotInfo> _waypoints = new List<RobotInfo>();
         protected int _waypointIndex = 0;
+        protected HighResTimer _lapTimer = new HighResTimer();
 
         protected double MIN_GOAL_DIST;
         protected double MIN_GOAL_DIFF_ORIENTATION;
@@ -100,16 +101,16 @@ namespace Robocup.ControlForm
             {
                 if (_waypointIndex == 0)
                 {
-                    if (!_lapping)
-                    {
-                        Console.WriteLine("Starting lap...");
-                        _lapping = true;
-                    }
-                    else
+                    if (!_firstLoop)
                     {
                         Console.WriteLine("Ending lap...");
-                        _lapping = false;
+                        _lapTimer.Stop();
+                        _fieldDrawer.UpdateLapDuration(_lapTimer.Duration);                        
                     }
+
+                    Console.WriteLine("Starting lap...");
+                    _lapTimer.Start();
+                    _firstLoop = false;
                 }
                 _waypointIndex = (_waypointIndex + 1) % _waypoints.Count;
             }
