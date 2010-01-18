@@ -417,6 +417,12 @@ namespace Robocup.Utilities
         {
             throw new NotImplementedException();
         }
+        public Color GetMarkerColor(int handle)
+        {
+            lock (_stateLock) {
+                return _state.Markers[handle].Color;
+            }
+        }
 
         public void DrawArrow(Team team, int robotID, ArrowType type, Vector2 toPoint)
         {

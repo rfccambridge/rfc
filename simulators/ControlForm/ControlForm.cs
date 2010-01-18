@@ -13,10 +13,13 @@ using Robocup.Plays;
 
 using System.Runtime.InteropServices;
 using Robocup.Simulation;
+using System.IO;
 
 namespace Robocup.ControlForm {
     
     public partial class ControlForm : Form {
+        const string WAYPOINTS_FILE = "waypoints.csv";
+
         Team OUR_TEAM;
         FieldHalf FIELD_HALF;
         string PLAY_DIR;
@@ -98,8 +101,11 @@ namespace Robocup.ControlForm {
             
             createRefboxCommandDisplayTimer();
 
-            btnLogNext.Enabled = false;            
+            btnLogNext.Enabled = false;     
             chkSelectAll.Checked = true;
+
+            if (File.Exists(WAYPOINTS_FILE))
+                loadWaypoints(WAYPOINTS_FILE);
 
             this.Focus();
         }        
@@ -151,31 +157,37 @@ namespace Robocup.ControlForm {
 
         void _fieldDrawer_WaypointAdded(object sender, WaypointAddedEventArgs e)
         {
-            RobotInfo waypoint = e.Object as RobotInfo;
-
-            _waypoints.Add(waypoint);
-            _fieldDrawer.BeginCollectState();
-            int markerHandle = _fieldDrawer.AddMarker(waypoint.Position, e.Color, waypoint);            
-            _waypointMarkers.Add(waypoint, markerHandle);
-            _fieldDrawer.EndCollectState();
+            addWaypoint(e.Object as RobotInfo, e.Color);
         }
 
         void _fieldDrawer_WaypointRemoved(object sender, WaypointRemovedEventArgs e)
         {
-            RobotInfo waypoint = e.Object as RobotInfo;
-
-            _fieldDrawer.BeginCollectState();
-            _fieldDrawer.RemoveMarker(_waypointMarkers[waypoint]);
-            _fieldDrawer.EndCollectState();
-
-            _waypoints.Remove(waypoint);
-            _waypointMarkers.Remove(waypoint);
+            removeWaypoint(e.Object as RobotInfo);
         }
 
         void _fieldDrawer_WaypointMoved(object sender, WaypointMovedEventArgs e)
         {
             RobotInfo waypoint = e.Object as RobotInfo;
             waypoint.Position = e.NewLocation;
+        }
+
+        private void addWaypoint(RobotInfo waypoint, Color color)
+        {
+            _waypoints.Add(waypoint);
+            _fieldDrawer.BeginCollectState();
+            int markerHandle = _fieldDrawer.AddMarker(waypoint.Position, color, waypoint);
+            _waypointMarkers.Add(waypoint, markerHandle);
+            _fieldDrawer.EndCollectState();
+        }
+
+        private void removeWaypoint(RobotInfo waypoint)
+        {
+            _fieldDrawer.BeginCollectState();
+            _fieldDrawer.RemoveMarker(_waypointMarkers[waypoint]);
+            _fieldDrawer.EndCollectState();
+
+            _waypoints.Remove(waypoint);
+            _waypointMarkers.Remove(waypoint);
         }
 
         private void createRefboxCommandDisplayTimer()
@@ -230,6 +242,36 @@ namespace Robocup.ControlForm {
             lblRefbox.BackColor = Color.Red;
             btnRefbox.Text = "Connect";
             _refboxConnected = false;
+        }
+
+        private void saveWaypoints(string file)
+        {            
+            TextWriter writer = new StreamWriter(file, false);
+            foreach (RobotInfo waypoint in _waypoints) {
+                string line = String.Join(",", new string[] { waypoint.Position.X.ToString(), waypoint.Position.Y.ToString(),
+                                                waypoint.Velocity.X.ToString(), waypoint.Velocity.Y.ToString(),
+                                                waypoint.AngularVelocity.ToString(), waypoint.Orientation.ToString(), 
+                                                waypoint.Team.ToString(), waypoint.ID.ToString(),
+                                                _fieldDrawer.GetMarkerColor(_waypointMarkers[waypoint]).ToArgb().ToString()});
+                writer.WriteLine(line);
+            }
+            writer.Close();
+        }
+
+        private void loadWaypoints(string file)
+        {
+            TextReader reader = new StreamReader(file);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                string[] tokens = line.Split(new char[] { ',' });                
+                RobotInfo waypoint = new RobotInfo(new Vector2(double.Parse(tokens[0]), double.Parse(tokens[1])),
+                                                   new Vector2(double.Parse(tokens[2]), double.Parse(tokens[3])),
+                                                   double.Parse(tokens[4]), double.Parse(tokens[5]),
+                                                   (Team)Enum.Parse(typeof(Team), tokens[6]), int.Parse(tokens[7]));
+                addWaypoint(waypoint, Color.FromArgb(int.Parse(tokens[8])));
+            }
+            reader.Close();
         }
 
         void _vision_MessageReceived(object sender, VisionMessageEventArgs e)
@@ -413,6 +455,16 @@ namespace Robocup.ControlForm {
 
                 Console.WriteLine("Constants and plays reloaded.");
                 return true;
+            }
+            else if (keyData == (Keys.Control | Keys.S))
+            {
+                saveWaypoints(WAYPOINTS_FILE);
+                Console.WriteLine("Waypoints saved.");
+            }
+            else if (keyData == (Keys.Control | Keys.L))
+            {
+                loadWaypoints(WAYPOINTS_FILE);
+                Console.WriteLine("Waypoints loaded.");
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
