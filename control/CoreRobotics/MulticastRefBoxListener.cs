@@ -188,6 +188,8 @@ namespace Robocup.CoreRobotics
                         so.sock.Close();
                     so.sock = null;
                 }
+
+                closing = false;
             }
         }        
 

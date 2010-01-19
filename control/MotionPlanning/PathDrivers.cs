@@ -1321,7 +1321,7 @@ namespace Robocup.MotionControl
                 }
                 //If we are close enough to actual destination, use another (hopefully more precise) feedback loop.
                 else {
-                    Console.WriteLine("Planning short distance");
+                    //Console.WriteLine("Planning short distance");
                     wheelSpeeds = shortFeedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
 
                     //See NOTE above
