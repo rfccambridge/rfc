@@ -1,5 +1,6 @@
 Metadata:
 type PenaltyKick_Ours_Setup
+name Penalty1
 score 10
 Objects:
 point6 (point -2.3 0)

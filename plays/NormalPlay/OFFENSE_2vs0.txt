@@ -71,8 +71,8 @@ trypass (if_Action (and passsupportopen supporthasshot) passsupport kicktogoal)
 supportrelay (robotpointmove supportrobot supportgoto)
 supportstandby (robotpointmove supportrobot standby_point)
 
-kickinrange (if_Action cleartogoal kicktogoal trypass)
-kickoutrange (if_Action clearcloserange kicktogoal trypass)
+kickinrange kicktogoal
+kickoutrange kicktogoal
 
 kick (if_Action ballinrange kickinrange kickoutrange)
 support (if_Action ballinrange supportstandby supportrelay)

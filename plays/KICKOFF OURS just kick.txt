@@ -1,5 +1,6 @@
 Metadata:
 type KickOff_Ours
+name KickOffOUrsJustKick
 score 1.007128
 Objects:
 point6 (pointof ball)

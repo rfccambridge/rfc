@@ -17,5 +17,5 @@ point1 (pointof robot0)
 Conditions:
 
 Actions:
-(robotpointkick robot0 theirgoal)
-
+#(robotpointkick robot0 theirgoal)
+(robotpointmove robot0 (point 0 0))

@@ -19,6 +19,8 @@ nothing (nullAction)
 Conditions:
 
 Actions:
+(assignPlay DEFENSE_2vs2)
+
 (if_Action (= numRobots 1) (assignPlay OFFENSE_1vs0) nothing)
 
 (if_Action (= numRobots 2) (assignPlay OFFENSE_1vs0) nothing)

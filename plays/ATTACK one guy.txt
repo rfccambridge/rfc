@@ -1,6 +1,8 @@
 Metadata:
 type NormalPlay
+name AttackOneGuy
 score 1.002615
+
 Objects:
 point2 (pointof ball)
 robot0 (closest friendly point2 loose)
@@ -11,8 +13,10 @@ topRightCorner (point 3.05 2.1)
 ourgoal (point -3.13 0)
 theirgoal (point 3.13 0)
 point1 (pointof robot0)
+
 Conditions:
 (< 0.6 (pointpointdistance point1 ourgoal))
+
 Actions:
 (if_Action (< (pointpointdistance point1 theirgoal) 1) (robotpointkick robot0 theirgoal) (robotpointdribble robot0 theirgoal))
 

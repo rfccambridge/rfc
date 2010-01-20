@@ -1,6 +1,6 @@
 Metadata:
 type KickOff_Theirs
-name Wall
+name Kickoff_Theirs_Wall
 score 0.7543067
 Objects:
 ourgoal (point -3.13 0)
@@ -25,4 +25,3 @@ Conditions:
 Actions:
 (robotpointmove robot5 point9)
 secondMove
-

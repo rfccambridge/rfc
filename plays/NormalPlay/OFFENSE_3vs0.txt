@@ -93,8 +93,8 @@ backupstandbypoint (if_point ballinrange (if_point supportstandbyispositive thei
 supportrelay (robotpointmove supportrobot supportgoto)
 supportstandby (robotpointmove supportrobot supportstandbypoint)
 
-kickinrange (if_Action cleartogoal kicktogoal trypass)
-kickoutrange (if_Action clearcloserange kicktogoal trypass)
+kickinrange kicktogoal
+kickoutrange kicktogoal
 
 kick (if_Action ballinrange kickinrange kickoutrange)
 support (if_Action ballinrange supportstandby supportrelay)

@@ -1,5 +1,6 @@
 Metadata:
 type PenaltyKick_Ours
+name Penalty
 score 100
 Objects:
 theirgoal (point 3.13 0)
