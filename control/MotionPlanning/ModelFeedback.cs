@@ -33,20 +33,79 @@ namespace Robocup.MotionControl
 		/// <returns></returns>
 		public WheelSpeeds ComputeWheelSpeeds(RobotInfo currentState, RobotInfo desiredState)
 		{
+
+            //Smallest turn algorithm
+            //get angles between 0 and two pi
+            double thetaGoal = desiredState.Orientation;
+            double thetaCurr = currentState.Orientation;
+
+            Console.Write("\before ncurrent angle: ");
+            Console.WriteLine(thetaCurr);
+            Console.Write("desired angle: ");
+            Console.WriteLine(thetaGoal);
+
+            while (thetaCurr >= 2 * Math.PI) {
+                thetaCurr -= 2 * Math.PI;
+            }
+            while (thetaCurr < 0) {
+                thetaCurr += 2 * Math.PI;
+            }
+
+            while (thetaGoal >= 2 * Math.PI) {
+                thetaGoal -= 2 * Math.PI;
+            }
+            while (thetaGoal < 0) {
+                thetaGoal += 2 * Math.PI;
+            }
+
+            if (thetaGoal - thetaCurr >= Math.PI)
+                thetaGoal = thetaGoal - 2 * Math.PI;
+            else if (thetaGoal - thetaCurr <= -Math.PI)
+                thetaGoal = thetaGoal + 2 * Math.PI;
+
+
+            //Needed to change wheelspeed convention - from {} to {}
+            double[,] permutation = new double[4,4]{{0,0,0,1},{1,0,0,0},{0,0,1,0}, {0,0,0,1}};
+            Matrix permutationMatrix = new Matrix(permutation);
+
+            double sTheta = Math.Sin(currentState.Orientation);
+            double cTheta = Math.Cos(currentState.Orientation);
+
+            double[,] globalToLocal = new double[6, 6]{{cTheta, sTheta, 0,0,0,0},
+                                                        {-sTheta, cTheta,0,0,0,0},
+                                                        {0,0,1,0,0,0},
+                                                        {0,0,0,cTheta,sTheta,0},
+                                                        {0,0,0,-sTheta,cTheta,0},
+                                                        {0,0,0,0,0,1}};
+            Matrix globalToLocalMatrix = new Matrix(globalToLocal);
+            
 			Matrix errorVector = new Matrix(6,1);
 			
-			errorVector[0] = new Complex(currentState.Position.X - desiredState.Position.X);
-			errorVector[1] = new Complex(currentState.Position.Y - desiredState.Position.Y);
-			errorVector[2] = new Complex(currentState.Orientation - desiredState.Orientation);
+			errorVector[1] = new Complex(currentState.Position.X - desiredState.Position.X);
+			errorVector[2] = new Complex(currentState.Position.Y - desiredState.Position.Y);
+            errorVector[3] = new Complex(thetaCurr - thetaGoal); //currentState.Orientation - desiredState.Orientation);  //Hack to test stuf!!!!!!!!!!!
+            
+			errorVector[4] = new Complex(currentState.Velocity.X - desiredState.Velocity.X);
+			errorVector[5] = new Complex(currentState.Velocity.Y - desiredState.Velocity.Y);
+			errorVector[6] = new Complex(currentState.AngularVelocity - desiredState.AngularVelocity);
 
-			errorVector[3] = new Complex(currentState.Velocity.X - desiredState.Velocity.X);
-			errorVector[4] = new Complex(currentState.Velocity.Y - desiredState.Velocity.Y);
-			errorVector[5] = new Complex(currentState.AngularVelocity - desiredState.AngularVelocity);
+            Matrix localError = globalToLocalMatrix * errorVector;
 
-			Matrix commandVector = errorVector * GainMatrix;
+            //if (currentState.Velocity.magnitudeSq() > 0.25)
+                //GainMatrix = GainMatrix;
+
+            //Matrix commandVector = GainMatrix * localError * 185;
+            Matrix commandVector = GainMatrix * localError * 3;
+
+            //double[] _command = new double[4] { 0, 0, 0, 30 };
+            //commandVector = new Matrix(_command);
+            
+            //commandVector = permutationMatrix * commandVector; 
+
 			//XXX: Ask if we need to do any scaling here! (Hunter mentions voltages which may be different than current wheelspeeds)
-			WheelSpeeds command = new WheelSpeeds(Convert.ToInt32(commandVector[0].Re), Convert.ToInt32(commandVector[0].Re), 
-				Convert.ToInt32(commandVector[0].Re), Convert.ToInt32(commandVector[0].Re));
+			WheelSpeeds command = new WheelSpeeds(-Convert.ToInt32(commandVector[1].Re), -Convert.ToInt32(commandVector[4].Re), 
+				-Convert.ToInt32(commandVector[2].Re), -Convert.ToInt32(commandVector[3].Re));
+            Console.WriteLine(commandVector);
 
 			return command;
 		}

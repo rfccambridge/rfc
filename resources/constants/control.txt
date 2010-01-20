@@ -4,8 +4,11 @@
 
 
 #Used be ModelFeedback
-string GAIN_MATRIX -1, 1, 1, -1, 1, 1; -1, -1, 1, -1, -1, 1; 1, -1, 1, 1, -1, 1; 1, 1, 1, 1, 1, 1
-
+#string GAIN_MATRIX  1, 1, 1, 1, 1, 1; -1, 1, 1, -1, 1, 1; -1, -1, 1, -1, -1, 1; 1, -1, 1, 1, -1, 1
+#string GAIN_MATRIX 1, 1, 1, 0, 0, 0; -1, 1, 1, 0, 0, 0; -1, -1, 1, 0, 0, 0; 1, -1, 1, 0, 0, 0
+#string GAIN_MATRIX 1, 1, 1, 0, 0, 0; -1, 1, 1, 0, 0, 0; -1, -1, 1, 0, 0, 0; 1, -1, 1, 0, 0, 0
+#string GAIN_MATRIX -5, 5, 0, -0.75, 0.75, 0; -5, -5, 0, -0.75, -0.75, 0; 5, -5, 0, 0.75, -0.75, 0; 5, 5, 0, 0.75, 0.75, 0
+string GAIN_MATRIX 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75
 
 ##alpha should be between 0 and 1.
 
@@ -23,12 +26,12 @@ string GAIN_MATRIX -1, 1, 1, -1, 1, 1; -1, -1, 1, -1, -1, 1; 1, -1, 1, 1, -1, 1;
 #d=150
 
 
-double P_X_0 550
+double P_X_0 100
 #double P_X_0 0
-double P_X_1 550
-double P_X_2 550
-double P_X_3 550
-double P_X_4 550
+double P_X_1 100
+double P_X_2 100
+double P_X_3 100
+double P_X_4 100
 
 double I_X_0 0
 #double I_X_0 0
@@ -52,11 +55,11 @@ double ALPHA_X_4 1
 
 
 #double P_Y_0 0
-double P_Y_0 550
-double P_Y_1 550
-double P_Y_2 550
-double P_Y_3 550
-double P_Y_4 550
+double P_Y_0 100
+double P_Y_1 100
+double P_Y_2 100
+double P_Y_3 100
+double P_Y_4 100
 
 #double I_Y_0 0
 double I_Y_0 0
@@ -78,11 +81,11 @@ double ALPHA_Y_2 1
 double ALPHA_Y_3 1
 double ALPHA_Y_4 1
 
-double P_THETA_0 300
-double P_THETA_1 300
-double P_THETA_2 300
-double P_THETA_3 300
-double P_THETA_4 300
+double P_THETA_0 100
+double P_THETA_1 100
+double P_THETA_2 100
+double P_THETA_3 100
+double P_THETA_4 100
 
 double I_THETA_0 0
 #double I_THETA_0 0
@@ -91,12 +94,12 @@ double I_THETA_2 0
 double I_THETA_3 0
 double I_THETA_4 0
 
-double D_THETA_0 2000
+double D_THETA_0 100
 #double D_THETA_0 0
-double D_THETA_1 2000
-double D_THETA_2 2000
-double D_THETA_3 2000
-double D_THETA_4 2000
+double D_THETA_1 100
+double D_THETA_2 100
+double D_THETA_3 100
+double D_THETA_4 100
 
 double ALPHA_THETA_0 1
 double ALPHA_THETA_1 1

@@ -14,30 +14,29 @@ int CAMERA_ID 1
 # areas and errors are in sq. mm
 
 # in pixels
-int MIN_BLOB_AREA 2
-int MIN_BLOB_HEIGHT 2
-int MIN_BLOB_WIDTH 2
+int MIN_BLOB_AREA 4
+int MIN_BLOB_HEIGHT 3
+int MIN_BLOB_WIDTH 3
 int MAX_BLOB_HEIGHT 100
 int MAX_BLOB_WIDTH 100
 
 float AREA_BALL 1400
 float ERROR_BALL 1100
 float MIN_BALL_DIST_FROM_ROBOT_SQ 8100
-float MIN_ROBOT_TO_ROBOT_DIST_SQ 20000
+float MIN_ROBOT_TO_ROBOT_DIST_SQ 27000
 
 float AREA_DOT 1600
 float ERROR_DOT 1000
 
-float AREA_BLUE_CENTER_DOT 1800
+float DIM_MIN_CENTER_DOT 3
+float DIM_MAX_CENTER_DOT 3
+float ERROR_RATIO_CENTER_DOT 0.5
+
+float AREA_BLUE_CENTER_DOT 2000
 float AREA_YELLOW_CENTER_DOT 2000
 
-float ERROR_BLUE_CENTER_DOT 1300
-float ERROR_YELLOW_CENTER_DOT 1250
-
-# Pixel width and height of a center dot of either color
-float DIM_MIN_CENTER_DOT 4
-float DIM_MAX_CENTER_DOT 15
-float ERROR_RATIO_CENTER_DOT 0.51
+float ERROR_BLUE_CENTER_DOT 1600
+float ERROR_YELLOW_CENTER_DOT 1500
 
 float AREA_CYAN_DOT 2000
 float AREA_PINK_DOT 2000
@@ -54,7 +53,7 @@ float ERROR_ANGLE 40
 float DIST_SHORT_SQ 17000
 
 float BALL_HEIGHT_TSAI 0
-float ROBOT_HEIGHT_TSAI 0
+float ROBOT_HEIGHT_TSAI -140
 
 int THEIR_ID_OFFSET_LAMBDA 0
 int THEIR_ID_OFFSET_OMEGA 10
@@ -107,24 +106,93 @@ int THEIR_ID_OFFSET_ONUFRII 0
 
 # Uncomment only the quater which you wish to calibrate
 
+########## 800 x 600
 #TOP
-double TSAI_ORIGIN_IMAGE_CENTER_X 862
-double TSAI_ORIGIN_IMAGE_CENTER_Y 641
+#double TSAI_ORIGIN_IMAGE_CENTER_X 783 
+#double TSAI_ORIGIN_IMAGE_CENTER_Y 532
+#This is an offset we apply every time we generate an image lookup table ( = half Y-size)
+#double TSAI_TOP_OFFSET_Y 3025
+
+#BOTTOM 
+#double TSAI_ORIGIN_IMAGE_CENTER_X 749
+#double TSAI_ORIGIN_IMAGE_CENTER_Y 569
+#double TSAI_TOP_OFFSET_Y 0
+
+########## 1024x768
+#TOP
+double TSAI_ORIGIN_IMAGE_CENTER_X 899 
+double TSAI_ORIGIN_IMAGE_CENTER_Y 614
 #This is an offset we apply every time we generate an image lookup table ( = half Y-size)
 double TSAI_TOP_OFFSET_Y 3025
 
-#BOTTOM
-#double TSAI_ORIGIN_IMAGE_CENTER_X 924
-#double TSAI_ORIGIN_IMAGE_CENTER_Y 668
+#BOTTOM 
+#double TSAI_ORIGIN_IMAGE_CENTER_X 749
+#double TSAI_ORIGIN_IMAGE_CENTER_Y 569
 #double TSAI_TOP_OFFSET_Y 0
 
-# Offset for tsai points for TsaiFinders 
-# [BR+TR+TL+BL]: [(+0,+0) (+0,+1925) (+3150,+1925) (+3150,0)]SS
-
-double TSAI_OFFSET_X_LAMBDA 3150
-double TSAI_OFFSET_Y_LAMBDA 1925
 
 
+# Laptops
+
+#    Lambda
+
+# Right Quater
+double TSAI_OFFSET_X_LAMBDA 0
+double TSAI_OFFSET_Y_LAMBDA 0
+# Left Quater
+#double TSAI_OFFSET_X_LAMBDA 2300
+#double TSAI_OFFSET_Y_LAMBDA 0
+
+#     Omega
+
+# Right Quater
+#double TSAI_OFFSET_X_OMEGA 0
+#double TSAI_OFFSET_Y_OMEGA 0
+# Left Quater
+double TSAI_OFFSET_X_OMEGA 2300
+double TSAI_OFFSET_Y_OMEGA 0
+
+# Desktops
+# bottom right corner
+# double TSAI_OFFSET_X_MARDUK -250
+# double TSAI_OFFSET_Y_MARDUK -250
+# top right corner
+#double TSAI_OFFSET_X_MARDUK -250
+#double TSAI_OFFSET_Y_MARDUK 1925
+# top left corner
+#double TSAI_OFFSET_X_MARDUK 3400
+#double TSAI_OFFSET_Y_MARDUK 1925
+# bottom left corner
+#double TSAI_OFFSET_X_MARDUK 3400
+#double TSAI_OFFSET_Y_MARDUK -250
+
+# Desktops
+# bottom right corner
+#double TSAI_OFFSET_X_RFC -250
+#double TSAI_OFFSET_Y_RFC 0
+# top right corner
+#double TSAI_OFFSET_X_RFC -250
+#double TSAI_OFFSET_Y_RFC 1175
+# top left corner
+#double TSAI_OFFSET_X_RFC 3400
+#double TSAI_OFFSET_Y_RFC 1175
+# bottom left corner
+double TSAI_OFFSET_X_RFC 3150
+double TSAI_OFFSET_Y_RFC 1925
+
+
+double TSAI_OFFSET_X_STRATEGIST 0
+double TSAI_OFFSET_Y_STRATEGIST 3050
+
+# Alexei's laptop
+double TSAI_OFFSET_X_THINKPAD 0
+double TSAI_OFFSET_Y_THINKPAD 2300
+
+# Svilen's laptop
+double TSAI_OFFSET_X_ONUFRII 0
+double TSAI_OFFSET_Y_ONUFRII 2300
+
+# Tsai point finder
 # in mm
 double GRID_UNIT 100
 int TSAI_COLS 5

@@ -152,8 +152,8 @@ namespace Robotics.Commander
             
             ///*******************************************
             ///Note Changing conventions!!!!! IN the new feedback class, this isn't a problem, so commenting out the following two commands.    
-            rf *= -1;
-            rb *= -1;
+            //rf *= -1;
+            //rb *= -1;
 
             // board bugs out if we send an unescaped slash
             if (lb == '\\')
@@ -466,7 +466,7 @@ namespace Robotics.Commander
             else if (rb < -maxspeed)
                 rb = -maxspeed;
 
-
+            Console.WriteLine("Sending wheelspeeds: {0} {1} {2} {3}", rf, lf, lb, rb);
             //if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 10)
             setAllMotor(id, 0, lf, rf, lb, rb, 1000);
             /*else

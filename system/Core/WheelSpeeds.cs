@@ -11,7 +11,7 @@ namespace Robocup.Core
     public class WheelsInfo<T>
     {
         public T lf, rf, lb, rb;
-        public WheelsInfo(T lf, T rf, T lb, T rb)
+        public WheelsInfo(T rf, T lf, T lb, T rb)
         {
             this.lf = lf;
             this.lb = lb;
@@ -34,11 +34,11 @@ namespace Robocup.Core
 
         static public WheelsInfo<double> Add(WheelsInfo<double> lhs, WheelsInfo<double> rhs)
         {
-            return new WheelsInfo<double>(rhs.lf + lhs.lf, rhs.rf + lhs.rf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
+            return new WheelsInfo<double>(rhs.rf + lhs.rf, rhs.lf + lhs.lf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
         }
         static public WheelsInfo<double> Times(double d, WheelsInfo<double> rhs)
         {
-            return new WheelsInfo<double>(d*rhs.lf, d*rhs.rf, d*rhs.lb, d*rhs.rb);
+            return new WheelsInfo<double>(d*rhs.rf, d*rhs.lf, d*rhs.lb, d*rhs.rb);
         }
     }
     [Serializable]
@@ -50,8 +50,8 @@ namespace Robocup.Core
     /// </summary>
     public class WheelSpeeds : WheelsInfo<int>
     {
-        public WheelSpeeds(int lf, int rf, int lb, int rb)
-            : base(lf, rf, lb, rb)
+        public WheelSpeeds(int rf, int lf, int lb, int rb)
+            : base(rf, lf, lb, rb)
         { }
 
         /// <summary>
@@ -63,29 +63,29 @@ namespace Robocup.Core
 
         static public WheelSpeeds operator +(WheelSpeeds lhs, WheelSpeeds rhs)
         {
-            return new WheelSpeeds(rhs.lf + lhs.lf, rhs.rf + lhs.rf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
+            return new WheelSpeeds(rhs.rf + lhs.rf, rhs.lf + lhs.lf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
         }
 
         static public WheelsInfo<double> operator *(double d, WheelSpeeds ws)
         {
-            return new WheelsInfo<double>(d * ws.lf, d * ws.rf, d * ws.lb, d * ws.rb);
+            return new WheelsInfo<double>(d * ws.rf, d * ws.lf, d * ws.lb, d * ws.rb);
         }
         static public WheelsInfo<double> operator +(WheelsInfo<double> lhs, WheelSpeeds rhs)
         {
-            return new WheelsInfo<double>(rhs.lf + lhs.lf, rhs.rf + lhs.rf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
+            return new WheelsInfo<double>(rhs.rf + lhs.rf, rhs.lf + lhs.lf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
         }
         static public explicit operator WheelSpeeds(WheelsInfo<double> ws)
         {
-            return new WheelSpeeds((int)(ws.lf + .5), (int)(ws.rf + .5), (int)(ws.lb + .5), (int)(ws.rb + .5));
+            return new WheelSpeeds((int)(ws.rf + .5), (int)(ws.lf + .5), (int)(ws.lb + .5), (int)(ws.rb + .5));
         }
         static public explicit operator WheelsInfo<double>(WheelSpeeds ws)
         {
-            return new WheelsInfo<double>(ws.lf, ws.rf, ws.lb, ws.rb);
+            return new WheelsInfo<double>(ws.rf, ws.lf, ws.lb, ws.rb);
         }
 
         public String toString()
         {
-            return "WheelSpeeds <lf>: " + lf + " <rf>: " + rf + " <lb>: " + lb + " <rb>: " + rb;
+            return "WheelSpeeds <rf>: " + rf + " <lf>: " + lf + " <lb>: " + lb + " <rb>: " + rb;
         }
     }
 }

@@ -158,10 +158,10 @@ namespace Robocup.MotionControl {
             //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
 
 
-            double _lf =   (sing*lateral + cosg * forward - wheelR * angularV);
-            double _rf =   -(sing*lateral - cosg*forward - wheelR*angularV);
-            double _lb =  (-sing*lateral + cosg*forward - wheelR*angularV);
-            double _rb =  -(-sing*lateral - cosg *forward - wheelR * angularV);
+            double _lf =   -(sing*lateral + cosg * forward - wheelR * angularV);
+            double _rf =   (sing*lateral - cosg*forward - wheelR*angularV);
+            double _lb =  -(-sing*lateral + cosg*forward - wheelR*angularV);
+            double _rb =  (-sing*lateral - cosg *forward - wheelR * angularV);
 
             
             /*int scaleUpFactor = 2;

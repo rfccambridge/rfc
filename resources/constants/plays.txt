@@ -4,15 +4,15 @@ double ROBOT_RADIUS .1
 
 double BALL_RADIUS .02
 
+double CENTER_CIRCLE_RADIUS 0.5
+
 # Game field
 #double FIELD_WIDTH 6.1
 #double FIELD_HEIGHT 4.2
 
 # Practice field MD 3rd (2009-02-27)
-double FIELD_WIDTH 4.80
-double FIELD_HEIGHT 3.20
-double REFEREE_ZONE_WIDTH 0.25
-double CENTER_CIRCLE_RADIUS 0.5
+double FIELD_WIDTH 6.05
+double FIELD_HEIGHT 4.05
 
 
 double FIELD_BUFFER 0.3
@@ -21,13 +21,13 @@ double GOAL_WIDTH .18
 double GOAL_HEIGHT .7
 
 # Is the goal we are defending at (-FIELD_WIDTH/2 - GOAL_WIDTH)?: 0 - false, 1 - true
-string FIELD_HALF LEFT
+bool IS_OUR_GOAL_LEFT true
 
 # delta distance for deciding that ball has moved
 double BALL_MOVED_DIST 0.02
 
 # Predefined ball positions when in refbox game state
-bool ASSUME_BALL true
+bool ASSUME_BALL false
 
 # for penalty: not absolute, but positive dist from center, sign set by BasicPredictor
 double BALL_POS_PENALTY_X 2.575
@@ -58,4 +58,5 @@ double CLEAR_DIST .25
 # distance robot goes from path to set up a pass when path is blocked
 double SUPPORT_SETUP_PASS 2
 
-double GOALIE_X_POS -2
+# goalie constants
+double GOALIE_X_POS -2.87

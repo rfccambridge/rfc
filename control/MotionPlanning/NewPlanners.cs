@@ -1074,7 +1074,8 @@ namespace Robocup.MotionControl
 	public class TangentBugModelFeedbackMotionPlanner : PlannerDriver, ILogger
 	{
 		static TangentBugPlanner pathplanner = new TangentBugPlanner();
-		public static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
+		//public static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
+        public static ModelFeedbackDriver pathdriver = new ModelFeedbackDriver();
 
 		public TangentBugModelFeedbackMotionPlanner()
 			: base(pathplanner, pathdriver)
