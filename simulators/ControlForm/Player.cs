@@ -16,6 +16,7 @@ namespace Robocup.CoreRobotics
         protected IPredictor _predictor;
         protected Interpreter _interpreter;
         protected IController _controller;
+        protected IMotionPlanner _motionPlanner;
         protected RefBoxState _refbox;
         protected FieldDrawer _fieldDrawer;
 
@@ -52,7 +53,9 @@ namespace Robocup.CoreRobotics
             //IMotionPlanner planner = new Robocup.MotionControl.BugFeedbackMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.FeedbackVeerMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.DefaultMotionPlanner();
-            IMotionPlanner planner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
+            //IMotionPlanner planner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
+
+            _motionPlanner = new Robocup.MotionControl.TangentBugModelFeedbackMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.TangentBugVeerMotionPlanner();
 
             /*Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
@@ -83,7 +86,7 @@ namespace Robocup.CoreRobotics
                     //planners[6] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
                 }*/
 
-            _controller = new RFCController(_team, commander, planner, _predictor, _fieldDrawer);            
+            _controller = new RFCController(_team, commander, _motionPlanner, _predictor, _fieldDrawer);            
 
             _interpreter = new Interpreter(_team, _fieldHalf, _predictor, _controller, _fieldDrawer);            
 
@@ -103,6 +106,8 @@ namespace Robocup.CoreRobotics
         {
             if (_controller != null)
                 _controller.LoadConstants();
+            if (_motionPlanner != null)
+                _motionPlanner.LoadConstants();
         }
 
         public void SetRefBoxListener(IRefBoxListener refboxListener)
