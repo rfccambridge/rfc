@@ -378,7 +378,9 @@ namespace Robocup.Utilities
                 foreach (Team team in Enum.GetValues(typeof(Team)))
                     _bufferedState.Robots[team].Clear();
                 foreach (RobotInfo robot in robots)
-                    _bufferedState.Robots[robot.Team].Add(robot.ID, new RobotDrawingInfo(robot));
+                    // Note: robots with duplicate ID's are ignored
+                    if (!_bufferedState.Robots[robot.Team].ContainsKey(robot.ID))
+                        _bufferedState.Robots[robot.Team].Add(robot.ID, new RobotDrawingInfo(robot));
             }
         }
 
