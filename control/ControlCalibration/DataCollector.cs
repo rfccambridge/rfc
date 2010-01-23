@@ -50,9 +50,7 @@ namespace Robocup.MotionControl
             functions.Add("Square function", new SquareWave());
 
             comboBoxFunctionList.Items.AddRange(new List<string>(functions.Keys).ToArray());
-            comboBoxFunctionList.SelectedIndex = 0;
-
-            textBoxSerialPort.Text = Constants.get<string>("ports", "SerialPort");
+            comboBoxFunctionList.SelectedIndex = 0;            
 
             FileStream fs = new FileStream("collecteddata.log.zip", FileMode.Create);
             GZipStream gz = new GZipStream(fs, CompressionMode.Compress);
@@ -225,7 +223,7 @@ namespace Robocup.MotionControl
         {
             CloseConnections();
             string host = textBoxVisionHostname.Text;
-            visionreceiver = Messages.CreateClientReceiver<VisionMessage>(host, Constants.get<int>("ports", "VisionDataPort"));
+            visionreceiver = Messages.CreateClientReceiver<VisionMessage>(host, int.Parse(txtVisionPort.Text));
             if (visionreceiver != null)
             {
                 visionreceiver.MessageReceived += VisionMessageReceived;

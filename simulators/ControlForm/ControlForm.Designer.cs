@@ -51,6 +51,7 @@ namespace Robocup.ControlForm {
             this.btnStartStopPlayer = new System.Windows.Forms.Button();
             this.lstSimplePlayer = new System.Windows.Forms.ComboBox();
             this.lblSimplePlayerStatus = new System.Windows.Forms.Label();
+            this.serialPort = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,7 +59,7 @@ namespace Robocup.ControlForm {
             // 
             this.serialHost.Location = new System.Drawing.Point(12, 80);
             this.serialHost.Name = "serialHost";
-            this.serialHost.Size = new System.Drawing.Size(132, 20);
+            this.serialHost.Size = new System.Drawing.Size(86, 20);
             this.serialHost.TabIndex = 4;
             // 
             // label2
@@ -66,9 +67,9 @@ namespace Robocup.ControlForm {
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(9, 63);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(36, 13);
+            this.label2.Size = new System.Drawing.Size(88, 13);
             this.label2.TabIndex = 24;
-            this.label2.Text = "Serial:";
+            this.label2.Text = "Serial (host/port):";
             // 
             // serialStatus
             // 
@@ -321,11 +322,19 @@ namespace Robocup.ControlForm {
             this.lblSimplePlayerStatus.TabIndex = 53;
             this.lblSimplePlayerStatus.Text = "                       ";
             // 
+            // serialPort
+            // 
+            this.serialPort.Location = new System.Drawing.Point(100, 80);
+            this.serialPort.Name = "serialPort";
+            this.serialPort.Size = new System.Drawing.Size(44, 20);
+            this.serialPort.TabIndex = 54;
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(380, 492);
+            this.Controls.Add(this.serialPort);
             this.Controls.Add(this.lblSimplePlayerStatus);
             this.Controls.Add(this.lstSimplePlayer);
             this.Controls.Add(this.btnStartStopPlayer);
@@ -389,5 +398,6 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.Button btnStartStopPlayer;
         private System.Windows.Forms.ComboBox lstSimplePlayer;
         private System.Windows.Forms.Label lblSimplePlayerStatus;
+        private System.Windows.Forms.TextBox serialPort;
     }
 }

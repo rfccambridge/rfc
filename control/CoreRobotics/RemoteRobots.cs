@@ -7,16 +7,15 @@ namespace Robocup.CoreRobotics
 {
     public class RemoteRobots : IRobots
     {
-        int SERIAL_SENDER_PORT = Constants.get<int>("ports", "RemoteControlPort");
         Robocup.MessageSystem.MessageSender<Robocup.Core.RobotCommand> _serial;
 
         public RemoteRobots()
         {
         }
 
-        public bool start(String host)
+        public bool start(String host, int port)
         {
-            _serial = Robocup.MessageSystem.Messages.CreateClientSender<Robocup.Core.RobotCommand>(host, SERIAL_SENDER_PORT);
+            _serial = Robocup.MessageSystem.Messages.CreateClientSender<Robocup.Core.RobotCommand>(host, port);
             return (_serial != null);
         }
 

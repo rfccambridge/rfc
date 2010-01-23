@@ -62,6 +62,8 @@ namespace Robocup.MotionControl
             this.buttonSendCustomSerial = new System.Windows.Forms.Button();
             this.listBoxInputHistory = new System.Windows.Forms.ListBox();
             this.checkBoxLimitCommands = new System.Windows.Forms.CheckBox();
+            this.txtVisionPort = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
@@ -132,11 +134,11 @@ namespace Robocup.MotionControl
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new System.Drawing.Point(151, 28);
+            label6.Location = new System.Drawing.Point(149, 9);
             label6.Name = "label6";
-            label6.Size = new System.Drawing.Size(73, 13);
+            label6.Size = new System.Drawing.Size(61, 13);
             label6.TabIndex = 20;
-            label6.Text = "Vision source:";
+            label6.Text = "Vision host:";
             // 
             // label7
             // 
@@ -220,9 +222,9 @@ namespace Robocup.MotionControl
             // 
             // buttonConnectVision
             // 
-            this.buttonConnectVision.Location = new System.Drawing.Point(44, 23);
+            this.buttonConnectVision.Location = new System.Drawing.Point(44, 9);
             this.buttonConnectVision.Name = "buttonConnectVision";
-            this.buttonConnectVision.Size = new System.Drawing.Size(101, 23);
+            this.buttonConnectVision.Size = new System.Drawing.Size(101, 39);
             this.buttonConnectVision.TabIndex = 9;
             this.buttonConnectVision.Text = "Connect to vision";
             this.buttonConnectVision.UseVisualStyleBackColor = true;
@@ -295,7 +297,7 @@ namespace Robocup.MotionControl
             // 
             // textBoxVisionHostname
             // 
-            this.textBoxVisionHostname.Location = new System.Drawing.Point(230, 25);
+            this.textBoxVisionHostname.Location = new System.Drawing.Point(216, 7);
             this.textBoxVisionHostname.Name = "textBoxVisionHostname";
             this.textBoxVisionHostname.Size = new System.Drawing.Size(100, 20);
             this.textBoxVisionHostname.TabIndex = 19;
@@ -380,11 +382,30 @@ namespace Robocup.MotionControl
             this.checkBoxLimitCommands.UseVisualStyleBackColor = true;
             this.checkBoxLimitCommands.CheckedChanged += new System.EventHandler(this.checkBoxLimitCommands_CheckedChanged);
             // 
+            // txtVisionPort
+            // 
+            this.txtVisionPort.Location = new System.Drawing.Point(216, 28);
+            this.txtVisionPort.Name = "txtVisionPort";
+            this.txtVisionPort.Size = new System.Drawing.Size(100, 20);
+            this.txtVisionPort.TabIndex = 31;
+            this.txtVisionPort.Text = "50000";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(151, 31);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(59, 13);
+            this.label11.TabIndex = 32;
+            this.label11.Text = "Vision port:";
+            // 
             // DataCollector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 434);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.txtVisionPort);
             this.Controls.Add(this.checkBoxLimitCommands);
             this.Controls.Add(this.listBoxInputHistory);
             this.Controls.Add(this.buttonSendCustomSerial);
@@ -452,5 +473,7 @@ namespace Robocup.MotionControl
         private System.Windows.Forms.Button buttonSendCustomSerial;
         private System.Windows.Forms.ListBox listBoxInputHistory;
         private System.Windows.Forms.CheckBox checkBoxLimitCommands;
+        private System.Windows.Forms.TextBox txtVisionPort;
+        private System.Windows.Forms.Label label11;
     }
 }

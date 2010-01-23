@@ -10,19 +10,22 @@ using Robocup.Core;
 using Robocup.MessageSystem;
 using Robocup.Utilities;
 
+
 namespace Robotics.Commander {
     public partial class RemoteControl : Form {
-        private int speed = 17;
+        private const int DEFAULT_SPEED = 40;
+
+        private int speed = DEFAULT_SPEED;
         private bool active = false;
         private bool sendcommands_remotehost = false;
         private bool sendcommands_serial = false;
-        private MessageSender<RobotCommand> message_sender = null;
-
+        private bool listening = false;
+        private MessageSender<RobotCommand> message_sender;
+        private MessageReceiver<RobotCommand> message_receiver;
+        private System.Timers.Timer rebootTimer = new System.Timers.Timer();
         private SerialRobots srobots;
-        /*public SerialRobots Serial
-        {
-            get { return srobots; }
-        }*/
+        private KeyboardHook keyboardHook = new KeyboardHook();
+
         // lf, rf, lb, rb  forward = all positive left = - + + -
         float[] wheel_dx = new float[] { 0.71f, -0.71f, -0.74f, 0.74f };
         float[] wheel_dy = new float[] { 0.71f, 0.71f, 0.68f, 0.68f };
@@ -33,19 +36,12 @@ namespace Robotics.Commander {
 
         private int curRobot;
 
-        // HACK REBOOT WORKAROUND
-        // for managing reboots
-        int _rebootTime;
-        System.Timers.Timer t;
-       
-        KeyboardHook keyboardHook = new KeyboardHook();
-
         System.Threading.Thread thread;
 
         public RemoteControl() {
             Form.CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
-            textBox1.Text = "8 backspace ======== kill the robot" + "\r\n"
+            txtCommandList.Text = "8 backspace ======== kill the robot" + "\r\n"
                            + "37 left =========== move left in x " + "\r\n"
                            + "39 right ========== move right in x" + "\r\n"
                            + "38 up ============= move forward in y" + "\r\n"
@@ -75,12 +71,20 @@ namespace Robotics.Commander {
                            + "27 esc ============ exit";
             curRobot = 0;
 
+            // reboot timer            
+            rebootTimer.AutoReset = true;
+            rebootTimer.Elapsed += rebootTimer_Elapsed;
+
             // Global hotkeys
 
             // register the event that is fired after the key press.
             keyboardHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(backspace_GlobalHotkeyPressed);
             // register the control + alt + F12 combination as hot key.
             keyboardHook.RegisterHotKey(Robocup.Utilities.ModifierKeys.Control | Robocup.Utilities.ModifierKeys.Alt, Keys.Back);
+
+            radioButtonSerial.Checked = true;
+
+            btnListen_Click(null, null);
         }
 
         private void backspace_GlobalHotkeyPressed(object sender, KeyPressedEventArgs e)
@@ -96,54 +100,56 @@ namespace Robotics.Commander {
             curRobot = oldCurRobot;
         }
 
-        private void toggleSettings(object sender, EventArgs e) {
-            active = !active;
-            /*textBox1.Enabled = !textBox1.Enabled;
-            statusLabel.Enabled = !statusLabel.Enabled;
-            OpenCOM.Enabled = !OpenCOM.Enabled;
-            reloadMotor.Enabled = !reloadMotor.Enabled;*/
-            foreach (Control c in this.Controls) {
-                c.Enabled = !active;
-            }
-
-            if (sendcommands_serial) {
-                if (active) {
+        private void btnConnect_Click(object sender, EventArgs e) {            
+            if (!active)
+            {
+                if (sendcommands_serial)
+                {
+                    string port = "COM" + ((int)udCOMPort.Value).ToString();
+                    srobots = new SerialRobots(port);
                     srobots.Open();
 
-
-                    _rebootTime = Constants.get<int>("default", "REBOOT_TIME");
-                    t = new System.Timers.Timer(_rebootTime);
-                    t.AutoReset = true;
-                    t.Elapsed += delegate(object s, System.Timers.ElapsedEventArgs eea)
-                    {
-                        
-                        for (int i = 0; i < 6; i++)
-                        {
-                            //Console.WriteLine("Rebooting robot: "+i);
-                            //HACK to stop reboot
-                            //srobots.resetBoards(i);
-                        }
-                    };
-                    t.Start();
-                    Console.WriteLine("Reboot timer started");
-                } else {
-                    t.Enabled = false;
-                    Console.WriteLine("Reboot timer disabled");
-                    srobots.Close();
+                    // To be able to get key events immediately
+                    txtCommandList.Focus();        
                 }
+                else if (sendcommands_remotehost)
+                {
+                    if (textBoxRemoteHost.Text != "localhost" && textBoxRemoteHost.Text != "127.0.0.1")
+                        this.message_sender = Messages.CreateClientSender<RobotCommand>(
+                            textBoxRemoteHost.Text, int.Parse(txtRemotePort.Text));
+                    else
+                        MessageBox.Show("don't create a loop like that!");
+                }
+
+                active = true;
+                lblSendStatus.BackColor = Color.Green;
+                btnConnect.Text = "Disconnect";
             }
+            else
+            {
+                if (sendcommands_serial)
+                {
+                    srobots.Close();
+                    srobots = null;  // let GC destroy the object
+                } else if (sendcommands_remotehost) {
+                    message_sender.Close();
+                    message_sender = null;
+                }
+
+                active = false;
+                lblSendStatus.BackColor = Color.Red;
+                btnConnect.Text = "Connect";
+            }               
         }
-
-
 
 
         private void setMotorSpeeds(int lf, int rf, int lb, int rb) {
            // Console.WriteLine("SerialControl: curRobotID = " + curRobot.ToString() + ";" +
              //   "Setting wheelspeeds to " + lf.ToString() + "," + rf.ToString() + "," + lb.ToString() + "," + rb.ToString());
-            sendCommand(curRobot, RobotCommand.Command.MOVE, new WheelSpeeds(lf, rf, lb, rb));
+            sendCommand(curRobot, RobotCommand.Command.MOVE, new WheelSpeeds(-rf, lf, lb, -rb));
         }
         public void sendMove(int id, int lf, int rf, int lb, int rb) {
-            sendCommand(id, RobotCommand.Command.MOVE, new WheelSpeeds(lf, rf, lb, rb));
+            sendCommand(id, RobotCommand.Command.MOVE, new WheelSpeeds(-rf, lf, lb, -rb));
         }
         
         public void sendCommand(int id, RobotCommand.Command command, WheelSpeeds speeds) {
@@ -247,8 +253,8 @@ namespace Robotics.Commander {
 
                 #region keyboard control
                 //label1.Text = Convert.ToString(e.KeyValue);
-                switch (e.KeyValue) {
-                    case 8: // backspace
+                switch (e.KeyCode) {
+                    case Keys.Back:
                         if (srobots == null)
                         {
                             statusLabel.Text = "no registered robots";
@@ -259,98 +265,151 @@ namespace Robotics.Commander {
                             statusLabel.Text = "stopping everything";
                         }
                         break;
-                    case 'a':
-                    case 37:        // left move left in x
+                    case Keys.Left: // left move left in x
+                    // case 'a':
+                    //case 37:        
                         //rcom.DriveStraight(oldcommander, 0, 65535);
-                        setMotorSpeeds(-speed, speed, speed, -speed);
+                        setMotorSpeeds(speed, -speed, -speed, speed);
                         //driveInDirection(-1.0f, 0.0f);
                         statusLabel.Text = "<-x";
                         break;
-                    case 'd':
-                    case 39:        // right move right in x
+                    case Keys.Right: // right move right in x
+                    //case 'd':
+                    //case 39:        
                         //rcom.DriveStraight(oldcommander, 1, 65535);
-                        setMotorSpeeds(speed, -speed, -speed, speed);
+                        
+                        setMotorSpeeds(-speed, speed, speed, -speed);    
                         //driveInDirection(1.0f, 0.0f);
                         statusLabel.Text = "x->";
                         break;
-                    case 'w':
-                    case 38:        // up move forward in y
+                    case Keys.Up: // up move forward in y
+                    //case 'w':
+                    //case 38:        
                         //rcom.DriveStraight(oldcommander, 2, 65535);
-                        setMotorSpeeds(speed, speed, speed, speed);
+                        setMotorSpeeds(-speed, -speed, -speed, -speed);
                         //driveInDirection(0.0f, 1.0f);
                         //rcom.DriveDir(oldcommander, Int32.Parse(forwardDir.Text), 65535);
                         statusLabel.Text = "^y";
                         break;
-                    case 's':
-                    case 40:        // down move backward in y
+                    case Keys.Down: // down move backward in y
+                    //case 's':
+                    //case 40:        
                         //rcom.DriveStraight(oldcommander, 3, 65535);
-                        setMotorSpeeds(-speed, -speed, -speed, -speed);
+                        setMotorSpeeds(speed, speed, speed, speed);                        
                         //driveInDirection(0.0f, -1.0f);
                         statusLabel.Text = "yv";
                         break;
-                    case 'q':
-                    case 188:       // , rotate anti-clockwise
+                    case Keys.Oemcomma: // , rotate anti-clockwise
+                    //case 'q':
+                    //case 188:       
                         //rcom.Rotate(oldcommander, 0, 65535);
-                        setMotorSpeeds(-speed, speed, -speed, speed);
+                        setMotorSpeeds(speed, -speed, speed, -speed);
                         statusLabel.Text = "anti clock";
                         break;
-                    case 'e':
-                    case 190:       // . rotate clockwise
+                    case Keys.OemPeriod: // . rotate clockwise
+                    //case 'e':
+                    //case 190:       
                         //rcom.Rotate(oldcommander, 1, 65535);
-                        setMotorSpeeds(speed, -speed, speed, -speed);
+                        setMotorSpeeds(-speed, speed, -speed, speed);
+                        
                         statusLabel.Text = "clock";
+                        break;                    
+                    case Keys.NumPad8: // up arrow (8) drive on main diagonal forward (two-wheel)
+                        //case 79:
+                        //case 'o':
+                        driveInDirection(1.0f, -1.0f);
+                        statusLabel.Text = "o /";
                         break;
-                    case 66:        // b break-beam kick
+                    case Keys.NumPad2: // down arrow (2) drive on main diagonal backward (two-wheel)
+                        //case 76:
+                        //case 'l':
+                        driveInDirection(-1.0f, 1.0f);
+                        statusLabel.Text = "l /";
+                        break;
+                    case Keys.NumPad4: // left arrow (4) drive on secondary diagonal forward (two-wheel)
+                        //case 79:
+                        //case 'o':
+                        driveInDirection(1.0f, 1.0f);
+                        statusLabel.Text = "o /";
+                        break;
+                    case Keys.NumPad6: // right arrow (6) drive on secondary diagonal backward (two-wheel)
+                        //case 76:
+                        //case 'l':
+                        driveInDirection(-1.0f, -1.0f);
+                        statusLabel.Text = "l /";
+                        break;
+                    case Keys.B: // b break-beam kick
+                    //case 66:        
                         statusLabel.Text = "Charging for break-beam";
                         srobots.beamKick(curRobot);
                         break;
-                    case 67:        // c charge kicker
+                    case Keys.C: // c charge kicker
+                    //case 67:        
                         //rcon.setOther(comboTarget.SelectedIndex, comboSource.SelectedIndex, 0);
                         //srobots.setCharge(curRobot);
                         //statusLabel.Text = "charging";
                         statusLabel.Text = "no charging";
                         break;
-                    case 32:        // space fire kicker
+                    case Keys.Space: // space fire kicker
+                    //case 32:        
                         //srobots.setStopCharge(curRobot);
                         srobots.setKick(curRobot);
                         //srobots.setStopCharge(curRobot);
                         statusLabel.Text = "kick";
                         break;
-                    case 75:        // k stop charging
+                    case Keys.K: // k stop charging
+                    //case 75:        
                         //srobots.setStopCharge(curRobot);
                         //statusLabel.Text = "stop charge";
                         statusLabel.Text = "no chargingi";
                         break;
-                    case 68:        // d dribbler on
+                    case Keys.D: // d dribbler on
+                    //case 68:        
                         srobots.startDribbler(curRobot);
                         //rcon.setOther(comboTarget.SelectedIndex, comboSource.SelectedIndex, 3);
                         statusLabel.Text = "dribbler is on";
                         break;
-                    case 70:        // f dribbler off
+                    case Keys.F: // f dribbler off
+                    //case 70:        
                         srobots.stopDribbler(curRobot);
                         //rcon.setOther(comboTarget.SelectedIndex, comboSource.SelectedIndex, 4);
                         statusLabel.Text = "dribbler is dead";
                         break;
-                    case 80:        // p stop   
+                    case Keys.P: // p stop   
+                    //case 80:        
                         //rcon.setAllMotor(oldcommander,comboTarget.SelectedIndex, comboSource.SelectedIndex, 0, 0, 0, 0, 0, 65535);
                         setMotorSpeeds(0, 0, 0, 0);
                         statusLabel.Text = "zzZz";
                         break;
-                    case 'r':
+                    case Keys.R: // r reset boards
+                    //case 'r':
                         if (sendcommands_serial)
                             srobots.resetBoards(curRobot);
                         break;
-                    case '=':
-                    case 187:
+                    case Keys.Oemplus: // = increase speed
+                    //case '=':
+                    //case 187:
                         speed += 1;
                         statusLabel.Text = "new speed: " + speed;
-                        break;
-                    case '-':
-                    case 189:
+                        break;                        
+                    case Keys.OemMinus: // - decrease speed
+                    //case '-':
+                    //case 189:
                         speed -= 1;
                         statusLabel.Text = "new speed: " + speed;
                         break;
-                    case 48:        // 0 robot0
+                    case Keys.D0: // digit key robot ids
+                    case Keys.D1:
+                    case Keys.D2:
+                    case Keys.D3:
+                    case Keys.D4:
+                    case Keys.D5:
+                    case Keys.D6:
+                    case Keys.D7:
+                    case Keys.D8:
+                    case Keys.D9:
+
+                    /*case 48:        
                     case 49:        // 1 robot1
                     case 50:        // 2 robot2
                     case 51:        // 3 robot3
@@ -359,26 +418,18 @@ namespace Robotics.Commander {
                     case 54:        // 6 robot6
                     case 55:        // 7 robot7
                     case 56:        // 8 robot8
-                    case 57:        // 9 robot9
-                        curRobot = e.KeyValue - 48;
+                    case 57:        // 9 robot9 */                       
+                        curRobot = e.KeyValue - 48;  // 48 is value for Keys.D0
                         //rcom.SwitchRobot(curRobot);
                         lblID.Text = "RobotID: " + curRobot;
                         break;
-                    case 27: // exit
-                        toggleSettings(null, null);
+                    case Keys.Escape: // esc disconnect
+                    //case 27: 
+                        btnConnect_Click(null, null);
                         statusLabel.Text = "breaking: " + active;
-                        break;
-                    case 79:
-                    case 'o':
-                        driveInDirection(-1.0f, -1.0f);
-                        statusLabel.Text = "o /";
-                        break;
-                    case 76:
-                    case 'l':
-                        driveInDirection(1.0f, 1.0f);
-                        statusLabel.Text = "l /";
-                        break;
-                    case 84:
+                        break;                                   
+                        // TODO: what is this?
+                   /* case 84:
                         //rcom.DriveStraight(oldcommander, 2, 65535);
                         //setMotorSpeeds(speed, speed, speed, speed);
                         driveInDirection(0.0f, 1.0f);
@@ -386,6 +437,7 @@ namespace Robotics.Commander {
                         //rcom.DriveDir(oldcommander, Int32.Parse(forwardDir.Text), 65535);
                         statusLabel.Text = "^y";
                         break;
+                    */
                     default:
                         //if(e.KeyCode==Keys.Escape)        // exit
                         //    toggleSettings();
@@ -393,6 +445,8 @@ namespace Robotics.Commander {
                         statusLabel.Text = "other: " + e.KeyValue.ToString();
                         break;
                 }
+
+              
                 #endregion
 
                 return;
@@ -400,7 +454,6 @@ namespace Robotics.Commander {
             }
 
         }
-
         
         private void RemoteControl_KeyUp(object sender, KeyEventArgs e) {
             if (active) {
@@ -416,15 +469,13 @@ namespace Robotics.Commander {
             }
         }
 
-
         private void RemoteControl_Load(object sender, EventArgs e) {
             //this.toggleSettings(sender, e);
 
             //rcom.LoadMotorScale("C:\\Microsoft Robotics Studio (1.0)\\samples\\MasterCommander\\scaling.txt");
         }
 
-
-        private void button3_Click(object sender, EventArgs e) {
+        private void reloadMotor_Click(object sender, EventArgs e) {
             srobots.loadMotorScale();
             Constants.Load();
             srobots.ReloadConstants();
@@ -432,25 +483,60 @@ namespace Robotics.Commander {
 
         private void radioButtonSerial_CheckedChanged(object sender, EventArgs e) {
             sendcommands_serial = radioButtonSerial.Checked;
-            if (sendcommands_serial)
-                srobots = new SerialRobots();
-            else
-                srobots = null;
         }
 
         private void radioButtonRemote_CheckedChanged(object sender, EventArgs e) {
             sendcommands_remotehost = radioButtonRemote.Checked;
-            if (radioButtonRemote.Checked) {
-                if (textBoxRemoteHost.Text == "localhost") {
-                    MessageBox.Show("don't create a loop like that!");
-                }
-                this.message_sender = Messages.CreateClientSender<RobotCommand>(
-                    textBoxRemoteHost.Text, Constants.get<int>("ports", "RemoteControlPort"));
-            } else {
-                this.message_sender.Close();
-                this.message_sender = null;
+        }
+
+        private void chkRebootTimerEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkRebootTimerEnabled.Checked)
+            {
+                rebootTimer.Interval = int.Parse(txtRebootTimerInterval.Text);
+                rebootTimer.Start();
+                Console.WriteLine("Reboot timer started");
+            }
+            else
+            {             
+                rebootTimer.Stop();             
+                Console.WriteLine("Reboot timer stopped");
             }
         }
 
+        void rebootTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                Console.WriteLine("Rebooting robot: " + i);
+                if (sendcommands_serial)
+                    srobots.resetBoards(i);
+                else if (sendcommands_remotehost)
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void btnListen_Click(object sender, EventArgs e)
+        {
+            if (!listening)
+            {
+                message_receiver = Messages.CreateServerReceiver<RobotCommand>(int.Parse(txtListenPort.Text));
+                message_receiver.MessageReceived += delegate(RobotCommand command)
+                {
+                    sendCommand(command);
+                };
+                listening = true;
+                btnListen.Text = "Stop listening";
+                lblListenStatus.BackColor = Color.Green;
+            }
+            else
+            {
+                message_receiver.Close();
+                message_receiver = null;
+                listening = false;
+                btnListen.Text = "Listen";
+                lblListenStatus.BackColor = Color.Red;
+            }
+        }
     }
 }

@@ -67,10 +67,6 @@ namespace Robotics.Commander
 
             crc.Init(CRCTool.CRCCode.CRC8);
         }
-        public SerialRobots()
-            : this(Constants.get<string>("ports", "SerialPort"))
-        {
-        }
 
         public void Open()
         {

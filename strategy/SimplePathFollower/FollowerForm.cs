@@ -90,7 +90,9 @@ namespace SimplePathFollower {
             goals.Add(new Vector2(2, -1.5));
             
 
-            MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
+            // TODO: FollowerForm is dead, so just commenting out for the sake of compilation
+            // MESSAGE_SENDER_PORT = Constants.get<int>("ports", "VisionDataPort");
+            MESSAGE_SENDER_PORT = 0;
 
 			txtVisionHostTop.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_TOP");
 			txtVisionHostBottom.Text = Constants.get<string>("default", "DEFAULT_HOST_VISION_BOTTOM");
@@ -479,7 +481,9 @@ namespace SimplePathFollower {
         private void BtnControl_Click(object sender, EventArgs e) {
             try {
                 if (!_controlConnected) {
-                    if ((_pathFollower.Commander as RemoteRobots).start(ControlHost.Text)) {
+                    // TODO: Follower is dead, so just fixing for sake of compilation
+                    if ((_pathFollower.Commander as RemoteRobots).start(ControlHost.Text, 50100))
+                    {
                         ControlStatus.BackColor = Color.Green;
                         BtnControl.Text = "Disconnect";
                         _controlConnected = true;

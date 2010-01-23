@@ -32,6 +32,9 @@ namespace JoystickSample
             this.flpAxes = new System.Windows.Forms.FlowLayoutPanel();
             this.tmrUpdateStick = new System.Windows.Forms.Timer(this.components);
             this.flpButtons = new System.Windows.Forms.FlowLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.udPort = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.udPort)).BeginInit();
             this.SuspendLayout();
             // 
             // flpAxes
@@ -39,9 +42,9 @@ namespace JoystickSample
             this.flpAxes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)));
             this.flpAxes.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flpAxes.Location = new System.Drawing.Point(12, 12);
+            this.flpAxes.Location = new System.Drawing.Point(12, 39);
             this.flpAxes.Name = "flpAxes";
-            this.flpAxes.Size = new System.Drawing.Size(242, 345);
+            this.flpAxes.Size = new System.Drawing.Size(242, 318);
             this.flpAxes.TabIndex = 0;
             // 
             // tmrUpdateStick
@@ -54,22 +57,47 @@ namespace JoystickSample
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.flpButtons.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flpButtons.Location = new System.Drawing.Point(260, 12);
+            this.flpButtons.Location = new System.Drawing.Point(260, 39);
             this.flpButtons.Name = "flpButtons";
-            this.flpButtons.Size = new System.Drawing.Size(427, 345);
+            this.flpButtons.Size = new System.Drawing.Size(427, 318);
             this.flpButtons.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(19, 14);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(56, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Port COM:";
+            // 
+            // udPort
+            // 
+            this.udPort.Location = new System.Drawing.Point(81, 12);
+            this.udPort.Name = "udPort";
+            this.udPort.Size = new System.Drawing.Size(38, 20);
+            this.udPort.TabIndex = 4;
+            this.udPort.Value = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(699, 369);
+            this.Controls.Add(this.udPort);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.flpButtons);
             this.Controls.Add(this.flpAxes);
             this.Name = "frmMain";
             this.Text = "Joystick Test Form";
             this.Load += new System.EventHandler(this.frmMain_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.udPort)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -78,6 +106,8 @@ namespace JoystickSample
         private System.Windows.Forms.FlowLayoutPanel flpAxes;
         private System.Windows.Forms.Timer tmrUpdateStick;
         private System.Windows.Forms.FlowLayoutPanel flpButtons;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown udPort;
     }
 }
 

@@ -71,6 +71,7 @@ namespace Robocup.ControlForm {
             sslVisionHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SSL_VISION") + ":" +
                  Constants.get<int>("default", "DEFAULT_PORT_SSL_VISION").ToString();
             serialHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SERIAL");
+            serialPort.Text = Constants.get<int>("default", "DEFAULT_PORT_SERIAL").ToString();
             txtRefbox.Items.Add(Constants.get<string>("default", "REFBOX_ADDR") + ":" +
                 Constants.get<int>("default", "REFBOX_PORT"));
             txtRefbox.Items.Add(Constants.get<string>("default", "LOCAL_REFBOX_ADDR") + ":" +
@@ -320,7 +321,7 @@ namespace Robocup.ControlForm {
             {
                 if (!_serialConnected)
                 {
-                    if (_serial.start(serialHost.Text))
+                    if (_serial.start(serialHost.Text, int.Parse(serialPort.Text)))
                     {
                         serialStatus.BackColor = Color.Green;
                         serialConnect.Text = "Disconnect";

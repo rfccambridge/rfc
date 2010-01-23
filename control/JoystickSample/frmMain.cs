@@ -58,7 +58,8 @@ namespace JoystickSample
             updateRobotID();
 
             // create a SerialRobots commander
-            robotcommander = new SerialRobots();
+            string port = "COM" + ((int)udPort.Value).ToString();
+            robotcommander = new SerialRobots(port);
             robotcommander.Open();
 
             // start updating positions
