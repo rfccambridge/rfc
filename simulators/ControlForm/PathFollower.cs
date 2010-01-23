@@ -71,15 +71,25 @@ namespace Robocup.ControlForm
             if (_waypoints.Count == 0)
                 return;
 
+            // TODO: figure out how to handle missing robots
+            RobotInfo curinfo;
+            try
+            {
+                 curinfo = _predictor.GetRobot(_team, _robotID);
+            }
+            catch
+            {
+                Console.WriteLine("Predictor did not find Robot " + _robotID.ToString());
+                return;
+            }
+
             // TODO: Add full ID support for all robots
             _controller.move(_robotID, false, _waypoints[_waypointIndex].Position, _waypoints[_waypointIndex].Orientation);
 
             // if lapping stops midway...
             //if (waypointIndex > waypoints.Count - 1) {
             //    waypointIndex = 0;
-            //}
-
-            RobotInfo curinfo = _predictor.GetRobot(_team, _robotID);
+            //}            
 
             if (curinfo == null)
             {

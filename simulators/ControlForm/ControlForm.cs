@@ -146,9 +146,9 @@ namespace Robocup.ControlForm {
         private void createSimple()
         {
             // Change the controller and predictor to the real ones (_predictor, _serial) to do real life
-            lstSimplePlayer.Items.Add(new PathFollowerPlayer(OUR_TEAM, FIELD_HALF, _physicsEngine, _physicsEngine, _fieldDrawer));
-            lstSimplePlayer.Items.Add(new KickPlayer(OUR_TEAM, FIELD_HALF, _physicsEngine, _physicsEngine, _fieldDrawer));
-            lstSimplePlayer.Items.Add(new BeamKickPlayer(OUR_TEAM, FIELD_HALF, _physicsEngine, _physicsEngine, _fieldDrawer));
+            lstSimplePlayer.Items.Add(new PathFollowerPlayer(OUR_TEAM, FIELD_HALF, _predictor, _serial, _fieldDrawer));
+            lstSimplePlayer.Items.Add(new KickPlayer(OUR_TEAM, FIELD_HALF, _predictor, _serial, _fieldDrawer));
+            lstSimplePlayer.Items.Add(new BeamKickPlayer(OUR_TEAM, FIELD_HALF, _predictor, _serial, _fieldDrawer));
             lstSimplePlayer.SelectedIndex = 0;
             
             _fieldDrawer.WaypointAdded += _fieldDrawer_WaypointAdded;

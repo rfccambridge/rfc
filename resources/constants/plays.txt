@@ -13,7 +13,9 @@ double CENTER_CIRCLE_RADIUS 0.5
 # Practice field MD 3rd (2009-02-27)
 double FIELD_WIDTH 6.05
 double FIELD_HEIGHT 4.05
+double REFEREE_ZONE_WIDTH 0.1
 
+string FIELD_HALF Left
 
 double FIELD_BUFFER 0.3
 

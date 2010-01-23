@@ -1,5 +1,5 @@
-string OUR_TEAM BLUE
-int OUR_TEAM_INT 1
+string OUR_TEAM Yellow
+
 bool YELLOW_HAS_PATTERN false
 bool BLUE_HAS_PATTERN true
 
