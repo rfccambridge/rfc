@@ -62,8 +62,20 @@ namespace Robocup.MotionControl
             this.buttonSendCustomSerial = new System.Windows.Forms.Button();
             this.listBoxInputHistory = new System.Windows.Forms.ListBox();
             this.checkBoxLimitCommands = new System.Windows.Forms.CheckBox();
+            this.txtRF = new System.Windows.Forms.TextBox();
+            this.txtLF = new System.Windows.Forms.TextBox();
             this.txtVisionPort = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.txtLB = new System.Windows.Forms.TextBox();
+            this.txtRB = new System.Windows.Forms.TextBox();
+            this.txtID = new System.Windows.Forms.TextBox();
+            this.txtPort = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
@@ -347,7 +359,8 @@ namespace Robocup.MotionControl
             // 
             // textBoxSerialCommand
             // 
-            this.textBoxSerialCommand.Location = new System.Drawing.Point(504, 315);
+            this.textBoxSerialCommand.Enabled = false;
+            this.textBoxSerialCommand.Location = new System.Drawing.Point(477, 373);
             this.textBoxSerialCommand.Name = "textBoxSerialCommand";
             this.textBoxSerialCommand.Size = new System.Drawing.Size(100, 20);
             this.textBoxSerialCommand.TabIndex = 27;
@@ -355,7 +368,7 @@ namespace Robocup.MotionControl
             // 
             // buttonSendCustomSerial
             // 
-            this.buttonSendCustomSerial.Location = new System.Drawing.Point(509, 341);
+            this.buttonSendCustomSerial.Location = new System.Drawing.Point(477, 399);
             this.buttonSendCustomSerial.Name = "buttonSendCustomSerial";
             this.buttonSendCustomSerial.Size = new System.Drawing.Size(95, 23);
             this.buttonSendCustomSerial.TabIndex = 28;
@@ -382,6 +395,23 @@ namespace Robocup.MotionControl
             this.checkBoxLimitCommands.UseVisualStyleBackColor = true;
             this.checkBoxLimitCommands.CheckedChanged += new System.EventHandler(this.checkBoxLimitCommands_CheckedChanged);
             // 
+            // txtRF
+            // 
+            this.txtRF.Location = new System.Drawing.Point(477, 344);
+            this.txtRF.Name = "txtRF";
+            this.txtRF.Size = new System.Drawing.Size(34, 20);
+            this.txtRF.TabIndex = 31;
+            this.txtRF.Text = "0";
+            // 
+            // txtLF
+            // 
+            this.txtLF.Location = new System.Drawing.Point(513, 344);
+            this.txtLF.Name = "txtLF";
+            this.txtLF.Size = new System.Drawing.Size(33, 20);
+            this.txtLF.TabIndex = 32;
+            this.txtLF.Text = "0";
+            // 
+            // txtLB
             // txtVisionPort
             // 
             this.txtVisionPort.Location = new System.Drawing.Point(216, 28);
@@ -390,22 +420,119 @@ namespace Robocup.MotionControl
             this.txtVisionPort.TabIndex = 31;
             this.txtVisionPort.Text = "50000";
             // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(151, 31);
+            this.label17.Name = "label11";
+            this.label17.Size = new System.Drawing.Size(59, 13);
+            this.label17.TabIndex = 32;
+            this.label17.Text = "Vision port:";
+            // 
+            // 
+            this.txtLB.Location = new System.Drawing.Point(548, 344);
+            this.txtLB.Name = "txtLB";
+            this.txtLB.Size = new System.Drawing.Size(33, 20);
+            this.txtLB.TabIndex = 33;
+            this.txtLB.Text = "0";
+            // 
+            // txtRB
+            // 
+            this.txtRB.Location = new System.Drawing.Point(584, 344);
+            this.txtRB.Name = "txtRB";
+            this.txtRB.Size = new System.Drawing.Size(33, 20);
+            this.txtRB.TabIndex = 34;
+            this.txtRB.Text = "0";
+            // 
+            // txtID
+            // 
+            this.txtID.Location = new System.Drawing.Point(477, 305);
+            this.txtID.Name = "txtID";
+            this.txtID.Size = new System.Drawing.Size(34, 20);
+            this.txtID.TabIndex = 35;
+            this.txtID.Text = "0";
+            // 
+            // txtPort
+            // 
+            this.txtPort.Location = new System.Drawing.Point(513, 305);
+            this.txtPort.Name = "txtPort";
+            this.txtPort.Size = new System.Drawing.Size(33, 20);
+            this.txtPort.TabIndex = 36;
+            this.txtPort.Text = "w";
+            // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(151, 31);
+            this.label11.Location = new System.Drawing.Point(474, 291);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(59, 13);
-            this.label11.TabIndex = 32;
-            this.label11.Text = "Vision port:";
+            this.label11.Size = new System.Drawing.Size(15, 13);
+            this.label11.TabIndex = 37;
+            this.label11.Text = "id";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(510, 291);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(25, 13);
+            this.label12.TabIndex = 38;
+            this.label12.Text = "port";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(477, 328);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(13, 13);
+            this.label13.TabIndex = 39;
+            this.label13.Text = "rf";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(513, 328);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(12, 13);
+            this.label14.TabIndex = 40;
+            this.label14.Text = "lf";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(549, 328);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(15, 13);
+            this.label15.TabIndex = 41;
+            this.label15.Text = "lb";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(587, 328);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(16, 13);
+            this.label16.TabIndex = 42;
+            this.label16.Text = "rb";
             // 
             // DataCollector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 434);
-            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label17);
             this.Controls.Add(this.txtVisionPort);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.txtPort);
+            this.Controls.Add(this.txtID);
+            this.Controls.Add(this.txtRB);
+            this.Controls.Add(this.txtLB);
+            this.Controls.Add(this.txtLF);
+            this.Controls.Add(this.txtRF);
             this.Controls.Add(this.checkBoxLimitCommands);
             this.Controls.Add(this.listBoxInputHistory);
             this.Controls.Add(this.buttonSendCustomSerial);
@@ -473,7 +600,19 @@ namespace Robocup.MotionControl
         private System.Windows.Forms.Button buttonSendCustomSerial;
         private System.Windows.Forms.ListBox listBoxInputHistory;
         private System.Windows.Forms.CheckBox checkBoxLimitCommands;
+        private System.Windows.Forms.TextBox txtRF;
+        private System.Windows.Forms.TextBox txtLF;
         private System.Windows.Forms.TextBox txtVisionPort;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox txtLB;
+        private System.Windows.Forms.TextBox txtRB;
+        private System.Windows.Forms.TextBox txtID;
+        private System.Windows.Forms.TextBox txtPort;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
     }
 }

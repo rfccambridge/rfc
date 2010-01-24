@@ -266,7 +266,16 @@ namespace Robocup.MotionControl
         {
             if (serialoutput != null)
             {
-                serialoutput.sendCommand(textBoxSerialCommand.Text);
+                byte[] msg = new byte[]{(byte)'\\',(byte)'H', (byte) ('0'+int.Parse(txtID.Text)),
+                (byte)'w',(byte)(char.Parse(txtPort.Text)),byte.Parse(txtRF.Text),
+                    byte.Parse(txtLF.Text), byte.Parse(txtLB.Text), byte.Parse(txtRB.Text),
+                (byte)0, // checksum
+                    (byte)'\\',(byte)'E'};
+                
+                serialoutput.sendCommand(msg);
+
+                // Old disabled textbox for raw command
+                //serialoutput.sendCommand(textBoxSerialCommand.Text);
             }
         }
 

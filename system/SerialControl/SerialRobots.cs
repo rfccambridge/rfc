@@ -377,9 +377,10 @@ namespace Robotics.Commander
         /// <summary>
         /// Sends an arbitrary command to the port -- for debugging purposes only
         /// </summary>
-        public void sendCommand(string command)
+        public void sendCommand(byte[] command)
         {
-            comport.Write(command);
+            comport.Write(command, 0, command.Length);
+            //comport.Write(command);
         }
 
         #region IRobots Members
