@@ -53,9 +53,9 @@ namespace Robocup.CoreRobotics
             //IMotionPlanner planner = new Robocup.MotionControl.BugFeedbackMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.FeedbackVeerMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.DefaultMotionPlanner();
-            //IMotionPlanner planner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
+            _motionPlanner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
 
-            _motionPlanner = new Robocup.MotionControl.TangentBugModelFeedbackMotionPlanner();
+            //_motionPlanner = new Robocup.MotionControl.TangentBugModelFeedbackMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.TangentBugVeerMotionPlanner();
 
             /*Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();

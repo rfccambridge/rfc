@@ -123,15 +123,16 @@ namespace Robocup.MotionControl
             }
 
             //change from the x and y of the field to forward and lateral(right is positive) used below
-            double robotForward = Math.Cos(currentOrientation) * xCommand + Math.Sin(currentOrientation) * yCommand;
-            double robotLateral = Math.Sin(currentOrientation) * xCommand - Math.Cos(currentOrientation) * yCommand;
+            double robotForward = -(Math.Cos(currentOrientation) * xCommand + Math.Sin(currentOrientation) * yCommand);
+            double robotLateral = -(-Math.Sin(currentOrientation) * xCommand + Math.Cos(currentOrientation) * yCommand);
 
             #region From Motion frame to Robot frame
             double frameAngleDiff = UsefulFunctions.angleDifference(direction, currentOrientation);
 
             //change from the forward and lateral frame to the robot frame
-            double robotFwd = Math.Cos(frameAngleDiff) * forwardCommand + Math.Sin(frameAngleDiff) * lateralCommand;
-            double robotLtr = Math.Sin(frameAngleDiff) * forwardCommand - Math.Cos(frameAngleDiff) * lateralCommand;
+            double robotFwd = -(Math.Cos(frameAngleDiff) * forwardCommand + Math.Sin(frameAngleDiff) * lateralCommand);
+            double robotLtr = -(-Math.Sin(frameAngleDiff) * forwardCommand + Math.Cos(frameAngleDiff) * lateralCommand);
+             
             #endregion
 
             WheelSpeeds tst = convert(robotFwd, robotLtr, angularVCommand);
@@ -165,12 +166,10 @@ namespace Robocup.MotionControl
 
             //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
 
-
-            double _lf = (sing * lateral + cosg * forward - wheelR * angularV);
-            double _rf = -(sing * lateral - cosg * forward - wheelR * angularV);
-            double _lb = (-sing * lateral + cosg * forward - wheelR * angularV);
-            double _rb = -(-sing * lateral - cosg * forward - wheelR * angularV);
-
+            double _rf = -(sing * lateral + cosg * forward - wheelR * angularV);
+            double _lf = -(sing * lateral - cosg * forward - wheelR * angularV);
+            double _lb = -(-sing * lateral - cosg * forward - wheelR * angularV);
+            double _rb = -(-sing * lateral + cosg * forward - wheelR * angularV);
 
             /*int scaleUpFactor = 2;
             if (Math.Abs(_lf) < 10 && Math.Abs(_rf) < 10 && Math.Abs(_lb) < 10 && Math.Abs(_rb) < 10) {

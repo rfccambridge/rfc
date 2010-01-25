@@ -73,7 +73,7 @@ double ALPHA_Y_2 0
 double ALPHA_Y_3 0
 double ALPHA_Y_4 0
 
-double P_THETA_0 60
+double P_THETA_0 150
 double P_THETA_1 60
 double P_THETA_2 60
 double P_THETA_3 60
@@ -86,7 +86,7 @@ double I_THETA_2 0.5
 double I_THETA_3 0.5
 double I_THETA_4 0.5
 
-double D_THETA_0 50
+double D_THETA_0 120
 #double D_THETA_0 0
 double D_THETA_1 50
 double D_THETA_2 50
@@ -102,7 +102,7 @@ double ALPHA_THETA_4 1
 int CHARGE_TIME 1000
 int LOG_EVERY_MSEC 100
 
-double DEFAULT_VELOCITY 30
+double DEFAULT_VELOCITY 60
 
 #OLD, but maybe used SOMEWHERE
 float ANGLE_PID_KP 35

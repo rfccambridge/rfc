@@ -29,7 +29,7 @@ namespace Robocup.Core
 
         public override string ToString()
         {
-            return "{" + lf.ToString() + "," + rf.ToString() + "," + lb.ToString() + "," + rb.ToString() + "}";
+            return "{" + rf.ToString() + "," + lf.ToString() + "," + lb.ToString() + "," + rb.ToString() + "}";
         }
 
         static public WheelsInfo<double> Add(WheelsInfo<double> lhs, WheelsInfo<double> rhs)

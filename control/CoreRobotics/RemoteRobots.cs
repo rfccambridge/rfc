@@ -30,7 +30,7 @@ namespace Robocup.CoreRobotics
         public void setMotorSpeeds(int robotID, WheelSpeeds wheelSpeeds)
         {
             if (robotID < 0 || _serial == null) return;
-            _serial.Post(new RobotCommand(robotID, new WheelSpeeds((int)(wheelSpeeds.lf / scaling), (int)(wheelSpeeds.rf / scaling), (int)(wheelSpeeds.lb / scaling), (int)(wheelSpeeds.rb / scaling))));
+            _serial.Post(new RobotCommand(robotID, new WheelSpeeds((int)(wheelSpeeds.rf / scaling), (int)(wheelSpeeds.lf / scaling), (int)(wheelSpeeds.lb / scaling), (int)(wheelSpeeds.rb / scaling))));
             //Console.WriteLine("RemoteRobots::setMotorSpeeds: " + wheelSpeeds.lf / scaling + " "
             //    + wheelSpeeds.rf / scaling + " " + wheelSpeeds.lb / scaling + " " + wheelSpeeds.rb / scaling + " ");
         }

@@ -26,9 +26,9 @@ namespace Robotics.Commander {
         private SerialRobots srobots;
         private KeyboardHook keyboardHook = new KeyboardHook();
 
-        // lf, rf, lb, rb  forward = all positive left = - + + -
+        // rf, lf, lb, rb  forward = all positive forward = + - - +
         float[] wheel_dx = new float[] { 0.71f, -0.71f, -0.74f, 0.74f };
-        float[] wheel_dy = new float[] { 0.71f, 0.71f, 0.68f, 0.68f };
+        float[] wheel_dy = new float[] { 0.71f, 0.71f, -0.68f, -0.68f };
         float[] wheel_baseline = new float[] { 3.23f, 3.23f, 3.23f, 3.23f };
         float[] wheel_radius = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
         // takes in a (unit) vector to translate the robot by
@@ -143,13 +143,13 @@ namespace Robotics.Commander {
         }
 
 
-        private void setMotorSpeeds(int lf, int rf, int lb, int rb) {
+        private void setMotorSpeeds(int rf, int lf, int lb, int rb) {
            // Console.WriteLine("SerialControl: curRobotID = " + curRobot.ToString() + ";" +
              //   "Setting wheelspeeds to " + lf.ToString() + "," + rf.ToString() + "," + lb.ToString() + "," + rb.ToString());
-            sendCommand(curRobot, RobotCommand.Command.MOVE, new WheelSpeeds(-rf, lf, lb, -rb));
+            sendCommand(curRobot, RobotCommand.Command.MOVE, new WheelSpeeds(rf, lf, lb, rb));
         }
-        public void sendMove(int id, int lf, int rf, int lb, int rb) {
-            sendCommand(id, RobotCommand.Command.MOVE, new WheelSpeeds(-rf, lf, lb, -rb));
+        public void sendMove(int id, int rf, int lf, int lb, int rb) {
+            sendCommand(id, RobotCommand.Command.MOVE, new WheelSpeeds(rf, lf, lb, rb));
         }
         
         public void sendCommand(int id, RobotCommand.Command command, WheelSpeeds speeds) {
@@ -269,7 +269,7 @@ namespace Robotics.Commander {
                     // case 'a':
                     //case 37:        
                         //rcom.DriveStraight(oldcommander, 0, 65535);
-                        setMotorSpeeds(speed, -speed, -speed, speed);
+                        setMotorSpeeds(speed, speed, -speed, -speed);
                         //driveInDirection(-1.0f, 0.0f);
                         statusLabel.Text = "<-x";
                         break;
@@ -278,7 +278,7 @@ namespace Robotics.Commander {
                     //case 39:        
                         //rcom.DriveStraight(oldcommander, 1, 65535);
                         
-                        setMotorSpeeds(-speed, speed, speed, -speed);    
+                        setMotorSpeeds(-speed, -speed, speed, speed);    
                         //driveInDirection(1.0f, 0.0f);
                         statusLabel.Text = "x->";
                         break;
@@ -286,7 +286,7 @@ namespace Robotics.Commander {
                     //case 'w':
                     //case 38:        
                         //rcom.DriveStraight(oldcommander, 2, 65535);
-                        setMotorSpeeds(-speed, -speed, -speed, -speed);
+                        setMotorSpeeds(speed, -speed, -speed, speed);
                         //driveInDirection(0.0f, 1.0f);
                         //rcom.DriveDir(oldcommander, Int32.Parse(forwardDir.Text), 65535);
                         statusLabel.Text = "^y";
@@ -295,7 +295,7 @@ namespace Robotics.Commander {
                     //case 's':
                     //case 40:        
                         //rcom.DriveStraight(oldcommander, 3, 65535);
-                        setMotorSpeeds(speed, speed, speed, speed);                        
+                        setMotorSpeeds(-speed, speed, speed, -speed);                        
                         //driveInDirection(0.0f, -1.0f);
                         statusLabel.Text = "yv";
                         break;
@@ -303,40 +303,44 @@ namespace Robotics.Commander {
                     //case 'q':
                     //case 188:       
                         //rcom.Rotate(oldcommander, 0, 65535);
-                        setMotorSpeeds(speed, -speed, speed, -speed);
+                        setMotorSpeeds(speed, speed, speed, speed);
                         statusLabel.Text = "anti clock";
                         break;
                     case Keys.OemPeriod: // . rotate clockwise
                     //case 'e':
                     //case 190:       
                         //rcom.Rotate(oldcommander, 1, 65535);
-                        setMotorSpeeds(-speed, speed, -speed, speed);
+                        setMotorSpeeds(-speed, -speed, -speed, -speed);
                         
                         statusLabel.Text = "clock";
-                        break;                    
-                    case Keys.NumPad8: // up arrow (8) drive on main diagonal forward (two-wheel)
-                        //case 79:
-                        //case 'o':
-                        driveInDirection(1.0f, -1.0f);
-                        statusLabel.Text = "o /";
                         break;
-                    case Keys.NumPad2: // down arrow (2) drive on main diagonal backward (two-wheel)
-                        //case 76:
-                        //case 'l':
-                        driveInDirection(-1.0f, 1.0f);
-                        statusLabel.Text = "l /";
+                    case Keys.NumPad8: // up arrow (8) drive forwards
+                        driveInDirection(1.0f, 0);
                         break;
-                    case Keys.NumPad4: // left arrow (4) drive on secondary diagonal forward (two-wheel)
-                        //case 79:
-                        //case 'o':
+                    case Keys.NumPad2: // down arrow (2) drive backwards
+                        driveInDirection(-1.0f, 0);
+                        break;
+                    case Keys.NumPad4: // left arrow (4) drive left
+                        driveInDirection(0.0f, 1.0f);
+                        break;
+                    case Keys.NumPad6: // right arrow (6) drive right
+                        driveInDirection(0.0f, -1.0f);
+                        break;
+                    case Keys.NumPad7: // numpad 7 positive x, positive y
                         driveInDirection(1.0f, 1.0f);
-                        statusLabel.Text = "o /";
+                        statusLabel.Text = "+\\";
                         break;
-                    case Keys.NumPad6: // right arrow (6) drive on secondary diagonal backward (two-wheel)
-                        //case 76:
-                        //case 'l':
+                    case Keys.NumPad3: // numpad 3 negative x, negative y
                         driveInDirection(-1.0f, -1.0f);
-                        statusLabel.Text = "l /";
+                        statusLabel.Text = "-\\";
+                        break;
+                    case Keys.NumPad9: // numpad 9 positive x, negative  y
+                        driveInDirection(1.0f, -1.0f);
+                        statusLabel.Text = "+/";
+                        break;
+                    case Keys.NumPad1: // numpad 1 negative x, positive y
+                        driveInDirection(-1.0f, 1.0f);
+                        statusLabel.Text = "-/";
                         break;
                     case Keys.B: // b break-beam kick
                     //case 66:        

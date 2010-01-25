@@ -69,9 +69,9 @@ namespace Robocup.CoreRobotics
 
             // from actual velocity to -127 to 127 scale
             WheelsInfo<double> Wheel = new WheelsInfo<double>();
-            Wheel.lb = lb * velocityCoe;
+            Wheel.lb = -lb * velocityCoe;
             Wheel.rb = rb * velocityCoe;
-            Wheel.lf = lf * velocityCoe;
+            Wheel.lf = -lf * velocityCoe;
             Wheel.rf = rf * velocityCoe;
 
             return Wheel;
@@ -79,7 +79,7 @@ namespace Robocup.CoreRobotics
 
         public double GetAngFromWheel(WheelsInfo<double> Wheel)
         {
-            return (-Wheel.lf - Wheel.lb + Wheel.rf + Wheel.rb) / (angVelocityCoe * rr);
+            return (Wheel.lf + Wheel.lb + Wheel.rf + Wheel.rb) / (angVelocityCoe * rr);
         }
 
         public Vector2 GetVelocityFromWheel(WheelsInfo<double> Wheel, double orientation)
@@ -90,7 +90,7 @@ namespace Robocup.CoreRobotics
             rfv = orientationVector.rotate(Math.PI / 4);
             rbv = lfv; lbv = rfv;
 
-            return 1 / velocityCoe * (Wheel.lb * lbv + Wheel.rb * rbv + Wheel.lf * lfv + Wheel.rf * rfv);
+            return 1 / velocityCoe * (-Wheel.lb * lbv + Wheel.rb * rbv + -Wheel.lf * lfv + Wheel.rf * rfv);
         }
 
         public Pair<Vector2, double> GetInfoFromWheelSpeeds(WheelsInfo<double> Wheel, double orientation)

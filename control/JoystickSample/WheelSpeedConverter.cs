@@ -34,7 +34,7 @@ namespace JoystickSample
 
             //change from the x and y of the field to forward and lateral(right is positive) used below
             double forward = -(Math.Cos(theta) * xCommand + Math.Sin(theta) * yCommand);
-            double lateral = -(Math.Sin(theta) * xCommand - Math.Cos(theta) * yCommand);
+            double lateral = -(-Math.Sin(theta) * xCommand + Math.Cos(theta) * yCommand);
 
             //Console.WriteLine(lateral.ToString() + " lateral|Forward: " + forward.ToString());
 
@@ -45,10 +45,10 @@ namespace JoystickSample
             //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
 
 
-            double _lf = (sing * lateral + cosg * forward - wheelR * angularV * EXTRA_ANGULAR_SCALING_FACTOR);
-            double _rf = -(sing * lateral - cosg * forward - wheelR * angularV * EXTRA_ANGULAR_SCALING_FACTOR);
-            double _lb = (-sing * lateral + cosg * forward - wheelR * angularV * EXTRA_ANGULAR_SCALING_FACTOR);
-            double _rb = -(-sing * lateral - cosg * forward - wheelR * angularV * EXTRA_ANGULAR_SCALING_FACTOR);
+            double _rf = (sing * lateral + cosg * forward - wheelR * angularV * EXTRA_ANGULAR_SCALING_FACTOR);
+            double _lf = (sing * lateral - cosg * forward - wheelR * angularV * EXTRA_ANGULAR_SCALING_FACTOR);            
+            double _lb = (-sing * lateral - cosg * forward - wheelR * angularV * EXTRA_ANGULAR_SCALING_FACTOR);
+            double _rb = (-sing * lateral + cosg * forward - wheelR * angularV * EXTRA_ANGULAR_SCALING_FACTOR);
 
 
             /*int scaleUpFactor = 2;
@@ -87,7 +87,7 @@ namespace JoystickSample
                 rb = -57;
             */
 
-            return new WheelSpeeds(lf, rf, lb, rb);
+            return new WheelSpeeds(rf, lf, lb, rb);
             //Note somewhere we need to check and ensure that wheel speeds being 
             //sent do not exceed maximum values allowed by the protocol.
         }

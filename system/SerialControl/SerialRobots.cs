@@ -135,7 +135,7 @@ namespace Robotics.Commander
         }
         //private int last_lf = 0, last_rf = 0, last_lb = 0, last_rb = 0;
         //private Robocup.Utilities.HighResTimer timer = new HighResTimer();
-        private void setAllMotor(int id, int source, int lf, int rf, int lb, int rb, int duration)
+        private void setAllMotor(int id, int source, int rf, int lf, int lb, int rb, int duration)
         {
             if (id >= headsigns.Length || id < 0)
             {
@@ -161,7 +161,7 @@ namespace Robotics.Commander
             if (rb == '\\')
                 rb++;
 
-            Console.WriteLine("id " + id + ": setting speeds to: " + new WheelSpeeds(lf,rf,lb,rb).ToString());
+            Console.WriteLine("id " + id + ": setting speeds to: " + new WheelSpeeds(rf,lf,lb,rb).ToString());
 
             //robots expect wheel powers in this order:
             //rf lf lb rb
@@ -465,7 +465,7 @@ namespace Robotics.Commander
 
             Console.WriteLine("Sending wheelspeeds: {0} {1} {2} {3}", rf, lf, lb, rb);
             //if (frontLeft * frontLeft + frontRight * frontRight + backLeft * backLeft + backRight * backRight > 10)
-            setAllMotor(id, 0, lf, rf, lb, rb, 1000);
+            setAllMotor(id, 0, rf, lf, lb, rb, 1000);
             /*else
                 setAllMotor(robotID, 0, 0, 0, 0, 0, 65535);*/
         }
@@ -513,14 +513,14 @@ namespace Robotics.Commander
                     float rf = float.Parse(values[count++]);
                     float lb = float.Parse(values[count++]);
                     float rb = float.Parse(values[count++]);
-                    backwardspower[id] = new WheelsInfo<float>(lf, rf, lb, rb);
+                    backwardspower[id] = new WheelsInfo<float>(rf, lf, lb, rb);
                 }
                 {
                     float lf = float.Parse(values[count++]);
                     float rf = float.Parse(values[count++]);
                     float lb = float.Parse(values[count++]);
                     float rb = float.Parse(values[count++]);
-                    forwardpower[id] = new WheelsInfo<float>(lf, rf, lb, rb);
+                    forwardpower[id] = new WheelsInfo<float>(rf, lf, lb, rb);
                 }
             }
             reader.Close();

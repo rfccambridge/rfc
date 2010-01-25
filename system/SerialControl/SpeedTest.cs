@@ -41,7 +41,7 @@ namespace Robocup.Commander
             right_back = transformToWheelSpeed(magnitude_y_component + magnitude_x_component);
             left_back = transformToWheelSpeed(magnitude_y_component - magnitude_x_component);
 
-            WheelSpeeds w = new WheelSpeeds(left_front, right_front, left_back, right_back);
+            WheelSpeeds w = new WheelSpeeds(right_front, left_front, left_back, right_back);
             Console.WriteLine("velocity: " + Convert.ToString(velocity) + " angle: " + Convert.ToString(angle_goal) + " wheel speeds: " + w.toString());
 
             return w;
