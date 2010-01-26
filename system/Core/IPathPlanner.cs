@@ -37,23 +37,26 @@ namespace Robocup.CoreRobotics
             _planner.DrawLast(g, c);
         }
 
-        public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             RobotPath path = _planner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
 
             // if path is empty, don't move
             if (path.isEmpty()) {
-                return new MotionPlanningResults(new WheelSpeeds());
+                return path;
             }
 
             // Make sure path contains desired state
             path.setFinalState(desiredState);
-
-            WheelSpeeds speeds = _driver.followPath(path, predictor);
-            // TODO: Find better output place for this
-            //Console.WriteLine("PlanMotion: robotID=" + id.ToString() + "; returning speeds: " + speeds);
-            return new MotionPlanningResults(speeds);
+            return path;
         }
+
+		public MotionPlanningResults FollowPath(RobotPath path, IPredictor predictor)
+		{
+			RobotInfo curr_state = predictor.GetRobot(path.Team, path.ID);
+			WheelSpeeds speeds = _driver.followPath(path, predictor);
+			return new MotionPlanningResults(speeds, path.findNearestWaypoint(curr_state));
+		}
     }
 
     /// <summary>

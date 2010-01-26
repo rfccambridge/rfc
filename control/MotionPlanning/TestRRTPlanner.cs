@@ -7,7 +7,8 @@ using Robocup.CoreRobotics;
 
 namespace Robocup.MotionControl
 {
-    public class TestRRTPlanner : IMotionPlanner
+#if false
+	public class TestRRTPlanner : IMotionPlanner
     {
         public void LoadConstants() { }
 
@@ -359,4 +360,5 @@ namespace Robocup.MotionControl
             }
         }
     }
+#endif
 }

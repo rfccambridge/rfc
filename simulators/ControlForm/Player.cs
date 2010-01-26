@@ -148,6 +148,7 @@ namespace Robocup.CoreRobotics
             _refbox.stop();
             foreach (RobotInfo info in _predictor.GetRobots(_team))
                 _controller.stop(info.ID);
+			_controller.StopControlling();
             _running = false;
         }
 

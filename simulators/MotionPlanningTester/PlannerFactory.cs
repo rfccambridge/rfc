@@ -15,7 +15,9 @@ namespace Robocup.MotionControl {
         }
 
         static private Type[] getPlannerTypes() {
-            Type[] allTypes = System.Reflection.Assembly.GetAssembly(typeof(SmoothVector2BiRRTMotionPlanner)).GetTypes();
+            Type[] allTypes = System.Reflection.Assembly.GetAssembly(typeof(
+				//SmoothVector2BiRRTMotionPlanner
+				TangentBugModelFeedbackMotionPlanner)).GetTypes();
             List<Type> rtn = new List<Type>();
             foreach (Type t in allTypes) {
                 if (t.IsAbstract || t.IsInterface || t.IsGenericType || !t.IsPublic)

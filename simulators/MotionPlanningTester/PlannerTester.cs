@@ -63,7 +63,9 @@ namespace Robocup.MotionControl
         {
             for (int i = 0; i < num; i++)
             {
-                MotionPlanningResults results = planner.PlanMotion(Team.Yellow, 0, new RobotInfo(destination, 0, 0), engine, .13);
+                RobotPath path = planner.PlanMotion(Team.Yellow, 0, new RobotInfo(destination, 0, 0), engine, .13);
+            	MotionPlanningResults results = planner.FollowPath(path, engine);
+
                 engine.setMotorSpeeds(0, results.wheel_speeds);
                 if (!checkBoxDisableMovement.Checked)
                     engine.Step(.025);

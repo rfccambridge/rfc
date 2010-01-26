@@ -18,6 +18,8 @@ namespace Robocup.MotionControl
     /// Head towards a point behind the ball (relative to the target), once you are there,
     /// use a very slow version of FeedbackVeerDriver to move forward to hit the ball
     /// </summary>
+    /// TODO: Gets called at strategy loop frequency! Modify to incorporate separate planning & control loops!
+    /// TODO: On a second look, seems to always call the same planner. Why the need for this wrapper then?
     public class FeedbackVeerKickPlanner : IKickPlanner
     {
         // Class variables
@@ -243,7 +245,8 @@ namespace Robocup.MotionControl
             if (goingToPoint1)
             {
                 RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
-                speeds = dumbPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
+            	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS);
+            	speeds = dumbPlanner.FollowPath(path, predictor).wheel_speeds;
                 //why was regular Planner being used here? it seems inconsistent, sometimes using one instance of the bugNavigator and sometimes another.
                     //regularPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
             }
@@ -251,7 +254,8 @@ namespace Robocup.MotionControl
             {
                 RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, id);
                 //speeds = new WheelSpeeds();
-                speeds = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0).wheel_speeds;// This is the "normal one"
+            	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0);
+				speeds = dumbPlanner.FollowPath(path,predictor).wheel_speeds;// This is the "normal one"
                 //speeds = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0).wheel_speeds;
 
                 // FOR NOW!!! Go forwards rather than use PID feedback. Meant to fix forward curving problem

@@ -11,7 +11,7 @@ namespace Robocup.Core {
         // Store team and id
         Team _team;
         int _id;
-        bool empty = false;
+        bool empty;
 
         // Store final goal for planners that do not store it as a waypoint
         RobotInfo _finalState;
@@ -177,6 +177,21 @@ namespace Robocup.Core {
         public RobotInfo getWaypoint(int index) {
             return _path[index];
         }
+
+    	/// <summary>
+    	/// Returns the i-th waypoint of the path
+    	/// </summary>
+    	/// <param name="i"></param>
+    	/// <returns></returns>
+		public RobotInfo this[int i]
+    	{
+			get { return _path[i]; }
+    	}
+
+		public static implicit operator List<RobotInfo> (RobotPath _this)
+		{
+			return _this._path;
+		}
 
         /// <summary>
         /// Set final state, in case it is not one of the waypoints

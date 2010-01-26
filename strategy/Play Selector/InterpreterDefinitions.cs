@@ -92,7 +92,7 @@ namespace Robocup.Plays
         public override int getID()
         {
             //update(evaluatorstate.Tick);
-            return thisrobot.ID;
+			return thisrobot.ID;
         }
         private bool ours;
         public override bool Ours

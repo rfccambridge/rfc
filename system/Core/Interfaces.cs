@@ -188,6 +188,7 @@ namespace Robocup.Core {
         void beamKick(int robotID, bool goForward);
         void stop(int robotID);
         void moveKick(int robotID, Vector2 target);
+    	void StopControlling();
 
         void LoadConstants();
     }

@@ -606,24 +606,18 @@ namespace SimplePathFollower {
                         _currentPlannerSelection = MotionPlanners.CircleFeedbackMotionPlanner;
                     }
                     break;
-                case MotionPlanners.MixedBiRRTMotionPlanner:
-                    planner = new MixedBiRRTMotionPlanner();
-                    if (_pathFollower.setPlanner(planner)) {
-                        _currentPlannerSelection = MotionPlanners.MixedBiRRTMotionPlanner;
-                    }
-                    break;
-                case MotionPlanners.StickyRRTFeedbackMotionPlanner:
-                    planner = new StickyRRTFeedbackMotionPlanner();
-                    if (_pathFollower.setPlanner(planner)) {
-                        _currentPlannerSelection = MotionPlanners.StickyRRTFeedbackMotionPlanner;
-                    }
-                    break;
-                case MotionPlanners.StickyDumbMotionPlanner:
-                    planner = new StickyDumbMotionPlanner();
-                    if (_pathFollower.setPlanner(planner)) {
-                        _currentPlannerSelection = MotionPlanners.StickyDumbMotionPlanner;
-                    }
-                    break;
+				//case MotionPlanners.MixedBiRRTMotionPlanner:
+				//    planner = new MixedBiRRTMotionPlanner();
+				//    if (_pathFollower.setPlanner(planner)) {
+				//        _currentPlannerSelection = MotionPlanners.MixedBiRRTMotionPlanner;
+				//    }
+				//    break;
+				//case MotionPlanners.StickyRRTFeedbackMotionPlanner:
+				//    planner = new StickyRRTFeedbackMotionPlanner();
+				//    if (_pathFollower.setPlanner(planner)) {
+				//        _currentPlannerSelection = MotionPlanners.StickyRRTFeedbackMotionPlanner;
+				//    }
+				//    break;
                 case MotionPlanners.DumbTurnPlanner:
                     planner = new DumbTurnPlanner();
                     if (_pathFollower.setPlanner(planner)) {

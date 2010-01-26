@@ -663,6 +663,10 @@ namespace InterpreterTester
         {
             throw new NotImplementedException("not implemented");
         }
+		public void StopControlling()
+		{
+			
+		}
         #endregion
 
         private void InterpreterTester_FormClosing(object sender, FormClosingEventArgs e)
