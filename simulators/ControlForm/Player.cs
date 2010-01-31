@@ -22,7 +22,8 @@ namespace Robocup.CoreRobotics
 
         protected bool _running = false;
 
-        System.Timers.Timer _interpretLoopTimer;
+        System.Timers.Timer _interpretLoopTimer = new System.Timers.Timer();
+        int _interpretLoopTimerSync = 0;
         HighResTimer _timerFreq = new HighResTimer();
         HighResTimer _timerDuration = new HighResTimer();
 
@@ -100,7 +101,10 @@ namespace Robocup.CoreRobotics
                 if (Constants.nondestructiveGet("default", "ROBOT_IS_GOALIE_" + i, out value))
                     TagSystem.AddTag(i, "goalie");
             }
-        }
+
+            _interpretLoopTimer.AutoReset = true;
+            _interpretLoopTimer.Elapsed += _interpretLoopTimer_Elapsed;
+        }        
 
         public virtual void LoadConstants()
         {
@@ -129,16 +133,8 @@ namespace Robocup.CoreRobotics
 
             _fieldDrawer.UpdateTeam(_team);
 
-            _refbox.start();
-            _interpretLoopTimer = new System.Timers.Timer(period);
-            _interpretLoopTimer.AutoReset = true;
-            _interpretLoopTimer.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
-            {
-                _interpretLoopTimer.Enabled = false;
-                Thread.CurrentThread.Name = "InterpretLoopTimer thread [" + _team.ToString() + "]";
-                runRound();
-                _interpretLoopTimer.Enabled = true;
-            };
+            _refbox.start();            
+            _interpretLoopTimer.Interval = period;                        
             _interpretLoopTimer.Start();
         }
 
@@ -180,6 +176,17 @@ namespace Robocup.CoreRobotics
         {
             PlayType playType = _refbox.GetCurrentPlayType();
             _interpreter.interpret(playType);
+        }
+
+        void _interpretLoopTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            // Skip the event if a previous one is still being handled
+            if (Interlocked.CompareExchange(ref _interpretLoopTimerSync, 1, 0) == 0)
+            {
+                Thread.CurrentThread.Name = "InterpretLoopTimer thread [" + _team.ToString() + "]";
+                runRound();
+                _interpretLoopTimerSync = 0;
+            }
         }
     }
 }
