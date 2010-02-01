@@ -287,16 +287,6 @@ namespace Robocup.MotionControl
         }
 
         /// <summary>
-        /// Draw last path- currently draws nothing (as this is a dumb planner, there
-        /// is no path)
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="c"></param>
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-        }
-
-        /// <summary>
         /// Plan motion using PID loop to control veer
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
@@ -699,16 +689,6 @@ namespace Robocup.MotionControl
         }
 
         /// <summary>
-        /// Draw last path- currently draws nothing (as this is a dumb planner, there
-        /// is no path)
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="c"></param>
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-        }
-
-        /// <summary>
         /// Plan motion using PID loop to control veer
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
@@ -944,16 +924,6 @@ namespace Robocup.MotionControl
             // Reload PID constants
             loops.ReloadConstants();
             angular_loops.ReloadConstants();
-        }
-
-        /// <summary>
-        /// Draw last path- currently draws nothing (as this is a dumb planner, there
-        /// is no path)
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="c"></param>
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
         }
 
         /// <summary>

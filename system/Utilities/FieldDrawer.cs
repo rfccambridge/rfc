@@ -55,6 +55,7 @@ namespace Robocup.Utilities
             public RobotInfo RobotInfo;
             public Dictionary<ArrowType, Arrow> Arrows = new Dictionary<ArrowType, Arrow>();
             public string PlayName;
+            public RobotPath Path;
         
             public RobotDrawingInfo(RobotInfo robotInfo)
             {
@@ -447,7 +448,17 @@ namespace Robocup.Utilities
             }
         }
 
-        // TODO: Paths
+        public void DrawPath(RobotPath path)
+        {
+            Team team = path.Team;
+            int robotID = path.ID;
+
+            lock (_collectingStateLock)
+            {
+                _bufferedState.Robots[team][robotID].Path = path;
+            }
+        }
+        
 
         private void drawField()
         {
@@ -508,6 +519,9 @@ namespace Robocup.Utilities
 
             foreach (Arrow arrow in drawingInfo.Arrows.Values)                
                 drawArrow(robot.Position, arrow.ToPoint, arrow.Color);
+
+            if (drawingInfo.Path != null)
+                drawPath(drawingInfo.Path);
         }
 
         private void drawBall(BallInfo ball)
@@ -536,6 +550,27 @@ namespace Robocup.Utilities
             GL.Vertex2(MARKER_SIZE, -MARKER_SIZE);
             GL.Vertex2(-MARKER_SIZE, -MARKER_SIZE);
             GL.End();
+        }
+
+        private void drawPath(RobotPath path)
+        {
+            const double WAYPOINT_RADIUS = 0.02;
+            const int SLICES = 8;
+
+            if (path.isEmpty())
+                return;
+
+            foreach (RobotInfo waypoint in path.Waypoints)
+            {
+                //GL.Vertex2(waypoint.Position.X, waypoint.Position.Y);
+                GL.MatrixMode(MatrixMode.Modelview);
+                GL.LoadIdentity();
+                GL.Color3(path.Team == Team.Yellow ? Color.Yellow : Color.Blue);
+                GL.Translate(waypoint.Position.X, waypoint.Position.Y, 0);
+                GL.Begin(BeginMode.Polygon);
+                OpenTK.Graphics.Glu.Disk(_ballQuadric, 0, WAYPOINT_RADIUS, SLICES, 1);
+                GL.End();
+            }
         }
 
         private bool ptInsideMarker(Marker marker, Vector2 pt)

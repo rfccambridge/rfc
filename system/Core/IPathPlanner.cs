@@ -32,11 +32,6 @@ namespace Robocup.CoreRobotics
             _driver.ReloadConstants();
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            _planner.DrawLast(g, c);
-        }
-
         public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             RobotPath path = _planner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
@@ -65,7 +60,6 @@ namespace Robocup.CoreRobotics
     public interface IPathPlanner
     {
         RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
-        void DrawLast(Graphics g, ICoordinateConverter c);
         void ReloadConstants();
     }
 
@@ -98,13 +92,6 @@ namespace Robocup.CoreRobotics
             lastWaypoint = results.waypoint;
             waypoints.Add(lastWaypoint);
             return new RobotPath(team, id, waypoints);
-        }
-
-        public void DrawLast(Graphics g, ICoordinateConverter c) {
-            if (lastWaypoint != null) {
-                Brush b = new SolidBrush(Color.Blue);
-                g.FillRectangle(b, c.fieldtopixelX(lastWaypoint.X) - 1, c.fieldtopixelY(lastWaypoint.Y) - 1, 4, 4);
-            }
         }
 
         public void ReloadConstants() {

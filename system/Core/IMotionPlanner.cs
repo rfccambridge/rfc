@@ -27,7 +27,6 @@ namespace Robocup.CoreRobotics
     {
         RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
     	MotionPlanningResults FollowPath(RobotPath path, IPredictor predictor);
-        void DrawLast(Graphics g, ICoordinateConverter c);
         void LoadConstants();
         
     }

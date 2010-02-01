@@ -293,9 +293,6 @@ namespace Robocup.MotionControl
             double lateralDistance = distRobotToBall * Math.Sin(theta);*/
         }
 
-        public void DrawLast(Graphics g, ICoordinateConverter c) {
-            //Console.WriteLine("DRAWING");
-        }
 
         public void LoadConstants() {
             Constants.Load("kickplanning");

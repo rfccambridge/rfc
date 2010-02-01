@@ -137,6 +137,40 @@ namespace Robocup.Core {
         }
 
         /// <summary>
+        /// Given a RobotInfo object, find a waypoint that's:
+        /// - close enough (almost the nearest)
+        /// - but still further towards the final goal, so that we don't slow down
+        /// </summary>
+        /// <param name="point">The position, relative to which we are searching</param>
+        /// <returns></returns>
+        public RobotInfo findNextNearestWaypoint(RobotInfo point)
+        {
+            // brute force over the waypoints to find the nearest
+            int closestWaypointIndex = 0;
+            double minDistSq = double.MaxValue;
+
+            for (int i = 0; i < _path.Count; i++)
+            {
+                RobotInfo waypoint = _path[i];
+                double distSq = waypoint.Position.distanceSq(point.Position);
+                if (distSq < minDistSq)
+                {
+                    closestWaypointIndex = i;
+                    minDistSq = distSq;
+                }
+            }
+
+            //Skip the nearest in the direction closer to the goal
+            closestWaypointIndex += 1;
+
+            //But make sure we're still inside the path boundary
+            if (closestWaypointIndex >= _path.Count)
+                closestWaypointIndex = _path.Count - 1;
+
+            return _path[closestWaypointIndex];
+        }
+        
+        /// <summary>
         /// Given a RobotInfo object, return the nearest waypoint to that object
         /// </summary>
         /// <param name="point">A RobotInfo representing the current position</param>

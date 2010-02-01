@@ -54,7 +54,7 @@ namespace Robocup.CoreRobotics
             //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
 
             //Console.WriteLine("doing speed1: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
-            return new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
+            return new WheelSpeeds((int)(speed * prf / max), (int)(speed * plf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             //return GetWheelSpeeds(start, goal.Position);
         }
 
@@ -80,7 +80,7 @@ namespace Robocup.CoreRobotics
                 double speed = Math.Min(Constants.get<double>("control", "MOVE_VTERM_MAX"),
                     Math.Sqrt(deltaV.magnitudeSq()) * Constants.get<double>("control", "MOVE_VTERM_GAIN"));
 
-                vwheels = new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
+                vwheels = new WheelSpeeds((int)(speed * prf / max), (int)(speed * plf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             }
             {
                 // break down wheelspeeds based on desired vector
@@ -99,7 +99,7 @@ namespace Robocup.CoreRobotics
                 double speed = Math.Min(Constants.get<double>("control", "MOVE_PTERM_MAX"),
                     Math.Sqrt(desiredDirection.magnitudeSq()) * Constants.get<double>("control", "MOVE_PTERM_GAIN"));
 
-                dwheels = new WheelSpeeds((int)(speed * plf / max), (int)(speed * prf / max), (int)(speed * plb / max), (int)(speed * prb / max));
+                dwheels = new WheelSpeeds((int)(speed * prf / max), (int)(speed * plf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             }
             WheelSpeeds toRet = (WheelSpeeds)WheelsInfo<double>.Times(1/(dprop + vprop),(WheelsInfo<double>.Add(dprop * dwheels,vprop * vwheels)));
             Console.WriteLine("sending speeds: " + toRet.ToString());

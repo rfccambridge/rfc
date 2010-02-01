@@ -23,11 +23,6 @@ namespace Robocup.MotionControl
                 return planner.PlanMotion(team, id, desiredState, predictor, avoidBallRadius);
             }
         }
-        public void DrawLast(Graphics g, ICoordinateConverter c)
-        {
-            foreach (RRTIndvPlanner planner in planners.Values)
-                planner.DrawLast(g, c);
-        }
 
         const int MAX_ITERATIONS = 500;
 

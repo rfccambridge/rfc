@@ -9,6 +9,8 @@ string VELOCITY_ARROW_COLOR "blue"
 double VELOCITY_ARROW_SIZE 0.03
 double VELOCITY_ARROW_MIN_MAG_SQ 0.01
 
+bool DRAW_PATH false
+
 # length of arrow = magnitude * this scaling factor
 double VELOCITY_ARROW_LEN_SCALE 20
 double BALL_VELOCITY_ARROW_LEN_SCALE 0.1

@@ -34,6 +34,8 @@ namespace Robocup.CoreRobotics
 		private int[] follows_since_plan;
 		private System.Timers.Timer t;
 
+        private bool DRAW_PATH;
+
 		public RFCController(
 			Team team,
 			IRobots commander,
@@ -171,10 +173,15 @@ namespace Robocup.CoreRobotics
 			}
 
 			#region Drawing
-			//Arrow showing final destination
 			if (_fieldDrawer != null)
 			{
-				_fieldDrawer.DrawArrow(_team, currPath.ID, ArrowType.Destination, currPath.getFinalState().Position);
+                //Path commited for following
+                if(DRAW_PATH)
+                    _fieldDrawer.DrawPath(currPath);
+                //Arrow showing final destination
+                _fieldDrawer.DrawArrow(_team, currPath.ID, ArrowType.Destination,
+                    destination);
+                    //currPath.getFinalState().Position);
 			}
 
 			#endregion
@@ -317,6 +324,8 @@ namespace Robocup.CoreRobotics
 		{
 			CONTROL_LOOP_FREQUENCY = Constants.get<double>("default", "CONTROL_LOOP_FREQUENCY");
 			control_period = 1 / CONTROL_LOOP_FREQUENCY * 1000; //in ms
+
+            DRAW_PATH = Constants.get<bool>("drawing", "DRAW_PATH");
 
 			_planner.LoadConstants();
 			_kickPlanner.LoadConstants();

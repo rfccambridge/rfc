@@ -15,7 +15,6 @@ namespace Robocup.CoreRobotics
     public interface IKickPlanner
     {
         KickPlanningResults kick(Team team, int id, Vector2 target, IPredictor predictor);
-        void DrawLast(Graphics g, ICoordinateConverter c);
         void LoadConstants();
 
         // Distance at which to activate this motion planner

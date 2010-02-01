@@ -43,11 +43,6 @@ namespace Robocup.MotionControl
 				path[Math.Min(path.Waypoints.Count - 1, 5)]));
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            Common.DrawVector2Tree(planner.LastTree(), Color.Black, g, c);
-        }
-		
 		public void LoadConstants()
 		{
 			
@@ -83,10 +78,6 @@ namespace Robocup.MotionControl
             return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, path[Math.Min(path.Count - 1, 5)]));
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            Common.DrawRobotInfoTree(planner.LastTree(), Color.Black, g, c);
-        }
     }
     public class Vector2BiRRTMotionPlanner : IMotionPlanner
     {
@@ -144,19 +135,6 @@ namespace Robocup.MotionControl
         }
 
         Vector2 important = null;
-
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            Common.DrawVector2Tree(planner.LastTree1(), Color.Blue, g, c);
-            Common.DrawVector2Tree(planner.LastTree2(), Color.Green, g, c);
-
-            if (important != null)
-            {
-                Brush red = new SolidBrush(Color.Red);
-                g.FillRectangle(red, c.fieldtopixelX(important.X) - 2, c.fieldtopixelY(important.Y) - 2, 5, 5);
-                red.Dispose();
-            }
-        }
     }
 
     public class MixedBiRRTMotionPlanner : IMotionPlanner
@@ -220,11 +198,6 @@ namespace Robocup.MotionControl
 
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            Common.DrawRobotInfoTree(planner.LastTree1(), Color.Blue, g, c);
-            Common.DrawVector2Tree(planner.LastTree2(), Color.Green, g, c);
-        }
     }
 
 	    public class SmoothVector2BiRRTMotionPlanner : IMotionPlanner
@@ -287,30 +260,6 @@ namespace Robocup.MotionControl
         }
 
         Vector2 important = null;
-
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            Common.DrawVector2Tree(planner.LastTree1(), Color.Blue, g, c);
-            Common.DrawVector2Tree(planner.LastTree2(), Color.Green, g, c);
-
-            //Console.WriteLine(waypointslist.Count.ToString());
-
-            Brush blue = new SolidBrush(Color.Blue);
-
-            for (int i = 0; i < waypointslist.Count; i++) {
-                //g.FillRectangle(blue, c.fieldtopixelX(waypointslist[i].X) - 2, c.fieldtopixelY(waypointslist[i].Y) - 2, 2, 2);
-            }
-            blue.Dispose();
-
-            if (important != null)
-            {
-                Brush red = new SolidBrush(Color.Red);
-                g.FillRectangle(red, c.fieldtopixelX(important.X) - 2, c.fieldtopixelY(important.Y) - 2, 5, 5);
-                red.Dispose();
-            }
-
-            Smoother.DrawLast(g, c);
-        }
     }
 
 #endif
@@ -494,12 +443,6 @@ namespace Robocup.MotionControl
             //return new MotionPlanningResults(wheelSpeeds, nextWayPoint);
 
             return results;
-        }
-
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
-            //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
-            //Common.DrawVector2Tree(_planner.LastTree2(), Color.Green, g, c);
-            PathDrawing.DrawPath(_planner.LastPath, Color.Blue, Color.Green, g, c);
         }
 
         /// <summary>
@@ -761,17 +704,6 @@ namespace Robocup.MotionControl
 
 
 
-        }
-
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
-            //Common.DrawRobotInfoTree(_planner.LastTree1(), Color.Blue, g, c);
-            //Common.DrawVector2Tree(_planner.LastTree2(), Color.Green, g, c);
-            foreach (Pair<List<RobotInfo>, List<Vector2>> path in paths) {
-                if (path == null)
-                    continue;
-
-                PathDrawing.DrawPath(path, Color.Blue, Color.Green, g, c);                
-            }
         }
 
         //reload all necessary constants from files, for now just PID reload

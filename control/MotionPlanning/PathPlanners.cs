@@ -25,12 +25,7 @@ namespace Robocup.MotionControl
             waypoints.Add(desiredState);
             return new RobotPath(waypoints);
         }
-
-        public void DrawLast(Graphics g, ICoordinateConverter c)
-        {
-
-        }
-        
+      
         public void ReloadConstants() { 
         
         }
@@ -117,15 +112,6 @@ namespace Robocup.MotionControl
             return path;
         }
 
-        public void DrawLast(Graphics g, ICoordinateConverter c)
-        {
-            if (lastWaypoint != null)
-            {
-                Brush b = new SolidBrush(Color.Blue);
-                g.FillRectangle(b, c.fieldtopixelX(lastWaypoint.X) - 1, c.fieldtopixelY(lastWaypoint.Y) - 1, 4, 4);
-            }
-        }
-
         public void ReloadConstants()
         {
             Constants.Load("motionplanning");
@@ -156,13 +142,10 @@ namespace Robocup.MotionControl
 
         double previousAngle;
 
-        BugNavigator _navigator;
-
         Vector2 lastWaypoint;        
 
         public TangentBugPlanner()
         {            
-            _navigator = new BugNavigator();
             ReloadConstants();
             previousAngle = 0;
         }
@@ -214,7 +197,7 @@ namespace Robocup.MotionControl
             double finalDirectionAngle = finalDirection.cartesianAngle();
 
             // create possible number range
-            NumberRange angle_range = new NumberRange(-Math.PI, Math.PI, 50);
+            NumberRange angle_range = new NumberRange(-Math.PI, Math.PI, 720);
 
             double obstacleDist;
             double obstacleAngle;
@@ -320,24 +303,32 @@ namespace Robocup.MotionControl
             List<RobotInfo> waypoints = new List<RobotInfo>();
 
         	Vector2 velocity = finalDirection.normalizeToLength(STEADY_STATE_SPEED);
-			RobotInfo lastState = new RobotInfo(lastWaypoint, 
+			//State representing carrot on a stick
+            RobotInfo carrotState = new RobotInfo(lastWaypoint, 
 				velocity, 0, desiredState.Orientation, team, id);
-			waypoints.Add(lastState);
+			waypoints.Add(carrotState);
+
+
+            //Add more waypoints along the line carrotState -> desiredState
+            //That way, more complicated followers can follow the whole path
+            int numWaypoints = Convert.ToInt32(Math.Floor(Math.Sqrt(
+                desiredState.Position.distanceSq(carrotState.Position)) / WAYPOINT_DIST));
+
+            Vector2 currentPosition = lastWaypoint;
+            for (int i = 0; i < numWaypoints; i++)
+            {
+                currentPosition += finalDirection;
+                RobotInfo newWaypoint = new RobotInfo(currentPosition, velocity, 0,
+                    desiredState.Orientation, team, id);
+                waypoints.Add(newWaypoint);
+            }
+
 
             //Console.WriteLine("LAST WAYPOINT: " + lastWaypoint.ToString());
 
             RobotPath path = new RobotPath(waypoints);
 
             return path;
-        }
-
-        public void DrawLast(Graphics g, ICoordinateConverter c)
-        {
-            if (lastWaypoint != null)
-            {
-                Brush b = new SolidBrush(Color.Blue);
-                g.FillRectangle(b, c.fieldtopixelX(lastWaypoint.X) - 1, c.fieldtopixelY(lastWaypoint.Y) - 1, 4, 4);
-            }
         }
 
         public void ReloadConstants()

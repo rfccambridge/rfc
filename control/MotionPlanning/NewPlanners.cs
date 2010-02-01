@@ -35,8 +35,6 @@ namespace Robocup.MotionControl
         // Dummy methods- required for interface
         public void ReloadConstants() { }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) { }
-
         /// <summary>
         /// Plan motion using straightforward WheelSpeedsExtender
         /// </summary>
@@ -101,7 +99,6 @@ namespace Robocup.MotionControl
             Console.WriteLine("RELOADING CONSTANTS!!! " + STOP_DISTANCE + " " + MIN_ANGLE_DIFFERENCE);
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) { }
 
         /// <summary>
         /// Plan motion using straightforward WheelSpeedsExtender
@@ -317,23 +314,6 @@ namespace Robocup.MotionControl
             angular_loops.ReloadConstants();
         }
 
-        /// <summary>
-        /// Draw last path- currently draws nothing (as this is a dumb planner, there
-        /// is no path)
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="c"></param>
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c) {
-            // if PlanMotion has been called, draw point
-            if (called && USE_NAVIGATOR == 1)
-            {
-                Brush b = new SolidBrush(Color.Blue);
-                Rectangle r = new Rectangle(new Point(c.fieldtopixelX(lastWayPoint.X), c.fieldtopixelY(lastWayPoint.Y)),
-                                        new Size(10, 10));
-                g.FillRectangle(b, r);
-                b.Dispose();
-            }
-        }
 
         /// <summary>
         /// Plan motion using PID loop to control veer
@@ -671,7 +651,6 @@ namespace Robocup.MotionControl
             return new MotionPlanningResults(speeds);
         
         }
-        public void DrawLast(Graphics g, ICoordinateConverter c){}
         public void ReloadConstants(){
             Constants.Load();
             velocity = Constants.get<double>("motionplanning", "DumbVelocity");
@@ -739,11 +718,6 @@ namespace Robocup.MotionControl
             pathdriver.ReloadConstants();
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            pathplanner.DrawLast(g, c);
-        }
-
         public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
@@ -770,12 +744,6 @@ namespace Robocup.MotionControl
             pathdriver.ReloadConstants();
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            Console.WriteLine("DRAWING");
-            pathplanner.DrawLast(g, c);
-        }
-
         public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
@@ -796,11 +764,6 @@ namespace Robocup.MotionControl
         {
             pathplanner.ReloadConstants();
             pathdriver.ReloadConstants();
-        }
-
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            pathplanner.DrawLast(g, c);
         }
 
         public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
@@ -825,11 +788,6 @@ namespace Robocup.MotionControl
             pathdriver.ReloadConstants();
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            pathplanner.DrawLast(g, c);
-        }
-
         public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
@@ -852,11 +810,6 @@ namespace Robocup.MotionControl
             pathdriver.ReloadConstants();
         }
 
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            pathplanner.DrawLast(g, c);
-        }
-
         public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
             RobotPath path = pathplanner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
@@ -877,11 +830,6 @@ namespace Robocup.MotionControl
         {
             pathplanner.ReloadConstants();
             pathdriver.ReloadConstants();
-        }
-
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            pathplanner.DrawLast(g, c);
         }
 
         public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
@@ -907,11 +855,6 @@ namespace Robocup.MotionControl
         {
             pathplanner.ReloadConstants();
             pathdriver.ReloadConstants();
-        }
-
-        public void DrawLast(System.Drawing.Graphics g, ICoordinateConverter c)
-        {
-            pathplanner.DrawLast(g, c);
         }
 
         public MotionPlanningResults PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
