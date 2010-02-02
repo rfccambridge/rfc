@@ -13,14 +13,15 @@
 //  If not, see <http://www.gnu.org/licenses/>.
 //========================================================================
 /*!
-  \file    robocup_ssl_client.h
-  \brief   C++ Interface: robocup_ssl_client
+  \file    robocup_ssl_server.h
+  \brief   C++ Interface: robocup_ssl_server
   \author  Stefan Zickler, 2009
 */
 //========================================================================
-#ifndef ROBOCUP_SSL_CLIENT_H
-#define ROBOCUP_SSL_CLIENT_H
+#ifndef ROBOCUP_SSL_SERVER_H
+#define ROBOCUP_SSL_SERVER_H
 #include "netraw.h"
+#include "common.h"
 #include <string>
 //#include <QMutex>
 #include "messages_robocup_ssl_detection.pb.h"
@@ -28,27 +29,28 @@
 #include "messages_robocup_ssl_wrapper.pb.h"
 using namespace std;
 /**
-	@author Author Name
+	@author Stefan Zickler
 */
-
-class RoboCupSSLClient{
+class DLLEXPORT RoboCupSSLServer{
 protected:
-  static const int MaxDataGramSize = 65536;
-  char * in_buffer;
-  Net::UDP mc; // multicast client
-//  QMutex mutex;
+  Net::UDP *mc; // multicast server
+  //QMutex mutex;
+  HANDLE mutex; // Replaced the QMutex with a Win32 mutex
   int _port;
   string _net_address;
   string _net_interface;
+
 public:
-    RoboCupSSLClient(int port = 10002,
+    RoboCupSSLServer(int port = 10002,
                      string net_ref_address="224.5.23.2",
                      string net_ref_interface="");
 
-    ~RoboCupSSLClient();
-    bool open(bool blocking=false);
+    ~RoboCupSSLServer();
+    bool open();
     void close();
-    bool receive(SSL_WrapperPacket & packet);
+    bool send(const SSL_WrapperPacket & packet);
+    bool send(const SSL_DetectionFrame & frame);
+    bool send(const SSL_GeometryData & geometry);
 
 };
 

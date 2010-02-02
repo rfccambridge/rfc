@@ -203,6 +203,10 @@
 				RelativePath=".\robocup_ssl_client.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\robocup_ssl_server.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -235,6 +239,10 @@
 			</File>
 			<File
 				RelativePath=".\robocup_ssl_client.h"
+				>
+			</File>
+			<File
+				RelativePath=".\robocup_ssl_server.h"
 				>
 			</File>
 			<File

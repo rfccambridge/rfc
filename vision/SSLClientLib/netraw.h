@@ -64,19 +64,8 @@ namespace Net{
 		unsigned recv_packets;
 		unsigned recv_bytes;
 	public:
-		UDP() {
-
-			fd=-1; close();   
-			// Initialize Winsock
-			WSADATA wsaData;
-
-			int iResult = WSAStartup( MAKEWORD(2,2), &wsaData );
-			if( iResult != NO_ERROR )
-				printf("Error at WSAStartup\n");
-
-		}
-		~UDP() {close();}
-
+		UDP();
+		~UDP();
 		bool open(int port = 0, bool share_port_for_multicasting=false, bool multicast_include_localhost=false, bool blocking=false);
 		bool addMulticast(const Address &multiaddr,const Address &minterface);
 		void close();

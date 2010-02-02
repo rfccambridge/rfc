@@ -254,6 +254,10 @@ namespace SSLVision {
 			delete m_pSSL_DetectionFrame;
 		}
 
+		::SSL_DetectionFrame &unmanagedInstance() {
+			return *m_pSSL_DetectionFrame;
+		}
+
 		bool has_frame_number() {
 			return m_pSSL_DetectionFrame->has_frame_number();
 		}

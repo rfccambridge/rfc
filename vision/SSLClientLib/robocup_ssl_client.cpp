@@ -31,21 +31,23 @@ RoboCupSSLClient::RoboCupSSLClient(int port,
   _net_address=net_address;
   _net_interface=net_interface;
   in_buffer=new char[65536];
+  mc = new Net::UDP();
 }
 
 
 RoboCupSSLClient::~RoboCupSSLClient()
 {
   delete[] in_buffer;
+  delete mc;
 }
 
 void RoboCupSSLClient::close() {
-  mc.close();
+  mc->close();
 }
 
 bool RoboCupSSLClient::open(bool blocking) {
   close();
-  if(!mc.open(_port,true,true,blocking)) {
+  if(!mc->open(_port,true,true,blocking)) {
     fprintf(stderr,"Unable to open UDP network port: %d\n",_port);
     fflush(stderr);
     return(false);
@@ -59,7 +61,7 @@ bool RoboCupSSLClient::open(bool blocking) {
     minterface.setAny();
   }
 
-  if(!mc.addMulticast(multiaddr,minterface)) {
+  if(!mc->addMulticast(multiaddr,minterface)) {
     fprintf(stderr,"Unable to setup UDP multicast\n");
     fflush(stderr);
     return(false);
@@ -71,7 +73,7 @@ bool RoboCupSSLClient::open(bool blocking) {
 bool RoboCupSSLClient::receive(SSL_WrapperPacket & packet) {
   Net::Address src;
   int r=0;
-  r = mc.recv(in_buffer,MaxDataGramSize,src);
+  r = mc->recv(in_buffer,MaxDataGramSize,src);
   if (r>0) {
     fflush(stdout);
     //decode packet:

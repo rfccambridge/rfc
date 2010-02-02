@@ -448,6 +448,10 @@ namespace SSLVision {
 			delete m_pSSL_GeometryData;
 		}
 
+		::SSL_GeometryData &unmanagedInstance() {
+			return *m_pSSL_GeometryData;
+		}
+
 		bool has_field() {
 			return m_pSSL_GeometryData->has_field();
 		}

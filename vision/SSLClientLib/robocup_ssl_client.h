@@ -39,7 +39,7 @@ class DLLEXPORT RoboCupSSLClient{
 protected:
   static const int MaxDataGramSize = 65536;
   char * in_buffer;
-  Net::UDP mc; // multicast client
+  Net::UDP *mc; // multicast client
   int _port;
   string _net_address;
   string _net_interface;

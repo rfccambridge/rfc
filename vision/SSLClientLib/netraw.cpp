@@ -93,6 +93,21 @@ void Address::print(FILE *out) const
 //  (C) James Bruce
 //====================================================================//
 
+UDP::UDP() {
+	fd=-1; UDP::close();   
+	// Initialize Winsock
+	WSADATA wsaData;
+
+	int iResult = WSAStartup( MAKEWORD(2,2), &wsaData );
+	if( iResult != NO_ERROR )
+		printf("Error at WSAStartup\n");
+}
+
+UDP::~UDP() {
+	UDP::close();
+}
+
+
 bool UDP::open(int port, bool share_port_for_multicasting, bool multicast_include_localhost, bool blocking)
 {
   // open the socket
