@@ -34,7 +34,7 @@ namespace Robocup.Utilities
 
         public void UpdateTeam(Team team)
         {
-            this.Invoke(new VoidDelegate(delegate
+            this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblTeam.Text = team.ToString();
                 lblTeam.ForeColor = team == Team.Yellow ? Color.Yellow : Color.Blue;
@@ -43,7 +43,7 @@ namespace Robocup.Utilities
 
         public void UpdateRefBoxCmd(string refBoxCmd)
         {
-            this.Invoke(new VoidDelegate(delegate
+            this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblRefBoxCmd.Text = refBoxCmd;
             }));
@@ -51,7 +51,7 @@ namespace Robocup.Utilities
 
         public void UpdatePlayType(PlayType playType)
         {
-            this.Invoke(new VoidDelegate(delegate
+            this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblPlayType.Text = playType.ToString();
             }));
@@ -59,7 +59,7 @@ namespace Robocup.Utilities
 
         public void UpdateInterpretFreq(double freq)
         {
-            this.Invoke(new VoidDelegate(delegate
+            this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblInterpretFreq.Text = String.Format("{0:F2} Hz", freq);
             }));
@@ -67,7 +67,7 @@ namespace Robocup.Utilities
 
         public void UpdateInterpretDuration(double duration)
         {
-            this.Invoke(new VoidDelegate(delegate
+            this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblInterpretDuration.Text = String.Format("{0:F2} ms", duration);
             }));
@@ -75,7 +75,7 @@ namespace Robocup.Utilities
 
         public void UpdateLapDuration(double duration)
         {
-            this.Invoke(new VoidDelegate(delegate
+            this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblLapDuration.Text = String.Format("{0:F2} s", duration);
             }));
