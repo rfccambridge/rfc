@@ -5,6 +5,7 @@ using Robocup.Core;
 using Robocup.CoreRobotics;
 using Robocup.MotionControl;
 using Robocup.Plays;
+using Robocup.ControlForm;
 
 namespace SimplePathFollower
 {
@@ -30,14 +31,14 @@ namespace SimplePathFollower
 
 		private IPredictor predictor;
 		private IMotionPlanner planner;
-		private IRobots commander;
-		private RFCController controller;
+		private Robocup.MessageSystem.IMessageSender<RobotCommand> commander;
+		private Controller controller;
         private Interpreter interpreter;
 
 		public IPredictor Predictor { get { return predictor; } }
-		public IRobots Commander { get { return commander; } }
+        public Robocup.MessageSystem.IMessageSender<RobotCommand> Commander { get { return commander; } set { commander = value; } }
         public IMotionPlanner Planner { get { return planner; } }
-        public RFCController Controller { get { return controller; } }
+        public Controller Controller { get { return controller; } }
         public Interpreter Interpreter { get { return interpreter; } set { interpreter = value; } }
 
         public delegate void EndLapDelegate(bool success, bool invokeStop);
@@ -87,12 +88,11 @@ namespace SimplePathFollower
 				Console.Write("Controller already running.");
 				return;
 			}
-
-			commander = new RemoteRobots();
+			
 			predictor = new AveragingPredictor();
             planner = newPlanner;
              
-			controller = new RFCController(team, commander, planner, predictor, null);
+			controller = new Controller(team, planner, predictor, null);
 
 			_sleepTime = Constants.get<int>("default", "UPDATE_SLEEP_TIME");
 		}
@@ -100,7 +100,7 @@ namespace SimplePathFollower
         public bool setPlanner(IMotionPlanner newPlanner) {
             if (!running) {
                 planner = newPlanner;
-                controller = new RFCController(team, commander, planner, predictor, null);
+                controller = new Controller(team, planner, predictor, null);
                 return true;
             }
 

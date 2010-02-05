@@ -135,81 +135,13 @@ namespace Robocup.MotionControl
              
             #endregion
 
-            WheelSpeeds tst = convert(robotFwd, robotLtr, angularVCommand);
+            WheelSpeeds tst = model.Convert(robotFwd, robotLtr, angularVCommand);
 
             //converts from x speed, y speed and angular speed to wheel speeds
-            WheelSpeeds ws = convert(robotForward, robotLateral, angularVCommand);
+            WheelSpeeds ws = model.Convert(robotForward, robotLateral, angularVCommand);
             //return ws;
 
             return useFwdLat ? tst : ws;
-        }
-
-        /// <summary>
-        /// Convert a desired velocity (in robot coordinates!!!) to WheelSpeeds object
-        /// </summary>
-        /// <param name="forward"></param>
-        /// <param name="lateral"></param>
-        /// <param name="angularV"></param>
-        /// <returns></returns>
-        private WheelSpeeds convert(double forward, double lateral, double angularV)
-        {
-            const double ANGLE_AXIS_TO_WHEEL = 41 * Math.PI / 180;
-
-            //I assume the x command is effectively in m/s, so r the radius of the wheels from the center of
-            //the robot is in meters
-
-            //Console.WriteLine(lateral.ToString() + " lateral|Forward: " + forward.ToString());
-
-            //computed here to save typing, since used 4 times
-            double sing = Math.Sin(ANGLE_AXIS_TO_WHEEL);
-            double cosg = Math.Cos(ANGLE_AXIS_TO_WHEEL);
-
-            //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
-
-            double _rf = -(sing * lateral + cosg * forward - wheelR * angularV);
-            double _lf = -(sing * lateral - cosg * forward - wheelR * angularV);
-            double _lb = -(-sing * lateral - cosg * forward - wheelR * angularV);
-            double _rb = -(-sing * lateral + cosg * forward - wheelR * angularV);
-
-            /*int scaleUpFactor = 2;
-            if (Math.Abs(_lf) < 10 && Math.Abs(_rf) < 10 && Math.Abs(_lb) < 10 && Math.Abs(_rb) < 10) {
-                _lf *= scaleUpFactor;
-                _rf *= scaleUpFactor;
-                _lb *= scaleUpFactor;
-                _rb *= scaleUpFactor;
-            }*/
-
-            int lf, rf, lb, rb;
-            lf = (int)_lf;
-            rf = (int)_rf;
-            lb = (int)_lb;
-            rb = (int)_rb;
-
-
-            /*if (lf > 57) 
-                lf = 57;
-            if (lf < -57)
-                lf = -57;
-                        
-            if (rf > 57) 
-                rf = 57;
-            if (rf < -57)
-                rf = -57;
-                        
-            if (lb > 57) 
-                lb = 57;
-            if (lb < -57)
-                lb = -57;
-                        
-            if (rb > 57) 
-                rb = 57;
-            if (rb < -57)
-                rb = -57;
-            */
-
-            return new WheelSpeeds(rf, lf, lb, rb);
-            //Note somewhere we need to check and ensure that wheel speeds being 
-            //sent do not exceed maximum values allowed by the protocol (done in SerialRobots somewhere).
         }
 
         public void ReloadConstants()

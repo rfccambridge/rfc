@@ -1,8 +1,0 @@
-/verbosity:info 
-/dll:"C:\Microsoft Robotics Studio (1.0)\bin\services\ControlPanel.Y2006.M08.dll" 
-/proxyprojectpath:"C:\Microsoft Robotics Studio (1.0)\gui\ControlPanel\Proxy " 
-/keyfile:"..\..\resources\rfc.snk" 
-/binpath:". " 
-/referencepath:"C:\Microsoft Robotics Studio (1.0)\bin\Debug\ " 
-/referencepath:"C:\Microsoft Robotics Studio (1.0)\bin\services\ " 
-/referencepath:"C:\Microsoft Robotics Studio (1.0)\bin\ "

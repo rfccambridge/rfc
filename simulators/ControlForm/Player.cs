@@ -5,21 +5,28 @@ using Robocup.Core;
 using Robocup.Utilities;
 using Robocup.Plays;
 using System.Threading;
+using Robocup.ControlForm;
+using Robocup.CoreRobotics;
 
-namespace Robocup.CoreRobotics
+namespace Robocup.ControlForm
 {
     public class Player
     {
+        protected string _name;
         protected Team _team;
-        protected FieldHalf _fieldHalf;        
+        protected FieldHalf _fieldHalf;
 
+        // These are created outside and handed to a Player (refbox should be in this list after
+        // the refbox refactoring project)
         protected IPredictor _predictor;
+        protected FieldDrawer _fieldDrawer;
+
+        // These are created inside the player
         protected Interpreter _interpreter;
         protected IController _controller;
         protected IMotionPlanner _motionPlanner;
         protected RefBoxState _refbox;
-        protected FieldDrawer _fieldDrawer;
-
+        
         protected bool _running = false;
 
         System.Timers.Timer _interpretLoopTimer = new System.Timers.Timer();
@@ -32,13 +39,17 @@ namespace Robocup.CoreRobotics
             get { return _running; }
         }
 
-        public Player(Team team, FieldHalf fieldHalf,
-                      IPredictor predictor, IRobots commander, FieldDrawer fieldDrawer) {
+        public Player(string name, Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) {
+            _name = name;
             _team = team;
-            _fieldHalf = fieldHalf;            
+            _fieldHalf = fieldHalf;
             _fieldDrawer = fieldDrawer;
-            _predictor = predictor;            
-
+            _predictor = predictor;
+            
+            //TODO: Change the PlayTypes to Yellow/Blue instead of Ours/Theirs. Then it would
+            //      be possible to (1) to hide usage of MulticastRefBoxListener inside RefBoxState
+            //      or just encapsulate it completely, and (2) create one refbox outside of player
+            //      and share it among all players who want a refbox.
             _refbox = new RefBoxState(_team, _predictor);
 
             // Set default MotionPlanner (many past options are included...)
@@ -87,7 +98,7 @@ namespace Robocup.CoreRobotics
                     //planners[6] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
                 }*/
 
-            _controller = new RFCController(_team, commander, _motionPlanner, _predictor, _fieldDrawer);            
+            _controller = new Controller(_team, _motionPlanner, _predictor, _fieldDrawer);            
 
             _interpreter = new Interpreter(_team, _fieldHalf, _predictor, _controller, _fieldDrawer);            
 
@@ -104,7 +115,15 @@ namespace Robocup.CoreRobotics
 
             _interpretLoopTimer.AutoReset = true;
             _interpretLoopTimer.Elapsed += _interpretLoopTimer_Elapsed;
-        }        
+        }
+
+        public override string ToString()
+        {
+            string fullClass = base.ToString();
+            string[] tokens = fullClass.Split(new char[] { '.' });
+            string name = _name.Length > 0 ? " (" + _name + ")" : "";
+            return tokens[tokens.Length - 1] + name + ": " + _team.ToString() + ", " + _fieldHalf.ToString();
+        }
 
         public virtual void LoadConstants()
         {
@@ -112,11 +131,33 @@ namespace Robocup.CoreRobotics
                 _controller.LoadConstants();
             if (_motionPlanner != null)
                 _motionPlanner.LoadConstants();
+        }        
+
+        public void ConnectToController(string host, int port)
+        {
+            _controller.Connect(host, port);
         }
 
-        public void SetRefBoxListener(IRefBoxListener refboxListener)
+        public void DisconnectFromController()
         {
-            _refbox.setReferee(refboxListener);
+            _controller.Disconnect();
+        }
+
+        public void RegisterPredictor(IPredictor predictor)
+        {
+            _predictor = predictor;
+        }
+
+        // Unfortunately, RefBox needs to be created inside the player because it depends on team.
+        // This will be changed in the refbox refactoring project.
+        public void ConnectToRefbox(IRefBoxListener refboxListener)
+        {
+            _refbox.Connect(refboxListener);
+        }
+
+        public void DisconnectFromRefbox()
+        {
+            _refbox.Disconnect();
         }
 
         public virtual void LoadPlays(List<InterpreterPlay> plays)
@@ -126,24 +167,29 @@ namespace Robocup.CoreRobotics
 
         public virtual void Start()
         {
+            if (_running)
+                throw new ApplicationException("Already running.");
+
             double freq = Constants.get<double>("default", "STRATEGY_FREQUENCY");
             double period = 1.0 / freq * 1000; // in ms
 
             _running = true;
 
-            _fieldDrawer.UpdateTeam(_team);
-
-            _refbox.start();            
+            _fieldDrawer.UpdateTeam(_team);            
+            
             _interpretLoopTimer.Interval = period;                        
             _interpretLoopTimer.Start();
         }
 
         public virtual void Stop()
         {
+            if (!_running)
+                throw new ApplicationException("Not running.");
+
             _interpretLoopTimer.Stop();
-            _refbox.stop();
+            
             foreach (RobotInfo info in _predictor.GetRobots(_team))
-                _controller.stop(info.ID);
+                _controller.Stop(info.ID);
 			_controller.StopControlling();
             _running = false;
         }
@@ -177,9 +223,9 @@ namespace Robocup.CoreRobotics
             PlayType playType = _refbox.GetCurrentPlayType();
             _interpreter.interpret(playType);
         }
-
+        
         void _interpretLoopTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
+        {            
             // Skip the event if a previous one is still being handled
             if (Interlocked.CompareExchange(ref _interpretLoopTimerSync, 1, 0) == 0)
             {
@@ -187,6 +233,7 @@ namespace Robocup.CoreRobotics
                 runRound();
                 _interpretLoopTimerSync = 0;
             }
-        }
+        }        
+
     }
 }

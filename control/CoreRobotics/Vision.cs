@@ -2,46 +2,53 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
+using System.Threading;
 
 namespace Robocup.CoreRobotics
 {
-    public class VisionMessageEventArgs : EventArgs
-    {
-        public VisionMessage VisionMessage;
-
-        public VisionMessageEventArgs(VisionMessage msg)
-        {
-            VisionMessage = msg;
-        }
-    }    
-
     public class Vision
     {
-        private delegate void VoidDelegate();        
-
-        public event EventHandler<VisionMessageEventArgs> MessageReceived;
+        public event EventHandler<EventArgs<VisionMessage>> MessageReceived;
         public event EventHandler ErrorOccured;
 
         bool verbose = false;
         SSLVision.RoboCupSSLClientManaged _client;
+        bool _clientOpen = false;
         bool _running = false;
-        IAsyncResult _loopHandle;
-        VoidDelegate _loopDelegate;
+        Thread _visionThread;
 
-        public Vision()
+        public void Connect(string hostname, int port)
         {
-            _loopDelegate = new VoidDelegate(loop);
-        }
-
-        public void Start(int port, string hostname)
-        {
-            if (_running)
-                throw new ApplicationException("Vision already running!");
+            if (_clientOpen)
+                throw new ApplicationException("Client already open.");
 
             _client = new SSLVision.RoboCupSSLClientManaged(port, hostname, "");
             _client.open(true);
+            _clientOpen = true;
+        }
 
-            _loopHandle = _loopDelegate.BeginInvoke(loopErrorHandler, null);
+        public void Disconnect()
+        {
+            if (!_clientOpen)
+                throw new ApplicationException("Client not open.");
+            if (_running)
+                throw new ApplicationException("Must stop before closing client.");
+
+            _client.close();
+            _clientOpen = false;
+        }
+
+        public void Start()
+        {
+            if (_running)
+                throw new ApplicationException("Vision already running!");
+            if (!_clientOpen)
+                throw new ApplicationException("Must open client before starting.");
+
+            // Have to create a new Thread object every time
+            _visionThread = new Thread(new ThreadStart(loop));
+            _visionThread.Start();
+            _running = true;
         }
 
         public void Stop()
@@ -49,11 +56,10 @@ namespace Robocup.CoreRobotics
             if (!_running)
                 throw new ApplicationException("Vision not running!");
 
-            _loopDelegate.EndInvoke(_loopHandle);
-            _client.close();
+            _visionThread.Abort();
             _running = false;
         }
-
+        
         private void loop()
         {
             SSLVision.SSL_WrapperPacketManaged packet = new SSLVision.SSL_WrapperPacketManaged();            
@@ -63,7 +69,6 @@ namespace Robocup.CoreRobotics
                 if (!_client.receive(packet))
                     continue;
 
-                if (verbose) Console.Write(String.Format("-----Received Wrapper Packet---------------------------------------------\n"));
                 //see if the packet contains a robot detection frame:
                 if (packet.has_detection())
                 {
@@ -72,68 +77,48 @@ namespace Robocup.CoreRobotics
                     //double t_now = GetTimeSec();
                     double t_now = 0;
 
-                    if (verbose) Console.Write(String.Format("-[Detection Data]-------\n"));
                     //Frame info:
-                    if (verbose) Console.Write(String.Format("Camera ID={0:G} FRAME={1:G} T_CAPTURE={2:F4}\n", detection.camera_id(), detection.frame_number(), detection.t_capture()));
-
-                    if (verbose) Console.Write(String.Format("SSL-Vision Processing Latency                   {0,7:F3}ms\n", (detection.t_sent() - detection.t_capture()) * 1000.0));
-                    if (verbose) Console.Write(String.Format("Network Latency (assuming synched system clock) {0,7:F3}ms\n", (t_now - detection.t_sent()) * 1000.0));
-                    if (verbose) Console.Write(String.Format("Total Latency   (assuming synched system clock) {0,7:F3}ms\n", (t_now - detection.t_capture()) * 1000.0));
                     int balls_n = detection.balls_size();
                     int robots_blue_n = detection.robots_blue_size();
                     int robots_yellow_n = detection.robots_yellow_size();
 
                     VisionMessage msg = new VisionMessage((int)detection.camera_id());
-
+                    
                     //Ball info:
                     float maxBallConfidence = float.MinValue;
                     for (int i = 0; i < balls_n; i++)
                     {
                         SSLVision.SSL_DetectionBallManaged ball = detection.balls(i);
-                        if (verbose) Console.Write(String.Format("-Ball ({0,2:G}/{1,2:G}): CONF={2,4:F2} POS=<{3,9:F2},{4,9:F2}> ", i + 1, balls_n, ball.confidence(), ball.x(), ball.y()));
-                        if (ball.has_z())
-                        {
-                            if (verbose) Console.Write(String.Format("Z={0,7:F2} ", ball.z()));
-                        }
-                        else
-                        {
-                            if (verbose) Console.Write(String.Format("Z=N/A   "));
-                        }
-                        if (verbose) Console.Write(String.Format("RAW=<{0,8:F2},{1,8:F2}>\n", ball.pixel_x(), ball.pixel_y()));
 
-                        if (ball.has_confidence() && ball.confidence() > maxBallConfidence && (!(ball.x() == 0 && ball.y() == 0)))
+                        if (ball.has_confidence() && ball.confidence() > maxBallConfidence)
                         {
                             msg.Ball = new BallInfo(ConvertFromSSLVisionCoords(new Vector2(ball.x(), ball.y())));
                             maxBallConfidence = ball.confidence();
                         }
                     }
-
+                    
                     //Blue robot info:
                     for (int i = 0; i < robots_blue_n; i++)
                     {
                         SSLVision.SSL_DetectionRobotManaged robot = detection.robots_blue(i);
-                        if (verbose) Console.Write(String.Format("-Robot(B) ({0,2:G}/{1,2:G}): ", i + 1, robots_blue_n));
-                        printRobotInfo(robot);
                         msg.Robots.Add(new VisionMessage.RobotData((int)robot.robot_id(), Team.Blue,
                             ConvertFromSSLVisionCoords(new Vector2(robot.x(), robot.y())), robot.orientation()));
-
                     }
-
+                    
                     //Yellow robot info:
                     for (int i = 0; i < robots_yellow_n; i++)
                     {
                         SSLVision.SSL_DetectionRobotManaged robot = detection.robots_yellow(i);
-                        if (verbose) Console.Write(String.Format("-Robot(Y) ({0,2:G}/{1,2:G}): ", i + 1, robots_yellow_n));
-                        printRobotInfo(robot);
                         msg.Robots.Add(new VisionMessage.RobotData((int)robot.robot_id(), Team.Yellow,
                           ConvertFromSSLVisionCoords(new Vector2(robot.x(), robot.y())), robot.orientation()));
                     }
 
                     if (MessageReceived != null)
-                        MessageReceived(this, new VisionMessageEventArgs(msg));                    
+                        MessageReceived(this, new EventArgs<VisionMessage>(msg));                    
                 }
 
                 //see if packet contains geometry data:
+                /*
                 if (packet.has_geometry())
                 {
                     SSLVision.SSL_GeometryDataManaged geom = packet.geometry();
@@ -180,7 +165,7 @@ namespace Robocup.CoreRobotics
                             if (verbose) Console.Write(String.Format("  -derived_camera_world_tz={0:F}\n", calib.derived_camera_world_tz()));
                         }
                     }
-                }
+                }*/
             }
         }
 

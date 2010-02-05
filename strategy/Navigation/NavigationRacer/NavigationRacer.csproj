@@ -91,9 +91,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\simulators\SimulationLib\SimulationLib.csproj">
+    <ProjectReference Include="..\..\..\simulators\SimulationLib\Simulator.csproj">
       <Project>{A343AA15-D817-4E28-AB24-24CD4359BDF7}</Project>
-      <Name>SimulationLib</Name>
+      <Name>Simulator</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\system\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>

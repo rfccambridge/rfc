@@ -81,6 +81,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Controller.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\control\CoreRobotics\CoreRobotics.csproj">
@@ -91,7 +92,6 @@
     <ProjectReference Include="..\..\control\MotionPlanning\MotionPlanning.csproj">
       <Project>{6B407296-924E-4788-A8B4-5E808061889D}</Project>
       <Name>MotionPlanning</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\strategy\Core Play Files\CorePlayFiles.csproj">
       <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
@@ -105,25 +105,20 @@
     <ProjectReference Include="..\..\strategy\Play Selector\PlaySelector.csproj">
       <Project>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</Project>
       <Name>PlaySelector</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\system\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\system\MessageSystem\MessageSystem.csproj">
+      <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
+      <Name>MessageSystem</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\vision\SSLClientWrapper\SSLClientWrapper.vcproj">
-      <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>
-      <Name>SSLClientWrapper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SimulationLib\SimulationLib.csproj">
-      <Project>{A343AA15-D817-4E28-AB24-24CD4359BDF7}</Project>
-      <Name>SimulationLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

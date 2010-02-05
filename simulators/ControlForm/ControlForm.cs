@@ -12,107 +12,115 @@ using Robocup.CoreRobotics;
 using Robocup.Plays;
 
 using System.Runtime.InteropServices;
-using Robocup.Simulation;
 using System.IO;
+using System.Threading;
 
 namespace Robocup.ControlForm {
-    
-    public partial class ControlForm : Form {
+
+    public partial class ControlForm : Form
+    {
         const string WAYPOINTS_FILE = "waypoints.csv";
 
         Team OUR_TEAM;
         FieldHalf FIELD_HALF;
-        string PLAY_DIR;
+        string PLAY_DIR;        
 
-        Vision _vision;
-        IPredictor _predictor;
-        FieldDrawer _fieldDrawer;
-        RemoteRobots _serial;
-        IRefBoxListener _refboxListener;
-        VirtualRef _virtualReferee;
-        PhysicsEngine _physicsEngine;
-
-        bool _serialConnected = false;
+        bool _controllerConnected = false;
         bool _refboxConnected = false;
         bool _visionConnected = false;
-        
-        List<InterpreterPlay> _plays;        
-        Player _player;
+        bool _formClosing = false;
 
-        List<InterpreterPlay> _plays1, _plays2; // Must have separate play objects!
-        Player _player1, _player2;
-        FieldDrawer _fieldDrawer1, _fieldDrawer2;
-        SimEngine _engine;
+        // Vision (+predictor) and refbox are created once and shared among the players 
+        // (mostly for efficiency)
+        protected Vision _vision;
+        protected IPredictor _predictor;
+        MulticastRefBoxListener _refboxListener;
+        System.Timers.Timer _refboxCommandDisplayTimer;
 
-        Player _simplePlayer;
+        Player _selectedPlayer;
+
+        // TODO: Make it possible for multiple players to share one field drawer.
+        FieldDrawer _fieldDrawer, _fieldDrawer2;
+
+        // Play storage: play identifier -> list of copies of that play owned by each player
+        // This is just one way to allow play enable/disable functionality *for all players at once*. At 
+        // this time it seems most *convenient* to me to have enable/disable to propagate to all players 
+        // (in the same way as vision/controller/refbox connectivity does), this could be changed to the 
+        // more natural player-specific control if need be. Oh, and: no, you cannot share play objects!
+        Dictionary<string, List<InterpreterPlay>> plays = new Dictionary<string, List<InterpreterPlay>>();
+
         List<RobotInfo> _waypoints = new List<RobotInfo>();
         Dictionary<RobotInfo, int> _waypointMarkers = new Dictionary<RobotInfo, int>();
 
-        System.Timers.Timer _refboxCommandDisplayTimer;
-
         PIDForm _pidForm;
-        DebugForm _debugForm;                
-        
+        DebugForm _debugForm;
+
         // Logging
         LogReader _logReader;
         IPredictor _logPredictor;
         FieldDrawer _logFieldDrawer;
         List<Type> _logLineFormat;
-        Timer timer;
-        bool logging;
+        System.Timers.Timer _timer;
+        bool _logging;
         string LOG_FILE;
 
-        public ControlForm() {
+        public ControlForm()
+        {
             InitializeComponent();
 
             LoadConstants();
-
-            // Defaults hosts for the GUI, for convenience only            
-            sslVisionHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SSL_VISION") + ":" +
-                 Constants.get<int>("default", "DEFAULT_PORT_SSL_VISION").ToString();
-            serialHost.Text = Constants.get<string>("default", "DEFAULT_HOST_SERIAL");
-            serialPort.Text = Constants.get<int>("default", "DEFAULT_PORT_SERIAL").ToString();
-            txtRefbox.Items.Add(Constants.get<string>("default", "REFBOX_ADDR") + ":" +
-                Constants.get<int>("default", "REFBOX_PORT"));
-            txtRefbox.Items.Add(Constants.get<string>("default", "LOCAL_REFBOX_ADDR") + ":" +
-                Constants.get<int>("default", "LOCAL_REFBOX_PORT"));
-            txtRefbox.SelectedIndex = 0;
-
+            
             _pidForm = new PIDForm();
             _pidForm.Show();
 
             _debugForm = DebugConsole.getForm();
             _debugForm.Show();
-            
+
             _fieldDrawer = new FieldDrawer();
             _fieldDrawer.Show();
 
-            _virtualReferee = new SimpleReferee();
-            _physicsEngine = new Robocup.Simulation.PhysicsEngine(_virtualReferee);
-            _engine = new SimEngine(_physicsEngine);
+            // TODO: Make it possible for multiple players to draw into the same field drawer
+            _fieldDrawer2 = new FieldDrawer();            
+            _fieldDrawer2.Show();
+
+            _fieldDrawer.WaypointAdded += _fieldDrawer_WaypointAdded;
+            _fieldDrawer.WaypointRemoved += _fieldDrawer_WaypointRemoved;
+            _fieldDrawer.WaypointMoved += _fieldDrawer_WaypointMoved;
+            
+            _vision = new Vision();
+            _vision.MessageReceived += _vision_MessageReceived;
+
+            //_predictor = new BasicPredictor();
+            _predictor = new AveragingPredictor();
+
+            _refboxListener = new MulticastRefBoxListener();
+            _refboxListener.PacketReceived += _refboxListener_PacketReceived;
 
             loggingInit();
-
-            reloadPlays();
-            connectRefbox();
-
-            createSystem();
-            createSim();
-            createSimple();
             
             createRefboxCommandDisplayTimer();
 
-            btnLogNext.Enabled = false;     
+            createPlayers();
+            lstPlayers.SelectedIndex = 0;
+
+            reloadPlays();
+
+            btnLogNext.Enabled = false;
             chkSelectAll.Checked = true;
+            
+            cmbVisionHost.SelectedIndex = 0;
+            cmbControllerHost.SelectedIndex = 0;
+            cmbRefboxHost.SelectedIndex = 0;
 
             if (File.Exists(WAYPOINTS_FILE))
                 loadWaypoints(WAYPOINTS_FILE);
 
-            this.Focus();
-        }        
+            // Otherwise focus goes to console window and/or other forms
+            this.BringToFront();
+        }
 
         public void LoadConstants()
-        {            
+        {
             OUR_TEAM = (Team)Enum.Parse(typeof(Team), Constants.get<string>("configuration", "OUR_TEAM"), true);
             FIELD_HALF = (FieldHalf)Enum.Parse(typeof(FieldHalf), Constants.get<string>("plays", "FIELD_HALF"), true);
             PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
@@ -120,62 +128,58 @@ namespace Robocup.ControlForm {
             LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
         }
 
-        private void createSystem()
-        {            
-            _serial = new RemoteRobots();
-
-            //_predictor = new BasicPredictor();
-            _predictor = new AveragingPredictor();
-
-            _vision = new Vision();
-            _vision.MessageReceived += new EventHandler<VisionMessageEventArgs>(_vision_MessageReceived);
-            _vision.ErrorOccured += new EventHandler(_vision_ErrorOccured);
-
-            _player = new Player(OUR_TEAM, FIELD_HALF, _predictor, _serial, _fieldDrawer);            
-        }        
-
-        private void createSim()
+        private void createPlayers()
         {
-            _fieldDrawer1 = new FieldDrawer();
-            _fieldDrawer2 = new FieldDrawer();
+            lstPlayers.Items.Add(new Player("RFC", OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor));
 
-            _player1 = new Player(Team.Yellow, FieldHalf.Left, _physicsEngine, _physicsEngine, _fieldDrawer1);
-            _player2 = new Player(Team.Blue, FieldHalf.Right, _physicsEngine, _physicsEngine, _fieldDrawer2);           
+            lstPlayers.Items.Add(new Player("Sim1", Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor));
+            lstPlayers.Items.Add(new Player("Sim2", Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor));
+
+            lstPlayers.Items.Add(new PathFollowerPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor));
+            lstPlayers.Items.Add(new KickPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor));
+            lstPlayers.Items.Add(new BeamKickPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor));
         }
 
-        private void createSimple()
+        // A timer that periodically resets the Refbox command indicator to be able to see when no 
+        // packets are received. This is not done with the other drawing, because the #1 point of 
+        // this refbox state output is to have an independent and direct reading from the refbox 
+        // (e.g. to *quickly* and always know whether we are getting commands from official refbox 
+        // during the game)
+        private void createRefboxCommandDisplayTimer()
         {
-            // Change the controller and predictor to the real ones (_predictor, _serial) to do real life
+            const double INTERVAL = 1000; // ms
+            _refboxCommandDisplayTimer = new System.Timers.Timer(INTERVAL);
+            _refboxCommandDisplayTimer.AutoReset = true;
+            _refboxCommandDisplayTimer.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
+            {
+                if (_fieldDrawer.Visible)
+                {
+                    if (_refboxListener == null)
+                    {
+                        _fieldDrawer.UpdateRefBoxCmd("<DISCONNECTED>");
+                        _fieldDrawer2.UpdateRefBoxCmd("<DISCONNECTED>");
+                    }
+                    else if (!_refboxListener.IsReceiving())
+                    {
+                        _fieldDrawer.UpdateRefBoxCmd("<NO DATA>");
+                        _fieldDrawer2.UpdateRefBoxCmd("<NO DATA>");
+                    }
+                }
+            };
+            _refboxCommandDisplayTimer.Start();
+        }        
 
-            /* Real World */
-            //IRobots controller = _serial;
-            //IPredictor predictor = _predictor;
-
-            /* Simulation */
-            IRobots controller = _physicsEngine;
-            IPredictor predictor = _physicsEngine;
-
-            lstSimplePlayer.Items.Add(new PathFollowerPlayer(OUR_TEAM, FIELD_HALF, predictor, controller, _fieldDrawer));
-            lstSimplePlayer.Items.Add(new KickPlayer(OUR_TEAM, FIELD_HALF, predictor, controller, _fieldDrawer));
-            lstSimplePlayer.Items.Add(new BeamKickPlayer(OUR_TEAM, FIELD_HALF, predictor, controller, _fieldDrawer));
-            lstSimplePlayer.SelectedIndex = 0;
-            
-            _fieldDrawer.WaypointAdded += _fieldDrawer_WaypointAdded;
-            _fieldDrawer.WaypointRemoved += _fieldDrawer_WaypointRemoved;
-            _fieldDrawer.WaypointMoved += _fieldDrawer_WaypointMoved;
-        }      
-
-        void _fieldDrawer_WaypointAdded(object sender, WaypointAddedEventArgs e)
+        private void _fieldDrawer_WaypointAdded(object sender, WaypointAddedEventArgs e)
         {
             addWaypoint(e.Object as RobotInfo, e.Color);
         }
 
-        void _fieldDrawer_WaypointRemoved(object sender, WaypointRemovedEventArgs e)
+        private void _fieldDrawer_WaypointRemoved(object sender, WaypointRemovedEventArgs e)
         {
             removeWaypoint(e.Object as RobotInfo);
         }
 
-        void _fieldDrawer_WaypointMoved(object sender, WaypointMovedEventArgs e)
+        private void _fieldDrawer_WaypointMoved(object sender, WaypointMovedEventArgs e)
         {
             RobotInfo waypoint = e.Object as RobotInfo;
             waypoint.Position = e.NewLocation;
@@ -200,64 +204,11 @@ namespace Robocup.ControlForm {
             _waypointMarkers.Remove(waypoint);
         }
 
-        private void createRefboxCommandDisplayTimer()
-        {
-            const double interval = 1000; // ms
-            _refboxCommandDisplayTimer = new System.Timers.Timer(interval);
-            _refboxCommandDisplayTimer.AutoReset = true;
-            _refboxCommandDisplayTimer.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
-            {                
-                if (_refboxListener == null)
-                    _fieldDrawer.UpdateRefBoxCmd("<DISCONNECTED>");
-                else if (!_refboxListener.isReceiving())
-                    _fieldDrawer.UpdateRefBoxCmd("<NO DATA>");
-            };
-            _refboxCommandDisplayTimer.Start();
-        }
-
-        private void reloadPlays()
-        {
-            _plays = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR).Keys);
-            chkSelectAll.Checked = false;
-            lstPlays.Items.Clear();
-            lstPlays.Items.AddRange(_plays.ToArray());
-            chkSelectAll.Checked = true;
-
-            _plays1 = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR).Keys);
-            _plays2 = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR).Keys);
-        }
-
-        private void connectRefbox()
-        {
-            string[] items = txtRefbox.Text.Split(new char[] { ':' });
-            if (items.Length != 2)
-            {
-                MessageBox.Show("Refbox address must be in format: ip:port");
-                return;
-            }
-            _refboxListener = new MulticastRefBoxListener(items[0], int.Parse(items[1]),
-                delegate(char command)
-                {
-                    _fieldDrawer.UpdateRefBoxCmd(MulticastRefBoxListener.CommandCharToName(command));
-                });
-
-            lblRefbox.BackColor = Color.Green;
-            btnRefbox.Text = "Disconnect";
-            _refboxConnected = true;
-        }
-        private void disconnectRefbox()
-        {
-            _refboxListener.stop();
-            _refboxListener.close();
-            lblRefbox.BackColor = Color.Red;
-            btnRefbox.Text = "Connect";
-            _refboxConnected = false;
-        }
-
         private void saveWaypoints(string file)
-        {            
+        {
             TextWriter writer = new StreamWriter(file, false);
-            foreach (RobotInfo waypoint in _waypoints) {
+            foreach (RobotInfo waypoint in _waypoints)
+            {
                 string line = String.Join(",", new string[] { waypoint.Position.X.ToString(), waypoint.Position.Y.ToString(),
                                                 waypoint.Velocity.X.ToString(), waypoint.Velocity.Y.ToString(),
                                                 waypoint.AngularVelocity.ToString(), waypoint.Orientation.ToString(), 
@@ -274,7 +225,7 @@ namespace Robocup.ControlForm {
             string line;
             while ((line = reader.ReadLine()) != null)
             {
-                string[] tokens = line.Split(new char[] { ',' });                
+                string[] tokens = line.Split(new char[] { ',' });
                 RobotInfo waypoint = new RobotInfo(new Vector2(double.Parse(tokens[0]), double.Parse(tokens[1])),
                                                    new Vector2(double.Parse(tokens[2]), double.Parse(tokens[3])),
                                                    double.Parse(tokens[4]), double.Parse(tokens[5]),
@@ -282,170 +233,78 @@ namespace Robocup.ControlForm {
                 addWaypoint(waypoint, Color.FromArgb(int.Parse(tokens[8])));
             }
             reader.Close();
-        }
-
-        void _vision_MessageReceived(object sender, VisionMessageEventArgs e)
+        }        
+        
+        private void reloadPlays()
         {
-            ((IVisionInfoAcceptor)_predictor).Update(e.VisionMessage);
-        }
+            bool firstPlayer = true;
 
-        void _vision_ErrorOccured(object sender, EventArgs e)
-        {
-            _visionConnected = false;
-            sslVisionStatus.BackColor = Color.Red;
-            sslVisionConnect.Text = "Connect";
-        }
+            chkSelectAll.Checked = false;
+            lstPlays.Items.Clear();
+            plays.Clear();
 
-        private void btnSSLVision_Click(object sender, EventArgs e)
-        {
-            if (!_visionConnected)
+            // There's no better place than lstPlayers to get all the players
+            foreach (Player player in lstPlayers.Items)
             {
-                int port;
-                string hostname;
-                string[] tokens = sslVisionHost.Text.Split(new char[] { ':' });
-                if (tokens.Length != 2 || !int.TryParse(tokens[1], out port))
+                List<InterpreterPlay> playObjs = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR).Keys);
+                player.LoadPlays(playObjs);
+
+                // Store for lookup from enable/disable list
+                // See comment on top for "plays" for why this is setup like this                
+                foreach (InterpreterPlay play in playObjs)
                 {
-                    MessageBox.Show("Invalid format of SSL Vision host. It must be \"hostname:port\"");
-                    return;
-                }
-                hostname = tokens[0];
-                
-                _vision.Start(port, hostname);
-
-                _visionConnected = true;
-                sslVisionStatus.BackColor = Color.Green;
-                sslVisionConnect.Text = "Disconnect";                
-            }
-            else
-            {
-                _visionConnected = false;
-                sslVisionStatus.BackColor = Color.Red;
-                sslVisionConnect.Text = "Connect";
-            }
-        }                  
-
-        private void serialConnect_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (!_serialConnected)
-                {
-                    if (_serial.start(serialHost.Text, int.Parse(serialPort.Text)))
+                    if (firstPlayer)
                     {
-                        serialStatus.BackColor = Color.Green;
-                        serialConnect.Text = "Disconnect";
-                        _serialConnected = true;
+                        List<InterpreterPlay> playCopies = new List<InterpreterPlay>();
+                        playCopies.Add(play);
+                        plays.Add(play.Name, playCopies);
+                        lstPlays.Items.Add(play.Name);
                     }
-                }
-                else
-                {
-                    _serial.stop();
-                    serialStatus.BackColor = Color.Red;
-                    serialConnect.Text = "Connect";
-                    _serialConnected = false;
-                }
-            }
-            catch (Exception except)
-            {
-                Console.WriteLine(except.StackTrace);
+                    else
+                    {
+                        // Append copies into the bin identified by the play name                         
+                        plays[play.Name].Add(play);
+                    }
+                }                
+                firstPlayer = false;
             }
 
-        }
-
-        private void btnRefbox_Click(object sender, EventArgs e)
-        {
-            if (_player.Running || _player1.Running || _simplePlayer.Running)
-            {
-                MessageBox.Show("Cannot connect/disconnect from refbox while system is running");
-                return;
-            }
-
-            if (!_refboxConnected)
-                connectRefbox();
-            else
-                disconnectRefbox();
-        }
-
-        private void rfcStart_Click(object sender, EventArgs e) {
-            if (!_player.Running) {
-                _player.LoadPlays(_plays);
-                _player.SetRefBoxListener(_refboxListener);
-                _player.Start();
-                rfcStatus.BackColor = Color.Green;
-                rfcStart.Text = "Stop";
-            } else {
-                _player.Stop();
-                rfcStatus.BackColor = Color.Red;
-                rfcStart.Text = "Start";
-            }
-        }
-   
-        private void btnStartSim_Click(object sender, EventArgs e)
-        {
-            if (!_player1.Running && !_player2.Running)
-            {
-                _fieldDrawer1.Show();
-                _fieldDrawer2.Show();
-
-                _player1.LoadPlays(_plays1);
-                _player2.LoadPlays(_plays2);
-
-                _player1.SetRefBoxListener(_refboxListener);
-                _player2.SetRefBoxListener(_refboxListener);
-
-                _player1.Start();
-                _player2.Start();
-                _engine.start();
-
-                lblSimStatus.BackColor = Color.Green;
-                btnStartSim.Text = "Stop Sim";
-            }
-            else
-            {
-                _engine.stop();
-                _player2.Stop();
-                _player1.Stop();
-
-                _fieldDrawer1.Hide();
-                _fieldDrawer2.Hide();
-
-                lblSimStatus.BackColor = Color.Red;
-                btnStartSim.Text = "Start Sim";
-            }
-        }
-
-        private void btnStartStopPlayer_Click(object sender, EventArgs e)
-        {            
-            if (!_simplePlayer.Running)
-            {                
-                if (_simplePlayer is PathFollowerPlayer)
-                {
-                    PathFollowerPlayer pathFollowerPlayer = _simplePlayer as PathFollowerPlayer;                    
-                    pathFollowerPlayer.ClearWaypoints();
-                    foreach (RobotInfo waypoint in _waypoints)
-                        pathFollowerPlayer.AddWaypoint(waypoint);
-                }
-                _simplePlayer.Start();
-                _engine.start();
-                lstSimplePlayer.Enabled = false;
-                lblSimplePlayerStatus.BackColor = Color.Green;
-                btnStartStopPlayer.Text = "Stop Simple Player";
-            }
-            else
-            {
-                _engine.stop();
-                _simplePlayer.Stop();
-                lstSimplePlayer.Enabled = true;
-                lblSimplePlayerStatus.BackColor = Color.Red;
-                btnStartStopPlayer.Text = "Start Simple Player";                
-            }
+            chkSelectAll.Checked = true;
         }
         
+        private bool parseHost(string host, out string hostname, out int port)
+        {
+            string[] tokens = host.Split(new char[] { ':' });
+            if (tokens.Length != 2 || !int.TryParse(tokens[1], out port) ||
+                tokens[0].Length == 0 || tokens[1].Length == 0)
+            {
+                MessageBox.Show("Invalid format of host ('" + host + "'). It must be \"hostname:port\"");
+                hostname = null;
+                port = 0;
+                return false;
+            }
+            hostname = tokens[0];
+            return true;
+        }
+
+        private bool checkAnyPlayerRunning()
+        {
+            foreach (Player player in lstPlayers.Items)
+            {
+                if (player.Running)
+                {
+                    MessageBox.Show("Cannot disconnect while a player is running.");
+                    return true;
+                }
+            }
+            return false;
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == (Keys.Control | Keys.R))
             {
-                if (_player.Running || _player1.Running || _player2.Running || _simplePlayer.Running)
+                if (_selectedPlayer.Running)
                 {
                     MessageBox.Show("System running. Need to stop system to reload contants.");
                     return false;
@@ -455,13 +314,10 @@ namespace Robocup.ControlForm {
 
                 LoadConstants();
 
-                _predictor.LoadConstants();
-                _player.LoadConstants();
+                foreach (object player in lstPlayers.Items)
+                    ((Player)player).LoadConstants();
 
                 reloadPlays();
-                _player.LoadPlays(_plays);
-                _player1.LoadPlays(_plays1);
-                _player2.LoadPlays(_plays2);
 
                 Console.WriteLine("Constants and plays reloaded.");
                 return true;
@@ -478,12 +334,181 @@ namespace Robocup.ControlForm {
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
-        }      
-     
+        }
+
+        private void _vision_MessageReceived(object sender, EventArgs<VisionMessage> e)
+        {
+            ((IVisionInfoAcceptor)_predictor).Update(e.Data);
+        }
+
+        private void _refboxListener_PacketReceived(object sender, EventArgs<char> e)
+        {
+            _fieldDrawer.UpdateRefBoxCmd(MulticastRefBoxListener.CommandCharToName(e.Data));
+            _fieldDrawer2.UpdateRefBoxCmd(MulticastRefBoxListener.CommandCharToName(e.Data));
+        }
+
+        private void btnVision_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!_visionConnected)
+                {
+                    int port;
+                    string hostname;
+                    if (!parseHost(cmbVisionHost.Text, out hostname, out port)) return;
+
+                    _vision.Connect(hostname, port);
+                    _vision.Start();
+
+                    _visionConnected = true;
+                    lblVisionStatus.BackColor = Color.Green;
+                    btnVision.Text = "Disconnect";
+                }
+                else
+                {
+                    if (checkAnyPlayerRunning()) return;
+
+                    _vision.Stop();
+                    _vision.Disconnect();
+
+                    _visionConnected = false;
+                    lblVisionStatus.BackColor = Color.Red;
+                    btnVision.Text = "Connect";
+                }
+            }
+            catch (Exception except)
+            {
+                MessageBox.Show(except.Message + "\r\n" + except.StackTrace);
+            }
+        }
+
+        private void btnController_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!_controllerConnected)
+                {
+                    string hostname;
+                    int port;
+                    if (!parseHost(cmbControllerHost.Text, out hostname, out port)) return;
+
+                    foreach (Player player in lstPlayers.Items)
+                        player.ConnectToController(hostname, port);
+
+                    lblControllerStatus.BackColor = Color.Green;
+                    btnController.Text = "Disconnect";
+                    _controllerConnected = true;
+                }
+                else
+                {
+                    if (checkAnyPlayerRunning()) return;
+
+                    foreach (object player in lstPlayers.Items)
+                        ((Player)player).DisconnectFromController();
+
+                    lblControllerStatus.BackColor = Color.Red;
+                    btnController.Text = "Connect";
+                    _controllerConnected = false;
+                }
+            }
+            catch (Exception except)
+            {
+                MessageBox.Show(except.Message + "\r\n" + except.StackTrace);
+            }
+        }
+
+        private void btnRefbox_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!_refboxConnected)
+                {
+                    string hostname;
+                    int port;
+                    if (!parseHost(cmbRefboxHost.Text, out hostname, out port)) return;
+
+                    // Listener can only be created once, so have to do it here as opposed to inside RefBoxState
+                    _refboxListener.Connect(hostname, port);                    
+
+                    foreach (Player player in lstPlayers.Items)
+                        player.ConnectToRefbox(_refboxListener);
+
+                    _refboxListener.Start();
+
+                    lblRefboxStatus.BackColor = Color.Green;
+                    btnRefbox.Text = "Disconnect";
+                    _refboxConnected = true;
+                }
+                else
+                {
+                    if (checkAnyPlayerRunning()) return;
+
+                    _refboxListener.Stop();
+                    _refboxListener.Disconnect();
+
+                    foreach (Player player in lstPlayers.Items)
+                        player.DisconnectFromRefbox();
+                    
+                    lblRefboxStatus.BackColor = Color.Red;
+                    btnRefbox.Text = "Connect";
+                    _refboxConnected = false;
+                }
+            }
+            catch (Exception except)
+            {
+                MessageBox.Show(except.Message + "\r\n" + except.StackTrace);
+            }
+        }
+
+        private void btnStartPlayer_Click(object sender, EventArgs e)
+        {
+            if (_selectedPlayer.Running)
+            {
+                MessageBox.Show("Selected player already running.");
+                return;
+            }
+
+            if (!_controllerConnected)
+            {
+                MessageBox.Show("Controller must be connected to run a player.");
+                return;
+            }
+
+            if (_selectedPlayer is PathFollowerPlayer)
+            {
+                PathFollowerPlayer pathFollowerPlayer = _selectedPlayer as PathFollowerPlayer;
+                pathFollowerPlayer.ClearWaypoints();
+                foreach (RobotInfo waypoint in _waypoints)
+                    pathFollowerPlayer.AddWaypoint(waypoint);
+            }
+            
+            _selectedPlayer.Start();
+
+            // Running status has changed for a player, so make sure it is (un)bold-ed in the list
+            lstPlayers.Invalidate();
+        }
+
+        private void btnStopPlayer_Click(object sender, EventArgs e)
+        {
+            if (!_selectedPlayer.Running)
+            {
+                MessageBox.Show("Selected player not running.");
+                return;
+            }
+
+            _selectedPlayer.Stop();            
+
+            // Running status has changed for a player, so make sure it is (un)bold-ed in the list
+            lstPlayers.Invalidate();
+        }
+
         private void lstPlays_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            InterpreterPlay play = lstPlays.Items[e.Index] as InterpreterPlay;
-            play.isEnabled = e.NewValue == CheckState.Checked;
+            string playName = lstPlays.Items[e.Index] as string;
+            
+            // Enable/disable the corresponding play object *for each player*
+            foreach (InterpreterPlay play in plays[playName])
+                play.isEnabled = e.NewValue == CheckState.Checked;
         }
 
         private void chkSelectAll_CheckedChanged(object sender, EventArgs e)
@@ -511,10 +536,10 @@ namespace Robocup.ControlForm {
             _logLineFormat.Add(typeof(RobotPath));
 
 
-            timer = new Timer();
-            timer.Interval = 500;
+            _timer = new System.Timers.Timer();
+            _timer.Interval = 500;
             //timer.Tick += new EventHandler(InvalidateTimerHanlder);
-            timer.Start();
+            _timer.Start();
         }
 
         private void btnLogNext_Click(object sender, EventArgs e)
@@ -550,7 +575,7 @@ namespace Robocup.ControlForm {
 
             _logFieldDrawer.BeginCollectState();
 
-            // TODO: Implement paths in FieldDrawer
+            // TODO: Maybe resurrect logging?
             /*_logFieldDrawer.ClearPaths();
             _logFieldDrawer.AddPath(path);*/
 
@@ -571,15 +596,15 @@ namespace Robocup.ControlForm {
                 return;
             }*/
 
-            if (logging)
+            if (_logging)
             {
-                logging = false;
+                _logging = false;
                 btnStartStopLogging.Text = "Start log";
                 btnLogOpenClose.Enabled = true;
             }
             else
             {
-                logging = true;
+                _logging = true;
                 btnStartStopLogging.Text = "Stop log";
                 btnLogOpenClose.Enabled = false;
             }
@@ -619,17 +644,68 @@ namespace Robocup.ControlForm {
                 btnLogNext.Enabled = true;
                 btnStartStopLogging.Enabled = false;
             }
-
-
         }
 
         #endregion
 
-        private void lstSimplePlayer_SelectedIndexChanged(object sender, EventArgs e)
+        private void lstPlayers_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            if (_simplePlayer != null && _simplePlayer.Running)
-                throw new ApplicationException("Cannot change player while running!");
-            _simplePlayer = lstSimplePlayer.SelectedItem as Player;
-        }     
+            _selectedPlayer = lstPlayers.SelectedItem as Player;
+        }
+
+        // For displaying the running players in bold
+        private void lstPlayers_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            // Draw the background of the ListBox control for each item.
+            e.DrawBackground();
+
+            Player player = (Player)lstPlayers.Items[e.Index];
+
+            Font font = e.Font;
+            if (player.Running)                
+                 font = new Font(e.Font.FontFamily, e.Font.SizeInPoints, FontStyle.Bold);
+
+            e.Graphics.DrawString(player.ToString(),
+                font, Brushes.Black, e.Bounds, StringFormat.GenericDefault);
+            e.DrawFocusRectangle();
+        }
+
+        private void ControlForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_formClosing) return;
+
+            // Stop everything for clean exit (emulate user actions, to not have to worry about
+            // editting this method)
+            object[] players = new object[lstPlayers.Items.Count];
+            lstPlayers.Items.CopyTo(players, 0);
+            foreach (Player player in players)
+            {
+                if (player.Running)
+                {
+                    lstPlayers.SelectedItem = player;
+                    btnStopPlayer_Click(null, null);
+                }
+            }
+
+            if (_refboxConnected)
+                btnRefbox_Click(null, null);
+            if (_visionConnected)
+                btnVision_Click(null, null);
+            if (_controllerConnected)
+                btnController_Click(null, null);                
+
+
+            // Need to give some time for the threads that the above calls spawn to 
+            // complete, *without stalling this thread*, hence this bizzare code here
+            _formClosing = true;
+            e.Cancel = true;
+
+            Thread shutdownThread = new Thread(delegate(object state)
+            {
+                Thread.Sleep(2000);
+                Application.Exit();
+            });
+            shutdownThread.Start();
+        }
     }
 }

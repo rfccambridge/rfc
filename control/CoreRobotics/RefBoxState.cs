@@ -11,7 +11,7 @@ namespace Robocup.CoreRobotics
         Team _ourTeam;                
         PlayType playsToRun;
         
-        IRefBoxListener _referee;
+        IRefBoxListener _refboxListener;
         IPredictor _predictor;
 
         int lastCmdCounter;
@@ -27,45 +27,43 @@ namespace Robocup.CoreRobotics
             lastCmdCounter = 0;
         }
 
-        public IRefBoxListener getReferee()
+        // The listener can only be created once, hence can't pass the nicer host, port pair
+        public void Connect(IRefBoxListener listener)
         {
-            return _referee;
-        }
-        public void setReferee(IRefBoxListener listener) {
-            _referee = listener;
-            lastCmdCounter = -1;
-        }
+            if (_refboxListener != null)
+                throw new ApplicationException("Already connected.");
 
-        public void start()
+            _refboxListener = listener;
+            lastCmdCounter = 0;
+        }
+       
+        public void Disconnect()
         {
-            if (_referee == null)
-                return;
+            if (_refboxListener == null)
+                throw new ApplicationException("Not connected.");
 
-            _referee.start();
+            _refboxListener = null;
         }
 
-        public void stop()
+        public bool IsReceiving()
         {
-            if (_referee == null)
-                return;
-
-            _referee.stop();
+            return _refboxListener.IsReceiving();
         }
 
         public PlayType GetCurrentPlayType()
         {
             // Default game state is stopped if there is no refbox connected
-            if (_referee == null)
+            if (_refboxListener == null)
                 return PlayType.Stopped;
 
             if (_predictor.HasBallMoved()) {
                     playsToRun = PlayType.NormalPlay;                    
                     _predictor.ClearBallMark();
             }
-            if (lastCmdCounter < _referee.getCmdCounter())
+            if (lastCmdCounter < _refboxListener.GetCmdCounter())
             {
-                lastCmdCounter = _referee.getCmdCounter();
-                char lastCommand = _referee.getLastCommand();
+                lastCmdCounter = _refboxListener.GetCmdCounter();
+                char lastCommand = _refboxListener.GetLastCommand();
                 switch (lastCommand)
                 {
                     case MulticastRefBoxListener.HALT:

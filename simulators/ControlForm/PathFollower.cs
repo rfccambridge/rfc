@@ -26,9 +26,8 @@ namespace Robocup.ControlForm
             set { _robotID = value; }
         }
 
-        public PathFollowerPlayer(Team team, FieldHalf fieldHalf, IPredictor predictor,
-                          IRobots commander, FieldDrawer fieldDrawer) :
-            base(team, fieldHalf, predictor, commander, fieldDrawer)
+        public PathFollowerPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) :
+            base("", team, fieldHalf, fieldDrawer, predictor)
         {
             LoadConstants();
         }
@@ -84,7 +83,7 @@ namespace Robocup.ControlForm
             }
 
             // TODO: Add full ID support for all robots
-            _controller.move(_robotID, false, _waypoints[_waypointIndex].Position, _waypoints[_waypointIndex].Orientation);
+            _controller.Move(_robotID, false, _waypoints[_waypointIndex].Position, _waypoints[_waypointIndex].Orientation);
 
             // if lapping stops midway...
             //if (waypointIndex > waypoints.Count - 1) {
@@ -146,11 +145,11 @@ namespace Robocup.ControlForm
             set { _robotID = value; }
         }
 
-        public KickPlayer(Team team, FieldHalf fieldHalf, IPredictor predictor,
-                          IRobots commander, FieldDrawer fieldDrawer) :
-            base(team, fieldHalf, predictor, commander, fieldDrawer)
+        public KickPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor)
+            :
+            base("", team, fieldHalf, fieldDrawer, predictor)
         {
-            _actionInterpreter = new ActionInterpreter(team, _controller, predictor);
+            _actionInterpreter = new ActionInterpreter(team, _controller, _predictor);
         }
 
         protected override void doAction()
@@ -161,9 +160,8 @@ namespace Robocup.ControlForm
 
     public class BeamKickPlayer : KickPlayer
     {
-        public BeamKickPlayer(Team team, FieldHalf fieldHalf, IPredictor predictor,
-                  IRobots commander, FieldDrawer fieldDrawer)
-            : base(team, fieldHalf, predictor, commander, fieldDrawer)
+        public BeamKickPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor)
+            : base(team, fieldHalf, fieldDrawer, predictor)
         {
         }
 

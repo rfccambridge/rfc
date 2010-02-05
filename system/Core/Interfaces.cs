@@ -39,7 +39,7 @@ namespace Robocup.Core {
         KickOff_Ours_Setup,
         Kickoff_Theirs_Setup,
         KickOff_Theirs
-    }
+    }    
 
     public interface IReferee
     {
@@ -48,36 +48,14 @@ namespace Robocup.Core {
     }
     public interface IRefBoxListener
     {
-        void start();
-        void stop();
-        void close();
-        bool isReceiving();
-        int getCmdCounter();
-        char getLastCommand();
-    }
-
-
-    /** Abstraction for the command executer
-     *  
-     *  Implementations: SerialRobots, MRSRobots
-     * 
-     */
-    public interface IRobots {
-        /// <summary>
-        /// Sets the speeds for the robot wheels.  Positive values mean that the robot will move forward.
-        /// </summary>
-        void setMotorSpeeds(int robotID, WheelSpeeds wheelSpeeds);
-        /// <summary>
-        /// Starts a charge/kick sequence - kicking always occurs after a certain charging delay
-        /// </summary>
-        /// <param name="robotID"></param>
-        void kick(int robotID);
-        /// <summary>
-        /// Starts a charge/kick sequence - kicking occurs if the ball breaks the break-beam on the actual robot
-        /// </summary>
-        /// <param name="robotID"></param>
-        void beamKick(int robotID);
-        void charge(int robotID);
+        event EventHandler<EventArgs<char>> PacketReceived;
+        void Connect(string addr, int port);
+        void Disconnect();
+        void Start();
+        void Stop();        
+        bool IsReceiving();
+        int GetCmdCounter();
+        char GetLastCommand();
     }
 
     /// <summary>
@@ -181,13 +159,13 @@ namespace Robocup.Core {
     /// has the robot execute it.
     /// </summary>
     public interface IController {
-        void move(int robotID, bool avoidBall, Vector2 dest);
-        void move(int robotID, bool avoidBall, Vector2 dest, double orientation);
-        void charge(int robotID);
-        void kick(int robotID);
-        void beamKick(int robotID, bool goForward);
-        void stop(int robotID);
-        void moveKick(int robotID, Vector2 target);
+        void Connect(string host, int port);
+        void Disconnect();
+        void Move(int robotID, bool avoidBall, Vector2 dest);
+        void Move(int robotID, bool avoidBall, Vector2 dest, double orientation);
+        void Charge(int robotID);
+        void Kick(int robotID, Vector2 target);
+        void Stop(int robotID);
     	void StopControlling();
 
         void LoadConstants();

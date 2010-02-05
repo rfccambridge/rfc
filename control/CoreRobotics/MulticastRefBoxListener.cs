@@ -11,39 +11,14 @@ namespace Robocup.CoreRobotics
 {
     public class MulticastRefBoxListener : IRefBoxListener
     {
-        public delegate void OnPacketReceivedCallback(char command);
-
-        // Note: If you change these, don't forget to change the names in the map
-        public const char HALT = 'H';
-        public const char STOP = 'S';
-        public const char READY = ' ';
-        public const char START = 's';
-        public const char KICKOFF_YELLOW = 'k';
-        public const char PENALTY_YELLOW = 'p';
-        public const char DIRECT_YELLOW = 'f';
-        public const char INDIRECT_YELLOW = 'i';
-        public const char TIMEOUT_YELLOW = 't';
-        public const char TIMEOUT_END_YELLOW = 'z';
-        
-        public const char KICKOFF_BLUE = 'K';
-        public const char PENALTY_BLUE = 'P';
-        public const char DIRECT_BLUE = 'F';
-        public const char INDIRECT_BLUE = 'I';
-        public const char TIMEOUT_BLUE = 'T';
-        public const char TIMEOUT_END_BLUE = 'Z';
-
-        public const char CANCEL = 'c';
-
-        private static Dictionary<char, string> COMMAND_CHAR_TO_NAME;
-        
-        public struct RefboxPacket
+        struct RefboxPacket
         {
             public char cmd;
             public byte cmd_counter;    // counter for current command
             public byte goals_blue;      // current score for blue team
             public byte goals_yellow;    // current score for yellow team
             public short time_remaining; // seconds remaining for current game stage (network byte order)
-            
+
             public byte[] toByte()
             {
                 int len = Marshal.SizeOf(this);
@@ -73,29 +48,37 @@ namespace Robocup.CoreRobotics
             }
         };
 
-        class StateObject
-        {
-            public Socket sock;
-            public byte[] buffer;
-            public RefboxPacket packet;
-            public EndPoint ep;
+        // Note: If you change these, don't forget to change the names in the map
+        public const char HALT = 'H';
+        public const char STOP = 'S';
+        public const char READY = ' ';
+        public const char START = 's';
+        public const char KICKOFF_YELLOW = 'k';
+        public const char PENALTY_YELLOW = 'p';
+        public const char DIRECT_YELLOW = 'f';
+        public const char INDIRECT_YELLOW = 'i';
+        public const char TIMEOUT_YELLOW = 't';
+        public const char TIMEOUT_END_YELLOW = 'z';
+        
+        public const char KICKOFF_BLUE = 'K';
+        public const char PENALTY_BLUE = 'P';
+        public const char DIRECT_BLUE = 'F';
+        public const char INDIRECT_BLUE = 'I';
+        public const char TIMEOUT_BLUE = 'T';
+        public const char TIMEOUT_END_BLUE = 'Z';
 
-            public StateObject()
-            {
-                packet = new RefboxPacket();
-                buffer = new byte[packet.getSize()];
-            }
-        }
+        public const char CANCEL = 'c';        
 
-        volatile bool running;
-        volatile bool closing;
-        DateTime lastReceivedTime;
-        object cvClosing = new object(); // Condition variable for closing notification
+        private static Dictionary<char, string> COMMAND_CHAR_TO_NAME;
 
-        EndPoint ep;
-        StateObject so;
-        RefboxPacket packet;                
-        OnPacketReceivedCallback onPacketReceivedCallback;
+        public event EventHandler<EventArgs<char>> PacketReceived;
+
+        Thread _receiveThread;        
+        EndPoint _endPoint;
+        Socket _socket;
+        RefboxPacket _lastPacket;
+        DateTime _lastReceivedTime;
+        object lastPacketLock = new object();
 
         static MulticastRefBoxListener()
         {
@@ -140,132 +123,100 @@ namespace Robocup.CoreRobotics
             return "";
         }
 
-        public MulticastRefBoxListener(string addr, int port)
-            : this(addr, port, null) { }
-
-        public MulticastRefBoxListener(string addr, int port, OnPacketReceivedCallback onPacketReceivedCallback)
+        public void Connect(string addr, int port)
         {
-            packet = new RefboxPacket();
-            packet.cmd = 'H';
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            ep = (EndPoint)new IPEndPoint(IPAddress.Any, port);
-            s.Bind(ep);
-            s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
-            
-            so = new StateObject();
-            so.sock = s;
-            so.ep = ep;
-            running = false;
+            if (_socket != null)
+                throw new ApplicationException("Already connected.");
 
-            start();
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            _endPoint = new IPEndPoint(IPAddress.Any, port);            
 
-            this.onPacketReceivedCallback = onPacketReceivedCallback;            
+            _socket.Bind(_endPoint);
+            _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
         }
 
-        public void close() {
-            if (running)
-                throw new ApplicationException("Cannot close MulticastRefBoxListener while listening");
-            if (closing)
-                throw new ApplicationException("Closing already in progress!");
-            
-            lock (cvClosing)
+        public void Disconnect()
+        {
+            if (_socket == null)
+                throw new ApplicationException("Not connected.");
+            if (_receiveThread != null)
+                throw new ApplicationException("Must stop before disconnecting.");
+
+            _socket.Close();
+            _socket = null;
+        }
+
+        public void Start()
+        {
+            _receiveThread = new Thread(new ThreadStart(loop));
+            _receiveThread.Start();
+        }
+
+        public void Stop()
+        {
+            _receiveThread.Abort();
+            _receiveThread = null;
+        }
+
+        public bool IsReceiving()
+        {   
+            const int MAX_ELAPSED = 3; // seconds
+            lock (lastPacketLock)
             {
-                // Check if the receiving threads are actually running
-                bool isRcv = isReceiving();
+                TimeSpan elapsed = DateTime.Now - _lastReceivedTime;
+                return elapsed.TotalSeconds <= MAX_ELAPSED;
+            }
+        }  
 
-                // "Request" closing
-                closing = true;                
+        public int GetCmdCounter()
+        {
+            lock (lastPacketLock)
+            {
+                return _lastPacket.cmd_counter;
+            }
+        }
 
-                // If receiving threads actually run, wait until closing routines complete
-                if (isRcv)
-                {
-                    // TODO: I've seen it deadlock here when trying to disconnect refbox
-                    Monitor.Wait(cvClosing);
+        public char GetLastCommand()
+        {
+            lock (lastPacketLock)
+            {
+                return _lastPacket.cmd;
+            }
+        }
+
+        private void loop()
+        {
+            RefboxPacket packet = new RefboxPacket();
+            byte[] buffer = new byte[packet.getSize()];
+
+            while (true)
+            {
+                int rcv = _socket.ReceiveFrom(buffer, 0, packet.getSize(), SocketFlags.None, ref _endPoint);
+
+                packet = new RefboxPacket();
+                if (rcv == packet.getSize())
+                {                    
+                    packet.setVals(buffer);
+
+                    lock (lastPacketLock)
+                    {
+                        _lastReceivedTime = DateTime.Now;
+                        _lastPacket = packet;
+                    }
+
+                    /*Console.WriteLine("command: " + packet.cmd + " counter: " + packet.cmd_counter
+                        + " blue: " + packet.goals_blue + " yellow: " + packet.goals_yellow+
+                        " time left: " + packet.time_remaining);*/
+
+                    if (PacketReceived != null)
+                        PacketReceived(this, new EventArgs<char>(packet.cmd));
                 }
                 else
                 {
-                    if (so.sock != null)
-                        so.sock.Close();
-                    so.sock = null;
-                }
-
-                closing = false;
-            }
-        }        
-
-        public void start()
-        {
-            if (closing)
-                throw new ApplicationException("Closing in progress, cannot start!");
-
-            running = true;            
-            so.sock.BeginReceiveFrom(so.buffer, 0, so.packet.getSize(), SocketFlags.None, ref ep, new AsyncCallback(ReceiveRefboxPacket), so);                        
-        }
-
-        public void stop()
-        {
-            running = false;
-        }
-
-        public bool isReceiving()
-        {   
-            const int MAX_ELAPSED = 3; // seconds
-            TimeSpan elapsed = DateTime.Now - lastReceivedTime;
-            return elapsed.TotalSeconds <= MAX_ELAPSED;
-        }
-
-        void ReceiveRefboxPacket(IAsyncResult result)
-        {
-            lastReceivedTime = DateTime.Now;
-
-            if (so.sock == null)
-                return;
-
-            lock (cvClosing)
-            {
-                if (closing)
-                {
-
-                    // I think multiple receiving threads are running -- only one needs to
-                    // close the socket.
-                    if (so.sock != null)
-                    {
-                        so.sock.Close();
-                        so.sock = null;
-                        Monitor.Pulse(cvClosing);
-                    }
-                    return;
+                    Console.WriteLine("MulticastRefBoxListener: received a packet of wrong size:" + rcv +
+                                      " (expecting " + packet.getSize() + ")");
                 }
             }
-
-            StateObject sobj = (StateObject)result.AsyncState;
-            packet = new RefboxPacket();
-            if (sobj.sock.EndReceive(result) == packet.getSize())
-            {
-                packet.setVals(sobj.buffer);
-
-                /*Console.WriteLine("command: " + packet.cmd + " counter: " + packet.cmd_counter
-                    + " blue: " + packet.goals_blue + " yellow: " + packet.goals_yellow+
-                    " time left: " + packet.time_remaining);//*/
-
-                if (onPacketReceivedCallback != null)
-                    onPacketReceivedCallback(packet.cmd);
-            }
-
-            if (running && !closing)
-            {
-                so.sock.BeginReceiveFrom(sobj.buffer, 0, sobj.packet.getSize(), SocketFlags.None, ref sobj.ep, new AsyncCallback(ReceiveRefboxPacket), sobj);
-            }
-        }
-
-        public int getCmdCounter()
-        {
-            return packet.cmd_counter;
-        }
-
-        public char getLastCommand()
-        {
-            return packet.cmd;
-        }
+        }     
     }
 }

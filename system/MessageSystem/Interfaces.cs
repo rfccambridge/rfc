@@ -4,14 +4,14 @@ using System.Text;
 
 namespace Robocup.MessageSystem
 {
-    public interface MessageSender<T>
+    public interface IMessageSender<T>
     {
         void Post(T t);
         void Close();
     }
 
     public delegate void ReceiveMessageDelegate<T>(T t);
-    public interface MessageReceiver<T>
+    public interface IMessageReceiver<T>
     {
         /// <summary>
         /// This event is called when a message is received.  Do not modify the parameter, as the same
@@ -27,12 +27,12 @@ namespace Robocup.MessageSystem
     /// </summary>
     public static partial class Messages
     {
-        public static MessageSender<T> CreateServerSender<T>(int portNum)
+        public static IMessageSender<T> CreateServerSender<T>(int portNum)
         {
             return new ServerMessageSender<T>(portNum);
         }
         /// <returns>Returns null if the connection was refused, most likely because there was no process running on the other side.</returns>
-        public static MessageReceiver<T> CreateClientReceiver<T>(string hostname, int portNum)
+        public static IMessageReceiver<T> CreateClientReceiver<T>(string hostname, int portNum)
         {
             try
             {
@@ -45,12 +45,12 @@ namespace Robocup.MessageSystem
             }
         }
 
-        public static MessageReceiver<T> CreateServerReceiver<T>(int portNum)
+        public static IMessageReceiver<T> CreateServerReceiver<T>(int portNum)
         {
             return new ServerMessageReceiver<T>(portNum);
         }
         /// <returns>Returns null if the connection was refused, most likely because there was no process running on the other side.</returns>
-        public static MessageSender<T> CreateClientSender<T>(string hostname, int portNum)
+        public static IMessageSender<T> CreateClientSender<T>(string hostname, int portNum)
         {
             try
             {

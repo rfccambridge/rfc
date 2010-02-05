@@ -38,7 +38,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="DebugConsole.cs" />
+    <Compile Include="DebugConsole.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DebugForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -61,12 +63,17 @@
     <Compile Include="TagSystem.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="VisionMessage.cs" />
-    <Compile Include="WheelCommand.cs" />
     <Compile Include="WheelSpeeds.cs" />
     <Compile Include="WheelSpeedsExtender.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rfc.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MessageSystem\MessageSystem.csproj">
+      <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
+      <Name>MessageSystem</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DebugForm.resx">

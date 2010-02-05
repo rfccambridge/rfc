@@ -988,7 +988,14 @@ namespace Robocup.MotionControl
         {
             base.LoadConstants();
 
-            pathdriver.PLANNER_WAYPOINT_DISTANCE = 0.87 * pathplanner.WAYPOINT_DIST;
+            // the planner waypoint distance must always be less than about .8 waypoint
+            // distance of the planner
+
+            // otherwise, the planner will go with PLANNER_WAYPOINT_DISTANCE in motionplanning.txt
+            if (pathdriver.PLANNER_WAYPOINT_DISTANCE < .8 * pathplanner.WAYPOINT_DIST)
+            {
+                pathdriver.PLANNER_WAYPOINT_DISTANCE = 0.8 * pathplanner.WAYPOINT_DIST;
+            }
         }
 
 

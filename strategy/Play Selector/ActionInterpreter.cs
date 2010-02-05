@@ -109,11 +109,11 @@ namespace Robocup.Plays
 
         public void Stop(int robotID)
         {
-            commander.stop(robotID);
+            commander.Stop(robotID);
         }
 
         public void Charge(int robotID) {
-            commander.charge(robotID);
+            commander.Charge(robotID);
         }
 
         
@@ -150,13 +150,13 @@ namespace Robocup.Plays
         bool tooClose = thisrobot.Position.distanceSq(destination) <= 0.01 * bumpDistance * bumpDistance && angleDiff <= Math.PI / 2;
 		
         if(nearLine || tooClose){
-			commander.move(robotID,
+			commander.Move(robotID,
 					false,
 					destinationBehind,
 					destinationAngle);
 		}
 		else{
-			commander.move(robotID,
+			commander.Move(robotID,
 			               true,
 			               destination,
 		        	       destinationAngle);
@@ -213,7 +213,7 @@ namespace Robocup.Plays
             {
                 Console.WriteLine("Distance from robot to ball:{0}", Math.Sqrt(thisrobot.Position.distanceSq(destination)));
                 Console.WriteLine("Going to try and Kick!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                commander.kick(robotID);
+                commander.Kick(robotID, target);
                 /*commander.move(
                     robotID,
                     true,
@@ -222,7 +222,7 @@ namespace Robocup.Plays
             }
             else if (thisrobot.Position.distanceSq(destination) < 4*kickDistance*kickDistance) {
                 //we're close to the ball but not quite there yet
-                commander.move(
+                commander.Move(
                     robotID,
                     true,
                     new Vector2(destination.X, destination.Y),
@@ -231,7 +231,7 @@ namespace Robocup.Plays
             }else//we're kindof far away from the ball
                 {
                 //destination += ballLeading * ballinfo.Velocity;
-                commander.move(
+                commander.Move(
                     robotID,
                     true,
                     new Vector2(destination.X, destination.Y),
@@ -268,7 +268,7 @@ namespace Robocup.Plays
             }
 
             // tell commander to kick towards goal
-            commander.moveKick(robotID, target);
+            commander.Kick(robotID, target);
 
             //KickPlanningResults kickplan = 
 
@@ -316,9 +316,9 @@ namespace Robocup.Plays
         {
             try {
                 if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01)
-                    commander.stop(robotID);
+                    commander.Stop(robotID);
                 else
-                    commander.move(robotID, true, target);
+                    commander.Move(robotID, true, target);
             }
             catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
@@ -342,9 +342,9 @@ namespace Robocup.Plays
             try {
                 if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01 &&
                     Math.Abs(getOurRobotFromID(robotID).Orientation - orient) < 0.15)
-                    commander.stop(robotID);
+                    commander.Stop(robotID);
                 else
-                    commander.move(robotID, avoidBall, target, orient);
+                    commander.Move(robotID, avoidBall, target, orient);
             }
             catch (ApplicationException) {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");

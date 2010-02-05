@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Robocup.MotionControl
+
+namespace Robocup.Simulation
 {
-    static class ModelCalibratorMain
+    static class Program
     {
         /// <summary>
         /// The main entry point for the application.
@@ -14,7 +15,8 @@ namespace Robocup.MotionControl
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ModelCalibrator());
+            Application.Run(new SimulatorForm());
         }
+
     }
 }

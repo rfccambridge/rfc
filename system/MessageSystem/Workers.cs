@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Robocup.MessageSystem
 {
-    class BasicMessageSender<T> : MessageSender<T>
+    class BasicMessageSender<T> : IMessageSender<T>
     {
         readonly TcpClient client;
         readonly NetworkStream stream;
@@ -65,7 +65,7 @@ namespace Robocup.MessageSystem
         public delegate void DoneHandler(BasicMessageSender<T> doneItem);
         public event DoneHandler OnDone;
     }
-    class BasicMessageReceiver<T> : MessageReceiver<T>
+    class BasicMessageReceiver<T> : IMessageReceiver<T>
     {
         public event ReceiveMessageDelegate<T> MessageReceived;
         readonly TcpClient client;

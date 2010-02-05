@@ -8,7 +8,7 @@
     <ProjectGuid>{3CCB17A5-8943-4535-A148-7AE8D237BA32}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SerialControl</RootNamespace>
+    <RootNamespace>Robocup.SerialControl</RootNamespace>
     <AssemblyName>SerialControl</AssemblyName>
     <SccProjectName>
     </SccProjectName>
@@ -18,7 +18,7 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <StartupObject>Robotics.Commander.RunSerial</StartupObject>
+    <StartupObject>Robocup.SerialControl.Program</StartupObject>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -48,15 +48,16 @@
   </Target>
   -->
   <ItemGroup>
-    <Compile Include="CRCTool.cs" />
+    <Compile Include="SerialInput.cs" />
+    <Compile Include="WheelSpeedFunctions.cs" />
+    <Compile Include="Joystick.cs" />
     <Compile Include="RemoteControl.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="RemoteControl.Designer.cs">
       <DependentUpon>RemoteControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="RunSerial.cs" />
-    <Compile Include="SerialRobots.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="SpeedTest.cs" />
     <Compile Include="SpeedTester.cs">
       <SubType>Form</SubType>
@@ -72,6 +73,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.DirectX.DirectInput, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -82,6 +84,10 @@
     <None Include="rfc.snk" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\control\CoreRobotics\CoreRobotics.csproj">
+      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
+      <Name>CoreRobotics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>

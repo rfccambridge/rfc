@@ -114,7 +114,9 @@ namespace Robocup.CoreRobotics
                         Predicate<RobotInfo> matchByPosPredicate;
                         matchByPosPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
                         {
-                            return robot.Position.distanceSq(newRobot.Position) < DELTA_DIST_SQ_MERGE;
+                            // TODO: Figure this out, temporarily forcing to look by ID
+                            return (robot.Position.distanceSq(newRobot.Position) < DELTA_DIST_SQ_MERGE ||
+                                    robot.ID == newRobot.ID);
                         });
                         
                         // Find the matching robot

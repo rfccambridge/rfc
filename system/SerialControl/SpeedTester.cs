@@ -13,12 +13,9 @@ namespace Robotics.Commander
 {
     public partial class SpeedTester : Form
     {
-        SerialRobots _control;
         public SpeedTester()
         {
             InitializeComponent();
-
-            
         }
     }
 }

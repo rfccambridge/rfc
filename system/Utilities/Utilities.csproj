@@ -54,6 +54,7 @@
     </Compile>
     <Compile Include="Combinations.cs" />
     <Compile Include="CoordinateConverter.cs" />
+    <Compile Include="CRCTool.cs" />
     <Compile Include="FieldDrawer.cs">
       <SubType>Code</SubType>
     </Compile>

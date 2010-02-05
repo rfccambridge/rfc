@@ -51,7 +51,6 @@
     <Compile Include="PIDLoop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotInfoNNFinder.cs" />
-    <Compile Include="RobotModel.cs" />
     <Compile Include="RobotSpinner.cs" />
     <Compile Include="RRTPlanners.cs" />
     <Compile Include="SearchTree.cs" />
@@ -81,6 +80,10 @@
     <ProjectReference Include="..\..\vision\CSML\CSML.csproj">
       <Project>{8CD08024-CDBD-4FDB-9B9F-EA35B513BE92}</Project>
       <Name>CSML</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CoreRobotics\CoreRobotics.csproj">
+      <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
+      <Name>CoreRobotics</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

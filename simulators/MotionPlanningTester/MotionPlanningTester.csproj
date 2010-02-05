@@ -82,13 +82,17 @@
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\system\MessageSystem\MessageSystem.csproj">
+      <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
+      <Name>MessageSystem</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\system\Utilities\Utilities.csproj">
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SimulationLib\SimulationLib.csproj">
+    <ProjectReference Include="..\SimulationLib\Simulator.csproj">
       <Project>{A343AA15-D817-4E28-AB24-24CD4359BDF7}</Project>
-      <Name>SimulationLib</Name>
+      <Name>Simulator</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

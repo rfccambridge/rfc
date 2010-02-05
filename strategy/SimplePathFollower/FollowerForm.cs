@@ -21,8 +21,8 @@ namespace SimplePathFollower {
 		private bool verbose = false;
 		private int MESSAGE_SENDER_PORT;
 
-        private MessageReceiver<VisionMessage> _visionTop;
-        private MessageReceiver<VisionMessage> _visionBottom;
+        private IMessageReceiver<VisionMessage> _visionTop;
+        private IMessageReceiver<VisionMessage> _visionBottom;
         private bool _visionConnectedTop;
         private bool _visionConnectedBottom;
         private bool _controlConnected;
@@ -482,7 +482,8 @@ namespace SimplePathFollower {
             try {
                 if (!_controlConnected) {
                     // TODO: Follower is dead, so just fixing for sake of compilation
-                    if ((_pathFollower.Commander as RemoteRobots).start(ControlHost.Text, 50100))
+                    _pathFollower.Commander = Robocup.MessageSystem.Messages.CreateClientSender<RobotCommand>(ControlHost.Text, 50100);
+                    if (_pathFollower.Commander !=  null)
                     {
                         ControlStatus.BackColor = Color.Green;
                         BtnControl.Text = "Disconnect";
@@ -490,7 +491,7 @@ namespace SimplePathFollower {
                     }
                 }
                 else {
-                    (_pathFollower.Commander as RemoteRobots).stop();
+                    _pathFollower.Commander.Close();
                     ControlStatus.BackColor = Color.Red;
                     BtnControl.Text = "Connect";
                     _controlConnected = false;

@@ -29,11 +29,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "..\..\system\U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "..\..\strategy\Geometry\Geometry.csproj", "{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationLib", "..\..\simulators\SimulationLib\SimulationLib.csproj", "{A343AA15-D817-4E28-AB24-24CD4359BDF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator", "..\..\simulators\SimulationLib\Simulator.csproj", "{A343AA15-D817-4E28-AB24-24CD4359BDF7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionPlanning", "..\..\control\MotionPlanning\MotionPlanning.csproj", "{6B407296-924E-4788-A8B4-5E808061889D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionPlanningTester", "..\..\simulators\MotionPlanningTester\MotionPlanningTester.csproj", "{07A473F5-5310-4397-BBE6-9772AA03A22D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlCalibration", "..\..\control\ControlCalibration\ControlCalibration.csproj", "{BBADBEA3-3CF2-46C3-95B5-A670EF057571}"
 EndProject
@@ -226,16 +224,6 @@ Global
 		{6B407296-924E-4788-A8B4-5E808061889D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6B407296-924E-4788-A8B4-5E808061889D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6B407296-924E-4788-A8B4-5E808061889D}.Release|Win32.ActiveCfg = Release|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{07A473F5-5310-4397-BBE6-9772AA03A22D}.Release|Win32.ActiveCfg = Release|Any CPU
 		{BBADBEA3-3CF2-46C3-95B5-A670EF057571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BBADBEA3-3CF2-46C3-95B5-A670EF057571}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBADBEA3-3CF2-46C3-95B5-A670EF057571}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

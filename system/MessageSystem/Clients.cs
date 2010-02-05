@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace Robocup.MessageSystem
 {
-    class ClientMessageSender<T> : MessageSender<T>
+    class ClientMessageSender<T> : IMessageSender<T>
     {
         readonly BasicMessageSender<T> sender;
         public ClientMessageSender(string hostname, int portNum)
@@ -42,7 +42,7 @@ namespace Robocup.MessageSystem
             this.Close();
         }
     }
-    class ClientMessageReceiver<T> : MessageReceiver<T>
+    class ClientMessageReceiver<T> : IMessageReceiver<T>
     {
         readonly BasicMessageReceiver<T> receiver;
         public ClientMessageReceiver(string hostname, int portNum)
