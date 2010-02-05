@@ -343,6 +343,44 @@ namespace SSLVision {
 			const ::SSL_DetectionRobot &robot = m_pSSL_DetectionFrame->robots_blue(index);
 			return new SSLVision::SSL_DetectionRobotManaged(robot);
 		}
+
+		void add_ball(float confidence, float x, float y) {
+			::SSL_DetectionBall *ball = m_pSSL_DetectionFrame->add_balls();
+			ball->set_confidence(confidence);
+			ball->set_x(x);
+			ball->set_y(y);
+			// dummy-fill required fields, we don't use these
+			ball->set_pixel_x(0);
+			ball->set_pixel_y(0);
+		}
+
+		void add_robot_yellow(float confidence, int robot_id, float x, float y, float orientation) {
+			::google::protobuf::RepeatedPtrField< ::SSL_DetectionRobot > *robots;
+			robots = m_pSSL_DetectionFrame->mutable_robots_yellow();
+			::SSL_DetectionRobot *robot = robots->Add();
+			add_robot(robot, confidence, robot_id, x, y, orientation);
+		}
+
+		void add_robot_blue(float confidence, int robot_id, float x, float y, float orientation) {
+			::google::protobuf::RepeatedPtrField< ::SSL_DetectionRobot > *robots;
+			robots = m_pSSL_DetectionFrame->mutable_robots_blue();
+			::SSL_DetectionRobot *robot = robots->Add();
+			add_robot(robot, confidence, robot_id, x, y, orientation);
+		}
+
+	private:
+		void add_robot(::SSL_DetectionRobot *robot,
+			float confidence, int robot_id, float x, float y, float orientation) {
+				robot->set_confidence(confidence);
+				robot->set_robot_id(robot_id);
+				robot->set_x(x);
+				robot->set_y(y);
+				robot->set_orientation(orientation);
+				// dummy-fill required fields, we don't use these
+				robot->set_pixel_x(0);
+				robot->set_pixel_y(0);
+		}
+						
 	};
 }
 #endif
