@@ -537,7 +537,7 @@ namespace InterpreterTester
         #endregion        
 
         #region Commander Members
-        public void move(int robotID, bool avoidBall, Vector2 dest)
+        public void Move(int robotID, bool avoidBall, Vector2 dest)
         {
             RobotInfo[] infos = ourinfo;
             int newid = robotID;
@@ -549,14 +549,14 @@ namespace InterpreterTester
                 newid -= TEAMSIZE;
             }
             RobotInfo r = infos[newid];
-            move(robotID, avoidBall, dest, (double)Math.Atan2(ballinfo.Position.Y - r.Position.Y, change * (ballinfo.Position.X - r.Position.X)));
+            Move(robotID, avoidBall, dest, (double)Math.Atan2(ballinfo.Position.Y - r.Position.Y, change * (ballinfo.Position.X - r.Position.X)));
         }
         const double distThreshold = .005;
         //Navigation.Current.CurrentNavigator navigator = new Navigation.Current.CurrentNavigator(),
         //    othernavigator = new Navigation.Current.CurrentNavigator();
         Navigator navigator = new Navigator(),
             othernavigator = new Navigator();
-        public void move(int robotID, bool avoidBall, Vector2 destination, double orientation)
+        public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation)
         {
             //Graphics g = this.CreateGraphics();
 
@@ -630,7 +630,7 @@ namespace InterpreterTester
             //infos[robotID] = new RobotInfo(translate(prev.Position, normalize(result - prev.Position), .01), (prev.Orientation * .9 + orientation * .1), prev.ID);
         }
 
-        public void kick(int robotID)
+        public void Kick(int robotID)
         {
             RobotInfo[] infos = ourinfo;
             if (robotID >= TEAMSIZE)
@@ -648,14 +648,14 @@ namespace InterpreterTester
             infos[robotID] = new RobotInfo(prev.Position + (new Vector2(-ballvx * recoil, -ballvy * recoil)), prev.Orientation, prev.ID);
             //throw new Exception("The method or operation is not implemented.");
         }
-        public void charge(int robotID) {
+        public void Charge(int robotID) {
             throw new NotImplementedException("InterpereterTester: charge() not implemented.");
         }
         public void beamKick(int robotID, bool somethign) {
             throw new NotImplementedException("InterpereterTester: beamKick() not implemented.");
         }
 
-        public void stop(int robotID)
+        public void Stop(int robotID)
         {
             throw new NotImplementedException("The method or operation is not implemented.");
         }
@@ -667,6 +667,19 @@ namespace InterpreterTester
 		{
 			
 		}
+        public void Kick(int robotID, Vector2 target)
+        {
+            throw new NotImplementedException("Not implemented!");
+        }
+        public void Connect(string host, int port)
+        {
+            throw new NotImplementedException("Not implemented!");
+        }
+        public void Disconnect()
+        {
+            throw new NotImplementedException("Not implemented!");
+        }
+
         #endregion
 
         private void InterpreterTester_FormClosing(object sender, FormClosingEventArgs e)

@@ -14,24 +14,25 @@ namespace Robocup.Plays
         //private bool[] active=new bool[MAXBOTS];
         //private bool[] shouldbeactive=new bool[MAXBOTS];
 
+        private double KICK_POSITION_DIST; // m
+        private double CHARGE_DIST; // m
+        private double MAX_LATERAL_DIST; // m        
+        private double MAX_DIST_TO_KICK_POSITION; // m 
+        private double MAX_ANGLE_TO_KICK_AXIS; // rad
+        private double KICK_ORIENTATION_ERROR; // rad        
+
         private IController commander;
         private IPredictor predictor;
         private Team team;
 
         public ActionInterpreter(Team team, IController commander, IPredictor predictor)
-        {
-            this.team = team;
-            this.commander = commander;
-            this.predictor = predictor;            
-        }
-
-        
+            : this(team, commander, predictor, 0.0, 0.0, 0.0, 0.0) { }
 
         /// <param name="kickDistance">Default: .12</param>
         /// <param name="ballLead">Default: 3</param>
         /// <param name="distTolerance">Default: .04</param>
         /// <param name="angleTolerance">Default: Math.PI/60</param>
-        public ActionInterpreter(Team team, IController commander, IPredictor predictor, double kickDistance, double ballLead, 
+        public ActionInterpreter(Team team, IController commander, IPredictor predictor, double kickDistance, double ballLead,
                                  double distTolerance, double angleTolerance)
         {
             this.team = team;
@@ -40,10 +41,27 @@ namespace Robocup.Plays
             this.kickDistance = kickDistance;
             this.ballLeading = ballLead;
             this.distanceTolerance = distTolerance;
-            this.angleTolerance = angleTolerance;            
+            this.angleTolerance = angleTolerance;
+
+            LoadConstants();
         }
+
+        public void LoadConstants()
+        {
+            KICK_POSITION_DIST = Constants.get<double>("kickplanning", "KICK_POSITION_DIST");
+            MAX_LATERAL_DIST = Constants.get<double>("kickplanning", "MAX_LATERAL_DIST");
+                        
+            // must be bigger than distance that defines the kicking position (KICK_POSITION_DIST),
+            // to avoid going back to the kicking position after we started to approach the ball for
+            // kicking
+            MAX_DIST_TO_KICK_POSITION = 2 * KICK_POSITION_DIST;
+
+            MAX_ANGLE_TO_KICK_AXIS = Math.PI / 180 * Constants.get<double>("kickplanning", "MAX_ANGLE_TO_KICK_AXIS");
+            KICK_ORIENTATION_ERROR = Math.PI / 180 * Constants.get<double>("kickplanning", "KICK_ORIENTATION_ERROR");
+        }
+
         private RobotInfo getOurRobotFromID(int robotID)
-        {            
+        {
             return predictor.GetRobot(team, robotID);
         }
 
@@ -51,10 +69,13 @@ namespace Robocup.Plays
         {
             RobotInfo thisrobot;
             Vector2 ball;
-            try {
+            try
+            {
                 thisrobot = getOurRobotFromID(robotID);
                 ball = predictor.GetBall().Position;
-            } catch (ApplicationException) {
+            }
+            catch (ApplicationException)
+            {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
@@ -71,7 +92,7 @@ namespace Robocup.Plays
                 avoidBall = true;
                 destination = extend(target, ball, kickDistance);
             }
-            
+
             Move(robotID, avoidBall, destination, ball);
             //commander.move(robotID, avoidBall, destination);
         }
@@ -112,61 +133,67 @@ namespace Robocup.Plays
             commander.Stop(robotID);
         }
 
-        public void Charge(int robotID) {
+        public void Charge(int robotID)
+        {
             commander.Charge(robotID);
         }
 
-        
-	private readonly double bumpDistance = 0.2;
-	private readonly double bumpOrientationOffset = Math.PI / 6;
-	/// <summary>
-	/// This is a fail-safe replacement of kicking - just go to the ball and bump it hard with the side of the robot
-	/// </summary>
-	public void Bump(int robotID, Vector2 target){
-		
-		RobotInfo thisrobot;
-		Vector2 ball;
-		BallInfo ballinfo;
-		try {
-		    thisrobot = getOurRobotFromID(robotID);
-                    ballinfo = predictor.GetBall();
-                    ball = ballinfo.Position;
-                }
-                catch (ApplicationException) {
-	                Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
-	                return;
-	        }
 
-		Vector2 destination = extend(target, ball, bumpDistance);
-		double destinationAngle = targetAngle(ball, target) + bumpOrientationOffset;
+        private readonly double bumpDistance = 0.2;
+        private readonly double bumpOrientationOffset = Math.PI / 6;
+        /// <summary>
+        /// This is a fail-safe replacement of kicking - just go to the ball and bump it hard with the side of the robot
+        /// </summary>
+        public void Bump(int robotID, Vector2 target)
+        {
 
-		Vector2 destinationBehind = extend(target, ball, -bumpDistance);
+            RobotInfo thisrobot;
+            Vector2 ball;
+            BallInfo ballinfo;
+            try
+            {
+                thisrobot = getOurRobotFromID(robotID);
+                ballinfo = predictor.GetBall();
+                ball = ballinfo.Position;
+            }
+            catch (ApplicationException)
+            {
+                Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
+                return;
+            }
 
-		Vector2 robotToBall = ball - thisrobot.Position;
-		Vector2 robotToDest = destination - thisrobot.Position;
+            Vector2 destination = extend(target, ball, bumpDistance);
+            double destinationAngle = targetAngle(ball, target) + bumpOrientationOffset;
 
-        double angleDiff = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), robotToDest.cartesianAngle()));
-        bool nearLine = thisrobot.Position.distanceSq(destination) <= bumpDistance * bumpDistance && angleDiff <= 3 * angleTolerance;
-        bool tooClose = thisrobot.Position.distanceSq(destination) <= 0.01 * bumpDistance * bumpDistance && angleDiff <= Math.PI / 2;
-		
-        if(nearLine || tooClose){
-			commander.Move(robotID,
-					false,
-					destinationBehind,
-					destinationAngle);
-		}
-		else{
-			commander.Move(robotID,
-			               true,
-			               destination,
-		        	       destinationAngle);
-		}
+            Vector2 destinationBehind = extend(target, ball, -bumpDistance);
 
-		return;
-	}
-	
-	
-	/// <summary>
+            Vector2 robotToBall = ball - thisrobot.Position;
+            Vector2 robotToDest = destination - thisrobot.Position;
+
+            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), robotToDest.cartesianAngle()));
+            bool nearLine = thisrobot.Position.distanceSq(destination) <= bumpDistance * bumpDistance && angleDiff <= 3 * angleTolerance;
+            bool tooClose = thisrobot.Position.distanceSq(destination) <= 0.01 * bumpDistance * bumpDistance && angleDiff <= Math.PI / 2;
+
+            if (nearLine || tooClose)
+            {
+                commander.Move(robotID,
+                        false,
+                        destinationBehind,
+                        destinationAngle);
+            }
+            else
+            {
+                commander.Move(robotID,
+                               true,
+                               destination,
+                               destinationAngle);
+            }
+
+            return;
+        }
+
+
+        /// <summary>
         /// This method does all the necessary work to get a robot to kick the ball to a certain point.
         /// This should make other functions easier, such as a moving pass.
         /// </summary>
@@ -176,16 +203,18 @@ namespace Robocup.Plays
 
             BeamKick(robotID, target);
             return;
-            
+
             RobotInfo thisrobot;
             Vector2 ball;
             BallInfo ballinfo;
-            try {
+            try
+            {
                 thisrobot = getOurRobotFromID(robotID);
                 ballinfo = predictor.GetBall();
                 ball = ballinfo.Position;
             }
-            catch (ApplicationException) {
+            catch (ApplicationException)
+            {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
@@ -220,7 +249,8 @@ namespace Robocup.Plays
                     new Vector2(destination.X, destination.Y),
                     destinationAngle);*/
             }
-            else if (thisrobot.Position.distanceSq(destination) < 4*kickDistance*kickDistance) {
+            else if (thisrobot.Position.distanceSq(destination) < 4 * kickDistance * kickDistance)
+            {
                 //we're close to the ball but not quite there yet
                 commander.Move(
                     robotID,
@@ -228,8 +258,9 @@ namespace Robocup.Plays
                     new Vector2(destination.X, destination.Y),
                     destinationAngle);
 
-            }else//we're kindof far away from the ball
-                {
+            }
+            else//we're kindof far away from the ball
+            {
                 //destination += ballLeading * ballinfo.Velocity;
                 commander.Move(
                     robotID,
@@ -244,11 +275,13 @@ namespace Robocup.Plays
         /// The main difference is that closeness to the ball is determined by a break-beam sensor on the robot itself and 
         /// that is, hopefully, much more accurate than vision distances.
         /// </summary>
-        public void BeamKick(int robotID, Vector2 target) {
+        public void BeamKick(int robotID, Vector2 target)
+        {
             RobotInfo thisrobot;
             Vector2 ball;
             BallInfo ballinfo;
-            try {
+            try
+            {
                 thisrobot = getOurRobotFromID(robotID);
                 ballinfo = predictor.GetBall();
                 // without this if statement, throws an exception when the ball is not found 
@@ -262,51 +295,93 @@ namespace Robocup.Plays
                     return;
                 }
             }
-            catch (ApplicationException) {
+            catch (ApplicationException)
+            {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
-            }
+            }            
 
-            // tell commander to kick towards goal
-            commander.Kick(robotID, target);
+            Vector2 kickPosition = extend(target, ball, KICK_POSITION_DIST); // kicking position
+            double kickOrientation = targetAngle(ball, target); // orientation in kicking position
 
-            //KickPlanningResults kickplan = 
+            // a waypoint between ball and target direction -- you move here once break beam is on 
+            // to actually kick the ball
+            Vector2 waypoint = ball + (target - ball).normalizeToLength(KICK_POSITION_DIST); // distance here doesn't matter much
 
-            // OLD IMPLEMENTATION:
-            /*
-
-            //position the robot close enough to the ball so that it can kick soon,
-            //but far enough so that the break-beam doesn't trigger
-
-            Vector2 farDestination = extend(target, ball, 2*kickDistance);
-            
-            Vector2 ballToTarget = (target - ball).normalize();
-            Vector2 robotToBall = (ball - thisrobot.Position).normalize();
-            Vector2 robotToTarget = (target - thisrobot.Position).normalize();
-
-            bool behindBall = (robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq());
-
-            //Vector2 actualDestination = extend(target, ball, 0.75*kickDistance);
-            Vector2 actualDestination = ball + (target - ball).normalizeToLength(kickDistance*2);            double destinationAngle = targetAngle(ball, target);
-            double theta = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), ballToTarget.cartesianAngle()));
+            Vector2 ballToTarget = (target - ball);
+            Vector2 robotToBall = (ball - thisrobot.Position);
+            Vector2 robotToTarget = (target - thisrobot.Position);
             double distRobotToBall = Math.Sqrt(thisrobot.Position.distanceSq(ball));
-            double lateralDistance = distRobotToBall * Math.Sin(theta);
-            Console.WriteLine("Lateral Distance " + lateralDistance.ToString());
 
-            //if (Math.Abs(UsefulFunctions.angleDifference(robotToTarget, ballToTarget)) < angleTolerance)            if (behindBall && lateralDistance < .03) {            //if (closeEnough(thisrobot, farDestination.X, farDestination.Y, destinationAngle)) {                if (distRobotToBall < 2 * kickDistance)                {                    Console.WriteLine("CHARGING!");                    commander.beamKick(robotID);                }                Console.WriteLine("BEHIND! Moving forward");                commander.move(
-                    robotID,
-                    true,
-                    new Vector2(actualDestination.X, actualDestination.Y),
-                    destinationAngle);
+            double distToKickPosition = Math.Sqrt(thisrobot.Position.distanceSq(kickPosition));            
+            
+            double theta = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), ballToTarget.cartesianAngle()));            
+            double lateralDistance = distRobotToBall * Math.Sin(theta);
+
+            double angleToKickAxis = Math.Abs(UsefulFunctions.angleDifference(robotToTarget.cartesianAngle(),
+                                                                              ballToTarget.cartesianAngle()));            
+
+            if (thisrobot.Position.distanceSq(kickPosition) < CHARGE_DIST * CHARGE_DIST)
+            {
+                Console.WriteLine("Close to the ball. CHARGING!");
+                
+                // TODO: temporarily disabled, just testing without a working kicker
+                //commander.Charge(robotID);
             }
-            else { //if we are too far
-                //destination += ballLeading * ballinfo.Velocity;
-                commander.move(
+
+            Console.WriteLine("Dist to KickPosition: {0:F3}", distToKickPosition);
+            Console.WriteLine("Orientation error: {0:F3}",
+                    Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation, 
+                                                             kickOrientation)));
+            Console.WriteLine("AngleToKickAxis: {0:F3}", angleToKickAxis);
+            Console.WriteLine("Lateral Distance: {0:F3}", lateralDistance);
+            Console.WriteLine("robotToTarget {0:F3} > ballToTarget {1:F3} [{2:G}]",
+                    robotToTarget.magnitudeSq(), ballToTarget.magnitudeSq(), 
+                    robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq());
+
+            if ( // is the robot in the position to kick
+
+                // close enough to kicking position
+                distToKickPosition < MAX_DIST_TO_KICK_POSITION && 
+
+                // robot oriented towards the target
+                Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation, 
+                                                         kickOrientation)) < KICK_ORIENTATION_ERROR &&
+                
+                // robot is on the opposite side of the ball from the target
+                angleToKickAxis < MAX_ANGLE_TO_KICK_AXIS &&
+                
+                // robot is outside of circle defined by target to ball vector                
+                robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq() &&
+
+                // robot is collinear with ball and with target
+                lateralDistance < MAX_LATERAL_DIST 
+
+                ) 
+            {
+                Console.WriteLine("Turning on break beam and moving towards the ball to kick.");
+                // TODO: temporarily disabled, just testing without a working kicker
+                //commander.BreakBeam(robotID);                
+                commander.Move(
+                        robotID,
+                        false, // don't avoid the ball, we are kicking it
+                        waypoint,
+                        kickOrientation);
+            }
+            else
+            {
+                Console.WriteLine("Not in kicking position for one of the above reasons. " +
+                                  "Moving to kicking position.");
+                //if we are too far
+
+                //position the robot close enough to the ball so that it can kick soon,
+                //but far enough so that the break-beam doesn't trigger
+                commander.Move(
                     robotID,
                     true,
-                    new Vector2(farDestination.X, farDestination.Y),
-                    destinationAngle);
-            } */
+                    kickPosition,
+                    kickOrientation);
+            }
         }
 
         /// <summary>
@@ -314,13 +389,15 @@ namespace Robocup.Plays
         /// </summary>
         public void Move(int robotID, Vector2 target)
         {
-            try {
+            try
+            {
                 if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01)
                     commander.Stop(robotID);
                 else
                     commander.Move(robotID, true, target);
             }
-            catch (ApplicationException) {
+            catch (ApplicationException)
+            {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
@@ -339,14 +416,16 @@ namespace Robocup.Plays
         private void Move(int robotID, bool avoidBall, Vector2 target, Vector2 facing)
         {
             double orient = Math.Atan2(facing.Y - target.Y, facing.X - target.X); //hack for different coordinates
-            try {
+            try
+            {
                 if (getOurRobotFromID(robotID).Position.distanceSq(target) < .01 * .01 &&
                     Math.Abs(getOurRobotFromID(robotID).Orientation - orient) < 0.15)
                     commander.Stop(robotID);
                 else
                     commander.Move(robotID, avoidBall, target, orient);
             }
-            catch (ApplicationException) {
+            catch (ApplicationException)
+            {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
@@ -356,7 +435,7 @@ namespace Robocup.Plays
         private readonly double angleTolerance = Math.PI / 20;// 2 degrees | 120;  //1.5º
         //private const double angleTolerance = (Math.PI);  //180º
         private readonly double distanceTolerance = .05;  //4d cm
-        
+
         /// <summary>
         /// Returns if this robot is close enough to the desired position and orientation
         /// (such as to decide whether or not the robot is in position to kick the ball)

@@ -7,8 +7,14 @@
 #string GAIN_MATRIX  1, 1, 1, 1, 1, 1; -1, 1, 1, -1, 1, 1; -1, -1, 1, -1, -1, 1; 1, -1, 1, 1, -1, 1
 #string GAIN_MATRIX 1, 1, 1, 0, 0, 0; -1, 1, 1, 0, 0, 0; -1, -1, 1, 0, 0, 0; 1, -1, 1, 0, 0, 0
 #string GAIN_MATRIX 1, 1, 1, 0, 0, 0; -1, 1, 1, 0, 0, 0; -1, -1, 1, 0, 0, 0; 1, -1, 1, 0, 0, 0
+#Translation only
 #string GAIN_MATRIX -5, 5, 0, -0.75, 0.75, 0; -5, -5, 0, -0.75, -0.75, 0; 5, -5, 0, 0.75, -0.75, 0; 5, 5, 0, 0.75, 0.75, 0
-string GAIN_MATRIX 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75
+#Rotation only
+#string GAIN_MATRIX 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75
+#Final version
+string GAIN_MATRIX -5, 5, 0.2, -0.3, 0.3, 0.75; -5, -5, 0.2, -0.3, -0.3, 0.75; 5, -5, 0.2, 0.3, -0.3, 0.75; 5, 5, 0.2, 0.3, 0.3, 0.75
+
+double GAIN_MATRIX_SCALE 40
 
 
 ##alpha should be between 0 and 1.
@@ -111,7 +117,7 @@ double ALPHA_THETA_4 1
 int CHARGE_TIME 1000
 int LOG_EVERY_MSEC 100
 
-double DEFAULT_VELOCITY 60
+double DEFAULT_VELOCITY 70
 
 int MAX_STEP 3
 int MAX_ACCELERATION 20

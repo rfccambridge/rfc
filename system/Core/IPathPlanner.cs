@@ -47,10 +47,18 @@ namespace Robocup.CoreRobotics
         }
 
 		public MotionPlanningResults FollowPath(RobotPath path, IPredictor predictor)
-		{
-			RobotInfo curr_state = predictor.GetRobot(path.Team, path.ID);
-			WheelSpeeds speeds = _driver.followPath(path, predictor);
-			return new MotionPlanningResults(speeds, path.findNearestWaypoint(curr_state));
+        {
+            try
+            {
+                RobotInfo curr_state = predictor.GetRobot(path.Team, path.ID);
+                WheelSpeeds speeds = _driver.followPath(path, predictor);
+                return new MotionPlanningResults(speeds, path.findNearestWaypoint(curr_state));
+            }
+            catch (ApplicationException e)
+            {
+                Console.WriteLine(e.Message + "\r\n" + e.StackTrace);
+                return new MotionPlanningResults(new WheelSpeeds());
+            }
 		}
     }
 

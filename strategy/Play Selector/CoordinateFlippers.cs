@@ -116,6 +116,11 @@ namespace Robocup.Plays
             actionInterpreter.Dribble(robotID, -target);
         }
 
+        public void LoadConstants()
+        {
+            actionInterpreter.LoadConstants();
+        }
+
         #endregion
     }
 }

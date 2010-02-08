@@ -474,12 +474,12 @@ namespace Robocup.ControlForm {
                 return;
             }
 
-            if (_selectedPlayer is PathFollowerPlayer)
+            if (_selectedPlayer is WaypointPlayer)
             {
-                PathFollowerPlayer pathFollowerPlayer = _selectedPlayer as PathFollowerPlayer;
-                pathFollowerPlayer.ClearWaypoints();
+                WaypointPlayer waypointPlayer = _selectedPlayer as WaypointPlayer;
+                waypointPlayer.ClearWaypoints();
                 foreach (RobotInfo waypoint in _waypoints)
-                    pathFollowerPlayer.AddWaypoint(waypoint);
+                    waypointPlayer.AddWaypoint(waypoint);
             }
             
             _selectedPlayer.Start();

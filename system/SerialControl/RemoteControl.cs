@@ -13,11 +13,11 @@ using System.Threading;
 using Robocup.CoreRobotics;
 using System.IO;
 
-
 namespace Robocup.SerialControl {
     public partial class RemoteControl : Form {
         private delegate void VoidLabelStringDelegate(Label lbl, string arg);
         private delegate void VoidListBoxObjectIntDelegate(ListBox lst, object item, int maxItems);
+        private delegate void VoidListBoxObjectsDelegate(ListBox lst, object[] item);
 
         private const int NUM_ROBOTS = 5;
         private const int DEFAULT_SPEED = 40;
@@ -152,10 +152,19 @@ namespace Robocup.SerialControl {
         {
             this.Invoke(new VoidListBoxObjectIntDelegate(delegate(ListBox lst, object obj, int maxCount)
             {
-                lstBox.Items.Insert(1, obj);
+                lstBox.Items.Insert(1,obj);
                 if (lstBox.Items.Count > maxCount)
                     lstBox.Items.RemoveAt(maxCount);
             }), new object[] { lstBox, item, maxItems });
+        }
+
+        private void showItemRange(ListBox lstBox, object items)
+        {
+            this.Invoke(new VoidListBoxObjectsDelegate(delegate(ListBox lst, object[] obj)
+            {
+                lstBox.Items.Clear();
+                lstBox.Items.AddRange(obj);
+            }), new object[] { lstBox, items});
         }
 
         private void backspace_GlobalHotkeyPressed(object sender, KeyPressedEventArgs e)
@@ -679,7 +688,7 @@ namespace Robocup.SerialControl {
                 }
 
                 _serialInput.ValueReceived += serialDataReceived;
-                                
+
                 _wheelSpeedFunctionTimer.Start();
 
                 lblDataInStatus.BackColor = Color.Green;
@@ -699,6 +708,8 @@ namespace Robocup.SerialControl {
             double t = _wheelSpeedFunctionTimer.Duration;
 
             int n = values.Length;
+
+            
             for (int i = 0; i < n; i++)
             {
                 double thist = (t - _lastSerialData) / n * (i + 1) + _lastSerialData;
@@ -709,9 +720,18 @@ namespace Robocup.SerialControl {
                                            values[i].DutyLow + ", " + values[i].WheelCommand);
 
                     updateLabel(labelTime, String.Format("{0:F2} s", thist));
-                    addItem(listBoxInputHistory, values[i], 10);
+                    //addItem(listBoxInputHistory, values[i], 7);
+                    
                 }
             }
+
+            String[] itemsArray = new string[values.Length+1];
+
+            itemsArray[0] = SerialInput.SerialInputMessage.ToStringHeader();
+            for(int i=1; i<=values.Length; i++)
+                itemsArray[i] = values[i-1].ToString();
+
+            showItemRange(listBoxInputHistory, itemsArray);
             _lastSerialData = t;
         }        
     }

@@ -20,6 +20,7 @@ namespace Robocup.MotionControl
 		public void LoadConstants()
 		{
 			GainMatrix = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));
+            GainMatrix *= Constants.get<double>("control", "GAIN_MATRIX_SCALE");
 			
 			if(GainMatrix.ColumnCount != 6 || GainMatrix.RowCount != 4)
 				throw new ApplicationException("Invalid dimensoins of GAIN_MATRIX in control.txt!");
@@ -39,10 +40,11 @@ namespace Robocup.MotionControl
             double thetaGoal = desiredState.Orientation;
             double thetaCurr = currentState.Orientation;
 
-            Console.Write("\before ncurrent angle: ");
+            /*Console.Write("\before ncurrent angle: ");
             Console.WriteLine(thetaCurr);
             Console.Write("desired angle: ");
             Console.WriteLine(thetaGoal);
+             */
 
             while (thetaCurr >= 2 * Math.PI) {
                 thetaCurr -= 2 * Math.PI;
@@ -94,18 +96,20 @@ namespace Robocup.MotionControl
             //if (currentState.Velocity.magnitudeSq() > 0.25)
                 //GainMatrix = GainMatrix;
 
-            //Matrix commandVector = GainMatrix * localError * 185;
-            Matrix commandVector = GainMatrix * localError * 3;
+            //Matrix commandVector = GainMatrix * localError * 50; // 185
+            
+            
+            Matrix commandVector = GainMatrix * localError;
 
             //double[] _command = new double[4] { 0, 0, 0, 30 };
-            //commandVector = new Matrix(_command);
+            //Matrix commandVector = new Matrix(_command);
             
             //commandVector = permutationMatrix * commandVector; 
 
 			//XXX: Ask if we need to do any scaling here! (Hunter mentions voltages which may be different than current wheelspeeds)
-			WheelSpeeds command = new WheelSpeeds(-Convert.ToInt32(commandVector[1].Re), -Convert.ToInt32(commandVector[4].Re), 
+			WheelSpeeds command = new WheelSpeeds(-Convert.ToInt32(commandVector[4].Re), -Convert.ToInt32(commandVector[1].Re), 
 				-Convert.ToInt32(commandVector[2].Re), -Convert.ToInt32(commandVector[3].Re));
-            Console.WriteLine(commandVector);
+            //Console.WriteLine(commandVector);
 
 			return command;
 		}

@@ -69,6 +69,10 @@ namespace Robocup.Plays
             plays.Clear();
             plays.AddRange(newPlays);
         }
+        public void LoadConstants()
+        {
+            actioninterpreter.LoadConstants();
+        }
  
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();
 

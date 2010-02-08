@@ -65,9 +65,9 @@ namespace Robocup.ControlForm
             //IMotionPlanner planner = new Robocup.MotionControl.BugFeedbackMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.FeedbackVeerMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.DefaultMotionPlanner();
-            _motionPlanner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
+            //_motionPlanner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
 
-            //_motionPlanner = new Robocup.MotionControl.TangentBugModelFeedbackMotionPlanner();
+            _motionPlanner = new Robocup.MotionControl.TangentBugModelFeedbackMotionPlanner();
             //IMotionPlanner planner = new Robocup.MotionControl.TangentBugVeerMotionPlanner();
 
             /*Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
@@ -127,10 +127,13 @@ namespace Robocup.ControlForm
 
         public virtual void LoadConstants()
         {
+            // TODO: remove redundant ifs
             if (_controller != null)
                 _controller.LoadConstants();
             if (_motionPlanner != null)
                 _motionPlanner.LoadConstants();
+            if (_interpreter != null)
+                _interpreter.LoadConstants();
         }        
 
         public void ConnectToController(string host, int port)

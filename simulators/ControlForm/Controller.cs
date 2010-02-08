@@ -209,6 +209,12 @@ namespace Robocup.ControlForm
 			Move(robotID, avoidBall, destination, orientation); //TODO make it the current robot position
 		}
 
+        public void BreakBeam(int robotID)
+        {
+            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.BREAKBEAM_KICK);
+            _cmdSender.Post(command);
+        }
+
 		/// <summary>
 		/// Move to the ball and then kick it. Uses IKickPlanner- see David Robinson or Josh Montana
 		/// with any questions

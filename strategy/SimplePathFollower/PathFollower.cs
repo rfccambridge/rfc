@@ -117,7 +117,7 @@ namespace SimplePathFollower
             //because this class just gets one point from the gui,
             //generating a static path is taken care of in feedbackbackMotionPlanner
 
-            controller.move(robotID, false, waypoints[waypointIndex], 0.0);
+            controller.Move(robotID, false, waypoints[waypointIndex], 0.0);
 
             do 
             {
@@ -199,7 +199,7 @@ namespace SimplePathFollower
             if (OnEndLap != null)
                 OnEndLap(false, false);
 
-            controller.stop(robotID);
+            controller.Stop(robotID);
             running = false;
             lapping = false;
 		}

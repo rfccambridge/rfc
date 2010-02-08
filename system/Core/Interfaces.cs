@@ -152,6 +152,7 @@ namespace Robocup.Core {
         void Move(int robotID, Vector2 target, Vector2 facing);
         void Stop(int robotID);
         void Dribble(int robotID, Vector2 target);
+        void LoadConstants();
     }
 
     /// <summary>
@@ -164,6 +165,7 @@ namespace Robocup.Core {
         void Move(int robotID, bool avoidBall, Vector2 dest);
         void Move(int robotID, bool avoidBall, Vector2 dest, double orientation);
         void Charge(int robotID);
+        void BreakBeam(int robotID);
         void Kick(int robotID, Vector2 target);
         void Stop(int robotID);
     	void StopControlling();

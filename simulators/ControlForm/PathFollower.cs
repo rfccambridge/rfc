@@ -9,34 +9,13 @@ using Robocup.Geometry;
 
 namespace Robocup.ControlForm
 {
-    public class PathFollowerPlayer : Player
+    public class WaypointPlayer : Player
     {
-        protected int _robotID = 0;
-        protected bool _firstLoop = true;
         protected List<RobotInfo> _waypoints = new List<RobotInfo>();
         protected int _waypointIndex = 0;
-        protected HighResTimer _lapTimer = new HighResTimer();
 
-        protected double MIN_GOAL_DIST;
-        protected double MIN_GOAL_DIFF_ORIENTATION;
-
-        public int RobotID
-        {
-            get { return _robotID; }
-            set { _robotID = value; }
-        }
-
-        public PathFollowerPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) :
-            base("", team, fieldHalf, fieldDrawer, predictor)
-        {
-            LoadConstants();
-        }
-
-        public override void LoadConstants()
-        {
-            base.LoadConstants();
-            MIN_GOAL_DIST = Constants.get<double>("motionplanning", "MIN_GOAL_DIST");
-            MIN_GOAL_DIFF_ORIENTATION = Constants.get<double>("motionplanning", "MIN_GOAL_DIFF_ORIENTATION");
+        public WaypointPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) :
+            base("", team, fieldHalf, fieldDrawer, predictor) {
         }
 
         public int AddWaypoint(RobotInfo waypoint)
@@ -61,6 +40,35 @@ namespace Robocup.ControlForm
             _waypoints.Clear();
             _waypointIndex = 0;
         }
+    }
+
+    public class PathFollowerPlayer : WaypointPlayer
+    {
+        protected int _robotID = 0;
+        protected bool _firstLoop = true;        
+        protected HighResTimer _lapTimer = new HighResTimer();
+
+        protected double MIN_GOAL_DIST;
+        protected double MIN_GOAL_DIFF_ORIENTATION;
+
+        public int RobotID
+        {
+            get { return _robotID; }
+            set { _robotID = value; }
+        }
+
+        public PathFollowerPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) :
+            base(team, fieldHalf, fieldDrawer, predictor)
+        {
+            LoadConstants();
+        }
+
+        public override void LoadConstants()
+        {
+            base.LoadConstants();
+            MIN_GOAL_DIST = Constants.get<double>("motionplanning", "MIN_GOAL_DIST");
+            MIN_GOAL_DIFF_ORIENTATION = Constants.get<double>("motionplanning", "MIN_GOAL_DIFF_ORIENTATION");
+        }      
 
         protected override void doAction()
         {
@@ -127,7 +135,7 @@ namespace Robocup.ControlForm
         }
     }
 
-    public class KickPlayer : Player
+    public class KickPlayer : WaypointPlayer
     {
         protected Vector2 _target = new Vector2(0, 0);
         protected int _robotID = 0;
@@ -147,14 +155,25 @@ namespace Robocup.ControlForm
 
         public KickPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor)
             :
-            base("", team, fieldHalf, fieldDrawer, predictor)
+            base(team, fieldHalf, fieldDrawer, predictor)
         {
             _actionInterpreter = new ActionInterpreter(team, _controller, _predictor);
         }
 
+        public override void LoadConstants()
+        {
+            base.LoadConstants();
+
+            if (_actionInterpreter != null)
+                _actionInterpreter.LoadConstants();
+        }
+
         protected override void doAction()
         {
-            _actionInterpreter.Kick(_robotID, _target);            
+            if (_waypoints.Count > 0)
+                _actionInterpreter.Kick(_robotID, _waypoints[0].Position);
+            else
+                Console.WriteLine("KickPlayer: no target waypoint to kick to.");
         }
     }
 
@@ -167,7 +186,10 @@ namespace Robocup.ControlForm
 
         protected override void doAction()
         {
-            _actionInterpreter.BeamKick(_robotID, _target);
+            if (_waypoints.Count > 0)
+                _actionInterpreter.BeamKick(_robotID, _waypoints[0].Position);
+            else
+                Console.WriteLine("BeamKickPlayer: no target waypoint to kick to.");
         }
     }
 }

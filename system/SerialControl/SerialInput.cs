@@ -100,14 +100,26 @@ namespace Robocup.SerialControl
             }
         }
 
+        /// <summary>
+        /// Protocol for spewed data:
+        /// First three bytes are a header.
+        /// (numgroups) groups follow, each of which is (group_size) bytes large
+        /// In current implementation, group_size == 5
+        /// bytes 1,2 - High and Low part of encoder packet (offset by 0x80 to fit it an unsigned int)
+        /// byte 3 - Duty cycle high
+        /// byte 4 - Duty cycle low
+        /// byte 5 - Wheel command
+        /// </summary>
         void serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            const int numgroups = 6;
+            const int group_size = 5; //bytes
+
             while (serialport.BytesToRead > 50)
             {
                 string s = serialport.ReadTo("\\H");
-                int numgroups = 4;
-                byte[] data = new byte[3+8*numgroups];
-                serialport.Read(data, 0, 3+8*numgroups);
+                byte[] data = new byte[3+group_size*numgroups];
+                serialport.Read(data, 0, 3+group_size*numgroups);
                 foreach (byte b in data)
                 {
                     Console.Write(b + " ");
@@ -122,12 +134,15 @@ namespace Robocup.SerialControl
                 for (int i = 0; i < numgroups; i++)
                 {
                     rtn[i] = new SerialInputMessage();
-                    rtn[i].Encoder = 256 * (int)(data[3 + i * 8]) + (int)(data[4 + i * 8]) - (1 << 15);
-                    rtn[i].DutyHigh = (int)(data[5 + i * 8]);
-                    rtn[i].DutyLow = (int)(data[6 + i * 8]);
-                    rtn[i].WheelCommand = (int)(data[7 + i * 8]);        
+                    rtn[i].Encoder = ((int)(data[3 + i * group_size]) << 8) + //Hi
+                                        (int)(data[4 + i * group_size]) //Lo
+                                        - (1 << 15); //Off-center
+                    rtn[i].DutyHigh = data[5 + i * group_size];
+                    rtn[i].DutyLow = data[6 + i * group_size];
+                    rtn[i].WheelCommand = (sbyte)data[7 + i * group_size];        
                 }
-                ValueReceived(rtn);
+                if(ValueReceived != null)
+                    ValueReceived(rtn);
             }
         }
 
