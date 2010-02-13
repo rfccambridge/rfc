@@ -544,8 +544,9 @@ namespace Robocup.SerialControl {
         {
             // Joystick button assignments
             // ***NUMBERS ARE AS PHYSICALLY LABELED ON JOYSTICK***
-            const int ID_UP = 5;
-            const int ID_DOWN = 7;
+            const int ID_UP = 10;
+            const int SPEED_UP = 5;
+            const int SPEED_DOWN = 7;
             const int KICK = 1;
             const int START_CHARGING = 4;
             const int STOP_CHARGING = 2;
@@ -563,9 +564,14 @@ namespace Robocup.SerialControl {
             // Update current robot ID
             if (_joystickInterface.Buttons[ID_UP - 1])
                 _curRobot = (_curRobot + 1) % NUM_ROBOTS;
-            if (_joystickInterface.Buttons[ID_DOWN - 1])
-                _curRobot = _curRobot - 1 < 0 ? NUM_ROBOTS - 1 : _curRobot - 1;
             updateLabel(lblID, _curRobot.ToString());
+
+            // Update speed
+            if (_joystickInterface.Buttons[SPEED_UP - 1])
+                _speed++;
+            if (_joystickInterface.Buttons[SPEED_DOWN - 1])
+                _speed--;
+            updateLabel(lblSpeed, _speed.ToString());
 
             if (_joystickInterface.Buttons[KICK - 1])
                 sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.KICK));
