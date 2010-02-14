@@ -325,8 +325,7 @@ namespace Robocup.Plays
             {
                 Console.WriteLine("Close to the ball. CHARGING!");
                 
-                // TODO: temporarily disabled, just testing without a working kicker
-                //commander.Charge(robotID);
+                commander.Charge(robotID);
             }
 
             Console.WriteLine("Dist to KickPosition: {0:F3}", distToKickPosition);
@@ -360,8 +359,7 @@ namespace Robocup.Plays
                 ) 
             {
                 Console.WriteLine("Turning on break beam and moving towards the ball to kick.");
-                // TODO: temporarily disabled, just testing without a working kicker
-                //commander.BreakBeam(robotID);                
+                commander.BreakBeam(robotID);                
                 commander.Move(
                         robotID,
                         false, // don't avoid the ball, we are kicking it
