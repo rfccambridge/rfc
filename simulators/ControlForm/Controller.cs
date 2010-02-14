@@ -39,12 +39,13 @@ namespace Robocup.ControlForm
 		private double CONTROL_LOOP_FREQUENCY;
         private bool DRAW_PATH;
 
+        private double BALL_AVOID_DIST;
+
 		private double _controlPeriod;
 		private bool _controlRunning;
 		private int[] _followsSincePlan;
 		private System.Timers.Timer _followPathsTimer;
         private int _followPathsTimerSync = 0;
-        double _ballAvoidDist = .12;
 
         private List<int> _charging = new List<int>();
         private Dictionary<int, double> _lastCharge = new Dictionary<int, double>();
@@ -132,7 +133,7 @@ namespace Robocup.ControlForm
 				return;
 			}
 
-			double avoidBallDist = (avoidBall ? _ballAvoidDist : 0f);
+			double avoidBallDist = (avoidBall ? BALL_AVOID_DIST : 0f);
 
 			RobotPath currPath;
 
@@ -267,6 +268,8 @@ namespace Robocup.ControlForm
             _controlPeriod = 1 / CONTROL_LOOP_FREQUENCY * 1000; //in ms
 
             DRAW_PATH = Constants.get<bool>("drawing", "DRAW_PATH");
+
+            BALL_AVOID_DIST = Constants.get<double>("motionplanning", "BALL_AVOID_DIST");
 
 			_planner.LoadConstants();
 			_kickPlanner.LoadConstants();

@@ -136,3 +136,7 @@ double PLANNER_WAYPOINT_DISTANCE 0.4
 double MIN_GOAL_DIST 0.06
 #ignore orientation: 100, usually 0.3
 double MIN_GOAL_DIFF_ORIENTATION 0.3
+
+# Used in ModelFeedback
+# in m
+double BALL_AVOID_DIST 0.13
