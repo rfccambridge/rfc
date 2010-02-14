@@ -175,54 +175,65 @@ namespace Robocup.SerialControl {
                 stopEverything(i);
         }
 
-        private void btnConnectSending_Click(object sender, EventArgs e) {            
-            if (!_active)
+        private void btnConnectSending_Click(object sender, EventArgs e)
+        {
+            try
             {
-                if (_cmdOutComPort)
+                if (!_active)
                 {
-                    string port = "COM" + ((int)udCmdOutCOMPort.Value).ToString();
-                    _comPort = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
-                    _comPort.Open();
-                    
-                    // To be able to get key events immediately
-                    txtCommandList.Focus();
-                }
-                else if (_cmdOutRemoteHost)
-                {
-                    int port;
-                    string hostname;
-                    string[] tokens = textBoxRemoteHost.Text.Split(new char[] { ':' });
-                    if (tokens.Length != 2 || !int.TryParse(tokens[1], out port))
+                    if (_cmdOutComPort)
                     {
-                        MessageBox.Show("Invalid format of remote host. It must be \"hostname:port\"");
-                        return;
+                        string port = "COM" + ((int)udCmdOutCOMPort.Value).ToString();
+                        _comPort = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
+                        _comPort.Open();
+
+                        // To be able to get key events immediately
+                        txtCommandList.Focus();
                     }
-                    hostname = tokens[0];
+                    else if (_cmdOutRemoteHost)
+                    {
+                        int port;
+                        string hostname;
+                        string[] tokens = textBoxRemoteHost.Text.Split(new char[] { ':' });
+                        if (tokens.Length != 2 || !int.TryParse(tokens[1], out port))
+                        {
+                            MessageBox.Show("Invalid format of remote host. It must be \"hostname:port\"");
+                            return;
+                        }
+                        hostname = tokens[0];
 
-                    if (hostname != "localhost" && hostname != "127.0.0.1")
-                        this._cmdSender = Messages.CreateClientSender<RobotCommand>(hostname, port);
-                    else
-                        MessageBox.Show("don't create a loop like that!");
+                        if (hostname != "localhost" && hostname != "127.0.0.1")
+                            this._cmdSender = Messages.CreateClientSender<RobotCommand>(hostname, port);
+                        else
+                            MessageBox.Show("don't create a loop like that!");
+                    }
+
+                    _active = true;
+                    lblSendStatus.BackColor = Color.Green;
+                    btnConnectSending.Text = "Disconnect";
                 }
-
-                _active = true;
-                lblSendStatus.BackColor = Color.Green;
-                btnConnectSending.Text = "Disconnect";
-            }
-            else
-            {
-                if (_cmdOutComPort)
+                else
                 {
-                    _comPort.Close();                    
-                } else if (_cmdOutRemoteHost) {
-                    _cmdSender.Close();
-                    _cmdSender = null;
-                }
+                    if (_cmdOutComPort)
+                    {
+                        _comPort.Close();
+                    }
+                    else if (_cmdOutRemoteHost)
+                    {
+                        _cmdSender.Close();
+                        _cmdSender = null;
+                    }
 
-                _active = false;
-                lblSendStatus.BackColor = Color.Red;
-                btnConnectSending.Text = "Connect";
-            }               
+                    _active = false;
+                    lblSendStatus.BackColor = Color.Red;
+                    btnConnectSending.Text = "Connect";
+                }
+            }
+            catch (Exception except)
+            {
+                MessageBox.Show(except.Message + "\r\n" + except.StackTrace);
+                return;
+            }
         }
 
         private void RemoteControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -491,6 +502,18 @@ namespace Robocup.SerialControl {
                          byte.Parse(txtP.Text), byte.Parse(txtI.Text), byte.Parse(txtD.Text)));
         }
 
+        private void btnSpew_Click(object sender, EventArgs e)
+        {
+            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_SPEW, 
+                                          byte.Parse(txtSpewBoardID.Text)));
+        }
+
+        private void btnStopSpew_Click(object sender, EventArgs e)
+        {
+            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.STOP_SPEW,
+                                         byte.Parse(txtSpewBoardID.Text)));
+        }
+
         private void btnSetWheelSpeeds_Click(object sender, EventArgs e)
         {
             sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
@@ -675,36 +698,44 @@ namespace Robocup.SerialControl {
         }        
 
         private void btnDataListen_Click(object sender, EventArgs e)
-        {            
-            if (!_dataListening)
+        {
+            try
             {
-                string port = "COM" + udDataInCOMPort.Value.ToString();
-                _serialInput = SerialInput.CreateSerialInput(port);
-
-                if (_serialInput == null)
+                if (!_dataListening)
                 {
-                    MessageBox.Show("Could not open port " + port);
-                    return;
-                }
+                    string port = "COM" + udDataInCOMPort.Value.ToString();
+                    _serialInput = SerialInput.CreateSerialInput(port);
 
-                if (_dataInWriter == null)
+                    if (_serialInput == null)
+                    {
+                        MessageBox.Show("Could not open port " + port);
+                        return;
+                    }
+
+                    if (_dataInWriter == null)
+                    {
+                        _dataInWriter = new StreamWriter(DATA_IN_FILE, false);
+                        _dataInWriter.WriteLine("time, sent command, encoder, duty high, duty low, error, received command");
+                    }
+
+                    _serialInput.ValueReceived += serialDataReceived;
+
+                    _wheelSpeedFunctionTimer.Start();
+
+                    lblDataInStatus.BackColor = Color.Green;
+                    _dataListening = true;
+                }
+                else
                 {
-                    _dataInWriter = new StreamWriter(DATA_IN_FILE, false);
-                    _dataInWriter.WriteLine("time, sent command, encoder, duty high, duty low, error, received command");
+                    _serialInput.Close();
+                    lblDataInStatus.BackColor = Color.Red;
+                    _dataListening = false;
                 }
-
-                _serialInput.ValueReceived += serialDataReceived;
-
-                _wheelSpeedFunctionTimer.Start();
-
-                lblDataInStatus.BackColor = Color.Green;
-                _dataListening = true;
             }
-            else
+            catch (Exception except)
             {
-                _serialInput.Close();
-                lblDataInStatus.BackColor = Color.Red;
-                _dataListening = false;
+                MessageBox.Show(except.Message + "\r\n" + except.StackTrace);
+                return;
             }
         }
 

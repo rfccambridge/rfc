@@ -52,6 +52,8 @@ namespace Robocup.SerialControl
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnStartSpew = new System.Windows.Forms.Button();
+            this.btnDischarge = new System.Windows.Forms.Button();
             this.btnSetWheelSpeeds = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
@@ -93,7 +95,9 @@ namespace Robocup.SerialControl
             this.listBoxInputHistory = new System.Windows.Forms.ListBox();
             this.label3 = new System.Windows.Forms.Label();
             this.lblSpeed = new System.Windows.Forms.Label();
-            this.btnDischarge = new System.Windows.Forms.Button();
+            this.btnStopSpew = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtSpewBoardID = new System.Windows.Forms.TextBox();
             label7 = new System.Windows.Forms.Label();
             label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.udCmdOutCOMPort)).BeginInit();
@@ -163,7 +167,7 @@ namespace Robocup.SerialControl
             // 
             this.lblID.AutoSize = true;
             this.lblID.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblID.Location = new System.Drawing.Point(455, 238);
+            this.lblID.Location = new System.Drawing.Point(455, 267);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(26, 29);
             this.lblID.TabIndex = 45;
@@ -345,6 +349,10 @@ namespace Robocup.SerialControl
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.label8);
+            this.groupBox4.Controls.Add(this.txtSpewBoardID);
+            this.groupBox4.Controls.Add(this.btnStopSpew);
+            this.groupBox4.Controls.Add(this.btnStartSpew);
             this.groupBox4.Controls.Add(this.btnDischarge);
             this.groupBox4.Controls.Add(this.btnSetWheelSpeeds);
             this.groupBox4.Controls.Add(this.label16);
@@ -370,14 +378,34 @@ namespace Robocup.SerialControl
             this.groupBox4.Controls.Add(this.btnKick);
             this.groupBox4.Location = new System.Drawing.Point(342, 12);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(290, 214);
+            this.groupBox4.Size = new System.Drawing.Size(290, 242);
             this.groupBox4.TabIndex = 64;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Robot";
             // 
+            // btnStartSpew
+            // 
+            this.btnStartSpew.Location = new System.Drawing.Point(130, 122);
+            this.btnStartSpew.Name = "btnStartSpew";
+            this.btnStartSpew.Size = new System.Drawing.Size(71, 23);
+            this.btnStartSpew.TabIndex = 53;
+            this.btnStartSpew.Text = "Spew On";
+            this.btnStartSpew.UseVisualStyleBackColor = true;
+            this.btnStartSpew.Click += new System.EventHandler(this.btnSpew_Click);
+            // 
+            // btnDischarge
+            // 
+            this.btnDischarge.Location = new System.Drawing.Point(15, 93);
+            this.btnDischarge.Name = "btnDischarge";
+            this.btnDischarge.Size = new System.Drawing.Size(139, 23);
+            this.btnDischarge.TabIndex = 52;
+            this.btnDischarge.Text = "Discharge";
+            this.btnDischarge.UseVisualStyleBackColor = true;
+            this.btnDischarge.Click += new System.EventHandler(this.btnDischarge_Click);
+            // 
             // btnSetWheelSpeeds
             // 
-            this.btnSetWheelSpeeds.Location = new System.Drawing.Point(161, 133);
+            this.btnSetWheelSpeeds.Location = new System.Drawing.Point(160, 162);
             this.btnSetWheelSpeeds.Name = "btnSetWheelSpeeds";
             this.btnSetWheelSpeeds.Size = new System.Drawing.Size(120, 23);
             this.btnSetWheelSpeeds.TabIndex = 51;
@@ -388,7 +416,7 @@ namespace Robocup.SerialControl
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(125, 119);
+            this.label16.Location = new System.Drawing.Point(124, 148);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(16, 13);
             this.label16.TabIndex = 50;
@@ -397,7 +425,7 @@ namespace Robocup.SerialControl
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(87, 119);
+            this.label15.Location = new System.Drawing.Point(86, 148);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(15, 13);
             this.label15.TabIndex = 49;
@@ -406,7 +434,7 @@ namespace Robocup.SerialControl
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(51, 119);
+            this.label14.Location = new System.Drawing.Point(50, 148);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(12, 13);
             this.label14.TabIndex = 48;
@@ -415,7 +443,7 @@ namespace Robocup.SerialControl
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(15, 119);
+            this.label13.Location = new System.Drawing.Point(14, 148);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(13, 13);
             this.label13.TabIndex = 47;
@@ -423,7 +451,7 @@ namespace Robocup.SerialControl
             // 
             // txtRB
             // 
-            this.txtRB.Location = new System.Drawing.Point(122, 135);
+            this.txtRB.Location = new System.Drawing.Point(121, 164);
             this.txtRB.Name = "txtRB";
             this.txtRB.Size = new System.Drawing.Size(33, 20);
             this.txtRB.TabIndex = 46;
@@ -431,7 +459,7 @@ namespace Robocup.SerialControl
             // 
             // txtLB
             // 
-            this.txtLB.Location = new System.Drawing.Point(86, 135);
+            this.txtLB.Location = new System.Drawing.Point(85, 164);
             this.txtLB.Name = "txtLB";
             this.txtLB.Size = new System.Drawing.Size(33, 20);
             this.txtLB.TabIndex = 45;
@@ -439,7 +467,7 @@ namespace Robocup.SerialControl
             // 
             // txtLF
             // 
-            this.txtLF.Location = new System.Drawing.Point(51, 135);
+            this.txtLF.Location = new System.Drawing.Point(50, 164);
             this.txtLF.Name = "txtLF";
             this.txtLF.Size = new System.Drawing.Size(33, 20);
             this.txtLF.TabIndex = 44;
@@ -447,7 +475,7 @@ namespace Robocup.SerialControl
             // 
             // txtRF
             // 
-            this.txtRF.Location = new System.Drawing.Point(15, 135);
+            this.txtRF.Location = new System.Drawing.Point(14, 164);
             this.txtRF.Name = "txtRF";
             this.txtRF.Size = new System.Drawing.Size(34, 20);
             this.txtRF.TabIndex = 43;
@@ -456,7 +484,7 @@ namespace Robocup.SerialControl
             // btnSendPacket
             // 
             this.btnSendPacket.Enabled = false;
-            this.btnSendPacket.Location = new System.Drawing.Point(161, 182);
+            this.btnSendPacket.Location = new System.Drawing.Point(160, 211);
             this.btnSendPacket.Name = "btnSendPacket";
             this.btnSendPacket.Size = new System.Drawing.Size(120, 23);
             this.btnSendPacket.TabIndex = 12;
@@ -467,14 +495,14 @@ namespace Robocup.SerialControl
             // txtPacket
             // 
             this.txtPacket.Enabled = false;
-            this.txtPacket.Location = new System.Drawing.Point(15, 184);
+            this.txtPacket.Location = new System.Drawing.Point(14, 213);
             this.txtPacket.Name = "txtPacket";
             this.txtPacket.Size = new System.Drawing.Size(140, 20);
             this.txtPacket.TabIndex = 11;
             // 
             // btnSetPID
             // 
-            this.btnSetPID.Location = new System.Drawing.Point(161, 157);
+            this.btnSetPID.Location = new System.Drawing.Point(160, 186);
             this.btnSetPID.Name = "btnSetPID";
             this.btnSetPID.Size = new System.Drawing.Size(120, 23);
             this.btnSetPID.TabIndex = 10;
@@ -484,30 +512,30 @@ namespace Robocup.SerialControl
             // 
             // txtD
             // 
-            this.txtD.Location = new System.Drawing.Point(119, 159);
+            this.txtD.Location = new System.Drawing.Point(118, 188);
             this.txtD.Name = "txtD";
             this.txtD.Size = new System.Drawing.Size(36, 20);
             this.txtD.TabIndex = 9;
             // 
             // txtI
             // 
-            this.txtI.Location = new System.Drawing.Point(67, 159);
+            this.txtI.Location = new System.Drawing.Point(66, 188);
             this.txtI.Name = "txtI";
             this.txtI.Size = new System.Drawing.Size(36, 20);
             this.txtI.TabIndex = 8;
             // 
             // txtP
             // 
-            this.txtP.Location = new System.Drawing.Point(16, 158);
+            this.txtP.Location = new System.Drawing.Point(15, 187);
             this.txtP.Name = "txtP";
             this.txtP.Size = new System.Drawing.Size(36, 20);
             this.txtP.TabIndex = 7;
             // 
             // btnReset
             // 
-            this.btnReset.Location = new System.Drawing.Point(161, 93);
+            this.btnReset.Location = new System.Drawing.Point(160, 92);
             this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(119, 23);
+            this.btnReset.Size = new System.Drawing.Size(118, 23);
             this.btnReset.TabIndex = 6;
             this.btnReset.Text = "Reset";
             this.btnReset.UseVisualStyleBackColor = true;
@@ -640,7 +668,7 @@ namespace Robocup.SerialControl
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(342, 238);
+            this.label5.Location = new System.Drawing.Point(342, 267);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(107, 29);
             this.label5.TabIndex = 66;
@@ -751,7 +779,7 @@ namespace Robocup.SerialControl
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(358, 267);
+            this.label3.Location = new System.Drawing.Point(497, 267);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(91, 29);
             this.label3.TabIndex = 69;
@@ -761,21 +789,39 @@ namespace Robocup.SerialControl
             // 
             this.lblSpeed.AutoSize = true;
             this.lblSpeed.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSpeed.Location = new System.Drawing.Point(455, 267);
+            this.lblSpeed.Location = new System.Drawing.Point(594, 267);
             this.lblSpeed.Name = "lblSpeed";
             this.lblSpeed.Size = new System.Drawing.Size(26, 29);
             this.lblSpeed.TabIndex = 68;
             this.lblSpeed.Text = "0";
             // 
-            // btnDischarge
+            // btnStopSpew
             // 
-            this.btnDischarge.Location = new System.Drawing.Point(15, 93);
-            this.btnDischarge.Name = "btnDischarge";
-            this.btnDischarge.Size = new System.Drawing.Size(139, 23);
-            this.btnDischarge.TabIndex = 52;
-            this.btnDischarge.Text = "Discharge";
-            this.btnDischarge.UseVisualStyleBackColor = true;
-            this.btnDischarge.Click += new System.EventHandler(this.btnDischarge_Click);
+            this.btnStopSpew.Location = new System.Drawing.Point(207, 122);
+            this.btnStopSpew.Name = "btnStopSpew";
+            this.btnStopSpew.Size = new System.Drawing.Size(71, 23);
+            this.btnStopSpew.TabIndex = 54;
+            this.btnStopSpew.Text = "Spew Off";
+            this.btnStopSpew.UseVisualStyleBackColor = true;
+            this.btnStopSpew.Click += new System.EventHandler(this.btnStopSpew_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(14, 127);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(52, 13);
+            this.label8.TabIndex = 56;
+            this.label8.Text = "Board ID:";
+            // 
+            // txtSpewBoardID
+            // 
+            this.txtSpewBoardID.Location = new System.Drawing.Point(72, 124);
+            this.txtSpewBoardID.Name = "txtSpewBoardID";
+            this.txtSpewBoardID.Size = new System.Drawing.Size(49, 20);
+            this.txtSpewBoardID.TabIndex = 55;
+            this.txtSpewBoardID.Text = "0";
+            this.txtSpewBoardID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // RemoteControl
             // 
@@ -882,6 +928,10 @@ namespace Robocup.SerialControl
         private System.Windows.Forms.Label lblDataInStatus;
         private System.Windows.Forms.NumericUpDown udDataInCOMPort;
         private System.Windows.Forms.Button btnDischarge;
+        private System.Windows.Forms.Button btnStartSpew;
+        private System.Windows.Forms.Button btnStopSpew;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox txtSpewBoardID;
     }
 }
 

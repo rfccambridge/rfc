@@ -19,7 +19,9 @@ namespace Robocup.CoreRobotics
             STOP_DRIBBLER,
             DISCHARGE,
             RESET,
-            SET_PID
+            SET_PID,
+            START_SPEW,
+            STOP_SPEW
         };
 
         static CRCTool _crcTool;
@@ -28,6 +30,7 @@ namespace Robocup.CoreRobotics
         public int ID;
         public Command command;
         public byte P, I, D;
+        public byte BoardID;
 
         static RobotCommand()
         {
@@ -47,6 +50,11 @@ namespace Robocup.CoreRobotics
             this.P = P;
             this.I = I;
             this.D = D;
+            init(ID, command, null);
+        }
+        public RobotCommand(int ID, Command command, byte boardID)
+        {
+            this.BoardID = boardID;
             init(ID, command, null);
         }
         public RobotCommand(int ID, Command command, WheelSpeeds speeds)
@@ -120,13 +128,23 @@ namespace Robocup.CoreRobotics
                                         (byte)'d', (byte)'0', // command for stop dribbler
                                         (byte)'\\', (byte)'E' };
                 case Command.SET_PID:
-                    checksum = (byte)_crcTool.crctablefast(new byte[] { (byte)P, (byte)I, (byte)D });
+                    checksum = (byte)_crcTool.crctablefast(new byte[] { P, I, D });
                     return new byte[] {(byte)'\\', (byte)'H', (byte) ('0' + ID),
                                        (byte)'w', // port
                                        (byte)'f', // command for PID const setting
                                        P, I, D,
                                        checksum,
                                       (byte)'\\', (byte)'E'};
+                case Command.START_SPEW:
+                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
+                                        (byte)'v', // port
+                                        (byte)'e', BoardID, (byte)'1',  // command to turn on spewing
+                                        (byte)'\\', (byte)'E' };
+                case Command.STOP_SPEW:
+                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
+                                        (byte)'v', // port
+                                        (byte)'e', BoardID, (byte)'0',  // command to turn on spewing
+                                        (byte)'\\', (byte)'E' };
                 case Command.DISCHARGE:
                     return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
                                         (byte)'v', // port
