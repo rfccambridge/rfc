@@ -1,3 +1,4 @@
+# obsolete, to be removed together with BasicPredictor
 string OUR_TEAM Yellow
 
 bool YELLOW_HAS_PATTERN false

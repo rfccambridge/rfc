@@ -14,18 +14,46 @@ namespace Robocup.Plays
 
         private List<int> active = new List<int>();
         private readonly PlaySelector selector;
-        private readonly IActionInterpreter actioninterpreter;
-        private readonly IPredictor predictor;
+        private IActionInterpreter actioninterpreter;
+        private IPredictor predictor;
         private List<InterpreterPlay> plays = new List<InterpreterPlay>();
         private Team team;
+        private FieldHalf fieldHalf;
         private FieldDrawer fieldDrawer;
+
+        public FieldHalf FieldHalf
+        {
+            get { return fieldHalf; }
+            set
+            {
+                if (running)
+                    throw new ApplicationException("Cannot change field half while running.");                
+
+                if (fieldHalf != value) 
+                {
+                    if (value == FieldHalf.Right)
+                    {
+                        //if we have to flip the coordinates, wrap the predictor/actioninterpreter
+                        actioninterpreter = new FlipActionInterpreter(actioninterpreter);
+                        predictor = new FlipPredictor(predictor);
+                    }
+                    else
+                    {
+                        FlipActionInterpreter flipAI = actioninterpreter as FlipActionInterpreter;
+                        FlipPredictor flipPredictor = predictor as FlipPredictor;
+                        actioninterpreter = flipAI.ActionInterpreter;
+                        predictor = flipPredictor.Predictor;
+                    }
+                }
+                fieldHalf = value;
+            }
+        }
 
         public Interpreter(Team ourTeam, FieldHalf fieldHalf, IPredictor predictor, IActionInterpreter actioninterpreter, FieldDrawer drawer)
         {
-            team = ourTeam;
-            fieldDrawer = drawer;
-
-            selector = new PlaySelector();            
+            team = ourTeam;            
+            fieldDrawer = drawer;            
+            this.fieldHalf = fieldHalf;
 
             if (fieldHalf == FieldHalf.Right)
             {
@@ -38,6 +66,8 @@ namespace Robocup.Plays
                 this.actioninterpreter = actioninterpreter;
                 this.predictor = predictor;
             }
+
+            selector = new PlaySelector();
         }
         public Interpreter(Team team, FieldHalf fieldHalf, IPredictor predictor, IController commander, FieldDrawer fieldDrawer)
             : this(team, fieldHalf, predictor, new ActionInterpreter(team, commander, predictor), fieldDrawer) { }

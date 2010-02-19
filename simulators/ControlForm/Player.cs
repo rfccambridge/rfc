@@ -39,6 +39,18 @@ namespace Robocup.ControlForm
             get { return _team; }
         }
 
+        public FieldHalf FieldHalf
+        {
+            get { return _fieldHalf; }
+            set
+            {
+                if (_running)
+                    throw new ApplicationException("Cannot change field half while running.");
+                _fieldHalf = value;
+                _interpreter.FieldHalf = _fieldHalf;
+            }
+        }
+
         public bool Running
         {
             get { return _running; }

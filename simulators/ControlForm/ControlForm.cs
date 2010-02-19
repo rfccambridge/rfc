@@ -21,9 +21,6 @@ namespace Robocup.ControlForm {
     {
         const string WAYPOINTS_FILE = "waypoints.csv";
 
-        Team OUR_TEAM;
-        FieldHalf FIELD_HALF;
-
         bool _controllerConnected = false;
         bool _refboxConnected = false;
         bool _visionConnected = false;
@@ -97,6 +94,9 @@ namespace Robocup.ControlForm {
             loggingInit();
             
             createRefboxCommandDisplayTimer();
+            
+            foreach (FieldHalf fieldHalf in Enum.GetValues(typeof(FieldHalf)))
+                cmbFieldHalf.Items.Add(fieldHalf);
 
             createPlayers();
             reloadPlays();
@@ -119,24 +119,20 @@ namespace Robocup.ControlForm {
 
         public void LoadConstants()
         {
-            OUR_TEAM = (Team)Enum.Parse(typeof(Team), Constants.get<string>("configuration", "OUR_TEAM"), true);
-            FIELD_HALF = (FieldHalf)Enum.Parse(typeof(FieldHalf), Constants.get<string>("plays", "FIELD_HALF"), true);           
             LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
             STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
         }
 
         private void createPlayers()
         {
-            Player playerRFC = new Player("RFC", OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor);
-            Player playerSim1 = new Player("Sim1", Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player playerSim2 = new Player("Sim2", Team.Blue, FieldHalf.Left, _fieldDrawer2, _predictor);
-            Player playerFollower = new PathFollowerPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor);
-            Player playerKick = new KickPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer2, _predictor);
-            Player playerBeamKick = new BeamKickPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor);
+            Player player1 = new Player("Player1", Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player player2 = new Player("Player2", Team.Blue, FieldHalf.Left, _fieldDrawer2, _predictor);
+            Player playerFollower = new PathFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player playerKick = new KickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer2, _predictor);
+            Player playerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer2, _predictor);
 
-            lstPlayers.Items.Add(playerRFC);
-            lstPlayers.Items.Add(playerSim1);
-            lstPlayers.Items.Add(playerSim2);
+            lstPlayers.Items.Add(player1);
+            lstPlayers.Items.Add(player2);
             lstPlayers.Items.Add(playerFollower);
             lstPlayers.Items.Add(playerKick);
             lstPlayers.Items.Add(playerBeamKick);
@@ -524,7 +520,6 @@ namespace Robocup.ControlForm {
                 if (_waypoints.ContainsKey(_waypointColors[waypointPlayer]))
                     foreach (RobotInfo waypoint in _waypoints[_waypointColors[waypointPlayer]])
                         waypointPlayer.AddWaypoint(waypoint);
-                waypointPlayer.RobotID = int.Parse(txtSimplePlayerRobotID.Text);
             }
 
             _selectedPlayer.Start();
@@ -694,6 +689,11 @@ namespace Robocup.ControlForm {
         {
             _selectedPlayer = lstPlayers.SelectedItem as Player;
 
+            cmbFieldHalf.SelectedItem = _selectedPlayer.FieldHalf;
+
+            if (_selectedPlayer is WaypointPlayer)
+                txtPlayerRobotID.Text = ((WaypointPlayer)_selectedPlayer).RobotID.ToString();
+
             // Replace the content of plays list box with the selected player's plays
             lstPlays.Items.Clear();
 
@@ -720,6 +720,33 @@ namespace Robocup.ControlForm {
                 font, Brushes.Black, e.Bounds, StringFormat.GenericDefault);
             e.DrawFocusRectangle();
         }
+
+        private void cmbFieldHalf_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_selectedPlayer.Running)
+            {
+                MessageBox.Show("Cannot change field half while player is running.");
+                return;
+            }
+            _selectedPlayer.FieldHalf = (FieldHalf)cmbFieldHalf.SelectedItem;
+        }
+
+        private void txtSimplePlayerRobotID_TextChanged(object sender, EventArgs e)
+        {
+            if (_selectedPlayer.Running)
+            {
+                MessageBox.Show("Cannot change robot ID while player is running.");
+                return;
+            }
+            if (!(_selectedPlayer is WaypointPlayer))
+            {
+                MessageBox.Show("Selected player does not need a robot ID.");
+                return;
+            }
+
+            WaypointPlayer wpPlayer = _selectedPlayer as WaypointPlayer;
+            wpPlayer.RobotID = int.Parse(txtPlayerRobotID.Text);
+        }        
 
         private void ControlForm_FormClosing(object sender, FormClosingEventArgs e)
         {

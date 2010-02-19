@@ -25,6 +25,11 @@ namespace Robocup.ControlForm
             base("", team, fieldHalf, fieldDrawer, predictor) {
         }
 
+        public override string ToString()
+        {
+            return base.ToString() + ", Robot " + _robotID.ToString();
+        }
+
         public int AddWaypoint(RobotInfo waypoint)
         {
             if (_running)

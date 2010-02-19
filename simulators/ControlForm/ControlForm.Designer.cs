@@ -47,9 +47,13 @@ namespace Robocup.ControlForm {
             this.cmbVisionHost = new System.Windows.Forms.ComboBox();
             this.lstPlayers = new System.Windows.Forms.ListBox();
             this.btnStopPlayer = new System.Windows.Forms.Button();
-            this.txtSimplePlayerRobotID = new System.Windows.Forms.TextBox();
+            this.txtPlayerRobotID = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cmbFieldHalf = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // label2
@@ -214,7 +218,7 @@ namespace Robocup.ControlForm {
             // lstPlays
             // 
             this.lstPlays.FormattingEnabled = true;
-            this.lstPlays.Location = new System.Drawing.Point(12, 274);
+            this.lstPlays.Location = new System.Drawing.Point(8, 57);
             this.lstPlays.Name = "lstPlays";
             this.lstPlays.Size = new System.Drawing.Size(356, 169);
             this.lstPlays.TabIndex = 46;
@@ -223,17 +227,17 @@ namespace Robocup.ControlForm {
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 258);
+            this.label1.Location = new System.Drawing.Point(5, 41);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(115, 13);
+            this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 47;
-            this.label1.Text = "Plays (selected player):";
+            this.label1.Text = "Plays:";
             // 
             // chkSelectAll
             // 
             this.chkSelectAll.AutoSize = true;
             this.chkSelectAll.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkSelectAll.Location = new System.Drawing.Point(298, 251);
+            this.chkSelectAll.Location = new System.Drawing.Point(294, 38);
             this.chkSelectAll.Name = "chkSelectAll";
             this.chkSelectAll.Size = new System.Drawing.Size(70, 17);
             this.chkSelectAll.TabIndex = 48;
@@ -243,9 +247,9 @@ namespace Robocup.ControlForm {
             // 
             // btnStartPlayer
             // 
-            this.btnStartPlayer.Location = new System.Drawing.Point(236, 175);
+            this.btnStartPlayer.Location = new System.Drawing.Point(251, 147);
             this.btnStartPlayer.Name = "btnStartPlayer";
-            this.btnStartPlayer.Size = new System.Drawing.Size(132, 33);
+            this.btnStartPlayer.Size = new System.Drawing.Size(132, 43);
             this.btnStartPlayer.TabIndex = 51;
             this.btnStartPlayer.Text = "Start Player";
             this.btnStartPlayer.UseVisualStyleBackColor = true;
@@ -277,14 +281,14 @@ namespace Robocup.ControlForm {
             this.lstPlayers.FormattingEnabled = true;
             this.lstPlayers.Location = new System.Drawing.Point(12, 147);
             this.lstPlayers.Name = "lstPlayers";
-            this.lstPlayers.Size = new System.Drawing.Size(218, 95);
+            this.lstPlayers.Size = new System.Drawing.Size(233, 82);
             this.lstPlayers.TabIndex = 56;
             this.lstPlayers.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lstPlayers_DrawItem);
             this.lstPlayers.SelectedIndexChanged += new System.EventHandler(this.lstPlayers_SelectedIndexChanged_1);
             // 
             // btnStopPlayer
             // 
-            this.btnStopPlayer.Location = new System.Drawing.Point(236, 209);
+            this.btnStopPlayer.Location = new System.Drawing.Point(251, 196);
             this.btnStopPlayer.Name = "btnStopPlayer";
             this.btnStopPlayer.Size = new System.Drawing.Size(132, 33);
             this.btnStopPlayer.TabIndex = 57;
@@ -292,39 +296,71 @@ namespace Robocup.ControlForm {
             this.btnStopPlayer.UseVisualStyleBackColor = true;
             this.btnStopPlayer.Click += new System.EventHandler(this.btnStopPlayer_Click);
             // 
-            // txtSimplePlayerRobotID
+            // txtPlayerRobotID
             // 
-            this.txtSimplePlayerRobotID.Location = new System.Drawing.Point(292, 149);
-            this.txtSimplePlayerRobotID.Name = "txtSimplePlayerRobotID";
-            this.txtSimplePlayerRobotID.Size = new System.Drawing.Size(76, 20);
-            this.txtSimplePlayerRobotID.TabIndex = 58;
-            this.txtSimplePlayerRobotID.Text = "0";
-            this.txtSimplePlayerRobotID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtPlayerRobotID.Location = new System.Drawing.Point(294, 13);
+            this.txtPlayerRobotID.Name = "txtPlayerRobotID";
+            this.txtPlayerRobotID.Size = new System.Drawing.Size(50, 20);
+            this.txtPlayerRobotID.TabIndex = 58;
+            this.txtPlayerRobotID.Text = "0";
+            this.txtPlayerRobotID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtPlayerRobotID.TextChanged += new System.EventHandler(this.txtSimplePlayerRobotID_TextChanged);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(233, 152);
+            this.label4.Location = new System.Drawing.Point(236, 19);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(53, 13);
             this.label4.TabIndex = 59;
             this.label4.Text = "Robot ID:";
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Controls.Add(this.cmbFieldHalf);
+            this.groupBox2.Controls.Add(this.lstPlays);
+            this.groupBox2.Controls.Add(this.label4);
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Controls.Add(this.txtPlayerRobotID);
+            this.groupBox2.Controls.Add(this.chkSelectAll);
+            this.groupBox2.Location = new System.Drawing.Point(12, 235);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(371, 234);
+            this.groupBox2.TabIndex = 60;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Player";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 16);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(54, 13);
+            this.label8.TabIndex = 63;
+            this.label8.Text = "Field Half:";
+            // 
+            // cmbFieldHalf
+            // 
+            this.cmbFieldHalf.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFieldHalf.FormattingEnabled = true;
+            this.cmbFieldHalf.Location = new System.Drawing.Point(66, 13);
+            this.cmbFieldHalf.Name = "cmbFieldHalf";
+            this.cmbFieldHalf.Size = new System.Drawing.Size(121, 21);
+            this.cmbFieldHalf.TabIndex = 61;
+            this.cmbFieldHalf.SelectedIndexChanged += new System.EventHandler(this.cmbFieldHalf_SelectedIndexChanged);
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(378, 451);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.txtSimplePlayerRobotID);
+            this.ClientSize = new System.Drawing.Size(395, 476);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnStopPlayer);
             this.Controls.Add(this.lstPlayers);
             this.Controls.Add(this.cmbVisionHost);
             this.Controls.Add(this.cmbControllerHost);
             this.Controls.Add(this.btnStartPlayer);
-            this.Controls.Add(this.chkSelectAll);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.lstPlays);
             this.Controls.Add(this.cmbRefboxHost);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.lblVisionStatus);
@@ -343,6 +379,8 @@ namespace Robocup.ControlForm {
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ControlForm_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -374,7 +412,10 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.ComboBox cmbVisionHost;
         private System.Windows.Forms.ListBox lstPlayers;
         private System.Windows.Forms.Button btnStopPlayer;
-        private System.Windows.Forms.TextBox txtSimplePlayerRobotID;
+        private System.Windows.Forms.TextBox txtPlayerRobotID;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox cmbFieldHalf;
     }
 }

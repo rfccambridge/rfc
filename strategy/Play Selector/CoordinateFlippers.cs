@@ -14,6 +14,12 @@ namespace Robocup.Plays
     internal class FlipPredictor : IPredictor
     {
         private IPredictor predictor;
+
+        public IPredictor Predictor
+        {
+            get { return predictor; }
+        }
+
         public FlipPredictor(IPredictor predictor)
         {
             this.predictor = predictor;
@@ -78,6 +84,12 @@ namespace Robocup.Plays
     internal class FlipActionInterpreter : IActionInterpreter
     {
         private IActionInterpreter actionInterpreter;
+
+        public IActionInterpreter ActionInterpreter
+        {
+            get { return actionInterpreter; }
+        }
+
         public FlipActionInterpreter(IActionInterpreter actionInterpreter)
         {
             this.actionInterpreter = actionInterpreter;
