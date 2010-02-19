@@ -118,7 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../vision/protobuf/src;../../vision/SSLClientWrapper/proto/cpp"
+				AdditionalIncludeDirectories="../../vision/protobuf/src;../../vision/SSLClientWrapper/proto/cpp;../../vision/SSLClientLib"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -143,6 +143,7 @@
 				AssemblyDebug="1"
 				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
+				KeyFile="$(InputDir)..\..\resources\rfc.snk"
 			/>
 			<Tool
 				Name="VCALinkTool"

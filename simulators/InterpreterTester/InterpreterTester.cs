@@ -537,6 +537,11 @@ namespace InterpreterTester
         #endregion        
 
         #region Commander Members
+        public void Move(RobotInfo dest, bool avoidBall)
+        {
+            Move(dest.ID, avoidBall, dest.Position);
+        }
+        
         public void Move(int robotID, bool avoidBall, Vector2 dest)
         {
             RobotInfo[] infos = ourinfo;
@@ -653,6 +658,10 @@ namespace InterpreterTester
         }
         public void beamKick(int robotID, bool somethign) {
             throw new NotImplementedException("InterpereterTester: beamKick() not implemented.");
+        }
+        public void BreakBeam(int robotId)
+        {
+            throw new NotImplementedException("InterpereterTester: BreakBream() not implemented.");
         }
 
         public void Stop(int robotID)
