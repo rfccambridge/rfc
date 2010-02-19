@@ -14,7 +14,7 @@ theirgoal (point 3.15 0)
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)
 
-GOALIE_X_POS (const-double GOALIE_X_POS)
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 kickerbot (closest friendly ballpoint loose)
 

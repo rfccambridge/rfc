@@ -8,11 +8,11 @@ double CENTER_CIRCLE_RADIUS 0.5
 
 # Game field
 #double FIELD_WIDTH 6.1
-#double FIELD_HEIGHT 4.2
+#double FIELD_HEIGHT 3.2
 
 # Practice field MD 3rd (2009-02-27)
-double FIELD_WIDTH 6.05
-double FIELD_HEIGHT 4.05
+double FIELD_WIDTH 4.8
+double FIELD_HEIGHT 3.2
 double REFEREE_ZONE_WIDTH 0.1
 
 string FIELD_HALF Left
@@ -61,4 +61,4 @@ double CLEAR_DIST .25
 double SUPPORT_SETUP_PASS 2
 
 # goalie constants
-double GOALIE_X_POS -2.87
+double GOALIE_X_POS_DELTA 0.3

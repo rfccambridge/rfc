@@ -15,7 +15,7 @@ middle_theirgoal (point 2 0)
 
 kickerbot (closest friendly ballpoint loose)
 
-GOALIE_X_POS (const-double GOALIE_X_POS)
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 #begin 3 person defense
 ourgoalwideperim (circle ourgoal .9)

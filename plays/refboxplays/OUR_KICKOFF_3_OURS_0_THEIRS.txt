@@ -22,7 +22,7 @@ middlepoint (point -2 0.2)
 goaliebot (closest friendly ourgoal loose)
 middlerbot (closest friendly middlepoint loose)
 
-GOALIE_X_POS (const-double GOALIE_X_POS)
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 centergoalline (line center ourgoal)
 

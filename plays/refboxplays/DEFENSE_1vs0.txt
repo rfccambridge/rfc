@@ -11,7 +11,7 @@ topRightCorner (point 2.4 1.6)
 theirgoal (point 2.5 0)
 ourgoal (point -2.5 0)
 
-GOALIE_X_POS (const-double GOALIE_X_POS)
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)

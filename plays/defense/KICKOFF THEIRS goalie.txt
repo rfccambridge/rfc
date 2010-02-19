@@ -1,6 +1,5 @@
 Metadata:
-type KickOff_Theirs
-name goalie_for_their_kickoff
+type NormalPlay
 score 10
 Objects:
 ourgoal (point -3.13 0)
@@ -14,6 +13,9 @@ point0 (pointof ball)
 line2 (line ourgoal point0)
 point3 (linecircleintersection line2 circle1 1)
 robot5 (closest friendly point3 loose)
+
 Conditions:
+
 Actions:
 (robotpointmove robot5 point3)
+

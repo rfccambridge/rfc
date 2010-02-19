@@ -16,7 +16,7 @@ middle_theirgoal (point 2 0)
 ourgoalwideperim (circle ourgoal .9)
 ourgoalcloseperim (circle ourgoal 0.4)
 
-GOALIE_X_POS (const-double GOALIE_X_POS)
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)

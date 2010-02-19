@@ -1,7 +1,7 @@
 Metadata:
 type NormalPlay
 name Defense_with_two_men
-score 20
+score 200
 
 Objects:
 
@@ -19,6 +19,7 @@ ourgoalcloseperim (circle ourgoal 0.4)
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)
 
+numRobots (numourbots)
 
 closestenemyg (closest enemy ourgoal loose)
 closestenemygpt (pointof closestenemyg)
@@ -41,6 +42,9 @@ twomanbot2 (closest friendly twomanpt2 loose)
 twomanbot2pt (pointof twomanbot2)
 
 Conditions:
+(doublecomparison numRobots >= 3)
+(doublecomparison numRobots <= 5)
+
 Actions:
 (if_Action (< (pointpointdistance twomanbot1pt ballpoint) 0.4) (robotpointkick twomanbot1 theirgoal) (robotpointmove twomanbot1 twomanpt1))
 (if_Action (< (pointpointdistance twomanbot2pt ballpoint) 0.4) (robotpointkick twomanbot2 theirgoal) (robotpointmove twomanbot2 twomanpt2))

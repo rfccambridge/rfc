@@ -19,7 +19,7 @@ ballgoalline (line ballpoint ourgoal)
 kickerbot (closest friendly ballpoint loose)
 supportbot (closest friendly theirgoal loose)
 
-GOALIE_X_POS (const-double GOALIE_X_POS)
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 BALL_KICK_DIST (const-double BALL_KICK_DIST)
 
 
