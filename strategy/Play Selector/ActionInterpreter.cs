@@ -56,6 +56,8 @@ namespace Robocup.Plays
             // kicking
             MAX_DIST_TO_KICK_POSITION = 2 * KICK_POSITION_DIST;
 
+            CHARGE_DIST = Constants.get<double>("kickplanning", "CHARGE_DIST");
+
             MAX_ANGLE_TO_KICK_AXIS = Math.PI / 180 * Constants.get<double>("kickplanning", "MAX_ANGLE_TO_KICK_AXIS");
             KICK_ORIENTATION_ERROR = Math.PI / 180 * Constants.get<double>("kickplanning", "KICK_ORIENTATION_ERROR");
         }
