@@ -30,6 +30,8 @@ namespace Robocup.Utilities
         {
             this.glField = new OpenTK.GLControl();
             this.panGameStatus = new System.Windows.Forms.Panel();
+            this.lblLapDuration = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.lblMarker = new System.Windows.Forms.Label();
             this.lblInterpretDuration = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -41,8 +43,6 @@ namespace Robocup.Utilities
             this.label1 = new System.Windows.Forms.Label();
             this.lblTeam = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.lblLapDuration = new System.Windows.Forms.Label();
             this.panGameStatus.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,6 +85,25 @@ namespace Robocup.Utilities
             this.panGameStatus.Name = "panGameStatus";
             this.panGameStatus.Size = new System.Drawing.Size(599, 117);
             this.panGameStatus.TabIndex = 8;
+            // 
+            // lblLapDuration
+            // 
+            this.lblLapDuration.AutoSize = true;
+            this.lblLapDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLapDuration.Location = new System.Drawing.Point(119, 94);
+            this.lblLapDuration.Name = "lblLapDuration";
+            this.lblLapDuration.Size = new System.Drawing.Size(32, 16);
+            this.lblLapDuration.TabIndex = 14;
+            this.lblLapDuration.Text = "<?>";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(42, 95);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(71, 13);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "Lap Duration:";
             // 
             // lblMarker
             // 
@@ -194,25 +213,6 @@ namespace Robocup.Utilities
             this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 5;
             this.label5.Text = "PlayType:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(42, 95);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 13);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "Lap Duration:";
-            // 
-            // lblLapDuration
-            // 
-            this.lblLapDuration.AutoSize = true;
-            this.lblLapDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLapDuration.Location = new System.Drawing.Point(119, 94);
-            this.lblLapDuration.Name = "lblLapDuration";
-            this.lblLapDuration.Size = new System.Drawing.Size(32, 16);
-            this.lblLapDuration.TabIndex = 14;
-            this.lblLapDuration.Text = "<?>";
             // 
             // FieldDrawerForm
             // 

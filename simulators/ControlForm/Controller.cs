@@ -123,48 +123,47 @@ namespace Robocup.ControlForm
                 }, null, 5 * CHARGE_TIME, System.Threading.Timeout.Infinite);
                 _timers[robotID] = t;
             }
-		}		
-	
-		public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation)
-		{
-			if (double.IsNaN(destination.X) || double.IsNaN(destination.Y))
-			{
-				Console.WriteLine("invalid destination");
-				return;
-			}
+		}
 
-			double avoidBallDist = (avoidBall ? BALL_AVOID_DIST : 0f);
+        public void Move(RobotInfo destination, bool avoidBall)
+        {
+            if (double.IsNaN(destination.Position.X) || double.IsNaN(destination.Position.Y))
+            {
+                Console.WriteLine("invalid destination");
+                return;
+            }
 
-			RobotPath currPath;
+            double avoidBallDist = (avoidBall ? BALL_AVOID_DIST : 0f);
 
-			try
-			{
-				currPath = _planner.PlanMotion(_team, robotID, new RobotInfo(destination, orientation, robotID),
-											  _predictor, avoidBallDist);
-			}
-			catch (ApplicationException e)
-			{
-				Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
-				return;
-			}
+            RobotPath currPath;
 
-			lock (_pathsLock)
-			{
-				// Commit path for following
-				_paths[currPath.ID] = currPath;
-			}
+            try
+            {
+                currPath = _planner.PlanMotion(_team, destination.ID, destination, _predictor, avoidBallDist);
+            }
+            catch (ApplicationException e)
+            {
+                Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
+                return;
+            }
 
-			// Clear timeout counter
-			_followsSincePlan[robotID] = 0;
+            lock (_pathsLock)
+            {
+                // Commit path for following
+                _paths[currPath.ID] = currPath;
+            }
 
-			// We've already committed a path for following, now start the 
-			// control loop if it's not already running
-			if (!_controlRunning)
-			{
-				_followPathsTimer = new System.Timers.Timer(_controlPeriod);
-				_followPathsTimer.AutoReset = true;
-				_followPathsTimer.Elapsed += delegate
-								{
+            // Clear timeout counter
+            _followsSincePlan[destination.ID] = 0;
+
+            // We've already committed a path for following, now start the 
+            // control loop if it's not already running
+            if (!_controlRunning)
+            {
+                _followPathsTimer = new System.Timers.Timer(_controlPeriod);
+                _followPathsTimer.AutoReset = true;
+                _followPathsTimer.Elapsed += delegate
+                                {
                                     // Skip event if still handling a previous event
                                     if (Interlocked.CompareExchange(ref _followPathsTimerSync, 1, 0) == 0)
                                     {
@@ -172,28 +171,33 @@ namespace Robocup.ControlForm
                                         followPaths();
                                         _followPathsTimerSync = 0;
                                     }
-								};
-				_followPathsTimer.Start();
-				_controlRunning = true;
-			}
+                                };
+                _followPathsTimer.Start();
+                _controlRunning = true;
+            }
 
-			#region Drawing
-			//Arrow showing final destination
-			if (_fieldDrawer != null)
-			{
-				//Path commited for following
-                if(DRAW_PATH)
+            #region Drawing
+            //Arrow showing final destination
+            if (_fieldDrawer != null)
+            {
+                //Path commited for following
+                if (DRAW_PATH)
                     _fieldDrawer.DrawPath(currPath);
                 //Arrow showing final destination
                 _fieldDrawer.DrawArrow(_team, currPath.ID, ArrowType.Destination,
-                    destination);
-                    //currPath.getFinalState().Position);
-			}
+                    destination.Position);
+                //currPath.getFinalState().Position);
+            }
 
-			#endregion
+            #endregion
+        }
+        
+        public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation)
+		{
+            Move(new RobotInfo(destination, orientation, robotID), avoidBall);
 		}		
 
-		public void Move(int robotID, bool avoidBall, Vector2 destination)
+        public void Move(int robotID, bool avoidBall, Vector2 destination)
 		{
 			double orientation;
 			try

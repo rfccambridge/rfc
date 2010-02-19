@@ -23,7 +23,6 @@ namespace Robocup.ControlForm {
 
         Team OUR_TEAM;
         FieldHalf FIELD_HALF;
-        string PLAY_DIR;        
 
         bool _controllerConnected = false;
         bool _refboxConnected = false;
@@ -42,15 +41,14 @@ namespace Robocup.ControlForm {
         // TODO: Make it possible for multiple players to share one field drawer.
         FieldDrawer _fieldDrawer, _fieldDrawer2;
 
-        // Play storage: play identifier -> list of copies of that play owned by each player
-        // This is just one way to allow play enable/disable functionality *for all players at once*. At 
-        // this time it seems most *convenient* to me to have enable/disable to propagate to all players 
-        // (in the same way as vision/controller/refbox connectivity does), this could be changed to the 
-        // more natural player-specific control if need be. Oh, and: no, you cannot share play objects!
-        Dictionary<string, List<InterpreterPlay>> plays = new Dictionary<string, List<InterpreterPlay>>();
+        Dictionary<Player, List<InterpreterPlay>> _plays = new Dictionary<Player, List<InterpreterPlay>>();
 
-        List<RobotInfo> _waypoints = new List<RobotInfo>();
+        // Waypoints are grouped by color. Upon creation each player is assigned a color and will get the
+        // waypoints of (only) that color upon start.
+        Dictionary<Color, List<RobotInfo>> _waypoints = new Dictionary<Color, List<RobotInfo>>();
+        Dictionary<WaypointPlayer, Color> _waypointColors = new Dictionary<WaypointPlayer, Color>();
         Dictionary<RobotInfo, int> _waypointMarkers = new Dictionary<RobotInfo, int>();
+        double STEADY_STATE_SPEED; // Needed for going through waypoints
 
         PIDForm _pidForm;
         DebugForm _debugForm;
@@ -101,9 +99,9 @@ namespace Robocup.ControlForm {
             createRefboxCommandDisplayTimer();
 
             createPlayers();
-            lstPlayers.SelectedIndex = 0;
-
             reloadPlays();
+
+            lstPlayers.SelectedIndex = 0;
 
             btnLogNext.Enabled = false;
             chkSelectAll.Checked = true;
@@ -122,23 +120,33 @@ namespace Robocup.ControlForm {
         public void LoadConstants()
         {
             OUR_TEAM = (Team)Enum.Parse(typeof(Team), Constants.get<string>("configuration", "OUR_TEAM"), true);
-            FIELD_HALF = (FieldHalf)Enum.Parse(typeof(FieldHalf), Constants.get<string>("plays", "FIELD_HALF"), true);
-            PLAY_DIR = Constants.get<string>("default", "PLAY_DIR");
-
+            FIELD_HALF = (FieldHalf)Enum.Parse(typeof(FieldHalf), Constants.get<string>("plays", "FIELD_HALF"), true);           
             LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
+            STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
         }
 
         private void createPlayers()
         {
-            lstPlayers.Items.Add(new Player("RFC", OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor));
+            Player playerRFC = new Player("RFC", OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor);
+            Player playerSim1 = new Player("Sim1", Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player playerSim2 = new Player("Sim2", Team.Blue, FieldHalf.Left, _fieldDrawer2, _predictor);
+            Player playerFollower = new PathFollowerPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor);
+            Player playerKick = new KickPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer2, _predictor);
+            Player playerBeamKick = new BeamKickPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor);
 
-            lstPlayers.Items.Add(new Player("Sim1", Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor));
-            lstPlayers.Items.Add(new Player("Sim2", Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor));
+            lstPlayers.Items.Add(playerRFC);
+            lstPlayers.Items.Add(playerSim1);
+            lstPlayers.Items.Add(playerSim2);
+            lstPlayers.Items.Add(playerFollower);
+            lstPlayers.Items.Add(playerKick);
+            lstPlayers.Items.Add(playerBeamKick);
 
-            lstPlayers.Items.Add(new PathFollowerPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor));
-            lstPlayers.Items.Add(new KickPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor));
-            lstPlayers.Items.Add(new BeamKickPlayer(OUR_TEAM, FIELD_HALF, _fieldDrawer, _predictor));
-        }
+            // Determines the waypoints of which color will be given to each player 
+            // Color list is defined in FieldDrawer form.
+            _waypointColors[playerFollower as WaypointPlayer] = Color.Cyan;
+            _waypointColors[playerKick as WaypointPlayer] = Color.Red;
+            _waypointColors[playerBeamKick as WaypointPlayer] = Color.Red;            
+        }        
 
         // A timer that periodically resets the Refbox command indicator to be able to see when no 
         // packets are received. This is not done with the other drawing, because the #1 point of 
@@ -169,52 +177,106 @@ namespace Robocup.ControlForm {
             _refboxCommandDisplayTimer.Start();
         }        
 
-        private void _fieldDrawer_WaypointAdded(object sender, WaypointAddedEventArgs e)
+        private void _fieldDrawer_WaypointAdded(object sender, EventArgs<WaypointInfo> e)
         {
-            addWaypoint(e.Object as RobotInfo, e.Color);
+            addWaypoint(e.Data.Object as RobotInfo, e.Data.Color);
         }
 
-        private void _fieldDrawer_WaypointRemoved(object sender, WaypointRemovedEventArgs e)
+        private void _fieldDrawer_WaypointRemoved(object sender, EventArgs<WaypointInfo> e)
         {
-            removeWaypoint(e.Object as RobotInfo);
+            removeWaypoint(e.Data.Object as RobotInfo, e.Data.Color);
         }
 
-        private void _fieldDrawer_WaypointMoved(object sender, WaypointMovedEventArgs e)
+        private void _fieldDrawer_WaypointMoved(object sender, EventArgs<WaypointMovedInfo> e)
         {
-            RobotInfo waypoint = e.Object as RobotInfo;
-            waypoint.Position = e.NewLocation;
+            RobotInfo waypoint = e.Data.Object as RobotInfo;
+            List<RobotInfo> waypoints = _waypoints[e.Data.Color];
+            
+            int ind = waypoints.IndexOf(waypoint);
+            waypoint.Position = e.Data.NewLocation;
+            
+            #region Adjust velocities
+            if(waypoints.Count > 1)
+            {
+                double speed = Math.Sqrt(waypoint.Velocity.magnitudeSq());
+                
+                int prevInd = ind - 1;
+                if(prevInd < 0) prevInd = waypoints.Count-1;
+                Vector2 newPrevVelocity = (waypoint.Position - waypoints[prevInd].Position).normalizeToLength(speed);
+                waypoints[prevInd].Velocity = newPrevVelocity;
+
+                int nextInd = (ind + 1) % (waypoints.Count - 1);
+                Vector2 newNextVelocity = (waypoints[nextInd].Position - waypoint.Position).normalizeToLength(speed);
+                waypoint.Velocity = newNextVelocity;
+            }
+            #endregion
+
         }
 
         private void addWaypoint(RobotInfo waypoint, Color color)
-        {
-            _waypoints.Add(waypoint);
+        {                        
+            if (!_waypoints.ContainsKey(color))
+                _waypoints.Add(color, new List<RobotInfo>());
+
+            List<RobotInfo> waypoints = _waypoints[color];
+
+            #region Adjust velocities
+            double speed = STEADY_STATE_SPEED;
+            if (waypoints.Count > 0)
+            {
+                Vector2 newLastVelocity = (waypoints[0].Position - waypoint.Position).normalizeToLength(speed);
+                waypoint.Velocity = newLastVelocity;
+
+                Vector2 newPrevToLastVelocity = (waypoint.Position - waypoints[waypoints.Count - 1].Position).normalizeToLength(speed);
+                waypoints[waypoints.Count - 1].Velocity = newPrevToLastVelocity;
+            }
+            #endregion
+            
+            waypoints.Add(waypoint);
+
             _fieldDrawer.BeginCollectState();
             int markerHandle = _fieldDrawer.AddMarker(waypoint.Position, color, waypoint);
             _waypointMarkers.Add(waypoint, markerHandle);
             _fieldDrawer.EndCollectState();
         }
 
-        private void removeWaypoint(RobotInfo waypoint)
+        private void removeWaypoint(RobotInfo waypoint, Color color)
         {
+            List<RobotInfo> waypoints = _waypoints[color];
+
             _fieldDrawer.BeginCollectState();
             _fieldDrawer.RemoveMarker(_waypointMarkers[waypoint]);
             _fieldDrawer.EndCollectState();
 
-            _waypoints.Remove(waypoint);
+            waypoints.Remove(waypoint);
+            
+            #region Adjust velocities
+            if (waypoints.Count > 0)
+            {
+                RobotInfo lastWaypoint = waypoints[waypoints.Count - 1];
+                double speed = Math.Sqrt(lastWaypoint.Velocity.magnitudeSq());
+                Vector2 newVelocity = (lastWaypoint.Position - waypoints[0].Position).normalizeToLength(speed);
+                waypoints[waypoints.Count - 1].Velocity = newVelocity;
+            }
+            #endregion
+
             _waypointMarkers.Remove(waypoint);
         }
 
         private void saveWaypoints(string file)
         {
             TextWriter writer = new StreamWriter(file, false);
-            foreach (RobotInfo waypoint in _waypoints)
+            foreach (KeyValuePair<Color, List<RobotInfo>> pair in _waypoints)
             {
-                string line = String.Join(",", new string[] { waypoint.Position.X.ToString(), waypoint.Position.Y.ToString(),
+                foreach (RobotInfo waypoint in pair.Value)
+                {
+                    string line = String.Join(",", new string[] { waypoint.Position.X.ToString(), waypoint.Position.Y.ToString(),
                                                 waypoint.Velocity.X.ToString(), waypoint.Velocity.Y.ToString(),
                                                 waypoint.AngularVelocity.ToString(), waypoint.Orientation.ToString(), 
                                                 waypoint.Team.ToString(), waypoint.ID.ToString(),
-                                                _fieldDrawer.GetMarkerColor(_waypointMarkers[waypoint]).ToArgb().ToString()});
-                writer.WriteLine(line);
+                                                pair.Key.Name});
+                    writer.WriteLine(line);
+                }
             }
             writer.Close();
         }
@@ -230,46 +292,27 @@ namespace Robocup.ControlForm {
                                                    new Vector2(double.Parse(tokens[2]), double.Parse(tokens[3])),
                                                    double.Parse(tokens[4]), double.Parse(tokens[5]),
                                                    (Team)Enum.Parse(typeof(Team), tokens[6]), int.Parse(tokens[7]));
-                addWaypoint(waypoint, Color.FromArgb(int.Parse(tokens[8])));
+                addWaypoint(waypoint, Color.FromName(tokens[8]));
             }
             reader.Close();
         }        
         
         private void reloadPlays()
         {
-            bool firstPlayer = true;
-
-            chkSelectAll.Checked = false;
-            lstPlays.Items.Clear();
-            plays.Clear();
+            _plays.Clear();
 
             // There's no better place than lstPlayers to get all the players
             foreach (Player player in lstPlayers.Items)
             {
+                // Currently indexing by team, but could index by name or whatever here
+                string PLAY_DIR = Constants.get<string>("default", "PLAY_DIR_" + player.Team.ToString().ToUpper());
+
                 List<InterpreterPlay> playObjs = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR).Keys);
                 player.LoadPlays(playObjs);
 
                 // Store for lookup from enable/disable list
-                // See comment on top for "plays" for why this is setup like this                
-                foreach (InterpreterPlay play in playObjs)
-                {
-                    if (firstPlayer)
-                    {
-                        List<InterpreterPlay> playCopies = new List<InterpreterPlay>();
-                        playCopies.Add(play);
-                        plays.Add(play.Name, playCopies);
-                        lstPlays.Items.Add(play.Name);
-                    }
-                    else
-                    {
-                        // Append copies into the bin identified by the play name                         
-                        plays[play.Name].Add(play);
-                    }
-                }                
-                firstPlayer = false;
-            }
-
-            chkSelectAll.Checked = true;
+                _plays[player] = playObjs;
+            }            
         }
         
         private bool parseHost(string host, out string hostname, out int port)
@@ -314,8 +357,8 @@ namespace Robocup.ControlForm {
 
                 LoadConstants();
 
-                foreach (object player in lstPlayers.Items)
-                    ((Player)player).LoadConstants();
+                foreach (Player player in lstPlayers.Items)
+                    player.LoadConstants();
 
                 reloadPlays();
 
@@ -478,10 +521,12 @@ namespace Robocup.ControlForm {
             {
                 WaypointPlayer waypointPlayer = _selectedPlayer as WaypointPlayer;
                 waypointPlayer.ClearWaypoints();
-                foreach (RobotInfo waypoint in _waypoints)
-                    waypointPlayer.AddWaypoint(waypoint);
+                if (_waypoints.ContainsKey(_waypointColors[waypointPlayer]))
+                    foreach (RobotInfo waypoint in _waypoints[_waypointColors[waypointPlayer]])
+                        waypointPlayer.AddWaypoint(waypoint);
+                waypointPlayer.RobotID = int.Parse(txtSimplePlayerRobotID.Text);
             }
-            
+
             _selectedPlayer.Start();
 
             // Running status has changed for a player, so make sure it is (un)bold-ed in the list
@@ -504,11 +549,8 @@ namespace Robocup.ControlForm {
 
         private void lstPlays_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            string playName = lstPlays.Items[e.Index] as string;
-            
-            // Enable/disable the corresponding play object *for each player*
-            foreach (InterpreterPlay play in plays[playName])
-                play.isEnabled = e.NewValue == CheckState.Checked;
+            InterpreterPlay play = lstPlays.Items[e.Index] as InterpreterPlay;            
+            play.isEnabled = e.NewValue == CheckState.Checked;
         }
 
         private void chkSelectAll_CheckedChanged(object sender, EventArgs e)
@@ -651,6 +693,15 @@ namespace Robocup.ControlForm {
         private void lstPlayers_SelectedIndexChanged_1(object sender, EventArgs e)
         {
             _selectedPlayer = lstPlayers.SelectedItem as Player;
+
+            // Replace the content of plays list box with the selected player's plays
+            lstPlays.Items.Clear();
+
+            foreach (InterpreterPlay play in _plays[_selectedPlayer])
+            {
+                int idx = lstPlays.Items.Add(play);
+                lstPlays.SetItemChecked(idx, play.isEnabled);
+            }
         }
 
         // For displaying the running players in bold

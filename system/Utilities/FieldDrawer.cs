@@ -13,42 +13,32 @@ namespace Robocup.Utilities
         Waypoint
     }
 
-    public class WaypointAddedEventArgs : EventArgs
+    public class WaypointInfo
     {
         public Object Object;
         public Color Color;
-        public WaypointAddedEventArgs(Object obj, Color color)
+        public WaypointInfo(Object obj, Color color)
         {
             Object = obj;
             Color = color;
         }
     }
 
-    public class WaypointRemovedEventArgs : EventArgs
+    public class WaypointMovedInfo : WaypointInfo
     {
-        public Object Object;
-        public WaypointRemovedEventArgs(Object obj)
-        {
-            Object = obj;
-        }
-    }
-
-    public class WaypointMovedEventArgs : EventArgs
-    {
-        public Object Object;
         public Vector2 NewLocation;
-        public WaypointMovedEventArgs(Object obj, Vector2 newLocation)
+        public WaypointMovedInfo(Object obj, Color color, Vector2 newLocation)
+            : base(obj, color)
         {
-            Object = obj;
             NewLocation = newLocation;
         }
     }
 
     public class FieldDrawer
     {
-        public event EventHandler<WaypointAddedEventArgs> WaypointAdded;
-        public event EventHandler<WaypointRemovedEventArgs> WaypointRemoved;
-        public event EventHandler<WaypointMovedEventArgs> WaypointMoved;
+        public event EventHandler<EventArgs<WaypointInfo>> WaypointAdded;
+        public event EventHandler<EventArgs<WaypointInfo>> WaypointRemoved;
+        public event EventHandler<EventArgs<WaypointMovedInfo>> WaypointMoved;
 
         private class RobotDrawingInfo
         {
@@ -219,7 +209,8 @@ namespace Robocup.Utilities
                 if (loc.X < 0 || loc.X > _glControlWidth || loc.Y < 0 || loc.Y > _glControlHeight)
                 {
                     if (WaypointRemoved != null)
-                        WaypointRemoved(this, new WaypointRemovedEventArgs(_draggedMarker.Object));
+                        WaypointRemoved(this, new EventArgs<WaypointInfo>(
+                                                new WaypointInfo(_draggedMarker.Object, _draggedMarker.Color)));
                 }
                 _draggedMarker = null;
             }
@@ -234,7 +225,8 @@ namespace Robocup.Utilities
                 {
                     _draggedMarker.Location = pt;
                     if (WaypointMoved != null)
-                        WaypointMoved(this, new WaypointMovedEventArgs(_draggedMarker.Object, pt));
+                        WaypointMoved(this, new EventArgs<WaypointMovedInfo>(
+                                                new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, pt)));
                 }
             }
             _fieldDrawerForm.InvalidateGLControl();
@@ -242,10 +234,10 @@ namespace Robocup.Utilities
 
         public void DragDrop(object obj, Point loc)
         {
-            if (obj.GetType() == typeof(WaypointAddedEventArgs))
+            if (obj.GetType() == typeof(EventArgs<WaypointInfo>))
             {
-                WaypointAddedEventArgs eventArgs = obj as WaypointAddedEventArgs;
-                RobotInfo waypoint = eventArgs.Object as RobotInfo;
+                EventArgs<WaypointInfo> eventArgs = obj as EventArgs<WaypointInfo>;
+                RobotInfo waypoint = eventArgs.Data.Object as RobotInfo;
                 waypoint.Position = controlToFieldCoords(loc);
                 if (WaypointAdded != null)
                     WaypointAdded(this, eventArgs);

@@ -13,6 +13,13 @@ namespace Robocup.ControlForm
     {
         protected List<RobotInfo> _waypoints = new List<RobotInfo>();
         protected int _waypointIndex = 0;
+        protected int _robotID = 0;
+
+        public int RobotID
+        {
+            get { return _robotID; }
+            set { _robotID = value; }
+        }
 
         public WaypointPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) :
             base("", team, fieldHalf, fieldDrawer, predictor) {
@@ -44,18 +51,11 @@ namespace Robocup.ControlForm
 
     public class PathFollowerPlayer : WaypointPlayer
     {
-        protected int _robotID = 0;
         protected bool _firstLoop = true;        
         protected HighResTimer _lapTimer = new HighResTimer();
 
         protected double MIN_GOAL_DIST;
         protected double MIN_GOAL_DIFF_ORIENTATION;
-
-        public int RobotID
-        {
-            get { return _robotID; }
-            set { _robotID = value; }
-        }
 
         public PathFollowerPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) :
             base(team, fieldHalf, fieldDrawer, predictor)
@@ -138,19 +138,12 @@ namespace Robocup.ControlForm
     public class KickPlayer : WaypointPlayer
     {
         protected Vector2 _target = new Vector2(0, 0);
-        protected int _robotID = 0;
         protected ActionInterpreter _actionInterpreter;
 
         public Vector2 Target
         {
             get { return _target; }
             set { _target = value; }
-        }
-
-        public int RobotID
-        {
-            get { return _robotID; }
-            set { _robotID = value; }
         }
 
         public KickPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor)

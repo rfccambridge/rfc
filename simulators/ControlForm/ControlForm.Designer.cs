@@ -47,13 +47,15 @@ namespace Robocup.ControlForm {
             this.cmbVisionHost = new System.Windows.Forms.ComboBox();
             this.lstPlayers = new System.Windows.Forms.ListBox();
             this.btnStopPlayer = new System.Windows.Forms.Button();
+            this.txtSimplePlayerRobotID = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 63);
+            this.label2.Location = new System.Drawing.Point(9, 54);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(104, 13);
             this.label2.TabIndex = 24;
@@ -63,7 +65,7 @@ namespace Robocup.ControlForm {
             // 
             this.lblControllerStatus.AutoSize = true;
             this.lblControllerStatus.BackColor = System.Drawing.Color.Red;
-            this.lblControllerStatus.Location = new System.Drawing.Point(150, 63);
+            this.lblControllerStatus.Location = new System.Drawing.Point(150, 54);
             this.lblControllerStatus.Name = "lblControllerStatus";
             this.lblControllerStatus.Size = new System.Drawing.Size(76, 13);
             this.lblControllerStatus.TabIndex = 25;
@@ -71,7 +73,7 @@ namespace Robocup.ControlForm {
             // 
             // btnController
             // 
-            this.btnController.Location = new System.Drawing.Point(150, 79);
+            this.btnController.Location = new System.Drawing.Point(150, 70);
             this.btnController.Name = "btnController";
             this.btnController.Size = new System.Drawing.Size(80, 20);
             this.btnController.TabIndex = 5;
@@ -81,7 +83,7 @@ namespace Robocup.ControlForm {
             // 
             // btnLogNext
             // 
-            this.btnLogNext.Location = new System.Drawing.Point(7, 100);
+            this.btnLogNext.Location = new System.Drawing.Point(7, 89);
             this.btnLogNext.Name = "btnLogNext";
             this.btnLogNext.Size = new System.Drawing.Size(75, 23);
             this.btnLogNext.TabIndex = 13;
@@ -91,7 +93,7 @@ namespace Robocup.ControlForm {
             // 
             // btnLogOpenClose
             // 
-            this.btnLogOpenClose.Location = new System.Drawing.Point(7, 70);
+            this.btnLogOpenClose.Location = new System.Drawing.Point(7, 65);
             this.btnLogOpenClose.Name = "btnLogOpenClose";
             this.btnLogOpenClose.Size = new System.Drawing.Size(75, 23);
             this.btnLogOpenClose.TabIndex = 15;
@@ -108,7 +110,7 @@ namespace Robocup.ControlForm {
             this.groupBox1.Controls.Add(this.btnLogOpenClose);
             this.groupBox1.Location = new System.Drawing.Point(275, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(91, 132);
+            this.groupBox1.Size = new System.Drawing.Size(91, 120);
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Logging";
@@ -143,7 +145,7 @@ namespace Robocup.ControlForm {
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 116);
+            this.label6.Location = new System.Drawing.Point(9, 96);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(94, 13);
             this.label6.TabIndex = 32;
@@ -151,7 +153,7 @@ namespace Robocup.ControlForm {
             // 
             // btnRefbox
             // 
-            this.btnRefbox.Location = new System.Drawing.Point(150, 132);
+            this.btnRefbox.Location = new System.Drawing.Point(150, 112);
             this.btnRefbox.Name = "btnRefbox";
             this.btnRefbox.Size = new System.Drawing.Size(80, 20);
             this.btnRefbox.TabIndex = 33;
@@ -163,7 +165,7 @@ namespace Robocup.ControlForm {
             // 
             this.lblRefboxStatus.AutoSize = true;
             this.lblRefboxStatus.BackColor = System.Drawing.Color.Red;
-            this.lblRefboxStatus.Location = new System.Drawing.Point(150, 116);
+            this.lblRefboxStatus.Location = new System.Drawing.Point(150, 96);
             this.lblRefboxStatus.Name = "lblRefboxStatus";
             this.lblRefboxStatus.Size = new System.Drawing.Size(76, 13);
             this.lblRefboxStatus.TabIndex = 34;
@@ -204,7 +206,7 @@ namespace Robocup.ControlForm {
             this.cmbRefboxHost.Items.AddRange(new object[] {
             "224.5.92.12:10100",
             "224.5.23.1:10100"});
-            this.cmbRefboxHost.Location = new System.Drawing.Point(12, 132);
+            this.cmbRefboxHost.Location = new System.Drawing.Point(12, 112);
             this.cmbRefboxHost.Name = "cmbRefboxHost";
             this.cmbRefboxHost.Size = new System.Drawing.Size(132, 21);
             this.cmbRefboxHost.TabIndex = 39;
@@ -223,9 +225,9 @@ namespace Robocup.ControlForm {
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(9, 258);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(90, 13);
+            this.label1.Size = new System.Drawing.Size(115, 13);
             this.label1.TabIndex = 47;
-            this.label1.Text = "Plays (all players):";
+            this.label1.Text = "Plays (selected player):";
             // 
             // chkSelectAll
             // 
@@ -241,9 +243,9 @@ namespace Robocup.ControlForm {
             // 
             // btnStartPlayer
             // 
-            this.btnStartPlayer.Location = new System.Drawing.Point(236, 160);
+            this.btnStartPlayer.Location = new System.Drawing.Point(236, 175);
             this.btnStartPlayer.Name = "btnStartPlayer";
-            this.btnStartPlayer.Size = new System.Drawing.Size(132, 37);
+            this.btnStartPlayer.Size = new System.Drawing.Size(132, 33);
             this.btnStartPlayer.TabIndex = 51;
             this.btnStartPlayer.Text = "Start Player";
             this.btnStartPlayer.UseVisualStyleBackColor = true;
@@ -254,7 +256,7 @@ namespace Robocup.ControlForm {
             this.cmbControllerHost.FormattingEnabled = true;
             this.cmbControllerHost.Items.AddRange(new object[] {
             "localhost:50100"});
-            this.cmbControllerHost.Location = new System.Drawing.Point(12, 78);
+            this.cmbControllerHost.Location = new System.Drawing.Point(12, 69);
             this.cmbControllerHost.Name = "cmbControllerHost";
             this.cmbControllerHost.Size = new System.Drawing.Size(132, 21);
             this.cmbControllerHost.TabIndex = 54;
@@ -273,28 +275,48 @@ namespace Robocup.ControlForm {
             // 
             this.lstPlayers.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.lstPlayers.FormattingEnabled = true;
-            this.lstPlayers.Location = new System.Drawing.Point(12, 160);
+            this.lstPlayers.Location = new System.Drawing.Point(12, 147);
             this.lstPlayers.Name = "lstPlayers";
-            this.lstPlayers.Size = new System.Drawing.Size(218, 82);
+            this.lstPlayers.Size = new System.Drawing.Size(218, 95);
             this.lstPlayers.TabIndex = 56;
             this.lstPlayers.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lstPlayers_DrawItem);
             this.lstPlayers.SelectedIndexChanged += new System.EventHandler(this.lstPlayers_SelectedIndexChanged_1);
             // 
             // btnStopPlayer
             // 
-            this.btnStopPlayer.Location = new System.Drawing.Point(236, 205);
+            this.btnStopPlayer.Location = new System.Drawing.Point(236, 209);
             this.btnStopPlayer.Name = "btnStopPlayer";
-            this.btnStopPlayer.Size = new System.Drawing.Size(132, 37);
+            this.btnStopPlayer.Size = new System.Drawing.Size(132, 33);
             this.btnStopPlayer.TabIndex = 57;
             this.btnStopPlayer.Text = "Stop Player";
             this.btnStopPlayer.UseVisualStyleBackColor = true;
             this.btnStopPlayer.Click += new System.EventHandler(this.btnStopPlayer_Click);
+            // 
+            // txtSimplePlayerRobotID
+            // 
+            this.txtSimplePlayerRobotID.Location = new System.Drawing.Point(292, 149);
+            this.txtSimplePlayerRobotID.Name = "txtSimplePlayerRobotID";
+            this.txtSimplePlayerRobotID.Size = new System.Drawing.Size(76, 20);
+            this.txtSimplePlayerRobotID.TabIndex = 58;
+            this.txtSimplePlayerRobotID.Text = "0";
+            this.txtSimplePlayerRobotID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(233, 152);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(53, 13);
+            this.label4.TabIndex = 59;
+            this.label4.Text = "Robot ID:";
             // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 451);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.txtSimplePlayerRobotID);
             this.Controls.Add(this.btnStopPlayer);
             this.Controls.Add(this.lstPlayers);
             this.Controls.Add(this.cmbVisionHost);
@@ -352,5 +374,7 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.ComboBox cmbVisionHost;
         private System.Windows.Forms.ListBox lstPlayers;
         private System.Windows.Forms.Button btnStopPlayer;
+        private System.Windows.Forms.TextBox txtSimplePlayerRobotID;
+        private System.Windows.Forms.Label label4;
     }
 }

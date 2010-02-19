@@ -132,15 +132,17 @@ namespace Robocup.Utilities
 
         private void lblMarker_MouseDown(object sender, MouseEventArgs e)
         {
-            lblMarker.DoDragDrop(lblMarker.BackColor, DragDropEffects.All);
+            if (e.Button == MouseButtons.Left)
+                lblMarker.DoDragDrop(lblMarker.BackColor, DragDropEffects.All);
         }
 
         private void glField_DragDrop(object sender, DragEventArgs e)
         {
             // TODO: Add ability to set orientation (and id?)
             if (e.Data.GetDataPresent(typeof(Color)))
-                _fieldDrawer.DragDrop(new WaypointAddedEventArgs(new RobotInfo(null, 0, -1), _colors[_currentColorIdx]), 
-                                      glField.PointToClient(new Point(e.X, e.Y)));
+                _fieldDrawer.DragDrop(new EventArgs<WaypointInfo>(new WaypointInfo(
+                                        new RobotInfo(null, 0, -1), _colors[_currentColorIdx])), 
+                                        glField.PointToClient(new Point(e.X, e.Y)));
         }
 
         private void lblMarker_Click(object sender, EventArgs e)

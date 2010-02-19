@@ -34,6 +34,11 @@ namespace Robocup.ControlForm
         HighResTimer _timerFreq = new HighResTimer();
         HighResTimer _timerDuration = new HighResTimer();
 
+        public Team Team
+        {
+            get { return _team; }
+        }
+
         public bool Running
         {
             get { return _running; }
@@ -236,7 +241,6 @@ namespace Robocup.ControlForm
                 runRound();
                 _interpretLoopTimerSync = 0;
             }
-        }        
-
+        }
     }
 }
