@@ -333,7 +333,7 @@ namespace Robocup.Plays
             Console.WriteLine("Dist to KickPosition: {0:F3}", distToKickPosition);
             Console.WriteLine("Orientation error: {0:F3}",
                     Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation, 
-                                                             kickOrientation)));
+                                                             kickOrientation)) * 180 / Math.PI);
             Console.WriteLine("AngleToKickAxis: {0:F3}", angleToKickAxis);
             Console.WriteLine("Lateral Distance: {0:F3}", lateralDistance);
             Console.WriteLine("robotToTarget {0:F3} > ballToTarget {1:F3} [{2:G}]",
