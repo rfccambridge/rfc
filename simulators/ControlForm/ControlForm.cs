@@ -692,7 +692,10 @@ namespace Robocup.ControlForm {
         {
             _selectedPlayer = lstPlayers.SelectedItem as Player;
 
+            // We don't want to trigger the event from here
+            cmbFieldHalf.SelectedIndexChanged -= cmbFieldHalf_SelectedIndexChanged;
             cmbFieldHalf.SelectedItem = _selectedPlayer.FieldHalf;
+            cmbFieldHalf.SelectedIndexChanged += cmbFieldHalf_SelectedIndexChanged;
 
             if (_selectedPlayer is WaypointPlayer)
                 txtPlayerRobotID.Text = ((WaypointPlayer)_selectedPlayer).RobotID.ToString();
