@@ -4,6 +4,7 @@ using System.Text;
 using Robocup.Core;
 using Robocup.Utilities;
 using Robocup.CoreRobotics;
+using System.Threading;
 
 namespace Robocup.CoreRobotics
 {
@@ -219,6 +220,18 @@ namespace Robocup.CoreRobotics
         // Each camera believes in a state
         private FieldState[] fieldStates = new FieldState[NUM_CAMERAS];
 
+        // Combined state (updated at a specified frequency)
+        private BallInfo ball;
+        private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();        
+
+        // Using independent objects for locking to be able to change the object that 
+        // the protected references point to
+        private object ballLock = new object();
+        private object robotsLock = new object();
+
+        private System.Timers.Timer combineTimer = new System.Timers.Timer();
+        private int combineTimerSync = 0;
+
         // For marking ball position
         private bool marking = false;          
         private Vector2 markedPosition = null;
@@ -227,7 +240,8 @@ namespace Robocup.CoreRobotics
         private static double DELTA_DIST_SQ_MERGE;
         private static double MAX_SECONDS_TO_KEEP_INFO;
         private static double VELOCITY_DT;
-        private static double BALL_MOVED_DIST;        
+        private static double BALL_MOVED_DIST;
+        private static double COMBINE_FREQUENCY;
 
         public AveragingPredictor()
         {
@@ -237,6 +251,9 @@ namespace Robocup.CoreRobotics
             }
 
             LoadConstants();
+
+            combineTimer.Elapsed += combineTimer_Elapsed;
+            combineTimer.Start();
         }
 
         public void LoadConstants()
@@ -245,201 +262,37 @@ namespace Robocup.CoreRobotics
             VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");            
             BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
             DELTA_DIST_SQ_MERGE = Constants.get<double>("default", "DELTA_DIST_SQ_MERGE");
+            
+            COMBINE_FREQUENCY = Constants.get<double>("default", "COMBINE_FREQUENCY");
+            combineTimer.Interval = 1 / COMBINE_FREQUENCY * 1000; // Convert to seconds, and find period 
+
             foreach (FieldState fieldState in fieldStates)
             {
                 fieldState.LoadConstants();
             }
         }
-        
 
         public void Update(VisionMessage msg)
         {
             fieldStates[msg.CameraID].Update(msg);            
         }
 
-        // Return the average of info from all cameras weighed by the time since 
-        // it was last updated
         public BallInfo GetBall()
         {
-            double time = HighResTimer.SecondsSinceStart();
-
-            // Return the average from all the cameras that see it weighted 
-            // by the time since they last saw it                 
-   
-            Vector2 avgPosition = null;
-            Vector2 avgVelocity = null;
-            double avgLastSeen = 0;
-            double sum = 0;
-            for (int i = 0; i < fieldStates.Length; i++)
+            lock (ballLock)
             {
-                BallInfo ball = fieldStates[i].GetBall();                                
-                if (ball != null)
-                {
-                    //double t = time - ball.LastSeen;
-                    double t = 1;
-                    // First time, we don't add, just initialize
-                    if (avgPosition == null)
-                    {
-                        avgPosition = t * ball.Position;
-                        avgVelocity = t * ball.Velocity;
-                        avgLastSeen = t * ball.LastSeen;
-                        sum = t;                    
-                    }
-                    avgPosition += t * ball.Position;
-                    avgVelocity += t * ball.Velocity;
-                    avgLastSeen += t * ball.LastSeen;
-                    sum += t;                    
-                }
+                return ball;
             }
-
-            BallInfo retBall = null;
-            if (avgPosition != null) // if we saw at least one ball
-            {
-                avgPosition /= sum;
-                avgVelocity /= sum;
-                avgLastSeen /= sum;
-                retBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
-            }
-            return retBall;
         }
 
-        // For each robot return the average of info from all cameras weighed by
-        // the time since it was last updated
         public List<RobotInfo> GetRobots(Team team)
-        {          
-            // Will store resulting list of robots
-            List<RobotInfo> avgRobots = new List<RobotInfo>();
-
-            // Infos from cameras    
-            List<RobotInfo>[] fieldStateLists = new List<RobotInfo>[NUM_CAMERAS];
-
-            // The outer list is has one entry per physical robot, each entry is a list made up of 
-            // infos for that robot believed by different cameras. We later average over the inner list.
-            // TODO: in the future, the parent predictor could keep it's own state so that paternless
-            // ids stay stay steady
-            List<List<RobotInfo>> robotSightings = new List<List<RobotInfo>>();            
-
-            // Technically, need to record acquisition time for each camera, but it's ok
-            double time = HighResTimer.SecondsSinceStart();
-            
-            // For assigning IDs to unidentified robots
-            int nextID = -1;
-
-            // Acquire the info from all cameras (as concurrently as possible)
-            for (int cameraID = 0; cameraID < NUM_CAMERAS; cameraID++) 
-            {                   
-                fieldStateLists[cameraID] = fieldStates[cameraID].GetRobots(team);
-            }
-
-            // Construct the robot sightings list for later averaging
-            for (int cameraID = 0; cameraID < NUM_CAMERAS; cameraID++) 
-            {                              
-                // Iterate over robots seen by the camera
-                foreach (RobotInfo fsRobot in fieldStateLists[cameraID])
-                {
-
-                    // Match with existing info either by ID (if vision gave it one) or by position
-                    Predicate<RobotInfo> matchByIDPredicate, matchByPosPredicate;
-                    matchByIDPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
-                    {
-                        return robot.ID == fsRobot.ID;
-                    });
-                    matchByPosPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
-                    {
-                        return robot.Position.distanceSq(fsRobot.Position) < DELTA_DIST_SQ_MERGE;
-                    });
-
-                    // Find the matching robot: m*n search
-                    int sightingsIdx;
-                    bool doNotAdd = false;
-                    for (sightingsIdx = 0; sightingsIdx < robotSightings.Count; sightingsIdx++)
-                    {
-                        int sIdx = -1;
-                        sIdx = robotSightings[sightingsIdx].FindIndex(matchByPosPredicate);
-                        
-                        // If position matches, but ID doesn't, the new robot is on top of one we already saw
-                        // In this case, we ignore the new one completely (arbitrary choice -- old is not really 
-                        // better than old)
-                        if (sIdx >= 0 && fsRobot.ID >= 0 && fsRobot.ID != robotSightings[sightingsIdx][sIdx].ID)
-                        {
-                            doNotAdd = true;
-                            continue;
-                        }
-             
-                        // If at least one sighting was satisfactory, we merge with that list of sightings
-                        if (sIdx >= 0)
-                        {                            
-                            break;
-                        }
-                    }
-
-                    // Decided to ignore this robot because it was on top of another one
-                    if (doNotAdd)
-                    {
-                        continue;
-                    }
-
-                    // If not yet seen anywhere else, add the robot; otherwise, add it to the 
-                    // sightings for later averaging                    
-                    if (sightingsIdx == robotSightings.Count) {
-                        List<RobotInfo> sList = new List<RobotInfo>();
-                        sList.Add(fsRobot);                        
-                        robotSightings.Add(sList);
-                    } else {
-                        robotSightings[sightingsIdx].Add(fsRobot);
-                    }
-
-                    // Keep track of maximum ID, so that we can assign IDs later
-                    if (fsRobot.ID > nextID)
-                    {
-                        nextID = fsRobot.ID;
-                    }
-                }
-            }
-
-            // Now we have assembled information for each robot, just take the average
-            foreach (List<RobotInfo> sList in robotSightings)
+        {
+            lock (robotsLock)
             {
-                RobotInfo avgRobot = new RobotInfo(sList[0]);
-
-                // Assign an ID if the robot came without one
-                if (avgRobot.ID < 0)
-                {
-                    avgRobot.ID = ++nextID;
-                }
-
-                double t = time - avgRobot.LastSeen;
-                t = 1;
-                Vector2 avgPosition = t * (new Vector2(avgRobot.Position));
-                Vector2 avgVelocity = t * (new Vector2(avgRobot.Velocity));                
-                double avgOrientation = t * avgRobot.Orientation;
-                double avgAngVel = t * avgRobot.AngularVelocity;
-                double avgLastSeen = t * avgRobot.LastSeen;
-                double sum = t;                
-                for (int i = 1; i < sList.Count; i++)
-                {
-                    //t = time - sList[i].LastSeen;
-                    t = 1;
-                    avgPosition += t * sList[i].Position;
-                    avgVelocity += t * sList[i].Velocity;
-                    avgAngVel += t * sList[i].AngularVelocity;
-                    avgOrientation += t * sList[i].Orientation;                
-                    avgLastSeen += t * sList[i].LastSeen;
-                    sum += t;
-                }
-                avgPosition /= sum;
-                avgVelocity /= sum;
-                avgAngVel /= sum;
-                avgOrientation /= sum;
-                avgLastSeen /= sum;
-
-                // Record result for returning
-                avgRobots.Add(new RobotInfo(avgPosition, avgVelocity, avgAngVel, avgOrientation, 
-                    team, avgRobot.ID, avgLastSeen));
+                return robots[team];
             }
-
-            return avgRobots;
         }
+
         public List<RobotInfo> GetRobots() {
             List<RobotInfo> combined = new List<RobotInfo>();
             foreach (Team team in Enum.GetValues(typeof(Team)))
@@ -448,6 +301,7 @@ namespace Robocup.CoreRobotics
         }        
         public RobotInfo GetRobot(Team team, int id)
         {
+            // TODO: this is frequently executed: change to use a dictionary
             List<RobotInfo> robots = GetRobots(team);            
             RobotInfo robot = robots.Find(new Predicate<RobotInfo>(delegate(RobotInfo r)
             {
@@ -488,7 +342,215 @@ namespace Robocup.CoreRobotics
         {
             // Do nothing: this method is for assumed ball: returning clever values for the ball
             // based on game state -- i.e. center of field during kick-off
-        }    
+        }
+
+        // Return the average of info from all cameras weighed by the time since 
+        // it was last updated
+        private void combineBall()
+        {
+            double time = HighResTimer.SecondsSinceStart();
+
+            // Return the average from all the cameras that see it weighted 
+            // by the time since they last saw it                 
+
+            Vector2 avgPosition = null;
+            Vector2 avgVelocity = null;
+            double avgLastSeen = 0;
+            double sum = 0;
+            for (int i = 0; i < fieldStates.Length; i++)
+            {
+                BallInfo ball = fieldStates[i].GetBall();
+                if (ball != null)
+                {
+                    //double t = time - ball.LastSeen;
+                    double t = 1;
+                    // First time, we don't add, just initialize
+                    if (avgPosition == null)
+                    {
+                        avgPosition = t * ball.Position;
+                        avgVelocity = t * ball.Velocity;
+                        avgLastSeen = t * ball.LastSeen;
+                        sum = t;
+                    }
+                    avgPosition += t * ball.Position;
+                    avgVelocity += t * ball.Velocity;
+                    avgLastSeen += t * ball.LastSeen;
+                    sum += t;
+                }
+            }
+
+            BallInfo retBall = null;
+            if (avgPosition != null) // if we saw at least one ball
+            {
+                avgPosition /= sum;
+                avgVelocity /= sum;
+                avgLastSeen /= sum;
+                retBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
+            }
+
+            lock (ballLock)
+            {
+                ball = retBall;
+            }
+        }
+
+        // For each robot return the average of info from all cameras weighed by
+        // the time since it was last updated
+        private void combineRobots(Team team)
+        {
+            // Will store resulting list of robots
+            List<RobotInfo> avgRobots = new List<RobotInfo>();
+
+            // Infos from cameras    
+            List<RobotInfo>[] fieldStateLists = new List<RobotInfo>[NUM_CAMERAS];
+
+            // The outer list is has one entry per physical robot, each entry is a list made up of 
+            // infos for that robot believed by different cameras. We later average over the inner list.
+            // TODO: in the future, the parent predictor could keep it's own state so that paternless
+            // ids stay stay steady
+            List<List<RobotInfo>> robotSightings = new List<List<RobotInfo>>();
+
+            // Technically, need to record acquisition time for each camera, but it's ok
+            double time = HighResTimer.SecondsSinceStart();
+
+            // For assigning IDs to unidentified robots
+            int nextID = -1;
+
+            // Acquire the info from all cameras (as concurrently as possible)
+            for (int cameraID = 0; cameraID < NUM_CAMERAS; cameraID++)
+            {
+                fieldStateLists[cameraID] = fieldStates[cameraID].GetRobots(team);
+            }
+
+            // Construct the robot sightings list for later averaging
+            for (int cameraID = 0; cameraID < NUM_CAMERAS; cameraID++)
+            {
+                // Iterate over robots seen by the camera
+                foreach (RobotInfo fsRobot in fieldStateLists[cameraID])
+                {
+
+                    // Match with existing info either by ID (if vision gave it one) or by position
+                    Predicate<RobotInfo> matchByIDPredicate, matchByPosPredicate;
+                    matchByIDPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
+                    {
+                        return robot.ID == fsRobot.ID;
+                    });
+                    matchByPosPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
+                    {
+                        return robot.Position.distanceSq(fsRobot.Position) < DELTA_DIST_SQ_MERGE;
+                    });
+
+                    // Find the matching robot: m*n search
+                    int sightingsIdx;
+                    bool doNotAdd = false;
+                    for (sightingsIdx = 0; sightingsIdx < robotSightings.Count; sightingsIdx++)
+                    {
+                        int sIdx = -1;
+                        sIdx = robotSightings[sightingsIdx].FindIndex(matchByPosPredicate);
+
+                        // If position matches, but ID doesn't, the new robot is on top of one we already saw
+                        // In this case, we ignore the new one completely (arbitrary choice -- old is not really 
+                        // better than old)
+                        if (sIdx >= 0 && fsRobot.ID >= 0 && fsRobot.ID != robotSightings[sightingsIdx][sIdx].ID)
+                        {
+                            doNotAdd = true;
+                            continue;
+                        }
+
+                        // If at least one sighting was satisfactory, we merge with that list of sightings
+                        if (sIdx >= 0)
+                        {
+                            break;
+                        }
+                    }
+
+                    // Decided to ignore this robot because it was on top of another one
+                    if (doNotAdd)
+                    {
+                        continue;
+                    }
+
+                    // If not yet seen anywhere else, add the robot; otherwise, add it to the 
+                    // sightings for later averaging                    
+                    if (sightingsIdx == robotSightings.Count)
+                    {
+                        List<RobotInfo> sList = new List<RobotInfo>();
+                        sList.Add(fsRobot);
+                        robotSightings.Add(sList);
+                    }
+                    else
+                    {
+                        robotSightings[sightingsIdx].Add(fsRobot);
+                    }
+
+                    // Keep track of maximum ID, so that we can assign IDs later
+                    if (fsRobot.ID > nextID)
+                    {
+                        nextID = fsRobot.ID;
+                    }
+                }
+            }
+
+            // Now we have assembled information for each robot, just take the average
+            foreach (List<RobotInfo> sList in robotSightings)
+            {
+                RobotInfo avgRobot = new RobotInfo(sList[0]);
+
+                // Assign an ID if the robot came without one
+                if (avgRobot.ID < 0)
+                {
+                    avgRobot.ID = ++nextID;
+                }
+
+                double t = time - avgRobot.LastSeen;
+                t = 1;
+                Vector2 avgPosition = t * (new Vector2(avgRobot.Position));
+                Vector2 avgVelocity = t * (new Vector2(avgRobot.Velocity));
+                double avgOrientation = t * avgRobot.Orientation;
+                double avgAngVel = t * avgRobot.AngularVelocity;
+                double avgLastSeen = t * avgRobot.LastSeen;
+                double sum = t;
+                for (int i = 1; i < sList.Count; i++)
+                {
+                    //t = time - sList[i].LastSeen;
+                    t = 1;
+                    avgPosition += t * sList[i].Position;
+                    avgVelocity += t * sList[i].Velocity;
+                    avgAngVel += t * sList[i].AngularVelocity;
+                    avgOrientation += t * sList[i].Orientation;
+                    avgLastSeen += t * sList[i].LastSeen;
+                    sum += t;
+                }
+                avgPosition /= sum;
+                avgVelocity /= sum;
+                avgAngVel /= sum;
+                avgOrientation /= sum;
+                avgLastSeen /= sum;
+
+                // Record result for returning
+                avgRobots.Add(new RobotInfo(avgPosition, avgVelocity, avgAngVel, avgOrientation,
+                    team, avgRobot.ID, avgLastSeen));
+            }
+
+            lock (robotsLock)
+            {
+                robots[team] = avgRobots;
+            }
+        }
+
+        void combineTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            // Throw away event if a previous event is still being handled
+            if (Interlocked.CompareExchange(ref combineTimerSync, 1, 0) == 0)
+            {
+                combineBall();
+                foreach (Team team in Enum.GetValues(typeof(Team)))
+                    combineRobots(team);
+
+                combineTimerSync = 0;
+            }
+        }
+
     }
 
 }
