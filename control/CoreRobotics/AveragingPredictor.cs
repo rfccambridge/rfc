@@ -446,7 +446,7 @@ namespace Robocup.CoreRobotics
                     for (sightingsIdx = 0; sightingsIdx < robotSightings.Count; sightingsIdx++)
                     {
                         int sIdx = -1;
-                        sIdx = robotSightings[sightingsIdx].FindIndex(matchByPosPredicate);
+                        sIdx = robotSightings[sightingsIdx].FindIndex(matchByIDPredicate);
 
                         // If position matches, but ID doesn't, the new robot is on top of one we already saw
                         // In this case, we ignore the new one completely (arbitrary choice -- old is not really 

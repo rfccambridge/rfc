@@ -121,6 +121,9 @@ namespace Robocup.ControlForm {
         {
             LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
             STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
+
+            if (_predictor != null)
+                _predictor.LoadConstants();
         }
 
         private void createPlayers()

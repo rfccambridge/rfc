@@ -30,7 +30,7 @@ string PLAY_DIR_BLUE ../../plays/refboxplaysBlue
 
 ## Basic Predictor constants
 double DELTA_DIST_SQ_MERGE .01
-double MAX_SECONDS_TO_KEEP_INFO 1
+double MAX_SECONDS_TO_KEEP_INFO 0.05
 # in seconds
 double VELOCITY_DT 0.2
 double VELOCITY_WEIGHT_OLD 0.5
