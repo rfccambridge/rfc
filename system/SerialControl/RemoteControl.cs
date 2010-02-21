@@ -16,6 +16,7 @@ using System.IO;
 namespace Robocup.SerialControl {
     public partial class RemoteControl : Form {
         private delegate void VoidLabelStringDelegate(Label lbl, string arg);
+        private delegate void VoidLabelColorDelegate(Label lbl, Color arg);
         private delegate void VoidListBoxObjectIntDelegate(ListBox lst, object item, int maxItems);
         private delegate void VoidListBoxObjectsDelegate(ListBox lst, object[] item);
 
@@ -34,6 +35,9 @@ namespace Robocup.SerialControl {
         private IMessageSender<RobotCommand> _cmdSender;
         private IMessageReceiver<RobotCommand> _cmdReceiver;
         private System.Timers.Timer _rebootTimer = new System.Timers.Timer();
+        private System.Timers.Timer _noCommandTimer = new System.Timers.Timer(500);
+        private DateTime _lastCommandTime = DateTime.MaxValue;
+        private object _lastCommandTimeLock = new object();
         private SerialPort _comPort;
         private SerialInput _serialInput;
         private StreamWriter _dataInWriter;
@@ -41,6 +45,7 @@ namespace Robocup.SerialControl {
         private JoystickInterface.Joystick _joystickInterface;
         private System.Timers.Timer _joystickTimer = new System.Timers.Timer(100);
         private int _joystickTimerSync = 0;
+        private bool _joystickDrivingOn = false;
         private int _curRobot;
         private RobotModel[] _robotModels = new RobotModel[NUM_ROBOTS];
 
@@ -101,6 +106,11 @@ namespace Robocup.SerialControl {
             _rebootTimer.AutoReset = true;
             _rebootTimer.Elapsed += rebootTimer_Elapsed;
 
+            // Clear the sent command label to be able to distinguish when nothing is being sent
+            _noCommandTimer.AutoReset = true;
+            _noCommandTimer.Elapsed += _noCommandTimer_Elapsed;
+            _noCommandTimer.Start();
+
             // Global hotkeys
             _keyboardHook.KeyPressed += backspace_GlobalHotkeyPressed;
             _keyboardHook.RegisterHotKey(Robocup.Utilities.ModifierKeys.Control | Robocup.Utilities.ModifierKeys.Alt, Keys.Back);
@@ -108,7 +118,8 @@ namespace Robocup.SerialControl {
             radioButtonSerial.Checked = true;
 
             btnCmdListen_Click(null, null);
-        }
+            btnConnectJoystick_Click(null, null);
+        }        
 
         private void sendCommand(RobotCommand command)
         {
@@ -127,7 +138,11 @@ namespace Robocup.SerialControl {
                 string status = command.command.ToString();
                 if (command.command == RobotCommand.Command.MOVE)
                     status += ": " + command.Speeds.ToString();
-                updateLabel(statusLabel, status);
+                updateLabel(lblSentCommand, status);
+                lock (_lastCommandTimeLock)
+                {
+                    _lastCommandTime = DateTime.Now;
+                }
             }
         }        
 
@@ -146,6 +161,14 @@ namespace Robocup.SerialControl {
             {
                 lbl.Text = text;
             }), new object[] { label, text });
+        }
+
+        private void updateLabel(Label label, Color backColor)
+        {
+            this.Invoke(new VoidLabelColorDelegate(delegate(Label lbl, Color color)
+            {
+                lbl.BackColor = color;
+            }), new object[] { label, backColor });
         }
 
         private void addItem(ListBox lstBox, object item, int maxItems)
@@ -430,6 +453,17 @@ namespace Robocup.SerialControl {
             }
         }
 
+        private void _noCommandTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            TimeSpan timeSinceLast;
+            lock (_lastCommandTimeLock)
+            {
+                timeSinceLast = DateTime.Now - _lastCommandTime;
+            }
+            if (timeSinceLast.TotalMilliseconds > 500)
+                updateLabel(lblSentCommand, "<NO CMD>");
+        }
+
         private void btnCmdListen_Click(object sender, EventArgs e)
         {
             if (!_cmdListening)
@@ -536,6 +570,7 @@ namespace Robocup.SerialControl {
                     _joystickInterface.AcquireJoystick(sticks[0]);                    
                     _joystickTimer.Start();
                     lblJoystickStatus.BackColor = Color.Green;
+                    btnConnectJoystick.Text = "Disconnect Joystick";
                     _joystickConnected = true;
 
                     // To immediately listen for key events
@@ -547,6 +582,7 @@ namespace Robocup.SerialControl {
                 _joystickTimer.Stop();
                 _joystickInterface.ReleaseJoystick();
                 lblJoystickStatus.BackColor = Color.Red;
+                btnConnectJoystick.Text = "Connect Joystick";
                 _joystickConnected = false;
             }
         }
@@ -567,6 +603,7 @@ namespace Robocup.SerialControl {
         {
             // Joystick button assignments
             // ***NUMBERS ARE AS PHYSICALLY LABELED ON JOYSTICK***
+            const int DRIVING_ON_OFF = 9;
             const int ID_UP = 10;
             const int SPEED_UP = 5;
             const int SPEED_DOWN = 7;
@@ -575,8 +612,7 @@ namespace Robocup.SerialControl {
             const int STOP_CHARGING = 2;
             const int ENABLE_BREAKBEAM = 3;
             const int START_DRIBBLER = 6;
-            const int STOP_DRIBBLER = 8;
-            const int RESET = 9;
+            const int STOP_DRIBBLER = 8;            
 
             // Joystick specific parameters
             const int JOYSTICK_AXIS_MAXIMUM = 65535;
@@ -608,37 +644,44 @@ namespace Robocup.SerialControl {
                 sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_DRIBBLER));
             if (_joystickInterface.Buttons[STOP_DRIBBLER - 1])
                 sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.STOP_DRIBBLER));
-            if (_joystickInterface.Buttons[RESET - 1])
-                sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.RESET));
 
-            // compute parameters based on the current state of the joystick
-            double forwardComponent = (1 - ((float)_joystickInterface.AxisD) / JOYSTICK_AXIS_MAXIMUM) - .5;
-            double lateralComponent = ((float)_joystickInterface.AxisC) / JOYSTICK_AXIS_MAXIMUM - .5;
-            double angularComponent = 1 - ((float)_joystickInterface.AxisA) / JOYSTICK_AXIS_MAXIMUM - .5;
+            if (_joystickInterface.Buttons[DRIVING_ON_OFF - 1])
+            {
+                _joystickDrivingOn = !_joystickDrivingOn;
+                updateLabel(lblJoystickDriving, _joystickDrivingOn ? Color.Green : Color.Red);
+            }
 
-            //Console.WriteLine("Forward component: " + forwardComponent + " lateral component " + lateralComponent +
-            //                    "angular component" + angularComponent);
+            if (_joystickDrivingOn)
+            {
+                // compute parameters based on the current state of the joystick
+                double forwardComponent = (1 - ((float)_joystickInterface.AxisD) / JOYSTICK_AXIS_MAXIMUM) - .5;
+                double lateralComponent = ((float)_joystickInterface.AxisC) / JOYSTICK_AXIS_MAXIMUM - .5;
+                double angularComponent = 1 - ((float)_joystickInterface.AxisA) / JOYSTICK_AXIS_MAXIMUM - .5;
 
-            // assume that we are facing in the y direction (90 degrees), so the lateral direction is
-            // x, the forward component is y, and the angular is what it is
+                //Console.WriteLine("Forward component: " + forwardComponent + " lateral component " + lateralComponent +
+                //                    "angular component" + angularComponent);
 
-            //I assume the x command is effectively in m/s, so r the radius of the wheels from the center of
-            //the robot is in meters
+                // assume that we are facing in the y direction (90 degrees), so the lateral direction is
+                // x, the forward component is y, and the angular is what it is
 
-            //change from the x and y of the field to forward and lateral(right is positive) used below
+                //I assume the x command is effectively in m/s, so r the radius of the wheels from the center of
+                //the robot is in meters
 
-            // TODO: why is theta randomly set here?
-            double theta = Math.PI / 2;
+                //change from the x and y of the field to forward and lateral(right is positive) used below
 
-            double forward = JOYSTICK_DIR_SPEED_SCALE * _speed * (-(Math.Cos(theta) * lateralComponent + 
-                                                             Math.Sin(theta) * forwardComponent));
-            double lateral = JOYSTICK_DIR_SPEED_SCALE * _speed * (-(-Math.Sin(theta) * lateralComponent +
-                                                             Math.Cos(theta) * forwardComponent));
-            double angular = JOYSTICK_ANG_SPEED_SCALE * _speed * angularComponent;
+                // TODO: why is theta randomly set here?
+                double theta = Math.PI / 2;
 
-            WheelSpeeds speeds = _robotModels[_curRobot].Convert(forward, lateral, angular);
+                double forward = JOYSTICK_DIR_SPEED_SCALE * _speed * (-(Math.Cos(theta) * lateralComponent +
+                                                                 Math.Sin(theta) * forwardComponent));
+                double lateral = JOYSTICK_DIR_SPEED_SCALE * _speed * (-(-Math.Sin(theta) * lateralComponent +
+                                                                 Math.Cos(theta) * forwardComponent));
+                double angular = JOYSTICK_ANG_SPEED_SCALE * _speed * angularComponent;
 
-            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE, speeds));
+                WheelSpeeds speeds = _robotModels[_curRobot].Convert(forward, lateral, angular);
+
+                sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE, speeds));
+            }
         }        
 
         private void btnStartStopWheelSpeedFunction_Click(object sender, EventArgs e)
