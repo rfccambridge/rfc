@@ -11,7 +11,7 @@ double P_X_2 100
 double P_X_3 100
 double P_X_4 100
 
-double I_X_0 .4
+double I_X_0 10
 double I_X_1 0
 double I_X_2 0
 double I_X_3 0
@@ -35,7 +35,7 @@ double P_Y_2 100
 double P_Y_3 100
 double P_Y_4 100
 
-double I_Y_0 .4
+double I_Y_0 10
 double I_Y_1 0
 double I_Y_2 0
 double I_Y_3 0
