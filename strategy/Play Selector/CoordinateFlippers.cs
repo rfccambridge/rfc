@@ -29,7 +29,8 @@ namespace Robocup.Plays
         /// </summary>
         private RobotInfo flipRobotInfo(RobotInfo info)
         {
-            return new RobotInfo(-info.Position, -info.Velocity, -info.AngularVelocity, info.Orientation+Math.PI, info.ID);
+            return new RobotInfo(-info.Position, -info.Velocity, -info.AngularVelocity,
+                    Robocup.Geometry.UsefulFunctions.angleDifference(info.Orientation, -Math.PI / 2), info.ID);
         }
         #region IPredictor Members
 
