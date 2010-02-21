@@ -47,4 +47,4 @@ wall1bkp (point 1.0 0)
 Conditions:
 Actions:
 (if_Action (inField wall1point) (robotpointpointmove wall1bot wall1point ballpoint) (robotpointpointmove wall1bot wall1bkp ballpoint))
-(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointmove goaliebot goalbotpt) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointmove goaliebot goaltoppt) (robotpointmove goaliebot goaliept)))
+(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))

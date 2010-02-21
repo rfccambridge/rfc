@@ -40,4 +40,4 @@ goaliebot (closest friendly ourgoal loose)
 
 Conditions:
 Actions:
-(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointmove goaliebot goalbotpt) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointmove goaliebot goaltoppt) (robotpointmove goaliebot goaliept)))
+(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))

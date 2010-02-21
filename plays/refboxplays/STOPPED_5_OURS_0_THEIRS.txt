@@ -63,4 +63,4 @@ Actions:
 (if_Action (inField wall2point) (robotpointpointmove wall2bot wall2point ballpoint) (robotpointpointmove wall2bot wall2bkp ballpoint))
 (if_Action (inField wall3point) (robotpointpointmove wall3bot wall3point ballpoint) (robotpointpointmove wall3bot wall3bkp ballpoint))
 (robotpointpointmove defenderbot defenderpoint ballpoint)
-(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointmove goaliebot goalbotpt) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointmove goaliebot goaltoppt) (robotpointmove goaliebot goaliept)))
+(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))
