@@ -131,18 +131,21 @@ namespace Robocup.ControlForm {
             Player player1 = new Player("Player1", Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
             Player player2 = new Player("Player2", Team.Blue, FieldHalf.Left, _fieldDrawer2, _predictor);
             Player playerFollower = new PathFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+        	Player playerMeasuringFollower = new MeasuringFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
             Player playerKick = new KickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer2, _predictor);
             Player playerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer2, _predictor);
 
             lstPlayers.Items.Add(player1);
             lstPlayers.Items.Add(player2);
             lstPlayers.Items.Add(playerFollower);
+        	lstPlayers.Items.Add(playerMeasuringFollower);
             lstPlayers.Items.Add(playerKick);
             lstPlayers.Items.Add(playerBeamKick);
 
             // Determines the waypoints of which color will be given to each player 
             // Color list is defined in FieldDrawer form.
             _waypointColors[playerFollower as WaypointPlayer] = Color.Cyan;
+			_waypointColors[playerMeasuringFollower as WaypointPlayer] = Color.Cyan;
             _waypointColors[playerKick as WaypointPlayer] = Color.Red;
             _waypointColors[playerBeamKick as WaypointPlayer] = Color.Red;            
         }        
