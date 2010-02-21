@@ -672,7 +672,11 @@ namespace InterpreterTester
         {
             throw new NotImplementedException("not implemented");
         }
-		public void StopControlling()
+        public void StartControlling()
+        {
+        }
+        
+        public void StopControlling()
 		{
 			
 		}
