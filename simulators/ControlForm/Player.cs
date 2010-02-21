@@ -196,7 +196,9 @@ namespace Robocup.ControlForm
             _running = true;
 
             _fieldDrawer.UpdateTeam(_team);            
-            
+
+            _controller.StartControlling();
+
             _interpretLoopTimer.Interval = period;                        
             _interpretLoopTimer.Start();
         }

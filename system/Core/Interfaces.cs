@@ -162,6 +162,9 @@ namespace Robocup.Core {
     public interface IController {
         void Connect(string host, int port);
         void Disconnect();
+        void StartControlling();
+        void StopControlling();
+
         /// <summary>
         /// Move to desitnation while keeping current orientation; Velocity at destination = 0;
         /// </summary>
@@ -178,9 +181,7 @@ namespace Robocup.Core {
         void Charge(int robotID);
         void BreakBeam(int robotID);
         void Kick(int robotID, Vector2 target);
-        void Stop(int robotID);
-    	void StopControlling();
-
+        void Stop(int robotID);        
         void LoadConstants();
     }
 

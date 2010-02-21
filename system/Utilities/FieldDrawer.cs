@@ -347,6 +347,11 @@ namespace Robocup.Utilities
             _fieldDrawerForm.UpdateLapDuration(duration);
         }
 
+        public void UpdateControllerDuration(double duration)
+        {
+            _fieldDrawerForm.UpdateControllerDuration(duration);
+        }
+
         public void UpdatePlayName(Team team, int robotID, string name)
         {
             lock (_collectingStateLock)

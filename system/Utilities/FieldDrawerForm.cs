@@ -73,6 +73,14 @@ namespace Robocup.Utilities
             }));
         }
 
+        public void UpdateControllerDuration(double duration)
+        {
+            this.BeginInvoke(new VoidDelegate(delegate
+            {
+                lblControllerDuration.Text = String.Format("{0:F2} ms", duration);
+            }));
+        }
+
         public void UpdateLapDuration(double duration)
         {
             this.BeginInvoke(new VoidDelegate(delegate

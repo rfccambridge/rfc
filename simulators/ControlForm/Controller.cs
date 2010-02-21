@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Timers;
 using Robocup.Core;
 using Robocup.Utilities;
 using Robocup.MotionControl;
@@ -46,6 +47,7 @@ namespace Robocup.ControlForm
 		private int[] _followsSincePlan;
 		private System.Timers.Timer _followPathsTimer;
         private int _followPathsTimerSync = 0;
+        private HighResTimer _followPathsDurationTimer = new HighResTimer();
 
         private List<int> _charging = new List<int>();
         private Dictionary<int, double> _lastCharge = new Dictionary<int, double>();
@@ -69,8 +71,26 @@ namespace Robocup.ControlForm
 			_followsSincePlan = new int[NUM_ROBOTS];
 			_controlRunning = false;
 
-			LoadConstants();
+            _followPathsTimer = new System.Timers.Timer();
+            _followPathsTimer.AutoReset = true;
+            _followPathsTimer.Elapsed += _followPathsTimer_Elapsed;
+
+            LoadConstants();
 		}
+
+        public void LoadConstants()
+        {
+            CONTROL_LOOP_FREQUENCY = Constants.get<double>("default", "CONTROL_LOOP_FREQUENCY");
+            _controlPeriod = 1 / CONTROL_LOOP_FREQUENCY * 1000; //in ms
+
+            DRAW_PATH = Constants.get<bool>("drawing", "DRAW_PATH");
+
+            BALL_AVOID_DIST = Constants.get<double>("motionplanning", "BALL_AVOID_DIST");
+
+            _planner.LoadConstants();
+            _kickPlanner.LoadConstants();
+            //_predictor
+        }
 
         public void Connect(string host, int port)
         {
@@ -88,6 +108,35 @@ namespace Robocup.ControlForm
             _cmdSender.Close();
             _cmdSender = null;
         }
+
+        public void StartControlling()
+        {
+            if (!_controlRunning)
+            {
+                _followPathsTimer.Interval = _controlPeriod;
+                _followPathsTimer.Start();
+                _controlRunning = true;
+            }
+            else
+                throw new Exception("Trying to start controller when it's already running.");
+        }
+
+        public void StopControlling()
+        {
+            if (_controlRunning)
+            {
+                lock (_pathsLock)
+                {
+                    for (int i = 0; i < NUM_ROBOTS; i++)
+                        _paths[i] = null;
+                }
+
+                _followPathsTimer.Stop();
+                _controlRunning = false;
+            }
+            else
+                throw new Exception("Trying to stop controller when it's not running.");
+        }                
 
 		public void Charge(int robotID)
 		{
@@ -155,26 +204,6 @@ namespace Robocup.ControlForm
 
             // Clear timeout counter
             _followsSincePlan[destination.ID] = 0;
-
-            // We've already committed a path for following, now start the 
-            // control loop if it's not already running
-            if (!_controlRunning)
-            {
-                _followPathsTimer = new System.Timers.Timer(_controlPeriod);
-                _followPathsTimer.AutoReset = true;
-                _followPathsTimer.Elapsed += delegate
-                                {
-                                    // Skip event if still handling a previous event
-                                    if (Interlocked.CompareExchange(ref _followPathsTimerSync, 1, 0) == 0)
-                                    {
-                                        Thread.CurrentThread.Name = "Controller timer thread";
-                                        followPaths();
-                                        _followPathsTimerSync = 0;
-                                    }
-                                };
-                _followPathsTimer.Start();
-                _controlRunning = true;
-            }
 
             #region Drawing
             //Arrow showing final destination
@@ -250,36 +279,7 @@ namespace Robocup.ControlForm
             RobotCommand command = new RobotCommand(robotID, new WheelSpeeds());
             _cmdSender.Post(command);
 		}
-
-		public void StopControlling()
-		{
-			if (_controlRunning)
-			{
-				lock (_pathsLock)
-				{
-					for (int i = 0; i < NUM_ROBOTS; i++)
-						_paths[i] = null;
-				}
-
-				_followPathsTimer.Stop();
-				_controlRunning = false;
-			}
-		}        
-
-		public void LoadConstants()
-		{
-			CONTROL_LOOP_FREQUENCY = Constants.get<double>("default", "CONTROL_LOOP_FREQUENCY");			
-            _controlPeriod = 1 / CONTROL_LOOP_FREQUENCY * 1000; //in ms
-
-            DRAW_PATH = Constants.get<bool>("drawing", "DRAW_PATH");
-
-            BALL_AVOID_DIST = Constants.get<double>("motionplanning", "BALL_AVOID_DIST");
-
-			_planner.LoadConstants();
-			_kickPlanner.LoadConstants();
-			//_predictor
-		}
-
+        
         private void followPaths()
         {
             RobotCommand command;
@@ -337,6 +337,20 @@ namespace Robocup.ControlForm
                 command = new RobotCommand(currPath.ID, mpResults.wheel_speeds);
                 _cmdSender.Post(command);
             }
-        }      
+        }
+
+        private void _followPathsTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // Skip event if still handling a previous event
+            if (Interlocked.CompareExchange(ref _followPathsTimerSync, 1, 0) == 0)
+            {
+                _followPathsDurationTimer.Start();
+                Thread.CurrentThread.Name = "Controller timer thread";
+                followPaths();
+                _followPathsTimerSync = 0;
+                _followPathsDurationTimer.Stop();
+                _fieldDrawer.UpdateControllerDuration(_followPathsDurationTimer.Duration * 1000);
+            }
+        }
 	}
 }
