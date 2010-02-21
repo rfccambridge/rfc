@@ -30,7 +30,8 @@ namespace Robocup.MessageSystem
         }
         private void OnMessageReceived(T t)
         {
-            MessageReceived(t);
+            if (MessageReceived != null)
+                MessageReceived(t);
         }
         private void Run(object o)
         {
