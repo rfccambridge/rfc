@@ -38,8 +38,8 @@ namespace Robocup.SerialControl
 
         public class SerialInputMessage
         {
-            private int encoder;
-            public int Encoder
+            private Int16 encoder;
+            public Int16 Encoder
             {
                 get { return encoder; }
                 set { encoder = value; }
@@ -134,11 +134,11 @@ namespace Robocup.SerialControl
                 for (int i = 0; i < numgroups; i++)
                 {
                     rtn[i] = new SerialInputMessage();
-                    rtn[i].Encoder = ((int)(data[3 + i * group_size]) << 8) + //Hi
-                                        (int)(data[4 + i * group_size]) //Lo
-                                        - (1 << 15); //Off-center
-                    rtn[i].DutyHigh = data[5 + i * group_size];
-                    rtn[i].DutyLow = data[6 + i * group_size];
+                    rtn[i].Encoder = (Int16)(((Int16)(data[3 + i * group_size]) << 8) + //Hi
+                                        (Int16)(data[4 + i * group_size])); //Lo
+                                        //- (1 << 15)); //Off-center
+                    rtn[i].DutyHigh = (sbyte)data[5 + i * group_size];
+                    rtn[i].DutyLow = (sbyte)data[6 + i * group_size];
                     rtn[i].WheelCommand = (sbyte)data[7 + i * group_size];        
                 }
                 if(ValueReceived != null)

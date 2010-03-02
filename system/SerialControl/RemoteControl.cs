@@ -551,8 +551,8 @@ namespace Robocup.SerialControl {
         private void btnSetWheelSpeeds_Click(object sender, EventArgs e)
         {
             sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                         new WheelSpeeds(byte.Parse(txtRF.Text), byte.Parse(txtLF.Text),
-                                         byte.Parse(txtLB.Text), byte.Parse(txtRB.Text))));
+                         new WheelSpeeds(sbyte.Parse(txtRF.Text), sbyte.Parse(txtLF.Text),
+                                         sbyte.Parse(txtLB.Text), sbyte.Parse(txtRB.Text))));
         }
 
         private void btnSendPacket_Click(object sender, EventArgs e)
