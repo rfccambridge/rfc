@@ -1,9 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Net.Sockets;
 
 namespace Robocup.MessageSystem
 {
+    public interface IByteSerializable<T>
+    {        
+        void Deserialize(NetworkStream stream);
+        void Serialize(NetworkStream stream);
+    }
+
     public interface IMessageSender<T>
     {
         void Post(T t);
@@ -27,12 +34,14 @@ namespace Robocup.MessageSystem
     /// </summary>
     public static partial class Messages
     {
-        public static IMessageSender<T> CreateServerSender<T>(int portNum)
+        public static IMessageSender<T> CreateServerSender<T>(int portNum) 
+            where T : IByteSerializable<T>
         {
             return new ServerMessageSender<T>(portNum);
         }
         /// <returns>Returns null if the connection was refused, most likely because there was no process running on the other side.</returns>
-        public static IMessageReceiver<T> CreateClientReceiver<T>(string hostname, int portNum)
+        public static IMessageReceiver<T> CreateClientReceiver<T>(string hostname, int portNum) 
+            where T : IByteSerializable<T>, new()
         {
             try
             {
@@ -46,11 +55,13 @@ namespace Robocup.MessageSystem
         }
 
         public static IMessageReceiver<T> CreateServerReceiver<T>(int portNum)
+            where T : IByteSerializable<T>, new()
         {
             return new ServerMessageReceiver<T>(portNum);
         }
         /// <returns>Returns null if the connection was refused, most likely because there was no process running on the other side.</returns>
         public static IMessageSender<T> CreateClientSender<T>(string hostname, int portNum)
+            where T : IByteSerializable<T>
         {
             try
             {

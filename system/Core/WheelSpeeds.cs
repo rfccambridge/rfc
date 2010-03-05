@@ -41,7 +41,7 @@ namespace Robocup.Core
             return new WheelsInfo<double>(d*rhs.rf, d*rhs.lf, d*rhs.lb, d*rhs.rb);
         }
     }
-    [Serializable]
+    
     /// <summary>
     /// A storage class for holding the four wheel speeds.
     /// 

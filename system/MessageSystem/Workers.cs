@@ -6,29 +6,27 @@ using System.Threading;
 
 namespace Robocup.MessageSystem
 {
-    class BasicMessageSender<T> : IMessageSender<T>
+    class BasicMessageSender<T> : IMessageSender<T> where T : IByteSerializable<T>
     {
         readonly TcpClient client;
         readonly NetworkStream stream;
         private object post_lock = new object();
         volatile bool done = false;
+
         public BasicMessageSender(TcpClient client)
         {
             this.client = client;
             stream = client.GetStream();
         }
         public void Post(T t)
-        {
+        {            
             lock (post_lock)
             {
                 if (!done)
                 {
-                    System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f =
-                        new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-
                     try
                     {
-                        f.Serialize(stream, t);
+                        t.Serialize(stream);
                     }
                     catch (System.IO.IOException e)
                     {
@@ -65,12 +63,13 @@ namespace Robocup.MessageSystem
         public delegate void DoneHandler(BasicMessageSender<T> doneItem);
         public event DoneHandler OnDone;
     }
-    class BasicMessageReceiver<T> : IMessageReceiver<T>
-    {
+    class BasicMessageReceiver<T> : IMessageReceiver<T> where T : IByteSerializable<T>, new()
+    {        
         public event ReceiveMessageDelegate<T> MessageReceived;
         readonly TcpClient client;
         readonly Thread thread;
         readonly NetworkStream stream;
+
         public BasicMessageReceiver(TcpClient client)
         {
             this.client = client;
@@ -86,14 +85,12 @@ namespace Robocup.MessageSystem
         {
             Console.WriteLine("worker instantiated, listening for data...");
 
-            System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f =
-                new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
             while (true)
             {
-                T obj;
+                T obj = new T();
                 try
                 {
-                    obj = (T)f.Deserialize(stream);
+                    obj.Deserialize(stream);
                 }
                 catch (System.IO.IOException e)
                 {
@@ -109,24 +106,8 @@ namespace Robocup.MessageSystem
                     }
                     throw e;
                 }
-                //This is a very brittle way of saying "if the client has closed the connection, then
-                //this guy's job is done".
-                catch (System.Runtime.Serialization.SerializationException se)
-                {
-                    if (se.Message == "End of Stream encountered before parsing was completed.")
-                    {
-                        if (OnDone != null)
-                            OnDone.BeginInvoke(this, null, null);
-                        return;
-                    }
-                    else
-                        throw se;
-                }
-                ReceiveMessageDelegate<T> sendTo = MessageReceived;
-                if (sendTo != null)
-                {
-                    sendTo(obj);
-                }
+                if (MessageReceived != null)
+                    MessageReceived(obj);
             }
         }
 

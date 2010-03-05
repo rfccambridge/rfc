@@ -10,7 +10,7 @@ namespace Robocup.MessageSystem
     /// A server for listening for messages.
     /// </summary>
     /// <typeparam name="T">The type of message to receive.</typeparam>
-    class ServerMessageReceiver<T> : IMessageReceiver<T>
+    class ServerMessageReceiver<T> : IMessageReceiver<T> where T : IByteSerializable<T>, new()
     {
         public event ReceiveMessageDelegate<T> MessageReceived;
         readonly TcpListener listener;
@@ -79,7 +79,7 @@ namespace Robocup.MessageSystem
     /// A server for broadcasting messages.
     /// </summary>
     /// <typeparam name="T">The type of message to send.</typeparam>
-    class ServerMessageSender<T> : IMessageSender<T>
+    class ServerMessageSender<T> : IMessageSender<T> where T : IByteSerializable<T>
     {
         readonly TcpListener listener;
         IAsyncResult beginAcceptResult;
