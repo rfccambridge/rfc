@@ -130,6 +130,10 @@ namespace Robocup.Utilities
         double[] _projectionMatrix = new double[16];
         int[] _viewport = new int[4];
 
+        const int NUM_VALUES_TO_AVG = 150;
+        double interpretFreqAvg, interpretDurationAvg, controllerDurationAvg;
+        int interpretFreqCnt = 0, interpretDurationCnt = 0, controllerDurationCnt = 0;        
+
         public bool Visible
         {
             get { return _fieldDrawerForm.Visible; }
@@ -334,22 +338,52 @@ namespace Robocup.Utilities
 
         public void UpdateInterpretFreq(double freq)
         {
-            _fieldDrawerForm.UpdateInterpretFreq(freq);
-        }
+            if (interpretFreqCnt == 0)
+                interpretFreqAvg = freq;
+            else
+                interpretFreqAvg += freq;
+            interpretFreqCnt++;
 
+            if (interpretFreqCnt == NUM_VALUES_TO_AVG)
+            {
+                _fieldDrawerForm.UpdateInterpretFreq(interpretFreqAvg / interpretFreqCnt);
+                interpretFreqCnt = 0;
+            }
+        }
+        
         public void UpdateInterpretDuration(double duration)
         {
-            _fieldDrawerForm.UpdateInterpretDuration(duration);
+            if (interpretDurationCnt == 0)
+                interpretDurationAvg = duration;
+            else
+                interpretDurationAvg += duration;
+            interpretDurationCnt++;
+
+            if (interpretDurationCnt == NUM_VALUES_TO_AVG)
+            {
+                _fieldDrawerForm.UpdateInterpretDuration(interpretDurationAvg / interpretDurationCnt);
+                interpretDurationCnt = 0;
+            }
         }
 
         public void UpdateLapDuration(double duration)
         {
             _fieldDrawerForm.UpdateLapDuration(duration);
         }
-
+        
         public void UpdateControllerDuration(double duration)
         {
-            _fieldDrawerForm.UpdateControllerDuration(duration);
+            if (controllerDurationCnt == 0)
+                controllerDurationAvg = duration;
+            else
+                controllerDurationAvg += duration;
+            controllerDurationCnt++;
+
+            if (controllerDurationCnt == NUM_VALUES_TO_AVG)
+            {
+                _fieldDrawerForm.UpdateControllerDuration(controllerDurationAvg / controllerDurationCnt);
+                controllerDurationCnt = 0;
+            }
         }
 
         public void UpdatePlayName(Team team, int robotID, string name)
