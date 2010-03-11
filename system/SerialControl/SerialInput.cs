@@ -9,37 +9,10 @@ namespace Robocup.SerialControl
 {
     class SerialInput
     {
-        static public SerialInput CreateSerialInput(string port)
-        {
-            SerialInput rtn = new SerialInput(port);
-            if (!rtn.serialport.IsOpen)
-                return null;
-            return rtn;
-        }
-
-        SerialPort serialport;
-        private SerialInput(string port)
-        {
-            //serialport = new SerialPort(port);
-            serialport = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
-            serialport.DataReceived += serial_DataReceived;
-            if (!serialport.IsOpen)
-                serialport.Open();
-        }
-        public void Close()
-        {
-            serialport.Close();
-            GC.SuppressFinalize(this);
-        }
-        ~SerialInput()
-        {
-            this.Close();
-        }
-
         public class SerialInputMessage
         {
-            private Int16 encoder;
-            public Int16 Encoder
+            private int encoder;
+            public int Encoder
             {
                 get { return encoder; }
                 set { encoder = value; }
@@ -59,18 +32,11 @@ namespace Robocup.SerialControl
                 set { wheelcommand = value; }
             }
 
-            private int dutyHigh;
-            public int DutyHigh
+            private int duty;
+            public int Duty
             {
-                get { return dutyHigh; }
-                set { dutyHigh = value; }
-            }
-
-            private int dutyLow;
-            public int DutyLow
-            {
-                get { return dutyLow; }
-                set { dutyLow = value; }
+                get { return duty; }
+                set { duty = value; }
             }
 
             private int extra;
@@ -92,12 +58,34 @@ namespace Robocup.SerialControl
 
             static public string ToStringHeader()
             {
-                return "encoder\tdutyHigh\tdutyLow\tcommand";
+                return "encoder\tduty\tcommand";
             }
             public override string ToString()
             {
-                return encoder + "\t" + dutyHigh + "\t" + dutyLow + "\t" + wheelcommand ;
+                return encoder + "\t" + duty + "\t" + wheelcommand;
             }
+        }
+
+        public event Action<SerialInputMessage[]> ValueReceived;        
+        SerialPort serialport = null;
+        bool stopReceiving;
+
+        public void Open(string port)
+        {
+            if (serialport != null)
+                throw new ApplicationException("Already have a port open.");
+            serialport = Robocup.Utilities.SerialPortManager.OpenSerialPort(port);
+            stopReceiving = false;
+            serialport.DataReceived += serial_DataReceived;            
+        }
+        public void Close()
+        {
+            if (serialport == null)
+                throw new ApplicationException("No port is open.");
+            serialport.DataReceived -= serial_DataReceived;
+            stopReceiving = true;
+            Robocup.Utilities.SerialPortManager.CloseSerialPort(serialport);
+            serialport = null;
         }
 
         /// <summary>
@@ -114,40 +102,53 @@ namespace Robocup.SerialControl
         {
             const int numgroups = 6;
             const int group_size = 5; //bytes
+            if (stopReceiving)
+                return;
 
-            while (serialport.BytesToRead > 50)
+            try
             {
-                string s = serialport.ReadTo("\\H");
-                byte[] data = new byte[3+group_size*numgroups];
-                serialport.Read(data, 0, 3+group_size*numgroups);
-                foreach (byte b in data)
+                while (serialport.BytesToRead > 50)
                 {
-                    Console.Write(b + " ");
+                    string s = serialport.ReadTo("\\H");
+                    byte[] data = new byte[3 + group_size * numgroups];
+                    serialport.Read(data, 0, 3 + group_size * numgroups);
+                    foreach (byte b in data)
+                    {
+                        Console.Write(b + " ");
+                    }
+                    Console.WriteLine();
+                    //foreach (byte b in data)
+                    //{
+                    //    Console.Write((char)b);
+                    //}
+                    //Console.WriteLine();
+                    SerialInputMessage[] rtn = new SerialInputMessage[numgroups];
+                    for (int i = 0; i < numgroups; i++)
+                    {
+                        rtn[i] = new SerialInputMessage();
+                        rtn[i].Encoder = (int)(((Int16)(data[3 + i * group_size]) << 8) + //Hi
+                                            (Int16)(data[4 + i * group_size])); //Lo
+                        //- (1 << 15)); //Off-center
+                        rtn[i].Duty = (int)(((Int16)data[5 + i * group_size] << 8) +
+                                       ((Int16)data[6 + i * group_size]));
+                        rtn[i].WheelCommand = (sbyte)data[7 + i * group_size];
+                    }
+                    if (ValueReceived != null)
+                        ValueReceived(rtn);
                 }
-                Console.WriteLine();
-                //foreach (byte b in data)
-                //{
-                //    Console.Write((char)b);
-                //}
-                //Console.WriteLine();
-                SerialInputMessage[] rtn = new SerialInputMessage[numgroups];
-                for (int i = 0; i < numgroups; i++)
-                {
-                    rtn[i] = new SerialInputMessage();
-                    rtn[i].Encoder = (Int16)(((Int16)(data[3 + i * group_size]) << 8) + //Hi
-                                        (Int16)(data[4 + i * group_size])); //Lo
-                                        //- (1 << 15)); //Off-center
-                    rtn[i].DutyHigh = (sbyte)data[5 + i * group_size];
-                    rtn[i].DutyLow = (sbyte)data[6 + i * group_size];
-                    rtn[i].WheelCommand = (sbyte)data[7 + i * group_size];        
-                }
-                if(ValueReceived != null)
-                    ValueReceived(rtn);
             }
-        }
-
-        /*public delegate void ValueReceivedDel(double t, int val);
-        public event ValueReceivedDel ValueReceived;*/
-        public event Action<SerialInputMessage[]> ValueReceived;
+            catch (IOException except)
+            {
+                // This is harmless, it happens when the listing thread is terminated 
+                Console.WriteLine(except.Message + "\r\n" + except.StackTrace);
+                return;
+            }
+            catch (InvalidOperationException except)
+            {
+                // This is harmless, it happens when the listing thread is terminated 
+                Console.WriteLine(except.Message + "\r\n" + except.StackTrace);
+                return;
+            }
+        }        
     }
 }

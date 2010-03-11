@@ -13,21 +13,43 @@ namespace Robocup.Utilities
         static readonly string db = "8";
         static readonly string sb = "One";
         static private Dictionary<string, SerialPort> ports = new Dictionary<string, SerialPort>();
-        static public SerialPort GetSerialPort(string port)
+        static private Dictionary<SerialPort, int> refcounts = new Dictionary<SerialPort, int>();
+        static public SerialPort OpenSerialPort(string port)
         {
+            SerialPort serialPort;
             if (ports.ContainsKey(port))
-                return ports[port];
-            SerialPort rtn = new SerialPort(port);
+            {
+                serialPort = ports[port];
+            }
+            else
+            {
+                serialPort = new SerialPort(port);
 
-            rtn.BaudRate = int.Parse(br);
-            rtn.DataBits = int.Parse(db);
-            rtn.StopBits = (StopBits)Enum.Parse(typeof(StopBits), sb);
-            rtn.Parity = (Parity)Enum.Parse(typeof(Parity), pr);
-            rtn.WriteTimeout = SerialPort.InfiniteTimeout;
-            rtn.ReadTimeout = SerialPort.InfiniteTimeout;
-            //rtn.Encoding = NullEncoding.Encoding;
-            ports.Add(port, rtn);
-            return rtn;
+                serialPort.BaudRate = int.Parse(br);
+                serialPort.DataBits = int.Parse(db);
+                serialPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), sb);
+                serialPort.Parity = (Parity)Enum.Parse(typeof(Parity), pr);
+                serialPort.WriteTimeout = SerialPort.InfiniteTimeout;
+                serialPort.ReadTimeout = SerialPort.InfiniteTimeout;
+                //serialPort.Encoding = NullEncoding.Encoding;
+                ports.Add(port, serialPort);
+                refcounts.Add(serialPort, 0);
+                serialPort.Open();
+            }
+            refcounts[serialPort]++;
+            return serialPort;
+        }
+        static public void CloseSerialPort(SerialPort port)
+        {
+            if (refcounts[port] == 0)
+                throw new ApplicationException("Somebody is double closing port!");
+            refcounts[port]--;
+            if (refcounts[port] == 0)
+            {
+                refcounts.Remove(port);
+                ports.Remove(port.PortName);
+                port.Close();                
+            }
         }
     }
     public class NullEncoding : Encoding

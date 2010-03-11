@@ -39,7 +39,7 @@ namespace Robocup.SerialControl {
         private DateTime _lastCommandTime = DateTime.MaxValue;
         private object _lastCommandTimeLock = new object();
         private SerialPort _comPort;
-        private SerialInput _serialInput;
+        private SerialInput _serialInput = new SerialInput();
         private StreamWriter _dataInWriter;
         private KeyboardHook _keyboardHook = new KeyboardHook();
         private JoystickInterface.Joystick _joystickInterface;
@@ -207,8 +207,7 @@ namespace Robocup.SerialControl {
                     if (_cmdOutComPort)
                     {
                         string port = "COM" + ((int)udCmdOutCOMPort.Value).ToString();
-                        _comPort = Robocup.Utilities.SerialPortManager.GetSerialPort(port);
-                        _comPort.Open();
+                        _comPort = Robocup.Utilities.SerialPortManager.OpenSerialPort(port);
 
                         // To be able to get key events immediately
                         txtCommandList.Focus();
@@ -239,7 +238,7 @@ namespace Robocup.SerialControl {
                 {
                     if (_cmdOutComPort)
                     {
-                        _comPort.Close();
+                        Robocup.Utilities.SerialPortManager.CloseSerialPort(_comPort);
                     }
                     else if (_cmdOutRemoteHost)
                     {
@@ -747,31 +746,28 @@ namespace Robocup.SerialControl {
                 if (!_dataListening)
                 {
                     string port = "COM" + udDataInCOMPort.Value.ToString();
-                    _serialInput = SerialInput.CreateSerialInput(port);
-
-                    if (_serialInput == null)
-                    {
-                        MessageBox.Show("Could not open port " + port);
-                        return;
-                    }
 
                     if (_dataInWriter == null)
                     {
                         _dataInWriter = new StreamWriter(DATA_IN_FILE, false);
-                        _dataInWriter.WriteLine("time, sent command, encoder, duty high, duty low, error, received command");
+                        _dataInWriter.WriteLine("time, sent command, encoder, duty low, error, received command");
                     }
 
+                    _serialInput.Open(port);
                     _serialInput.ValueReceived += serialDataReceived;
-
+                    
                     _wheelSpeedFunctionTimer.Start();
 
                     lblDataInStatus.BackColor = Color.Green;
+                    btnDataListen.Text = "Stop listening";
                     _dataListening = true;
                 }
                 else
                 {
+                    _serialInput.ValueReceived -= serialDataReceived; 
                     _serialInput.Close();
                     lblDataInStatus.BackColor = Color.Red;
+                    btnDataListen.Text = "Listen";
                     _dataListening = false;
                 }
             }
@@ -796,8 +792,8 @@ namespace Robocup.SerialControl {
                 lock (_dataInWriter)
                 {
                     _dataInWriter.WriteLine(thist + ", " + _wheelSpeedFunction.Eval(thist).ToString() + ", " +
-                                           values[i].Encoder + ", " + values[i].DutyHigh + ", " +
-                                           values[i].DutyLow + ", " + values[i].WheelCommand);
+                                           values[i].Encoder + ", " + values[i].Duty + ", " +
+                                           values[i].WheelCommand);
 
                     updateLabel(labelTime, String.Format("{0:F2} s", thist));
                     //addItem(listBoxInputHistory, values[i], 7);
