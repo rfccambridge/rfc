@@ -25,7 +25,7 @@ namespace Robocup.SerialControl.WheelSpeedFunctions
             get { return amplitude; }
             set { amplitude = value; }
         }
-        private double startPeriod = 2.0;
+        private double startPeriod = 0.02;
         [Description("The initial period of the sine wave, in seconds")]
         public double StartPeriod
         {
@@ -43,8 +43,8 @@ namespace Robocup.SerialControl.WheelSpeedFunctions
             set { endPeriod = value; }
         }
 
-        private double periodStep = 1.0;
-        [Description("Increment step of period, in seconds")]
+        private double periodStep = 2;
+        [Description("Increment step of period (multipled by this)")]
         public double PeriodStep
         {
             get { return periodStep; }
@@ -69,11 +69,11 @@ namespace Robocup.SerialControl.WheelSpeedFunctions
                 speed = 0;
             else
                 speed = (int)(amplitude * Math.Sin(t / period * 2 * Math.PI));
-            currentIter = Convert.ToInt32(Math.Floor((t - lastPeriodTime) / period * 2 * Math.PI));
+            currentIter = Convert.ToInt32(Math.Floor((t - lastPeriodTime) / period));
             if (currentIter > numIter)
             {
                 currentIter = 0;
-                period += periodStep;
+                period *= periodStep;
                 lastPeriodTime = t;
             }
             return new WheelSpeeds(speed, speed, speed, speed);

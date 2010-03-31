@@ -126,9 +126,9 @@ namespace Robocup.SerialControl
                     for (int i = 0; i < numgroups; i++)
                     {
                         rtn[i] = new SerialInputMessage();
-                        rtn[i].Encoder = (int)(((Int16)(data[3 + i * group_size]) << 8) + //Hi
-                                            (Int16)(data[4 + i * group_size])); //Lo
-                        //- (1 << 15)); //Off-center
+                        rtn[i].Encoder = (Int16)(((UInt16)(data[3 + i * group_size]) << 8) + //Hi
+                                            (UInt16)(data[4 + i * group_size])); //Lo
+                                            //- (1 << 15)); //Off-center
                         rtn[i].Duty = (int)(((Int16)data[5 + i * group_size] << 8) +
                                        ((Int16)data[6 + i * group_size]));
                         rtn[i].WheelCommand = (sbyte)data[7 + i * group_size];
