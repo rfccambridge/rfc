@@ -102,4 +102,25 @@ namespace Robocup.Utilities
             return byteCount;
         }
     }
+    static public class Checksum
+    {
+        // Just a parity (XORed), the result is NOTed to avoid the check passing when 
+        // the corruption is such that data is 0 and checksum is 0. TODO: change this to be CRC
+
+        // NOTE: could not get generics to work, so copy-pasting...
+        public static byte Compute(byte[] bytes)
+        {
+            byte chksum = 0;
+            foreach (byte b in bytes)
+                chksum ^= b;
+            return (byte)(~chksum);
+        }
+        public static byte Compute(string bytes)
+        {
+            byte chksum = 0;
+            foreach (char b in bytes)
+                chksum ^= (byte)b;
+            return (byte)(~chksum);
+        }
+    }
 }

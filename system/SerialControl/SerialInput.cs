@@ -4,6 +4,7 @@ using System.Text;
 
 using System.IO;
 using System.IO.Ports;
+using Robocup.Utilities;
 
 namespace Robocup.SerialControl
 {
@@ -47,28 +48,49 @@ namespace Robocup.SerialControl
             }
 
             private int extra2;
-
             public int Extra2
             {
                 get { return extra2; }
                 set { extra2 = value; }
             }
 
+            private int pktsReceived;
+            public int PktsReceived
+            {
+                get { return pktsReceived; }
+                set { pktsReceived = value; }
+            }
+
+            private int pktsAccepted;
+            public int PktsAccepted
+            {
+                get { return pktsAccepted; }
+                set { pktsAccepted = value; }
+            }
+
+            private int pktsMismatched;
+            public int PktsMismatched
+            {
+                get { return pktsMismatched; }
+                set { pktsMismatched = value; }
+            }
 
 
             static public string ToStringHeader()
             {
-                return "encoder\tduty\tcommand";
+                return "enc\tduty\tcmd\trcv\tacc\tmism";
             }
             public override string ToString()
             {
-                return encoder + "\t" + duty + "\t" + wheelcommand;
+                return encoder + "\t" + duty + "\t" + wheelcommand + "\t" + 
+                    pktsReceived + "\t" + pktsAccepted + "\t" + pktsMismatched;
             }
         }
 
         public event Action<SerialInputMessage[]> ValueReceived;        
         SerialPort serialport = null;
         bool stopReceiving;
+        uint pktsAccepted, pktsMismatched, pktsReceived;
 
         public void Open(string port)
         {
@@ -76,6 +98,7 @@ namespace Robocup.SerialControl
                 throw new ApplicationException("Already have a port open.");
             serialport = Robocup.Utilities.SerialPortManager.OpenSerialPort(port);
             stopReceiving = false;
+            pktsAccepted = pktsMismatched = pktsReceived = 0;
             serialport.DataReceived += serial_DataReceived;            
         }
         public void Close()
@@ -100,39 +123,57 @@ namespace Robocup.SerialControl
         /// </summary>
         void serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            const int numgroups = 6;
-            const int group_size = 5; //bytes
-            if (stopReceiving)
-                return;
+            const int HEADER_LEN = 1; // chksum (\\H is not counted, it doesn't end up in data variable)
+            const int FOOTER_LEN = 2; // '\\', 'E'
+            const int NUM_SUBPKTS = 1;
+            const int SUBPKT_SIZE = 8;
+            const int PAYLOAD_SIZE = NUM_SUBPKTS * SUBPKT_SIZE;
+
+            byte[] data = new byte[PAYLOAD_SIZE + 1];
+            byte[] payload = new byte[PAYLOAD_SIZE];
 
             try
             {
-                while (serialport.BytesToRead > 50)
+                while (serialport.BytesToRead >= HEADER_LEN + PAYLOAD_SIZE + FOOTER_LEN)
                 {
-                    string s = serialport.ReadTo("\\H");
-                    byte[] data = new byte[3 + group_size * numgroups];
-                    serialport.Read(data, 0, 3 + group_size * numgroups);
-                    foreach (byte b in data)
+                    string s = serialport.ReadTo("\\H"); // TODO: shouldn't use this                    
+                    serialport.Read(data, 0, PAYLOAD_SIZE+1);                    
+
+                    Console.Write(pktsReceived + ": ");
+                    for (int i = 0; i < data.Length; i++)
                     {
-                        Console.Write(b + " ");
+                        Console.Write(data[i] + " ");
+                        if (i > 0)
+                            payload[i-1] = data[i];
                     }
                     Console.WriteLine();
-                    //foreach (byte b in data)
-                    //{
-                    //    Console.Write((char)b);
-                    //}
-                    //Console.WriteLine();
-                    SerialInputMessage[] rtn = new SerialInputMessage[numgroups];
-                    for (int i = 0; i < numgroups; i++)
+                    
+                    pktsReceived++;                 
+
+                    // verify chksum
+                    if (data[0] != Checksum.Compute(payload))
+                    {
+                        pktsMismatched++;
+                        Console.WriteLine("Checksum mismatch. Stats: acc " + pktsAccepted + 
+                            " / mism " + pktsMismatched + " / rcv " + pktsReceived);
+                        return;
+                    }
+
+                    SerialInputMessage[] rtn = new SerialInputMessage[NUM_SUBPKTS];
+                    for (int i = 0; i < NUM_SUBPKTS; i++)
                     {
                         rtn[i] = new SerialInputMessage();
-                        rtn[i].Encoder = (Int16)(((UInt16)(data[3 + i * group_size]) << 8) + //Hi
-                                            (UInt16)(data[4 + i * group_size])); //Lo
-                                            //- (1 << 15)); //Off-center
-                        rtn[i].Duty = (int)(((Int16)data[5 + i * group_size] << 8) +
-                                       ((Int16)data[6 + i * group_size]));
-                        rtn[i].WheelCommand = (sbyte)data[7 + i * group_size];
+                        rtn[i].Encoder = (Int16)(((UInt16)(payload[i * SUBPKT_SIZE]) << 8) + //Hi
+                                            (UInt16)(payload[i * SUBPKT_SIZE + 1])); //Lo
+                        //- (1 << 15)); //Off-center
+                        rtn[i].Duty = (int)(((Int16)payload[i * SUBPKT_SIZE + 2] << 8) +
+                                       ((Int16)payload[i * SUBPKT_SIZE + 3]));
+                        rtn[i].WheelCommand = (sbyte)payload[i * SUBPKT_SIZE + 4];
+                        rtn[i].PktsReceived = (byte)payload[i * SUBPKT_SIZE + 5];
+                        rtn[i].PktsAccepted = (byte)payload[i * SUBPKT_SIZE + 6];
+                        rtn[i].PktsMismatched = (byte)payload[i * SUBPKT_SIZE + 7];                        
                     }
+                    pktsAccepted++;
                     if (ValueReceived != null)
                         ValueReceived(rtn);
                 }
@@ -148,6 +189,14 @@ namespace Robocup.SerialControl
                 // This is harmless, it happens when the listing thread is terminated 
                 Console.WriteLine(except.Message + "\r\n" + except.StackTrace);
                 return;
+            }
+            catch (NullReferenceException except)
+            {
+                // The stopping functionality is not clean, (i.e. there's no synching), so this might
+                // get called when stopReceiving is already true and serialport is null. In other cases,
+                // something else is messed up, so rethrow.
+                if (!stopReceiving)
+                    throw except;
             }
         }        
     }

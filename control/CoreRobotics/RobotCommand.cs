@@ -19,8 +19,7 @@ namespace Robocup.CoreRobotics
             DISCHARGE,
             RESET,
             SET_PID,
-            START_SPEW,
-            STOP_SPEW
+            SET_CFG_FLAGS
         };
 
         static CRCTool _crcTool;
@@ -32,6 +31,7 @@ namespace Robocup.CoreRobotics
         public Command command;
         public byte P, I, D;
         public byte BoardID;
+        public byte Flags;
 
         static RobotCommand()
         {
@@ -65,9 +65,10 @@ namespace Robocup.CoreRobotics
             this.D = D;
             init(ID, command, null);
         }
-        public RobotCommand(int ID, Command command, byte boardID)
+        public RobotCommand(int ID, Command command, byte boardID, byte flags)
         {
             this.BoardID = boardID;
+            this.Flags = flags;
             init(ID, command, null);
         }
         public RobotCommand(int ID, Command command, WheelSpeeds speeds)
@@ -84,7 +85,8 @@ namespace Robocup.CoreRobotics
 
         public byte[] ToPacket()
         {
-            byte checksum;
+            byte id = (byte)('0' + ID);
+            byte chksum, source, port, arg; // source: w for brushless board, v for kicker board
 
             switch (command)
             {
@@ -102,82 +104,52 @@ namespace Robocup.CoreRobotics
                     if (lb == '\\') lb++;
                     if (lf == '\\') lf++;
                     if (rf == '\\') rf++;
-                    if (rb == '\\') rb++;
-
-                    Console.WriteLine("id " + ID + ": setting speeds to: " + Speeds.ToString());
+                    if (rb == '\\') rb++;                    
 
                     //robots expect wheel powers in this order:
-                    //rf lf lb rb
+                    //rf lf lb rb                                       
+                    
+                    source = (byte)'w'; port = (byte)'w';
+                    chksum = Checksum.Compute(new byte[] { id, source, port, 
+                                                                         (byte)rf, (byte)lf, (byte)lb, (byte)rb });
+                    Console.WriteLine("id " + ID + ": setting speeds to: " + Speeds.ToString() + " parity: " + chksum.ToString());
 
-                    checksum = (byte)_crcTool.crctablefast(new byte[] { (byte)rf, (byte)lf, (byte)lb, (byte)rb });
-
-                    return new byte[]{(byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                      (byte)'w',  // port
-                                      (byte)'w',  // command for wheel speeds
+                    return new byte[]{(byte)'\\', (byte)'H', chksum, id, source, port,
                                       (byte)rf, (byte)lf, (byte)lb, (byte)rb,
-                                      checksum,
-                                      (byte)'\\', (byte)'E'};
-                case Command.KICK:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                       (byte)'v', // port
-                                       (byte)'k', // command for kick
-                                       (byte)'\\', (byte)'E' };
-                case Command.START_CHARGING:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v', // port
-                                        (byte)'c', // command for start charging
-                                        (byte)'\\', (byte)'E' };
-                case Command.STOP_CHARGING:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v', // port
-                                        (byte)'s', // command to stop charging
-                                        (byte)'\\', (byte)'E' };
-                case Command.BREAKBEAM_KICK:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v', // port
-                                        (byte)'b', // command to listen to break beam
-                                        (byte)'\\', (byte)'E' };
-                case Command.START_DRIBBLER:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v',            // port
-                                        (byte)'d', (byte)'1', // command for start dribbler
-                                        (byte)'\\', (byte)'E' };
-                case Command.STOP_DRIBBLER:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v',            // port
-                                        (byte)'d', (byte)'0', // command for stop dribbler
-                                        (byte)'\\', (byte)'E' };
+                                      (byte)'\\', (byte)'E'};                                
                 case Command.SET_PID:
-                    checksum = (byte)_crcTool.crctablefast(new byte[] { P, I, D });
-                    return new byte[] {(byte)'\\', (byte)'H', (byte) ('0' + ID),
-                                       (byte)'w', // port
-                                       (byte)'f', // command for PID const setting
-                                       P, I, D,
-                                       checksum,
+                    source = (byte)'w'; port = (byte)'f';
+                    chksum = Checksum.Compute(new byte[] { id, source, port, P, I, D });
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, P, I, D,
                                       (byte)'\\', (byte)'E'};
-                case Command.START_SPEW:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v', // port
-                                        (byte)'e', BoardID, (byte)'1',  // command to turn on spewing
-                                        (byte)'\\', (byte)'E' };
-                case Command.STOP_SPEW:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v', // port
-                                        (byte)'e', BoardID, (byte)'0',  // command to turn on spewing
-                                        (byte)'\\', (byte)'E' };
-                case Command.DISCHARGE:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v', // port
-                                        (byte)'p', // command to discharge
-                                        (byte)'\\', (byte)'E' };
-                case Command.RESET:
-                    return new byte[] { (byte)'\\', (byte)'H', (byte) ('0' + ID), 
-                                        (byte)'v',
-                                        (byte)'r', (byte)'r', // command to reset boards
-                                        (byte)'\\', (byte)'E' };
+                case Command.SET_CFG_FLAGS:
+                    source = (byte)'w'; port = (byte)'c';
+                    chksum = Checksum.Compute(new byte[] { id, source, port, BoardID, Flags });
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, BoardID, Flags,
+                                      (byte)'\\', (byte)'E'};
+                case Command.START_DRIBBLER:
+                    source = (byte)'v'; port = (byte)'d'; arg = (byte)'1';
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg });
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg,
+                                      (byte)'\\', (byte)'E'};
+                case Command.STOP_DRIBBLER:
+                    source = (byte)'v'; port = (byte)'d'; arg = (byte)'0';
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg });
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg,
+                                      (byte)'\\', (byte)'E'};
+                case Command.KICK:           source = (byte)'v'; port = (byte)'k'; break;
+                case Command.START_CHARGING: source = (byte)'v'; port = (byte)'c'; break;
+                case Command.STOP_CHARGING:  source = (byte)'v'; port = (byte)'s'; break;
+                case Command.BREAKBEAM_KICK: source = (byte)'v'; port = (byte)'b'; break;
+                case Command.DISCHARGE:      source = (byte)'v'; port = (byte)'p'; break;
+                case Command.RESET:          source = (byte)'v'; port = (byte)'r'; break;
                 default:
                     throw new ApplicationException("Don't know how to package command: " + command.ToString());
             }
+
+            // simplest commands fall through to here
+            chksum = Checksum.Compute(new byte[] { id, source, port });
+            return new byte[] { (byte)'\\', (byte)'H', chksum, id, source, port, (byte)'\\', (byte)'E' };
         }        
 
         #region IByteSerializable<RobotCommand> Members
@@ -215,9 +187,9 @@ namespace Robocup.CoreRobotics
                     I = buff[5];
                     D = buff[6];
                     break;
-                case Command.START_SPEW:
-                case Command.STOP_SPEW:
+                case Command.SET_CFG_FLAGS:
                     BoardID = buff[4];
+                    Flags = buff[5];
                     break;
             }
         }
@@ -241,9 +213,9 @@ namespace Robocup.CoreRobotics
                     buff[5] = I;
                     buff[6] = D;
                     break;
-                case Command.START_SPEW:
-                case Command.STOP_SPEW:
+                case Command.SET_CFG_FLAGS:
                     buff[4] = BoardID;
+                    buff[5] = Flags;
                     break;
             }
 

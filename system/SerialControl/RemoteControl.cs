@@ -535,18 +535,16 @@ namespace Robocup.SerialControl {
                          byte.Parse(txtP.Text), byte.Parse(txtI.Text), byte.Parse(txtD.Text)));
         }
 
-        private void btnSpew_Click(object sender, EventArgs e)
+        private void btnSetCfgFlags_Click(object sender, EventArgs e)
         {
-            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_SPEW, 
-                                          byte.Parse(txtSpewBoardID.Text)));
+            byte flags = 0;
+            flags |= (byte)(chkCfgSpewEncoder.Checked ?  (1 << 0) : 0);
+            flags |= (byte)(chkCfgSpewPktStats.Checked ? (1 << 1) : 0);
+            flags |= (byte)(chkCfgFeedback.Checked ?     (1 << 2) : 0);
+            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.SET_CFG_FLAGS, 
+                        (byte)udBoardID.Value, flags));
         }
-
-        private void btnStopSpew_Click(object sender, EventArgs e)
-        {
-            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.STOP_SPEW,
-                                         byte.Parse(txtSpewBoardID.Text)));
-        }
-
+        
         private void btnSetWheelSpeeds_Click(object sender, EventArgs e)
         {
             sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
@@ -750,7 +748,8 @@ namespace Robocup.SerialControl {
                     if (_dataInWriter == null)
                     {
                         _dataInWriter = new StreamWriter(DATA_IN_FILE, false);
-                        _dataInWriter.WriteLine("time, sent command, encoder, duty low, error, received command");
+                        _dataInWriter.WriteLine("time, sent cmd, enc, duty, " +
+                             "rcved cmd,  pkts rcved, pkts acc, pkts mism");
                     }
 
                     _serialInput.Open(port);
@@ -793,7 +792,8 @@ namespace Robocup.SerialControl {
                 {
                     _dataInWriter.WriteLine(thist + ", " + _wheelSpeedFunction.Eval(thist).ToString() + ", " +
                                            values[i].Encoder + ", " + values[i].Duty + ", " +
-                                           values[i].WheelCommand);
+                                           values[i].WheelCommand + ", " + values[i].PktsReceived + ", " +
+                                           values[i].PktsAccepted + ", " + values[i].PktsMismatched);
 
                     updateLabel(labelTime, String.Format("{0:F2} s", thist));
                     //addItem(listBoxInputHistory, values[i], 7);
@@ -809,6 +809,6 @@ namespace Robocup.SerialControl {
 
             showItemRange(listBoxInputHistory, itemsArray);
             _lastSerialData = t;
-        }        
+        }
     }
 }
