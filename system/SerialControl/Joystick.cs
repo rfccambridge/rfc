@@ -178,9 +178,9 @@ namespace JoystickInterface
             }
             catch (Exception err)
             {
-                Debug.WriteLine("FindJoysticks()");
-                Debug.WriteLine(err.Message);
-                Debug.WriteLine(err.StackTrace);
+                Console.WriteLine("FindJoysticks()");
+                Console.WriteLine(err.Message);
+                Console.WriteLine(err.StackTrace);
             }
 
             return systemJoysticks;
