@@ -21,7 +21,7 @@ namespace Robocup.ControlForm
 	public class Controller : IController
 	{
         private const int CONTROL_TIMEOUT = 10;
-        private const int NUM_ROBOTS = 10; //For simulation
+        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
         private const int CHARGE_TIME = 4;  // TODO: madeup value! is this in seconds or milliseconds        
 
         private Team _team;
@@ -80,6 +80,7 @@ namespace Robocup.ControlForm
 
         public void LoadConstants()
         {
+            
             CONTROL_LOOP_FREQUENCY = Constants.get<double>("default", "CONTROL_LOOP_FREQUENCY");
             _controlPeriod = 1 / CONTROL_LOOP_FREQUENCY * 1000; //in ms
 
