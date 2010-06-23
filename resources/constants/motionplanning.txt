@@ -2,8 +2,27 @@
 # Constants for NewPlanners.cs- planners developed for
 # spring 2009 CS199r class
 
+# Speed scaling factor- applied in ModelFeedback.cs, and multiplied
+# by the full speed vector
+
+# one constant scales speeds for all robots
+double SPEED_SCALING_FACTOR_ALL .9
+
+double SPEED_SCALING_FACTOR_0 .95
+double SPEED_SCALING_FACTOR_1 .95
+double SPEED_SCALING_FACTOR_2 .95
+double SPEED_SCALING_FACTOR_3 1
+double SPEED_SCALING_FACTOR_4 1
+double SPEED_SCALING_FACTOR_5 1
+double SPEED_SCALING_FACTOR_6 1
+double SPEED_SCALING_FACTOR_7 .95
+double SPEED_SCALING_FACTOR_8 1
+double SPEED_SCALING_FACTOR_9 1
+double SPEED_SCALING_FACTOR_10 1
+double SPEED_SCALING_FACTOR_11 1
+
 #general constants used in MotionPlanning
-int NUM_ROBOTS 10
+int NUM_ROBOTS 12
 int MIN_SINGLE_WHEEL_SPEED 0
 int MAX_SINGLE_WHEEL_SPEED 127
 
@@ -89,16 +108,21 @@ double LOOK_AHEAD_DIST 0.3
 double WAYPOINT_DIST .3
 double MIN_ABS_VAL_STICK .5
 double EXTRA_GOAL_DIST .12
-double BOUNDARY_AVOID 1.5
+double BOUNDARY_AVOID .5
 
 double STEADY_STATE_SPEED 2.30
 #.25
 
 #FIELD CONSTANTS!!!
-double MIN_X_ROBOT_BOUNDARY -1.6
-double MAX_X_ROBOT_BOUNDARY 1.6
-double MIN_Y_ROBOT_BOUNDARY -2.4
-double MAX_Y_ROBOT_BOUNDARY 2.4
+#double MIN_X_ROBOT_BOUNDARY -3.2
+#double MAX_X_ROBOT_BOUNDARY 3.2
+#double MIN_Y_ROBOT_BOUNDARY -2.2
+#double MAX_Y_ROBOT_BOUNDARY 2.2
+
+double MIN_X_ROBOT_BOUNDARY -2.4
+double MAX_X_ROBOT_BOUNDARY 2.4
+double MIN_Y_ROBOT_BOUNDARY -1.6
+double MAX_Y_ROBOT_BOUNDARY 1.6
 
 #DEFAULT
 double DEFAULT_DIST_SLOW_DOWN 0
