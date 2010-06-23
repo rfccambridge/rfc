@@ -322,6 +322,92 @@ namespace Robocup.Plays
 
         	            	});
 
+
+
+            addFunction("robotInGoal", "Robot in Goal",
+                        "Whether there is a robot (any robot) in a goal", typeof(bool),
+                        new Type[] { },
+                        delegate(EvaluatorState state, object[] objects)
+                        {
+                            double GOAL_BOX_X = -2.5;
+                            double GOAL_BOX_Y = .175;
+
+                            List<Vector2> GOAL_CORNERS = new List<Vector2>(new Vector2[] {new Vector2(-3, .175), new Vector2(-3, -.175)});
+                            double QUARTER_CIRCLE_RADIUS = .5;
+
+                            // get info about each of our robots
+                            foreach (RobotInfo robot in state.OurTeamInfo)
+                            {
+                                // figure out if the robot is in the goal
+                                Vector2 position = robot.Position;
+
+                                // first see if it is in the square
+                                if (position.X < GOAL_BOX_X && Math.Abs(position.Y) < GOAL_BOX_Y)
+                                {
+                                    // in that square part of the goal
+                                    //Console.WriteLine(position.ToString() + " in goal box", ProjectDomains.Plays);
+                                    return true;
+                                }
+
+                                // Otherwise, see whether it is within either of those quarter circles
+                                foreach (Vector2 corner in GOAL_CORNERS)
+                                {
+                                    if (corner.distanceSq(position) < QUARTER_CIRCLE_RADIUS * QUARTER_CIRCLE_RADIUS)
+                                    {
+                                        // is within a quarter circle
+                                        //Console.WriteLine(position.ToString() + " in goal circles", ProjectDomains.Plays);
+                                        return true;
+                                    }
+                                }
+                            }
+
+                            // no robot is in the goal
+                            return false;
+
+                        });
+
+            // SO SAD THAT MUCH OF THIS IS COPIED AND PASTED FROM ABOVE, BUT THERE WAS NO 
+            // PARTICULARLY GOOD PLACE TO PUT THE FUNCTION
+            addFunction("pointInGoal", "Point in Goal",
+                        "Whether point ~ is in our goal", typeof(bool),
+                        new Type[] { typeof(Vector2) },
+                        delegate(EvaluatorState state, object[] objects)
+                        {
+                            Vector2 position = (Vector2)objects[0];
+
+                            double GOAL_BOX_X = -2.5;
+                            double GOAL_BOX_Y = .175;
+
+                            List<Vector2> GOAL_CORNERS = new List<Vector2>(new Vector2[] { new Vector2(-3, .175), new Vector2(-3, -.175) });
+                            double QUARTER_CIRCLE_RADIUS = .5;
+
+                            // get info about each of our robots
+
+                             // first see if it is in the square
+                             if (position.X < GOAL_BOX_X && Math.Abs(position.Y) < GOAL_BOX_Y)
+                             {
+                                 // in that square part of the goal
+                                 //Console.WriteLine(position.ToString() + " in goal box", ProjectDomains.Plays);
+                                 return true;
+                             }
+
+                             // Otherwise, see whether it is within either of those quarter circles
+                             foreach (Vector2 corner in GOAL_CORNERS)
+                             {
+                                 if (corner.distanceSq(position) < QUARTER_CIRCLE_RADIUS * QUARTER_CIRCLE_RADIUS)
+                                 {
+                                     // is within a quarter circle
+                                     //Console.WriteLine(position.ToString() + " in goal circles", ProjectDomains.Plays);
+                                     return true;
+                                 }
+                             }
+                                
+
+                            // no robot is in the goal
+                            return false;
+
+                        });
+
         	addFunction("inField", "Point inside field boundaries", "Whether the point ~ is inside the field",
         	            typeof (bool), new Type[] {typeof (Vector2)}, delegate(EvaluatorState state, object[] objects)
 			{
@@ -541,6 +627,14 @@ namespace Robocup.Plays
             {
                 return Math.Abs((int)objects[0]);
             });
+            addFunction("doubleSin", "double - Sin", "The sine of ~", typeof(double), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return Math.Sin((double)objects[0]);
+            });
+            addFunction("doubleCos", "double - Cos", "The cosine of ~", typeof(double), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return Math.Cos((double)objects[0]);
+            });
             #endregion
 
             #region misc
@@ -582,13 +676,14 @@ namespace Robocup.Plays
 
             addFunction("print-bool", "bool print", "print ~", typeof(bool), new Type[] { typeof(bool) }, delegate(EvaluatorState state, object[] objects)
             {
-                Console.WriteLine((string)objects[0]);
+                //DebugConsole.Write("print-bool: " + objects[0].ToString(), ProjectDomains.Plays);
+                Console.WriteLine("print-bool" + objects[0].ToString());
                 return true;
             });
 
             addFunction("print-double", "double print", "print ~", typeof(bool), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
             {
-                Console.WriteLine((string)objects[0]);
+                Console.WriteLine(objects[0].ToString());
                 return true;
             });
 
