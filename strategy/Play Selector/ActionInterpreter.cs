@@ -323,22 +323,29 @@ namespace Robocup.Plays
             double angleToKickAxis = Math.Abs(UsefulFunctions.angleDifference(robotToTarget.cartesianAngle(),
                                                                               ballToTarget.cartesianAngle()));            
 
+            // should we print all these annoying little details about kicking
+            bool VERBOSE = false;
+
             if (thisrobot.Position.distanceSq(kickPosition) < CHARGE_DIST * CHARGE_DIST)
             {
-                Console.WriteLine("Close to the ball. CHARGING!");
+                if (VERBOSE)
+                    Console.WriteLine("Close to the ball. CHARGING!");
                 
                 commander.Charge(robotID);
             }
 
-            Console.WriteLine("Dist to KickPosition: {0:F3}", distToKickPosition);
-            Console.WriteLine("Orientation error: {0:F3}",
-                    Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation, 
+            if (VERBOSE)
+            {
+                Console.WriteLine("Dist to KickPosition: {0:F3}", distToKickPosition);
+                Console.WriteLine("Orientation error: {0:F3}",
+                        Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation,
                                                              kickOrientation)) * 180 / Math.PI);
-            Console.WriteLine("AngleToKickAxis: {0:F3}", angleToKickAxis);
-            Console.WriteLine("Lateral Distance: {0:F3}", lateralDistance);
-            Console.WriteLine("robotToTarget {0:F3} > ballToTarget {1:F3} [{2:G}]",
-                    robotToTarget.magnitudeSq(), ballToTarget.magnitudeSq(), 
-                    robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq());
+                Console.WriteLine("AngleToKickAxis: {0:F3}", angleToKickAxis);
+                Console.WriteLine("Lateral Distance: {0:F3}", lateralDistance);
+                Console.WriteLine("robotToTarget {0:F3} > ballToTarget {1:F3} [{2:G}]",
+                        robotToTarget.magnitudeSq(), ballToTarget.magnitudeSq(),
+                        robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq());
+            }
 
             if ( // is the robot in the position to kick
 
@@ -360,7 +367,8 @@ namespace Robocup.Plays
 
                 ) 
             {
-                Console.WriteLine("Turning on break beam and moving towards the ball to kick.");
+                if (VERBOSE)
+                    Console.WriteLine("Turning on break beam and moving towards the ball to kick.");
                 commander.BreakBeam(robotID);                
                 commander.Move(
                         robotID,
@@ -370,8 +378,9 @@ namespace Robocup.Plays
             }
             else
             {
-                Console.WriteLine("Not in kicking position for one of the above reasons. " +
-                                  "Moving to kicking position.");
+                if (VERBOSE)
+                    Console.WriteLine("Not in kicking position for one of the above reasons. " +
+                                      "Moving to kicking position.");
                 //if we are too far
 
                 //position the robot close enough to the ball so that it can kick soon,
