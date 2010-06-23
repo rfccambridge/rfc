@@ -9,6 +9,12 @@ namespace Robocup.MotionControl
 	// Essential job is to calculate command based on current & desired (position, orientation, velocity, angular velocity)
 	public class ModelFeedback
 	{
+        // scaling factor applied to the matrix
+        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
+        double [] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS];
+
+        private double SPEED_SCALING_FACTOR_ALL;
+
 		public ModelFeedback()
 		{
 			LoadConstants();
@@ -19,6 +25,13 @@ namespace Robocup.MotionControl
 
 		public void LoadConstants()
 		{
+            double SPEED_SCALING_FACTOR_ALL = Constants.get<double>("motionplanning", "SPEED_SCALING_FACTOR_ALL");
+
+            for (int i = 0; i < NUM_ROBOTS; i++)
+            {
+                SPEED_SCALING_FACTORS[i] = Constants.get<double>("motionplanning", "SPEED_SCALING_FACTOR_" + i.ToString());
+            }
+
 			GainMatrix = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));
             GainMatrix *= Constants.get<double>("control", "GAIN_MATRIX_SCALE");
 			
@@ -98,7 +111,6 @@ namespace Robocup.MotionControl
 
             //Matrix commandVector = GainMatrix * localError * 50; // 185
             
-            
             Matrix commandVector = GainMatrix * localError;
 
             //double[] _command = new double[4] { 0, 0, 0, 30 };
@@ -106,7 +118,9 @@ namespace Robocup.MotionControl
             
             //commandVector = permutationMatrix * commandVector; 
 
-			//XXX: Ask if we need to do any scaling here! (Hunter mentions voltages which may be different than current wheelspeeds)
+            // We are doing scaling, and doing so per robot
+            commandVector = SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[currentState.ID] * commandVector;
+
 			WheelSpeeds command = new WheelSpeeds(-Convert.ToInt32(commandVector[4].Re), -Convert.ToInt32(commandVector[1].Re), 
 				-Convert.ToInt32(commandVector[2].Re), -Convert.ToInt32(commandVector[3].Re));
             //Console.WriteLine(commandVector);

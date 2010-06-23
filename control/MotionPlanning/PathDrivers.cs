@@ -21,6 +21,8 @@ namespace Robocup.MotionControl
 
     /// <summary>
     /// Drive straight towards nearest path point using WheelSpeedsExtender
+    /// Future generations should know that this does not work well- it uses ancient
+    /// code
     /// </summary>
     public class ExtenderDriver : IPathDriver
     {
@@ -1219,7 +1221,7 @@ namespace Robocup.MotionControl
         private Feedback[] shortFeedbackObjs;
         public Feedback GetShortFeedbackObj(int robotID) { return shortFeedbackObjs[robotID]; }
 
-        const int NUM_ROBOTS = 10;        
+        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");       
 
         private double MIN_SQ_DIST_TO_WP;
         private double MIN_ANGLE_DIFF_TO_WP;
@@ -1406,11 +1408,10 @@ namespace Robocup.MotionControl
     }
 
 	public class ModelFeedbackDriver : IPathDriver, ILogger {
-		
+        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
+
 		private ModelFeedback[] feedbackObjs;
 		public ModelFeedback GetFeedbackObj(int robotID) { return feedbackObjs[robotID]; }
-
-		const int NUM_ROBOTS = 10;
 
 		private double MIN_SQ_DIST_TO_WP;
 		private double MIN_ANGLE_DIFF_TO_WP;
@@ -1427,8 +1428,8 @@ namespace Robocup.MotionControl
 		}
 
 		public void ReloadConstants()
-		{
-			for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
+		{   
+            for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 feedbackObjs[robotID].LoadConstants();
 
 			LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");			

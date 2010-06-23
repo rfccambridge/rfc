@@ -8,7 +8,7 @@ using Robocup.Geometry;
 namespace Robocup.CoreRobotics
 {
     //This is used as a base of different robot models to be used when computing wheelspeed commands.
-    //For now, called only from Feedback.ComputeWheelSpeeds
+    //For now, called only from Feedback.ComputeWheelSpeeds and the joystick
     public abstract class RobotModel
     {
         //a fine-grained may model may be calibrated on a per-robot basis
