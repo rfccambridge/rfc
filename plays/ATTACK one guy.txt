@@ -1,4 +1,4 @@
-UGBUGMetadata:
+BUGBUGMetadata:
 type NormalPlay
 name AttackOneGuy
 score 1.002615
