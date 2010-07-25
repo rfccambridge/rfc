@@ -4,39 +4,29 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{38CE179C-5898-4DCA-A645-BD7C7C445FB4}</ProjectGuid>
+    <ProjectGuid>{2808F349-5B4B-4ED4-AC47-D0B754B652D6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Robocup.Plays</RootNamespace>
-    <AssemblyName>PlaySelector</AssemblyName>
+    <RootNamespace>PlaySystem</RootNamespace>
+    <AssemblyName>PlaySystem</AssemblyName>
     <StartupObject>
     </StartupObject>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>rfc.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>rfc.snk.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,36 +34,26 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoordinateFlippers.cs" />
-    <Compile Include="InterpreterPlay.cs" />
-    <Compile Include="PlayComparer.cs" />
-    <Compile Include="ActionInterpreter.cs" />
-    <Compile Include="Interpreter.cs" />
-    <Compile Include="InterpreterExpression.cs" />
-    <Compile Include="InterpreterFunctions.cs" />
-    <Compile Include="InterpreterDefinitions.cs" />
-    <Compile Include="InterpreterObjects.cs" />
-    <Compile Include="PlayEvaluator.cs" />
-    <Compile Include="PlaySelector.cs" />
-    <Compile Include="PlayUtils.cs" />
+    <Compile Include="ActionAssigner.cs" />
+    <Compile Include="FrozenPredictor.cs" />
+    <Compile Include="GameState.cs" />
+    <Compile Include="PlayAssigner.cs" />
+    <Compile Include="PlayFunctions.cs" />
+    <Compile Include="PlayLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="rfc.snk" />
+    <Compile Include="SharedPlays.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\control\CoreRobotics\CoreRobotics.csproj">
       <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
       <Name>CoreRobotics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\control\MotionPlanning\MotionPlanning.csproj">
-      <Project>{6B407296-924E-4788-A8B4-5E808061889D}</Project>
-      <Name>MotionPlanning</Name>
+    <ProjectReference Include="..\Geometry\Geometry.csproj">
+      <Project>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</Project>
+      <Name>Geometry</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\system\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
@@ -83,20 +63,9 @@
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core Play Files\CorePlayFiles.csproj">
-      <Project>{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}</Project>
-      <Name>CorePlayFiles</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Geometry\Geometry.csproj">
-      <Project>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</Project>
-      <Name>Geometry</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\PlaySystem\PlaySystem.csproj">
-      <Project>{2808F349-5B4B-4ED4-AC47-D0B754B652D6}</Project>
-      <Name>PlaySystem</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="rfc.snk.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

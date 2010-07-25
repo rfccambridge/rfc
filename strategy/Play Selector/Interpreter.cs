@@ -6,11 +6,13 @@ using System.Collections;
 using Robocup.Core;
 using System.IO;
 using Robocup.Utilities;
+using Robocup.PlaySystem;
 
 namespace Robocup.Plays
 {
     public class Interpreter
     {
+        bool USE_C_SHARP_PLAY_SYSTEM;
 
         private List<int> active = new List<int>();
         private readonly PlaySelector selector;
@@ -20,6 +22,10 @@ namespace Robocup.Plays
         private Team team;
         private FieldHalf fieldHalf;
         private FieldDrawer fieldDrawer;
+
+        // new play system- retain a game state and a play assigner
+        private GameState state;
+        private PlayAssigner playAssigner;
 
         public FieldHalf FieldHalf
         {
@@ -44,6 +50,11 @@ namespace Robocup.Plays
                         actioninterpreter = flipAI.ActionInterpreter;
                         predictor = flipPredictor.Predictor;
                     }
+
+                    // New PlaySystem code
+                    // switch the actioninterpreter and the predictor in the game state
+                    state.setActionInterpreter(actioninterpreter);
+                    state.setPredictor(predictor);
                 }
                 fieldHalf = value;
             }
@@ -66,6 +77,10 @@ namespace Robocup.Plays
                 this.actioninterpreter = actioninterpreter;
                 this.predictor = predictor;
             }
+
+            // new play system: set up the game state
+            state = new GameState(this.predictor, this.actioninterpreter, ourTeam);
+            playAssigner = new PlayAssigner();
 
             selector = new PlaySelector();
         }
@@ -102,14 +117,44 @@ namespace Robocup.Plays
         public void LoadConstants()
         {
             actioninterpreter.LoadConstants();
+
+            // load the new play system's constants
+            playAssigner.ReloadConstants();
+
+            // reload single constant from a file
+            USE_C_SHARP_PLAY_SYSTEM = Constants.get<bool>("default", "USE_C_SHARP_PLAY_SYSTEM");
         }
  
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();
+
+        /// <summary>
+        /// An alternative to the old play interpreter. Plays are written in C# and found in the PlaySystem project
+        /// </summary>
+        /// <param name="type">The current play type to be interpreted</param>
+        /// <returns>true if play was interpreted, false if is already interpreting</returns>
+        public bool interpret_csharp(PlayType type)
+        {
+            // the old interpret method had a check to make sure the interpreter was not already running
+            // I do not believe that was necessary, as I set a breakpoint and it was never broken.
+            // Furthermore, one player has only one thread that calls interpret. I removed it 
+            // to save space and confusion
+
+            // pass this play type on to the play assigner
+            state.Playtype = type;
+            playAssigner.assignPlays(state);
+
+            return true;
+        }
 
         /// <returns>Returns true if it actually interpreted,
         /// false if it quit because it was already interpreting.</returns>
         public bool interpret(PlayType type)
         {
+            // if the appropriate constant is set, use the new play system
+            if (USE_C_SHARP_PLAY_SYSTEM) {
+                return interpret_csharp(type);
+            }
+            
             List<RobotInfo> ourteaminfo_base = predictor.GetRobots(team);
             List<RobotInfo> theirteaminfo_base = predictor.GetRobots((team == Team.Yellow) ? Team.Blue : Team.Yellow);
             

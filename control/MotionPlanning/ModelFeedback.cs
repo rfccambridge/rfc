@@ -25,7 +25,7 @@ namespace Robocup.MotionControl
 
 		public void LoadConstants()
 		{
-            double SPEED_SCALING_FACTOR_ALL = Constants.get<double>("motionplanning", "SPEED_SCALING_FACTOR_ALL");
+            SPEED_SCALING_FACTOR_ALL = Constants.get<double>("motionplanning", "SPEED_SCALING_FACTOR_ALL");
 
             for (int i = 0; i < NUM_ROBOTS; i++)
             {

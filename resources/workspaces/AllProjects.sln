@@ -2,143 +2,57 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\..\strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\..\strategy\Core Play Files\CorePlayFiles.csproj", "{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreRobotics", "..\..\control\CoreRobotics\CoreRobotics.csproj", "{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialControl", "..\..\system\SerialControl\SerialControl.csproj", "{3CCB17A5-8943-4535-A148-7AE8D237BA32}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpreterTester", "..\..\simulators\InterpreterTester\InterpreterTester.csproj", "{CE6CAEEE-9EE3-4CDD-8584-440FDD3B35D5}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationRacer", "..\..\strategy\Navigation\NavigationRacer\NavigationRacer.csproj", "{CB7165CE-ADD5-42A0-ADA8-5FD454FABA41}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineLearning", "..\..\strategy\MachineLearning\MachineLearning.csproj", "{74322154-87D4-4D6B-9A5F-AAA368FDEABD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navigation", "..\..\strategy\Navigation\Navigation.csproj", "{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayDesigner", "..\..\strategy\Play Designer\PlayDesigner.csproj", "{C57C048E-0954-44CD-8FF6-BD7269962214}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageSystem", "..\..\system\MessageSystem\MessageSystem.csproj", "{1C7044F7-B506-46B2-AF61-E38E224EC33A}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KalmanFilter", "..\..\vision\KalmanFilter\KalmanFilter.csproj", "{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\system\Core\Core.csproj", "{501CE524-9C56-4C08-B04F-69A92318872A}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "..\..\system\Utilities\Utilities.csproj", "{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "..\..\strategy\Geometry\Geometry.csproj", "{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator", "..\..\simulators\SimulationLib\Simulator.csproj", "{A343AA15-D817-4E28-AB24-24CD4359BDF7}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionPlanning", "..\..\control\MotionPlanning\MotionPlanning.csproj", "{6B407296-924E-4788-A8B4-5E808061889D}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlCalibration", "..\..\control\ControlCalibration\ControlCalibration.csproj", "{BBADBEA3-3CF2-46C3-95B5-A670EF057571}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSML", "..\..\vision\CSML\CSML.csproj", "{8CD08024-CDBD-4FDB-9B9F-EA35B513BE92}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlForm", "..\..\simulators\ControlForm\ControlForm.csproj", "{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientLib", "..\..\vision\SSLClientLib\SSLClientLib.vcproj", "{E8342D57-BCE2-4970-89AB-A1C16F8419CD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30} = {3E283F37-A4ED-41B7-A3E6-A2D89D131A30}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientWrapper", "..\..\vision\SSLClientWrapper\SSLClientWrapper.vcproj", "{3D6BCAD3-A81A-4ADB-9B80-115920094F24}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30} = {3E283F37-A4ED-41B7-A3E6-A2D89D131A30}
 		{E8342D57-BCE2-4970-89AB-A1C16F8419CD} = {E8342D57-BCE2-4970-89AB-A1C16F8419CD}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libprotobuf", "..\..\vision\protobuf\vsprojects\libprotobuf.vcproj", "{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySystem", "..\..\strategy\PlaySystem\PlaySystem.csproj", "{2808F349-5B4B-4ED4-AC47-D0B754B652D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -376,6 +290,16 @@ Global
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}.Release|Win32.ActiveCfg = Release|Win32
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}.Release|Win32.Build.0 = Release|Win32
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

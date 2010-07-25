@@ -19,6 +19,9 @@ int REBOOT_TIME 15000
 #label clearing in ms
 int REFBOX_COMMAND_CLEAR_INTERVAL 1000
 
+# is the new play system (C# one) used?
+bool USE_C_SHARP_PLAY_SYSTEM true
+
 # testing directory
 #string PLAY_DIR ../../plays/Test2009
 # competition directory
