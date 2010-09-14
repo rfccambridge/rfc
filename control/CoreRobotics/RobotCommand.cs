@@ -130,12 +130,12 @@ namespace Robocup.CoreRobotics
                 case Command.START_DRIBBLER:
                     source = (byte)'v'; port = (byte)'d'; arg = (byte)'1';
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg,
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};
                 case Command.STOP_DRIBBLER:
                     source = (byte)'v'; port = (byte)'d'; arg = (byte)'0';
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg,
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};
                 case Command.KICK:           source = (byte)'v'; port = (byte)'k'; break;
                 case Command.START_CHARGING: source = (byte)'v'; port = (byte)'c'; break;
@@ -149,7 +149,7 @@ namespace Robocup.CoreRobotics
 
             // simplest commands fall through to here
             chksum = Checksum.Compute(new byte[] { id, source, port });
-            return new byte[] { (byte)'\\', (byte)'H', chksum, id, source, port, (byte)'\\', (byte)'E' };
+            return new byte[] { (byte)'\\', (byte)'H', /*chksum,*/ id, source, port, (byte)'\\', (byte)'E' };
         }        
 
         #region IByteSerializable<RobotCommand> Members
