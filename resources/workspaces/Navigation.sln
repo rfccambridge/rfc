@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navigation", "..\..\strategy\Navigation\Navigation.csproj", "{C4E17220-DC22-47C7-9C22-DB2F79D8C9AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationRacer", "..\..\strategy\Navigation\NavigationRacer\NavigationRacer.csproj", "{CB7165CE-ADD5-42A0-ADA8-5FD454FABA41}"

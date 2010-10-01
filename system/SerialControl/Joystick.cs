@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.DirectX.DirectInput;
+using SlimDX.DirectInput;
 using System.Diagnostics;
 
 namespace JoystickInterface
@@ -17,11 +17,11 @@ namespace JoystickInterface
     /// <summary>
     /// Class to interface with a joystick device.
     /// </summary>
-    public class Joystick
+    public class JoystickWrapper
     {
-        private Device joystickDevice;
+        private Joystick joystick;
         private JoystickState state;
-        
+
         private int axisCount;
         /// <summary>
         /// Number of axes on the joystick.
@@ -84,7 +84,7 @@ namespace JoystickInterface
         {
             get { return axisF; }
         }
-        private IntPtr hWnd;
+        private System.Windows.Forms.Control control;
 
         private bool[] buttons;
         /// <summary>
@@ -100,10 +100,10 @@ namespace JoystickInterface
         /// <summary>
         /// Constructor for the class.
         /// </summary>
-        /// <param name="window_handle">Handle of the window which the joystick will be "attached" to.</param>
-        public Joystick(IntPtr window_handle)
+        /// <param name="conrol">Windowed control which the joystick will be "attached" to.</param>
+        public JoystickWrapper(System.Windows.Forms.Control control)
         {
-            hWnd = window_handle;
+            this.control = control;
             axisA = -1;
             axisB = -1;
             axisC = -1;
@@ -118,9 +118,9 @@ namespace JoystickInterface
             try
             {
                 // poll the joystick
-                joystickDevice.Poll();
+                joystick.Poll();
                 // update the joystick state field
-                state = joystickDevice.CurrentJoystickState;
+                state = joystick.GetCurrentState();
             }
             catch (Exception err)
             {
@@ -150,11 +150,9 @@ namespace JoystickInterface
             try
             {
                 // Find all the GameControl devices that are attached.
-                // NOTE: If a LoaderLock exception is thrown here, go to Debug->Exceptions->Managed Debugger Assistants
-                //       and uncheck LoaderLock. The exception happens because MDX v1.1 is crappy and MDX v2.0 has been
-                //       cancelled and replaced by XNA... maybe someday we'll switch to XNA, or better some other cross
-                //       platform input library. (-Alexei)
-                DeviceList gameControllerList = Manager.GetDevices(DeviceClass.GameControl, EnumDevicesFlags.AttachedOnly);
+                DirectInput dinput = new DirectInput();
+
+                IList<DeviceInstance> gameControllerList = dinput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
 
                 // check that we have at least one device.
                 if (gameControllerList.Count > 0)
@@ -165,12 +163,10 @@ namespace JoystickInterface
                     foreach (DeviceInstance deviceInstance in gameControllerList)
                     {
                         // create a device from this controller so we can retrieve info.
-                        joystickDevice = new Device(deviceInstance.InstanceGuid);
-                        joystickDevice.SetCooperativeLevel(hWnd,
-                            CooperativeLevelFlags.Background |
-                            CooperativeLevelFlags.NonExclusive);
+                        joystick = new Joystick(dinput, deviceInstance.InstanceGuid);
+                        joystick.SetCooperativeLevel(control, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
 
-                        systemJoysticks[i] = joystickDevice.DeviceInformation.InstanceName;
+                        systemJoysticks[i] = joystick.Information.InstanceName;
 
                         i++;
                     }
@@ -195,7 +191,9 @@ namespace JoystickInterface
         {
             try
             {
-                DeviceList gameControllerList = Manager.GetDevices(DeviceClass.GameControl, EnumDevicesFlags.AttachedOnly);
+                DirectInput dinput = new DirectInput();
+
+                IList<DeviceInstance> gameControllerList = dinput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
                 int i = 0;
                 bool found = false;
                 // loop through the devices.
@@ -205,10 +203,8 @@ namespace JoystickInterface
                     {
                         found = true;
                         // create a device from this controller so we can retrieve info.
-                        joystickDevice = new Device(deviceInstance.InstanceGuid);
-                        joystickDevice.SetCooperativeLevel(hWnd,
-                            CooperativeLevelFlags.Background |
-                            CooperativeLevelFlags.NonExclusive);
+                        joystick = new Joystick(dinput, deviceInstance.InstanceGuid);
+                        joystick.SetCooperativeLevel(control, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
                         break;
                     }
 
@@ -218,19 +214,16 @@ namespace JoystickInterface
                 if (!found)
                     return false;
                 
-                // Tell DirectX that this is a Joystick.
-                joystickDevice.SetDataFormat(DeviceDataFormat.Joystick);
-
                 // Finally, acquire the device.
-                joystickDevice.Acquire();
+                joystick.Acquire();
 
                 // How many axes?
                 // Find the capabilities of the joystick
-                DeviceCaps cps = joystickDevice.Caps;
-                Debug.WriteLine("Joystick Axis: " + cps.NumberAxes);
-                Debug.WriteLine("Joystick Buttons: " + cps.NumberButtons);
+                Capabilities cps = joystick.Capabilities;
+                Debug.WriteLine("Joystick Axis: " + cps.AxesCount);
+                Debug.WriteLine("Joystick Buttons: " + cps.ButtonCount);
 
-                axisCount = cps.NumberAxes;
+                axisCount = cps.AxesCount;
 
                 UpdateStatus();
             }
@@ -250,7 +243,7 @@ namespace JoystickInterface
         /// </summary>
         public void ReleaseJoystick()
         {
-            joystickDevice.Unacquire();
+            joystick.Unacquire();
         }
 
         /// <summary>
@@ -260,25 +253,16 @@ namespace JoystickInterface
         {
             Poll();
 
-            int[] extraAxis = state.GetSlider();
+            int[] extraAxis = state.GetForceSliders();
             //Rz Rx X Y Axis1 Axis2
-            axisA = state.Rz;
-            axisB = state.Rx;
+            axisA = state.RotationZ;
+            axisB = state.RotationX;
             axisC = state.X;
             axisD = state.Y;
             axisE = extraAxis[0];
             axisF = extraAxis[1];
 
-            // not using buttons, so don't take the tiny amount of time it takes to get/parse
-            byte[] jsButtons = state.GetButtons();
-            buttons = new bool[jsButtons.Length];
-
-            int i = 0;
-            foreach (byte button in jsButtons)
-            {
-                buttons[i] = button >= 128;
-                i++;
-            }
+            buttons = state.GetButtons();
         }
     }
 }

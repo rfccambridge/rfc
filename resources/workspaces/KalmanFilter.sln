@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KalmanFilter", "..\..\vision\KalmanFilter\KalmanFilter.csproj", "{7FD5B4AA-D7B4-45B7-8279-9A7E3B4E6F01}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSML", "..\..\vision\CSML\CSML.csproj", "{8CD08024-CDBD-4FDB-9B9F-EA35B513BE92}"

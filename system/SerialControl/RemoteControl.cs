@@ -42,7 +42,7 @@ namespace Robocup.SerialControl {
         private SerialInput _serialInput = new SerialInput();
         private StreamWriter _dataInWriter;
         private KeyboardHook _keyboardHook = new KeyboardHook();
-        private JoystickInterface.Joystick _joystickInterface;
+        private JoystickInterface.JoystickWrapper _joystickInterface;
         private System.Timers.Timer _joystickTimer = new System.Timers.Timer(100);
         private int _joystickTimerSync = 0;
         private bool _joystickDrivingOn = false;
@@ -85,7 +85,7 @@ namespace Robocup.SerialControl {
             for (int i = 0; i < NUM_ROBOTS; i++)
                 _robotModels[i] = new FailSafeModel(i);
 
-            _joystickInterface = new JoystickInterface.Joystick(this.Handle);
+            _joystickInterface = new JoystickInterface.JoystickWrapper(this);
             _joystickTimer.AutoReset = true;
             _joystickTimer.Elapsed += joystickTimer_Elapsed;
 

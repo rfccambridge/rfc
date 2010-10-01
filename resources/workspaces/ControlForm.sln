@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlForm", "..\..\simulators\ControlForm\ControlForm.csproj", "{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreRobotics", "..\..\control\CoreRobotics\CoreRobotics.csproj", "{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}"
@@ -13,18 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\..\stra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageSystem", "..\..\system\MessageSystem\MessageSystem.csproj", "{1C7044F7-B506-46B2-AF61-E38E224EC33A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientWrapper", "..\..\vision\SSLClientWrapper\SSLClientWrapper.vcproj", "{3D6BCAD3-A81A-4ADB-9B80-115920094F24}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30} = {3E283F37-A4ED-41B7-A3E6-A2D89D131A30}
-		{E8342D57-BCE2-4970-89AB-A1C16F8419CD} = {E8342D57-BCE2-4970-89AB-A1C16F8419CD}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientWrapper", "..\..\vision\SSLClientWrapper\SSLClientWrapper.vcxproj", "{3D6BCAD3-A81A-4ADB-9B80-115920094F24}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientLib", "..\..\vision\SSLClientLib\SSLClientLib.vcproj", "{E8342D57-BCE2-4970-89AB-A1C16F8419CD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30} = {3E283F37-A4ED-41B7-A3E6-A2D89D131A30}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientLib", "..\..\vision\SSLClientLib\SSLClientLib.vcxproj", "{E8342D57-BCE2-4970-89AB-A1C16F8419CD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libprotobuf", "..\..\vision\protobuf\vsprojects\libprotobuf.vcproj", "{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libprotobuf", "..\..\vision\protobuf\vsprojects\libprotobuf.vcxproj", "{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "..\..\strategy\Geometry\Geometry.csproj", "{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}"
 EndProject

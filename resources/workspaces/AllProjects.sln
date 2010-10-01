@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\..\strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePlayFiles", "..\..\strategy\Core Play Files\CorePlayFiles.csproj", "{1F29EBE7-E253-4BF6-8ACC-2BD45B9E9026}"
@@ -39,18 +39,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSML", "..\..\vision\CSML\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlForm", "..\..\simulators\ControlForm\ControlForm.csproj", "{EBB6F8D0-8263-48F1-9114-03EA5EEEE179}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientLib", "..\..\vision\SSLClientLib\SSLClientLib.vcproj", "{E8342D57-BCE2-4970-89AB-A1C16F8419CD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30} = {3E283F37-A4ED-41B7-A3E6-A2D89D131A30}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientLib", "..\..\vision\SSLClientLib\SSLClientLib.vcxproj", "{E8342D57-BCE2-4970-89AB-A1C16F8419CD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientWrapper", "..\..\vision\SSLClientWrapper\SSLClientWrapper.vcproj", "{3D6BCAD3-A81A-4ADB-9B80-115920094F24}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30} = {3E283F37-A4ED-41B7-A3E6-A2D89D131A30}
-		{E8342D57-BCE2-4970-89AB-A1C16F8419CD} = {E8342D57-BCE2-4970-89AB-A1C16F8419CD}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSLClientWrapper", "..\..\vision\SSLClientWrapper\SSLClientWrapper.vcxproj", "{3D6BCAD3-A81A-4ADB-9B80-115920094F24}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libprotobuf", "..\..\vision\protobuf\vsprojects\libprotobuf.vcproj", "{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libprotobuf", "..\..\vision\protobuf\vsprojects\libprotobuf.vcxproj", "{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySystem", "..\..\strategy\PlaySystem\PlaySystem.csproj", "{2808F349-5B4B-4ED4-AC47-D0B754B652D6}"
 EndProject

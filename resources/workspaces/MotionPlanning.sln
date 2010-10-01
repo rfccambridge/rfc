@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionPlanning", "..\..\control\MotionPlanning\MotionPlanning.csproj", "{6B407296-924E-4788-A8B4-5E808061889D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\system\Core\Core.csproj", "{501CE524-9C56-4C08-B04F-69A92318872A}"
