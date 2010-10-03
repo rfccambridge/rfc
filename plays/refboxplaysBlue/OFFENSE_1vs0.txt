@@ -1,0 +1,28 @@
+Metadata:
+type NormalPlay
+name OFFENSE_1vs0
+score 10001.002615
+
+Objects:
+point2 (pointof ball)
+robot0 (closest friendly point2 loose)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.13 0)
+theirgoal (point 3.13 0)
+point1 (pointof robot0)
+
+standbypoint (point -2 0)
+ballpoint (pointof ball)
+
+Conditions:
+
+Actions:
+
+# check if we shouldn't go after the ball- that is, if it is
+# in the goal and there is another robot there
+
+(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick robot0 theirgoal) (robotpointmove robot0 standbypoint))
+

@@ -1,0 +1,43 @@
+Metadata:
+type Kickoff_Theirs
+score 300
+name TH_KOFF_3x0
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+theirgoal (point 3.13 0)
+ourgoal (point -3.13 0)
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+centercircle (circle center 0.7)
+middlept (point -1.5 0)
+
+ourgoalwideperim (circle ourgoal 1.2)
+ourgoalcloseperim (circle ourgoal 0.4)
+
+goaliebot (closest friendly ourgoal loose)
+goaliebotpt (pointof goaliebot)
+
+centerbot (closest friendly center loose)
+centerbotpt (pointof centerbot)
+
+middlerbot (closest friendly middlept loose)
+middlerbotpt (pointof middlerbot)
+
+centergoalline (line center ourgoal)
+goaliept (linecircleintersection centergoalline ourgoalcloseperim -1)
+middlerpt (linecircleintersection centergoalline ourgoalwideperim -1)
+
+centercirclept (linecircleintersection centergoalline centercircle 1)
+
+Conditions:
+Actions:
+(robotpointpointmove goaliebot goaliept center)
+(robotpointpointmove middlerbot middlerpt center)
+(robotpointpointmove centerbot centercirclept center)

@@ -1,0 +1,45 @@
+Metadata:
+type SetPlay_Ours
+name O_FK_3x0
+score 300
+
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+ourgoal (point -3.15 0)
+theirgoal (point 3.15 0)
+
+ballpoint (pointof ball)
+ballgoalline (line ballpoint ourgoal)
+
+kickerbot (closest friendly ballpoint loose)
+
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
+
+#begin 2 person defense
+ourgoalwideperim (circle ourgoal .9)
+ourgoalcloseperim (circle ourgoal 0.4)
+
+defenderpoint (linecircleintersection ballgoalline ourgoalwideperim -1)
+
+endtopgoalpt (point GOALIE_X_POS 2)
+endbottomgoalpt (point GOALIE_X_POS -2)
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+goaliept (linelineintersection ballgoalline vertgoalline)
+goaltoppt (point GOALIE_X_POS 0.35)
+goalbotpt (point GOALIE_X_POS -0.35)
+
+goaliebot (closest friendly ourgoal loose)
+
+defenderbot (closest friendly defenderpoint loose)
+#end 2 person defense
+
+
+Conditions:
+
+Actions:
+(robotpointkick kickerbot theirgoal)
+(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))
+(robotpointpointmove defenderbot defenderpoint theirgoal)
