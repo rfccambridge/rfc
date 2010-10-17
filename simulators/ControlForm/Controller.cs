@@ -155,7 +155,7 @@ namespace Robocup.ControlForm
 
                 RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.START_CHARGING);
                 _cmdSender.Post(command);
-                Console.WriteLine("Controller: robot {0} is charging for a break-beam kick", robotID);
+                //Console.WriteLine("Controller: robot {0} is charging for a break-beam kick", robotID);
 
                 _charging.Add(robotID);
                 _lastCharge[robotID] = currTime;
@@ -167,7 +167,7 @@ namespace Robocup.ControlForm
 
                     command = new RobotCommand(robotID, RobotCommand.Command.STOP_CHARGING);
                     _cmdSender.Post(command);
-                    Console.WriteLine("Controller: robot {0} stopped charging", robotID);
+                    //Console.WriteLine("Controller: robot {0} stopped charging", robotID);
 
                     _charging.Remove(robotID);
                 }, null, 5 * CHARGE_TIME, System.Threading.Timeout.Infinite);

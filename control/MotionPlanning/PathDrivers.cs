@@ -1472,7 +1472,7 @@ namespace Robocup.MotionControl
 			}
 			else
 			{
-				Console.WriteLine("Close enough to point, stopping now.");
+				//Console.WriteLine("Close enough to point, stopping now.");
 				wheelSpeeds = new WheelSpeeds();
 			}
 
