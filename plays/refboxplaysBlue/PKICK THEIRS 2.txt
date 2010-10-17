@@ -1,8 +1,7 @@
 Metadata:
 type PenaltyKick_Theirs
-score 100
-name Penalty_Their1
-Objects:
+score 500
+name Penalty_Their5
 Objects:
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
@@ -11,7 +10,7 @@ topRightCorner (point 3.05 2.1)
 theirgoal (point 3.13 0)
 ourgoal (point -3.13 0)
 
-GOALIE_X_POS (const-double GOALIE_X_POS)
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 ballpoint (pointof ball)
 ballgoalline (line ballpoint ourgoal)
@@ -27,6 +26,12 @@ goaliebotpt (pointof goaliebot)
 goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)
 
+
+xdistance (- (const-double PENALTY_OFFSET) (/ (const-double FIELD_WIDTH) 2))
+defpoint1 (point xdistance 0.0)
+robot1 (closest friendly defpoint1 loose)
+
 Conditions:
 Actions:
 (if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointmove goaliebot goalbotpt) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointmove goaliebot goaltoppt) (robotpointmove goaliebot goaliept)))
+(robotpointpointmove robot1 defpoint1 ourgoal)

@@ -44,8 +44,8 @@ double BALL_AVOID_RADIUS 0
 
 # Used in ActionInterpreter (distances in m, angles in degrees)
 double KICK_POSITION_DIST 0.12
-double MAX_LATERAL_DIST 0.04
-double MAX_ANGLE_TO_KICK_AXIS 5
+double MAX_LATERAL_DIST 0.03
+double MAX_ANGLE_TO_KICK_AXIS 4
 double KICK_ORIENTATION_ERROR 6
 double CHARGE_DIST 3
 

@@ -14,7 +14,8 @@
 #Final version
 string GAIN_MATRIX -5, 5, 0.2, -0.3, 0.3, 0.75; -5, -5, 0.2, -0.3, -0.3, 0.75; 5, -5, 0.2, 0.3, -0.3, 0.75; 5, 5, 0.2, 0.3, 0.3, 0.75
 
-double GAIN_MATRIX_SCALE 20
+#double GAIN_MATRIX_SCALE 20
+double GAIN_MATRIX_SCALE 15
 
 
 ##alpha should be between 0 and 1.
