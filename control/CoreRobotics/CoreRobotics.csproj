@@ -105,6 +105,7 @@
     <ProjectReference Include="..\..\vision\SSLClientWrapper\SSLClientWrapper.vcxproj">
       <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>
       <Name>SSLClientWrapper</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
