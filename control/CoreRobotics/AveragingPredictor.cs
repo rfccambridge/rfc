@@ -233,7 +233,6 @@ namespace Robocup.CoreRobotics
         private int combineTimerSync = 0;
 
         // For marking ball position
-        private bool marking = false;          
         private Vector2 markedPosition = null;
 
         // "Constants"
@@ -322,16 +321,13 @@ namespace Robocup.CoreRobotics
                 return;
             }
             markedPosition = ball != null ? new Vector2(ball.Position) : null;
-            marking = true;
         }
 
         public void ClearBallMark() {
-            marking = false;
             markedPosition = null;
         }
 
         public bool HasBallMoved() {
-            if (!marking) return false;
             BallInfo ball = GetBall();
             bool ret = (ball != null && markedPosition == null) || (ball != null && 
                         markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);

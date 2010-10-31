@@ -14,7 +14,9 @@ namespace Robocup.CoreRobotics
         IRefBoxListener _refboxListener;
         IPredictor _predictor;
 
-        int lastCmdCounter;
+        private int lastCmdCounter;
+
+        private bool predictor_marking = false;
 
         public RefBoxState(Team team, IPredictor predictor)
         {          
@@ -50,15 +52,27 @@ namespace Robocup.CoreRobotics
             return _refboxListener.IsReceiving();
         }
 
+        private void predictorSetBallMark()
+        {
+            _predictor.SetBallMark();
+            predictor_marking = true;
+        }
+
+        private void predictorClearBallMark()
+        {
+            _predictor.ClearBallMark();
+            predictor_marking = false;
+        }
+
         public PlayType GetCurrentPlayType()
         {
             // Default game state is stopped if there is no refbox connected
             if (_refboxListener == null)
                 return PlayType.Stopped;
 
-            if (_predictor.HasBallMoved()) {
+            if (predictor_marking && _predictor.HasBallMoved()) {
                     playsToRun = PlayType.NormalPlay;                    
-                    _predictor.ClearBallMark();
+                    predictorClearBallMark();
             }
             if (lastCmdCounter < _refboxListener.GetCmdCounter())
             {
@@ -69,11 +83,11 @@ namespace Robocup.CoreRobotics
                     case MulticastRefBoxListener.HALT:
                         // stop bots completely
                         playsToRun = PlayType.Halt;
-                        _predictor.ClearBallMark();
+                        predictorClearBallMark();
                         break;
                     case MulticastRefBoxListener.START:
                         playsToRun = PlayType.NormalPlay;
-                        _predictor.ClearBallMark();
+                        predictorClearBallMark();
                         break;
                     case MulticastRefBoxListener.CANCEL:
                     case MulticastRefBoxListener.STOP:
@@ -81,7 +95,7 @@ namespace Robocup.CoreRobotics
                     case MulticastRefBoxListener.TIMEOUT_YELLOW:
                         //go to stopped/waiting state
                         playsToRun = PlayType.Stopped;
-                        _predictor.ClearBallMark();
+                        predictorClearBallMark();
                         break;
                     case MulticastRefBoxListener.TIMEOUT_END_BLUE:
                     case MulticastRefBoxListener.TIMEOUT_END_YELLOW:
@@ -90,14 +104,14 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.PenaltyKick_Ours;
                         if (playsToRun == PlayType.KickOff_Ours_Setup)
                             playsToRun = PlayType.KickOff_Ours;
-                        _predictor.SetBallMark();
+                        predictorSetBallMark();
                         break;
                     case MulticastRefBoxListener.KICKOFF_BLUE:
                         if (_ourTeam == Team.Yellow)
                             playsToRun = PlayType.KickOff_Theirs;
                         else
                             playsToRun = PlayType.KickOff_Ours_Setup;
-                        _predictor.SetBallMark();
+                        predictorSetBallMark();
                         break;
                     case MulticastRefBoxListener.INDIRECT_BLUE:
                     case MulticastRefBoxListener.DIRECT_BLUE:
@@ -105,14 +119,14 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.SetPlay_Theirs;
                         else
                             playsToRun = PlayType.SetPlay_Ours;
-                        _predictor.SetBallMark();
+                        predictorSetBallMark();
                         break;
                     case MulticastRefBoxListener.KICKOFF_YELLOW:
                         if (_ourTeam == Team.Blue)
                             playsToRun = PlayType.KickOff_Theirs;
                         else
                             playsToRun = PlayType.KickOff_Ours_Setup;
-                        _predictor.SetBallMark();
+                        predictorSetBallMark();
                         break;
                     case MulticastRefBoxListener.INDIRECT_YELLOW:
                     case MulticastRefBoxListener.DIRECT_YELLOW:
@@ -120,7 +134,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.SetPlay_Theirs;
                         else
                             playsToRun = PlayType.SetPlay_Ours;
-                        _predictor.SetBallMark();
+                        predictorSetBallMark();
                         break;
                     case MulticastRefBoxListener.PENALTY_BLUE:
                         // handle penalty
@@ -128,7 +142,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.PenaltyKick_Theirs;
                         else
                             playsToRun = PlayType.PenaltyKick_Ours_Setup;
-                        _predictor.ClearBallMark();
+                        predictorClearBallMark();
                         break;
                     case MulticastRefBoxListener.PENALTY_YELLOW:
                         // penalty kick
@@ -137,7 +151,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.PenaltyKick_Theirs;
                         else
                             playsToRun = PlayType.PenaltyKick_Ours_Setup;
-                        _predictor.ClearBallMark();
+                        predictorClearBallMark();
                         break;
                 }
             }

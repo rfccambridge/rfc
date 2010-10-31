@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionPlanning", "..\..\con
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySelector", "..\..\strategy\Play Selector\PlaySelector.csproj", "{38CE179C-5898-4DCA-A645-BD7C7C445FB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaySystem", "..\..\strategy\PlaySystem\PlaySystem.csproj", "{2808F349-5B4B-4ED4-AC47-D0B754B652D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +157,16 @@ Global
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{38CE179C-5898-4DCA-A645-BD7C7C445FB4}.Release|Win32.ActiveCfg = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2808F349-5B4B-4ED4-AC47-D0B754B652D6}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
