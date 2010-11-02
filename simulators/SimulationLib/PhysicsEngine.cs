@@ -32,6 +32,9 @@ namespace Robocup.Simulation
         private int mainTimerSync = 0;
         private int counter = 0;
 
+		private int numYellow;
+		private int numBlue;
+
         private IMessageReceiver<RobotCommand> cmdReceiver;
 
         private bool visionStarted = false;
@@ -53,23 +56,35 @@ namespace Robocup.Simulation
                 movement_modelers[team] = new Dictionary<int, MovementModeler>();
                 speeds[team] = new Dictionary<int, WheelSpeeds>();
             }
-			ResetPositions();
-		
-            foreach (Team team in Enum.GetValues(typeof(Team))) 
-            {
-                foreach (RobotInfo info in robots[team])
-                {
-                    break_beams[team].Add(info.ID, false);
-                    movement_modelers[team].Add(info.ID, new MovementModeler());
-                    speeds[team].Add(info.ID, new WheelSpeeds());
-                }
-            }
-            
+			
             LoadConstants();
 
             mainTimer.AutoReset = true;
             mainTimer.Elapsed += mainTimer_Elapsed;
-		}        
+		}
+        
+		private void InitState()
+		{
+			foreach (Team team in Enum.GetValues(typeof(Team)))
+			{
+				break_beams[team].Clear();
+				movement_modelers[team].Clear();
+				speeds[team].Clear();
+			}
+
+			ResetPositions();
+
+			foreach (Team team in Enum.GetValues(typeof(Team)))
+			{
+				foreach (RobotInfo info in robots[team])
+				{
+					break_beams[team].Add(info.ID, false);
+					movement_modelers[team].Add(info.ID, new MovementModeler());
+					speeds[team].Add(info.ID, new WheelSpeeds());
+				}
+			}
+            
+		}
 
         public void LoadConstants()
         {
@@ -130,16 +145,24 @@ namespace Robocup.Simulation
             List<RobotInfo> blueRobots = new List<RobotInfo>();
 
             yellowRobots.Add(new RobotInfo(new Vector2(-1.0, -1), 0, Team.Yellow, 0));
-            yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 0), 0, Team.Yellow, 1));
-            yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 1), 0, Team.Yellow, 2));
-            yellowRobots.Add(new RobotInfo(new Vector2(-2f, -1), 0, Team.Yellow, 3));
-            yellowRobots.Add(new RobotInfo(new Vector2(-2f, 1), 0, Team.Yellow, 4));
+            if (numYellow > 1)
+				yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 0), 0, Team.Yellow, 1));
+			if (numYellow > 2)
+				yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 1), 0, Team.Yellow, 2));
+			if (numYellow > 3)
+				yellowRobots.Add(new RobotInfo(new Vector2(-2f, -1), 0, Team.Yellow, 3));
+			if (numYellow > 4)
+				yellowRobots.Add(new RobotInfo(new Vector2(-2f, 1), 0, Team.Yellow, 4));
 
             blueRobots.Add(new RobotInfo(new Vector2(1.0, -1), 0, Team.Blue, 5));
-            blueRobots.Add(new RobotInfo(new Vector2(1.0, 0), 0, Team.Blue, 6));
-            blueRobots.Add(new RobotInfo(new Vector2(1.0, 1), 0, Team.Blue, 7));
-            blueRobots.Add(new RobotInfo(new Vector2(2f, -1), 0, Team.Blue, 8));
-            blueRobots.Add(new RobotInfo(new Vector2(2f, 1), 0, Team.Blue, 9));
+            if (numBlue > 1)
+				blueRobots.Add(new RobotInfo(new Vector2(1.0, 0), 0, Team.Blue, 6));
+			if (numBlue > 2)
+				blueRobots.Add(new RobotInfo(new Vector2(1.0, 1), 0, Team.Blue, 7));
+			if (numBlue > 3)
+				blueRobots.Add(new RobotInfo(new Vector2(2f, -1), 0, Team.Blue, 8));
+			if (numBlue > 4)
+				blueRobots.Add(new RobotInfo(new Vector2(2f, 1), 0, Team.Blue, 9));
 
             robots[Team.Yellow].Clear();
             robots[Team.Blue].Clear();
@@ -150,10 +173,15 @@ namespace Robocup.Simulation
             ball = new BallInfo(Vector2.ZERO);
         }
 
-        public void Start()
+        public void Start(int numYellow, int numBlue)
         {
             if (running)
                 throw new ApplicationException("Already running.");
+
+			this.numYellow = numYellow;
+			this.numBlue = numBlue;
+
+			InitState();
 
             double freq = Constants.get<double>("default", "SIM_ENGINE_FREQUENCY");
             double period = 1.0 / freq * 1000; // in ms

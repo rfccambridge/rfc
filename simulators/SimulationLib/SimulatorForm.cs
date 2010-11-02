@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
+using System.Diagnostics;
 using Robocup.Core;
 
 namespace Robocup.Simulation
@@ -51,6 +52,11 @@ namespace Robocup.Simulation
                     int cmdPort = int.Parse(txtSimCmdPort.Text);
                     if (!parseHost(txtSimVisionHost.Text, out visionIp, out visionPort)) return;
 
+					int numBlue = int.Parse(txtNumBlue.Text);
+					Debug.Assert(numBlue > 0 && numBlue < 6);
+					int numYellow = int.Parse(txtNumYellow.Text);
+					Debug.Assert(numYellow > 0 && numYellow < 6);
+
                     // For convenience reload constants on every restart
                     Constants.Load();
                     _physicsEngine.LoadConstants();
@@ -58,7 +64,7 @@ namespace Robocup.Simulation
                     _physicsEngine.StartCommander(cmdPort);
                     _physicsEngine.StartVision(visionIp, visionPort);
 
-                    _physicsEngine.Start();
+                    _physicsEngine.Start(numYellow, numBlue);
 
                     _simRunning = true;
                     btnSimStartStop.Text = "Stop Sim";

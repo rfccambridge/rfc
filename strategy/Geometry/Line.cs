@@ -10,6 +10,10 @@ namespace Robocup.Geometry {
         public Line(Vector2 p1, Vector2 p2) {
             points = new Vector2[] { p1, p2 };
         }
+		public Line(Vector2 p, double direction){
+			Vector2 p2 = new Vector2(1.0, 0.0).rotate(direction);
+			points = new Vector2[] { p, p2 };
+		}
         public Vector2[] getPoints() {
             return points;
             //return new Vector2[] { points[0].getPoint(), points[1].getPoint() };

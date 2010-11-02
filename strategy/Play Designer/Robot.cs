@@ -33,6 +33,10 @@ namespace Robocup.Plays
         {
             return -1;
         }
+		public double getOrientation()
+		{
+			return 0;
+		}
         public DesignerRobot(Vector2 p, bool ours)
         {
             this.ours = ours;

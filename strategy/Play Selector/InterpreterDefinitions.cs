@@ -109,6 +109,10 @@ namespace Robocup.Plays
         {
             return thisrobot.Position;
         }
+		public override double getOrientation()
+		{
+			return thisrobot.Orientation;
+		}
         public InterpreterRobotDefinition(bool ours, RobotAssignmentType assignment)
         {
             this.ours = ours;

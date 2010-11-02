@@ -134,12 +134,14 @@ namespace Robocup.Plays
     {
         bool Ours { get; }
         Vector2 getPoint();
+		double getOrientation();
         int getID();
     }
     abstract public class PlayRobotDefinition : Robot
     {
         public abstract bool Ours { get;}
         public abstract Vector2 getPoint();
+		public abstract double getOrientation();
         public abstract int getID();
     }
 

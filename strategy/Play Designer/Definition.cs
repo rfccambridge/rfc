@@ -34,6 +34,10 @@ namespace Robocup.Plays
         {
             throw new Exception("The method or operation is not implemented.");
         }
+		public override double getOrientation()
+		{
+			throw new NotImplementedException("This method is not implemented.");
+		}
         public override bool Ours
         {
             //get { return ((DesignerRobot)robot.getValue(0)).Ours; }

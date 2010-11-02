@@ -1,0 +1,41 @@
+Metadata:
+type NormalPlay
+name DEFENSE_1vs1
+score 150
+
+Objects:
+topLeftCorner (point -2.4 1.6)
+bottomLeftCorner (point -2.4 -1.6)
+bottomRightCorner (point 2.4 -1.6)
+topRightCorner (point 2.4 1.6)
+theirgoal (point 2.5 0)
+ourgoal (point -2.5 0)
+
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
+
+ballpoint (pointof ball)
+ballgoalline (line ballpoint ourgoal)
+
+attacker (closest enemy ballpoint loose)
+attackerpt (pointof attacker)
+attackerorient (orientationof attacker)
+
+attackerline (linedirection attackerpt attackerorient)
+
+endtopgoalpt (point GOALIE_X_POS 1.6)
+endbottomgoalpt (point GOALIE_X_POS -1.6)
+
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+
+attackerverticalpt (linelineintersection attackerline vertgoalline)
+
+ballverticalpt (linelineintersection ballgoalline vertgoalline)
+
+goaliebot (closest friendly ourgoal loose)
+goaliebotpt (pointof goaliebot)
+goaltoppt (point GOALIE_X_POS 0.35)
+goalbotpt (point GOALIE_X_POS -0.35)
+
+Conditions:
+Actions:
+(if_Action (and (< (getYcoord attackerverticalpt) (getYcoord goalbotpt)) (> (getYcoord attackerverticalpt) (getYcoord goaltoppt))) (robotpointpointmove goaliebot attackerverticalpt attackerpt) (if_Action (< (getYcoord ballverticalpt) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord ballverticalpt) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot ballverticalpt ballpoint))))

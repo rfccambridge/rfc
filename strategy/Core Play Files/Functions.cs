@@ -168,6 +168,12 @@ namespace Robocup.Plays
         	                                                             		return new Line((Vector2) objects[0],
         	                                                             		                (Vector2) objects[1]);
         	                                                             	});
+			addFunction("linedirection", "Point, Direction - Line", "The unit length line from point ~ oriented at ~", typeof(Line),
+						new Type[] { typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+						{
+							return new Line((Vector2)objects[0],
+											(double)objects[1]);
+						});
         	addFunction("circle", "Point, Radius - Circle", "The circle with ~ as its center, and radius ~",
         	            typeof (Circle), new Type[] {typeof (Vector2), typeof (double)},
         	            delegate(EvaluatorState state, object[] objects)
@@ -180,6 +186,10 @@ namespace Robocup.Plays
         	                                                		return ((GetPointable) objects[0]).getPoint();
         	                                                		//return new Vector2((GetPointable)objects[0]);
         	                                                	});
+			addFunction("orientationof", "orientation of a robot", "The orientation of robot ~", typeof(double), new Type[] { typeof(Robot) }, delegate(EvaluatorState state, object[] objects)
+			{
+				return ((Robot)objects[0]).getOrientation();
+			});
         	addFunction("linelineintersection", "Line, Line - Intersection", "The intersection of lines ~ and ~",
         	            typeof (Vector2), new Type[] {typeof (Line), typeof (Line)},
         	            delegate(EvaluatorState state, object[] objects)
@@ -646,8 +656,7 @@ namespace Robocup.Plays
             {
                 return (double) state.TheirTeamInfo.Length;
             });
-
-            addFunction("const-double", "double constant", "The (double) constant ~", typeof(double), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
+			addFunction("const-double", "double constant", "The (double) constant ~", typeof(double), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
                 return Core.Constants.get<double>("plays", (string)objects[0]);
             });
