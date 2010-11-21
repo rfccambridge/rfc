@@ -34,8 +34,8 @@ namespace Robocup.ControlForm
         private IMotionPlanner _regularPlanner;
 		private IKickPlanner _kickPlanner;		        
 
-		private RobotPath[] _paths;		
-		private Object _pathsLock = new object();
+		private RobotPath[] _paths;
+        private Object[] _pathLocks;
                 
 		private double CONTROL_LOOP_FREQUENCY;
         private bool DRAW_PATH;
@@ -74,6 +74,10 @@ namespace Robocup.ControlForm
             _followPathsTimer = new System.Timers.Timer();
             _followPathsTimer.AutoReset = true;
             _followPathsTimer.Elapsed += _followPathsTimer_Elapsed;
+
+            _pathLocks = new Object[NUM_ROBOTS];
+            for (int i = 0; i < NUM_ROBOTS; i++)
+                _pathLocks[i] = new Object();
 
             LoadConstants();
 		}
@@ -126,10 +130,12 @@ namespace Robocup.ControlForm
         {
             if (_controlRunning)
             {
-                lock (_pathsLock)
+                for (int i = 0; i < NUM_ROBOTS; i++)
                 {
-                    for (int i = 0; i < NUM_ROBOTS; i++)
+                    lock (_pathLocks[i])
+                    {
                         _paths[i] = null;
+                    }
                 }
 
                 _followPathsTimer.Stop();
@@ -197,7 +203,7 @@ namespace Robocup.ControlForm
                 return;
             }
 
-            lock (_pathsLock)
+            lock (_pathLocks[currPath.ID])
             {
                 // Commit path for following
                 _paths[currPath.ID] = currPath;
@@ -276,7 +282,10 @@ namespace Robocup.ControlForm
 
 		public void Stop(int robotID)
 		{
-			_paths[robotID] = null;
+            lock (_pathLocks[robotID])
+            {
+                _paths[robotID] = null;
+            }
             RobotCommand command = new RobotCommand(robotID, new WheelSpeeds());
             _cmdSender.Post(command);
 		}
@@ -290,7 +299,7 @@ namespace Robocup.ControlForm
                 //Keep a local copy of the path in order not to lock the whole procedure
                 RobotPath currPath;
 
-                lock (_pathsLock)
+                lock (_pathLocks[i])
                 {
                     // Ensures we clear any stale paths if no planning calls have been made
                     if (_followsSincePlan[i] >= CONTROL_TIMEOUT)
