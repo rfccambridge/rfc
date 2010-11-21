@@ -355,7 +355,6 @@ namespace Robocup.ControlForm
             if (Interlocked.CompareExchange(ref _followPathsTimerSync, 1, 0) == 0)
             {
                 _followPathsDurationTimer.Start();
-                Thread.CurrentThread.Name = "Controller timer thread";
                 followPaths();
                 _followPathsTimerSync = 0;
                 _followPathsDurationTimer.Stop();

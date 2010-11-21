@@ -251,7 +251,6 @@ namespace Robocup.ControlForm
             // Skip the event if a previous one is still being handled
             if (Interlocked.CompareExchange(ref _interpretLoopTimerSync, 1, 0) == 0)
             {
-                Thread.CurrentThread.Name = "InterpretLoopTimer thread [" + _team.ToString() + "]";
                 runRound();
                 _interpretLoopTimerSync = 0;
             }
