@@ -1,6 +1,4 @@
 # Motion planning constants
-# Constants for NewPlanners.cs- planners developed for
-# spring 2009 CS199r class
 
 # Speed scaling factor- applied in ModelFeedback.cs, and multiplied
 # by the full speed vector

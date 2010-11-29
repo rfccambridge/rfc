@@ -47,6 +47,7 @@ namespace Robocup.Core {
             _id = waypoints[0].ID;
 
             _path = waypoints;
+			empty = false;
         }
 
         /// <summary>
@@ -61,6 +62,7 @@ namespace Robocup.Core {
             waypoints.Add(new RobotInfo(waypoint, 0, team, id));
 
             _path = waypoints;
+			empty = false;
         }
 
 		/// <summary>
@@ -76,6 +78,7 @@ namespace Robocup.Core {
 			waypoints.Add(waypoint);
 
 			_path = waypoints;
+			empty = false;
 		}
 
         /// <summary>
@@ -90,6 +93,7 @@ namespace Robocup.Core {
             // Combine paths into a single waypoints list
             _path = waypoints1;
             _path.AddRange(makeRobotInfoList(_id, waypoints2));
+			empty = false;
         }
 
         /// <summary>
@@ -102,6 +106,7 @@ namespace Robocup.Core {
             _team = team;
             _id = id;
             _path = makeRobotInfoList(_id, waypoints);
+			empty = false;
         }
 
 

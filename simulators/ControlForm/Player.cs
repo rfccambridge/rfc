@@ -85,7 +85,8 @@ namespace Robocup.ControlForm
             //_motionPlanner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
 
             _motionPlanner = new Robocup.MotionControl.TangentBugModelFeedbackMotionPlanner();
-            //IMotionPlanner planner = new Robocup.MotionControl.TangentBugVeerMotionPlanner();
+			//_motionPlanner = new Robocup.MotionControl.BasicRRTModelFeedbackMotionPlanner();
+			//IMotionPlanner planner = new Robocup.MotionControl.TangentBugVeerMotionPlanner();
 
             /*Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
                 for (int i = 0; i < 10; i++)

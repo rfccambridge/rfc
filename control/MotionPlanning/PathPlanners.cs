@@ -452,5 +452,66 @@ namespace Robocup.MotionControl
         }
     }
 
+	/// <summary>
+	/// A basic unidirectional RRT planner that searches over a Vector2 space. A wrapper around the generic BasicRRTPlanner.
+	/// The conversion Vector2->RobotInfo (to return RobotPath) is oversimplified - velocities are assigned with constant
+	/// speed in the direction of the next waypoint
+	/// </summary>
+	public class BasicRRTMotionPlanner : IPathPlanner
+	{
+		double AVOID_DIST;
+		double STEADY_STATE_SPEED;
+
+		private readonly BasicRRTPlanner<Vector2, Vector2Tree> planner;
+
+		public BasicRRTMotionPlanner()
+		{
+			planner = new BasicRRTPlanner<Vector2, Vector2Tree>(Common.ExtendVV, Common.RandomStateV);
+		}
+
+		public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+		{
+			List<Obstacle> obstacles = new List<Obstacle>();
+			//Aviod all robots, but myself
+			foreach (RobotInfo info in predictor.GetRobots())
+			{
+				if (info.Team != team || info.ID != id)
+					obstacles.Add(new Obstacle(info.Position, AVOID_DIST));
+			}
+			//If needed, avoid ball
+			if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
+				obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
+
+			RobotInfo curinfo = predictor.GetRobot(team, id);
+			List<Vector2> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
+
+			List<RobotInfo> robotPath = new List<RobotInfo>();
+
+			//Overly simplistic conversion from planning on position vectors to RobotInfo that has orientation and velocity information
+			//velocity at every waypoint just points to next one with constant speed
+			for (int i = 0; i < path.Count; i++)
+			{
+				//0-th waypoint is current state, driver won't like it
+				if (i == 0)
+					continue;
+
+				RobotInfo waypoint = new RobotInfo(path[i], desiredState.Orientation, team, id);				
+				if (i < path.Count - 1)
+					waypoint.Velocity = (path[i + 1] - path[i]).normalizeToLength(STEADY_STATE_SPEED);
+				else
+					waypoint.Velocity = new Vector2(0, 0); //Stop at destination
+				
+				robotPath.Add(waypoint);
+			}
+
+			return new RobotPath(robotPath);
+		}
+
+		public void ReloadConstants()
+		{
+			AVOID_DIST = Constants.get<double>("motionplanning", "AVOID_DIST");
+			STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
+		}
+	}
 
 }

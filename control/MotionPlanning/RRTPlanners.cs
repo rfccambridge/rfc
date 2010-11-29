@@ -9,45 +9,6 @@ using Robocup.Utilities;
 namespace Robocup.MotionControl
 {
 
-    public class BasicRRTMotionPlanner : IMotionPlanner
-    {
-        private readonly BasicRRTPlanner<Vector2, Vector2Tree> planner;
-
-        public BasicRRTMotionPlanner()
-        {
-            planner = new BasicRRTPlanner<Vector2, Vector2Tree>(Common.ExtendVV, Common.RandomStateV);
-        }
-
-        public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
-        {
-        	List<Obstacle> obstacles = new List<Obstacle>();
-        	foreach (RobotInfo info in predictor.GetRobots())
-        	{
-        		if (info.ID != id)
-        			//TODO magic number (robot radius)
-        			obstacles.Add(new Obstacle(info.Position, .2));
-        	}
-        	if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
-        		obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
-
-        	RobotInfo curinfo = predictor.GetRobot(team, id);
-        	List<Vector2> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
-
-			return new RobotPath(team, id, path);
-        }
-
-		public MotionPlanningResults FollowPath(RobotPath path, IPredictor predictor)
-		{
-			RobotInfo curinfo = predictor.GetRobot(path.Team, path.ID);
-			return new MotionPlanningResults(WheelSpeedsExtender.GetWheelSpeedsThrough(curinfo, 
-				path[Math.Min(path.Waypoints.Count - 1, 5)]));
-        }
-
-		public void LoadConstants()
-		{
-			
-		}
-	}
 #if false
     public class KinodynamicRRTMotionPlanner : IMotionPlanner
     {

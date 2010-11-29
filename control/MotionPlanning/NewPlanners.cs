@@ -1061,4 +1061,16 @@ namespace Robocup.MotionControl
 		#endregion
 	}
 
+	public class BasicRRTModelFeedbackMotionPlanner : PlannerDriver
+	{
+		static BasicRRTMotionPlanner pathplanner = new BasicRRTMotionPlanner();
+		public static ModelFeedbackDriver pathdriver = new ModelFeedbackDriver();
+
+		public BasicRRTModelFeedbackMotionPlanner()
+			: base(pathplanner, pathdriver)
+		{
+			LoadConstants();
+		}
+	}
+
 }

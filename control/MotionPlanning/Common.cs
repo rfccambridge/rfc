@@ -46,7 +46,7 @@ namespace Robocup.MotionControl
     }
     static public class Common
     {
-        const double extendDistance = .05;
+        const double extendDistance = .20;
         static public ExtendResults<Vector2> ExtendVV(Vector2 start, Vector2 end, object state)
         {
             List<Obstacle> obstacles = (List<Obstacle>)state;
