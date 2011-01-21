@@ -39,6 +39,10 @@ namespace Robocup.MotionControl
         /// Gets a list of all the nodes in the tree.
         /// </summary>
         List<T> AllNodes();
+        /// <summary>
+        /// Find the distance between two nodes
+        /// </summary>
+        double DistanceBetween(T ptA, T ptB);
     }
     public interface BiSearchTree<T, O> : SearchTree<T> where T : class
     {
@@ -105,6 +109,10 @@ namespace Robocup.MotionControl
         {
             return new List<Vector2>(parents.Keys);
         }
+        public double DistanceBetween(Vector2 ptA, Vector2 ptB)
+        {
+            return ptA.distanceSq(ptB);
+        }
     }
     public class RobotInfoTree : BiSearchTree<RobotInfo, Vector2>, BiSearchTree<RobotInfo, RobotInfo>
     {
@@ -155,6 +163,10 @@ namespace Robocup.MotionControl
         public List<RobotInfo> AllNodes()
         {
             return new List<RobotInfo>(parents.Keys);
+        }
+        public double DistanceBetween(RobotInfo ptA, RobotInfo ptB)
+        {
+            return ptA.Position.distanceSq(ptB.Position);
         }
     }
 }

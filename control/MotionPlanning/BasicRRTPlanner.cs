@@ -42,7 +42,7 @@ namespace Robocup.MotionControl
             set { goalprob = value; }
         }
 
-        private double waypointprob = .6;
+        private double waypointprob = 0.6;
         public double WaypointProbability
         {
             get { return waypointprob; }
@@ -63,7 +63,7 @@ namespace Robocup.MotionControl
         T[] waypoints;
         Random r = new Random();
         public BasicRRTPlanner(Extender<T, T> extender, /*Predicate<T> blocked, */ValueFunction<T> randomstate)
-        {
+        {  
             this.extender = extender;
             //this.blocked = blocked;
             this.randomstate = randomstate;
@@ -94,26 +94,46 @@ namespace Robocup.MotionControl
                     waypoints[r.Next(numwaypoints)] = node;
                 }
             }
-        }
+        }  
 
         G lastTree = null;
         private List<T> FindPath(T current, T goal, object state)
         {
             G tree = new G();
             tree.AddNode(current, null);
+            double quality = 0;
+            double maxcost = 0;
+            double optcost = cost(tree, current, goal);
+            double probfloor = 0.6;
 
             while (tree.Size() < MaxTreeSize)
             {
                 T extendTo;
+                T extendFrom;
                 double p = r.NextDouble();
                 if (p < goalprob)
                     extendTo = goal;
                 else if (numSavedWaypoints > 0 && p < goalprob + waypointprob)
                     extendTo = waypoints[r.Next(numSavedWaypoints)];
                 else
+                {
                     extendTo = randomstate();
+                    /*
+                    while (p > quality)
+                    {
+                        //extendTo -> goal
+                        Console.WriteLine("quality is ");
+                        quality = 1 - ((cost(tree, extendTo, goal) - optcost)  / (maxcost - optcost));
+                        quality = Math.Min(quality, probfloor);
+                        p = r.NextDouble();
+                        extendTo = randomstate();
+                    }
+                     * */
+                     
+                }
 
-                T extendFrom = tree.ClosestGoingTo(extendTo);
+                extendFrom = tree.ClosestGoingTo(extendTo);
+                    
                 //if (extendFrom.Equals(extendTo))
                 //    continue;
 
@@ -136,6 +156,8 @@ namespace Robocup.MotionControl
                     else if (extendresults.resultType == ExtendResultType.Success)
                     {
                         tree.AddNode(extendresults.extension, extendFrom);
+                        //current -> extendresults.extension
+                        maxcost = Math.Max(maxcost, cost(tree, extendresults.extension, goal));
                         extendFrom = extendresults.extension;
                     }
                 }
@@ -144,6 +166,12 @@ namespace Robocup.MotionControl
             lastTree = tree;
             return GetPath(tree.ClosestGoingTo(goal), tree);
         }
+
+        private double cost(G tree, T start, T end)
+        {
+            return tree.DistanceBetween(start, end);
+        }
+
         private List<T> GetPath(T goal, G tree)
         {
             List<T> rtn = new List<T>();
