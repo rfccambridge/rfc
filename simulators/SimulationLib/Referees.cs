@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
+using Robocup.CoreRobotics;
 
 namespace Robocup.Simulation
 {
@@ -28,8 +29,12 @@ namespace Robocup.Simulation
         static double GOAL_WIDTH;
         static double GOAL_HEIGHT;
 
+        MulticastRefBoxSender sender;
+
         public SimpleReferee()
         {
+            sender = new MulticastRefBoxSender();
+
             LoadConstants();             
         }
 
@@ -117,6 +122,21 @@ namespace Robocup.Simulation
         public PlayType GetCurrentPlayType()
         {
             return PlayType.NormalPlay;
+        }
+
+        public void Connect(string host, int port)
+        {
+            sender.Connect(host, port);
+        }
+
+        public void Disconnect()
+        {
+            sender.Disconnect();
+        }
+
+        public void SendCommand(char command)
+        {
+            sender.SendCommand(command);
         }
     }
 }

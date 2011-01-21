@@ -47,10 +47,11 @@ namespace Robocup.Simulation
                 if (!_simRunning)
                 {
 
-                    string visionIp;
-                    int visionPort;
+                    string visionIp, refBoxIp;
+                    int visionPort, refBoxPort;
                     int cmdPort = int.Parse(txtSimCmdPort.Text);
                     if (!parseHost(txtSimVisionHost.Text, out visionIp, out visionPort)) return;
+                    if (!parseHost(txtSimRefereeHost.Text, out refBoxIp, out refBoxPort)) return;
 
 					int numBlue = int.Parse(txtNumBlue.Text);
 					Debug.Assert(numBlue > 0 && numBlue < 6);
@@ -63,6 +64,7 @@ namespace Robocup.Simulation
 
                     _physicsEngine.StartCommander(cmdPort);
                     _physicsEngine.StartVision(visionIp, visionPort);
+                    _physicsEngine.StartReferee(refBoxIp, refBoxPort);
 
                     _physicsEngine.Start(numYellow, numBlue);
 
@@ -74,6 +76,7 @@ namespace Robocup.Simulation
                 {
                     _physicsEngine.Stop();
 
+                    _physicsEngine.StopReferee();
                     _physicsEngine.StopVision();
                     _physicsEngine.StopCommander();
 

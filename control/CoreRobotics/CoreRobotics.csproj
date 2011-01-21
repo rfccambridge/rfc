@@ -73,13 +73,13 @@
     <Compile Include="BasicPredictor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MulticastrefBoxHandler.cs" />
     <Compile Include="RobotCommand.cs" />
     <Compile Include="RobotModel.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="StaticPredictor.cs" />
     <Compile Include="FourWheeledMovement.cs" />
-    <Compile Include="MulticastRefBoxListener.cs" />
     <Compile Include="RefBoxState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TwoWheeledMovement.cs" />

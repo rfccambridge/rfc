@@ -46,16 +46,19 @@ namespace Robocup.Core {
         PlayType GetCurrentPlayType();
         void LoadConstants();
     }
-    public interface IRefBoxListener
+    public interface IRefBoxHandler
     {
-        event EventHandler<EventArgs<char>> PacketReceived;
         void Connect(string addr, int port);
         void Disconnect();
         void Start();
         void Stop();        
-        bool IsReceiving();
         int GetCmdCounter();
         char GetLastCommand();
+    }
+    public interface IRefBoxListener : IRefBoxHandler
+    {
+        event EventHandler<EventArgs<char>> PacketReceived;
+        bool IsReceiving();
     }
 
     /// <summary>

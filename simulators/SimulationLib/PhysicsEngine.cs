@@ -38,7 +38,10 @@ namespace Robocup.Simulation
         private IMessageReceiver<RobotCommand> cmdReceiver;
 
         private bool visionStarted = false;
-        SSLVision.RoboCupSSLServerManaged sslVisionServer; 
+        SSLVision.RoboCupSSLServerManaged sslVisionServer;
+
+        private bool refBoxStarted = false;
+        SimpleReferee referee;
 
 		private BallInfo ball = null;
         private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
@@ -138,7 +141,27 @@ namespace Robocup.Simulation
 
             visionStarted = false;
         }
-        
+
+        public void StartReferee(string host, int port)
+        {
+            if (refBoxStarted)
+                throw new ApplicationException("Referee already running.");
+
+            referee.Connect(host, port);
+
+            refBoxStarted = true;
+        }
+
+        public void StopReferee()
+        {
+            if (!refBoxStarted)
+                throw new ApplicationException("Referee not running.");
+
+            referee.Disconnect();
+
+            refBoxStarted = false;
+        }
+
         public void ResetPositions()
         {
             List<RobotInfo> yellowRobots = new List<RobotInfo>();
