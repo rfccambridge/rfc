@@ -14,7 +14,7 @@ namespace Robocup.Simulation
     {
         private delegate void VoidDelegate();
 
-        const double INITIAL_BALL_SPEED = 0.1f;
+        const double INITIAL_BALL_SPEED = 0.3f;
 
 		private bool _marking = false;
 		private Vector2 _markedPosition;
@@ -147,7 +147,7 @@ namespace Robocup.Simulation
             if (refBoxStarted)
                 throw new ApplicationException("Referee already running.");
 
-            referee.Connect(host, port);
+            //referee.Connect(host, port);
 
             refBoxStarted = true;
         }
@@ -157,7 +157,7 @@ namespace Robocup.Simulation
             if (!refBoxStarted)
                 throw new ApplicationException("Referee not running.");
 
-            referee.Disconnect();
+            //referee.Disconnect();
 
             refBoxStarted = false;
         }

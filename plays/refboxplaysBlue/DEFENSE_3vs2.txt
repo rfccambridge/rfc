@@ -9,21 +9,18 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-theirgoal (point 3.13 0)
-ourgoal (point -3.13 0)
-middle_theirgoal (point 2 0)
 
-ourgoalwideperim (circle ourgoal .9)
-ourgoalcloseperim (circle ourgoal 0.4)
+ourgoalwideperim (circle (ourgoal) .9)
+ourgoalcloseperim (circle (ourgoal) 0.4)
 
 GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 ballpoint (pointof ball)
-ballgoalline (line ballpoint ourgoal)
+ballgoalline (line ballpoint (ourgoal))
 
-#closestenemyg (closest enemy ourgoal loose)
+#closestenemyg (closest enemy (ourgoal) loose)
 #closestenemygpt (pointof closestenemyg)
-#closestenemyggoalline (line closestenemygpt ourgoal)
+#closestenemyggoalline (line closestenemygpt (ourgoal))
 
 #closestenemyb (closest enemy ballpoint loose)
 
@@ -39,7 +36,7 @@ goaliept (linelineintersection ballgoalline vertgoalline)
 goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)
 
-goaliebot (closest friendly ourgoal loose)
+goaliebot (closest friendly (ourgoal) loose)
 goaliebotpt (pointof goaliebot)
 
 twomanbot1 (closest friendly twomanpt1 loose)
@@ -51,5 +48,5 @@ twomanbot2pt (pointof twomanbot2)
 Conditions:
 Actions:
 (if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))
-(if_Action (< (pointpointdistance twomanbot1pt ballpoint) 0.2) (robotpointkick twomanbot1 theirgoal) (robotpointmove twomanbot1 twomanpt1))
-(if_Action (< (pointpointdistance twomanbot2pt ballpoint) 0.2) (robotpointkick twomanbot2 theirgoal) (robotpointmove twomanbot2 twomanpt2))
+(if_Action (< (pointpointdistance twomanbot1pt ballpoint) 0.2) (robotpointkick twomanbot1 (theirgoal)) (robotpointmove twomanbot1 twomanpt1))
+(if_Action (< (pointpointdistance twomanbot2pt ballpoint) 0.2) (robotpointkick twomanbot2 (theirgoal)) (robotpointmove twomanbot2 twomanpt2))

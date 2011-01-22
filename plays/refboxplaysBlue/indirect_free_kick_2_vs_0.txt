@@ -7,18 +7,17 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-ourgoal (point -3.15 0)
-theirgoal (point 3.15 0)
-robot1 (closest friendly ourgoal loose)
+
+robot1 (closest friendly (ourgoal) loose)
 point0 (pointof robot1)
 robot2 (closest friendly point6 loose)
 point1 (pointof robot2)
 point3 (pointof ball)
-line4 (line point3 ourgoal)
+line4 (line point3 (ourgoal))
 circle5 (circle point3 0.60)
 point6 (linecircleintersection line4 circle5 1)
 
-circle10 (circle ourgoal 0.40)
+circle10 (circle (ourgoal) 0.40)
 point11 (linecircleintersection line4 circle10 1)
 Conditions:
 Actions:

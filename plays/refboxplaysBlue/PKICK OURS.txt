@@ -3,13 +3,11 @@ type PenaltyKick_Ours
 name Penalty
 score 100
 Objects:
-theirgoal (point 3.13 0)
-robot0 (closest friendly theirgoal loose)
+robot0 (closest friendly (theirgoal) loose)
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-ourgoal (point -3.13 0)
 point1 (pointof robot0)
 point2 (point 2.62 0.34)
 point3 (pointof ball)
@@ -24,5 +22,5 @@ point16 (point 1.5 -0.5)
 point20 (point 1.8 0)
 Conditions:
 Actions:
-(if_Action (< (closestRobotToLine line1 enemy) (closestRobotToLine line2 enemy)) (robotpointkick robot0 theirgoal) (robotpointkick robot0 theirgoal))
+(if_Action (< (closestRobotToLine line1 enemy) (closestRobotToLine line2 enemy)) (robotpointkick robot0 (theirgoal)) (robotpointkick robot0 (theirgoal)))
 

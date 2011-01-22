@@ -8,11 +8,9 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-ourgoal (point -3.15 0)
-theirgoal (point 3.15 0)
 
 ballpoint (pointof ball)
-ballgoalline (line ballpoint ourgoal)
+ballgoalline (line ballpoint (ourgoal))
 
 GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
@@ -25,12 +23,12 @@ goaliept (linelineintersection ballgoalline vertgoalline)
 goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)
 
-goaliebot (closest friendly ourgoal loose)
+goaliebot (closest friendly (ourgoal) loose)
 goaliebotpt (pointof goaliebot)
 
 
 Conditions:
 
 Actions:
-(robotpointkick kickerbot theirgoal)
+(robotpointkick kickerbot (theirgoal))
 (if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))

@@ -8,13 +8,11 @@ topLeftCorner (point -2.4 1.6)
 bottomLeftCorner (point -2.4 -1.6)
 bottomRightCorner (point 2.4 -1.6)
 topRightCorner (point 2.4 1.6)
-theirgoal (point 2.5 0)
-ourgoal (point -2.5 0)
 
 GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 ballpoint (pointof ball)
-ballgoalline (line ballpoint ourgoal)
+ballgoalline (line ballpoint (ourgoal))
 
 attacker (closest enemy ballpoint loose)
 attackerpt (pointof attacker)
@@ -31,7 +29,7 @@ attackerverticalpt (linelineintersection attackerline vertgoalline)
 
 ballverticalpt (linelineintersection ballgoalline vertgoalline)
 
-goaliebot (closest friendly ourgoal loose)
+goaliebot (closest friendly (ourgoal) loose)
 goaliebotpt (pointof goaliebot)
 goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)

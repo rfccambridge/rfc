@@ -8,8 +8,7 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-ourgoal (point -3.15 0)
-theirgoal (point 3.15 0)
+
 robot1 (closest friendly point1 loose)
 point0 (pointof robot1)
 point1 (pointof ball)
@@ -17,7 +16,7 @@ point1 (pointof ball)
 Conditions:
 
 Actions:
-(robotpointkick robot1 theirgoal)
+(robotpointkick robot1 (theirgoal))
 
 DesignerData:
 ball <-0.35,-0.01>

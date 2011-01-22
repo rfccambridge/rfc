@@ -9,8 +9,7 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-theirgoal (point 3.13 0)
-ourgoal (point -3.13 0)
+
 center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)
@@ -19,13 +18,13 @@ centerpoint (point -0.3 0)
 
 middlepoint (point -2 0.2)
 
-goaliebot (closest friendly ourgoal loose)
+goaliebot (closest friendly (ourgoal) loose)
 middlerbot (closest friendly middlepoint loose)
 centerbot (closest friendly center loose)
 
 GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
-centergoalline (line center ourgoal)
+centergoalline (line center (ourgoal))
 
 endtopgoalpt (point GOALIE_X_POS 2)
 endbottomgoalpt (point GOALIE_X_POS -2)
@@ -38,5 +37,5 @@ goaliept (linelineintersection centergoalline vertgoalline)
 Conditions:
 Actions:
 (robotpointpointmove goaliebot goaliept center) 
-(robotpointpointmove middlerbot middlepoint theirgoal)
-(robotpointpointmove centerbot centerpoint theirgoal)
+(robotpointpointmove middlerbot middlepoint (theirgoal))
+(robotpointpointmove centerbot centerpoint (theirgoal))

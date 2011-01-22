@@ -202,8 +202,6 @@ namespace Robocup.Plays
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx, maxy), "bottomLeftCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), maxx, maxy), "bottomRightCorner");
             play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), maxx, miny), "topRightCorner");
-            play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), minx - goalback, (miny + maxy) / 2), "ourgoal");
-            play.AddPlayObject(new DesignerExpression(Function.getFunction("point"), maxx + goalback, (miny + maxy) / 2), "theirgoal");
 
             Version v = System.Reflection.Assembly.GetAssembly(this.GetType()).GetName(false).Version;
             showDebugLine("This is Play Designer version " + v.Major + "." + v.Minor + ", build " + v.Build);

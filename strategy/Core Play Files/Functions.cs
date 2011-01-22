@@ -733,6 +733,16 @@ namespace Robocup.Plays
                 return (Vector2)session[(string)objects[0]];
             });
 
+            addFunction("ourgoal", "OurGoal", "Our goal position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                return new Vector2(-1 * Constants.get<double>("plays", "FIELD_WIDTH") / 2 -0.08, 0);
+            });
+
+            addFunction("theirgoal", "TheirGoal", "Their goal position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                return new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2 + 0.08, 0);
+            });
+
             #endregion
 
             #region actions

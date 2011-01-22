@@ -9,8 +9,6 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-theirgoal (point 3.13 0)
-ourgoal (point -3.13 0)
 center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)
@@ -21,14 +19,14 @@ centerbottom (point 0 -2.1)
 
 ballpoint (pointof ball)
 ballcircle (circle ballpoint 0.63)
-ballgoalline (line ballpoint ourgoal)
+ballgoalline (line ballpoint (ourgoal))
 
-#ballgoaldist (pointpointdistance ballpoint ourgoal)
+#ballgoaldist (pointpointdistance ballpoint (ourgoal))
 
 # decide whether the ball is too close to the goal to have robots close to the ball
 #close_to_goal (< ballgoaldist GOAL_CLOSE_CHANGE_SETUP)
 
-wall1line (line ballpoint ourgoal)
+wall1line (line ballpoint (ourgoal))
 wall1point (linecircleintersection wall1line ballcircle 1)
 
 #20 deg rotation
@@ -41,8 +39,8 @@ wall1bkp (point 1.0 0)
 wall2bkp (point 1.5 -1)
 
 #begin 2 person defense
-ourgoalwideperim (circle ourgoal .9)
-ourgoalcloseperim (circle ourgoal 0.4)
+ourgoalwideperim (circle (ourgoal) .9)
+ourgoalcloseperim (circle (ourgoal) 0.4)
 
 defenderpoint (linecircleintersection ballgoalline ourgoalwideperim -1)
 
@@ -55,7 +53,7 @@ goaliept (linelineintersection ballgoalline vertgoalline)
 goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)
 
-goaliebot (closest friendly ourgoal loose)
+goaliebot (closest friendly (ourgoal) loose)
 
 defenderbot (closest friendly defenderpoint loose)
 #end 2 person defense

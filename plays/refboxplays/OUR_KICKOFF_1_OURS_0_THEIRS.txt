@@ -9,8 +9,6 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-theirgoal (point 3.13 0)
-ourgoal (point -3.13 0)
 center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)
@@ -20,4 +18,4 @@ centerbotpt (pointof centerbot)
 
 Conditions:
 Actions:
-(robotpointkick centerbot theirgoal)
+(robotpointkick centerbot (theirgoal))

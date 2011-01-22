@@ -8,15 +8,14 @@ topLeftCorner (point -2.4 1.6)
 bottomLeftCorner (point -2.4 -1.6)
 bottomRightCorner (point 2.4 -1.6)
 topRightCorner (point 2.4 1.6)
-theirgoal (point 2.5 0)
-ourgoal (point -2.5 0)
+
 
 GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
 
 ballpoint (pointof ball)
-ballgoalline (line ballpoint ourgoal)
+ballgoalline (line ballpoint (ourgoal))
 
-ourgoalwideperim (circle ourgoal 1.0)
+ourgoalwideperim (circle (ourgoal) 1.0)
 defensept (linecircleintersection ballgoalline ourgoalwideperim -1)
 defensebot (closest friendly defensept loose)
 defensebotpt (pointof defensebot)
@@ -27,7 +26,7 @@ endbottomgoalpt (point GOALIE_X_POS -1.6)
 vertgoalline (line endtopgoalpt endbottomgoalpt)
 
 goaliept (linelineintersection ballgoalline vertgoalline)
-goaliebot (closest friendly ourgoal loose)
+goaliebot (closest friendly (ourgoal) loose)
 goaliebotpt (pointof goaliebot)
 goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)
@@ -42,4 +41,4 @@ shouldkick (or (pointInGoal ballpoint) (< defensedisttoball 0.4))
 Conditions:
 Actions:
 (if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))
-(if_Action shouldkick (robotpointkick defensebot theirgoal) (robotpointmove defensebot defensept))
+(if_Action shouldkick (robotpointkick defensebot (theirgoal)) (robotpointmove defensebot defensept))
