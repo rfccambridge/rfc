@@ -663,7 +663,14 @@ namespace InterpreterTester
         {
             throw new NotImplementedException("InterpereterTester: BreakBream() not implemented.");
         }
-
+        public void StartDribbling(int robotID)
+        {
+            throw new NotImplementedException("InterpreterTester: StartDribbling() not implemented.");
+        }
+        public void StopDribbling(int robotID)
+        {
+            throw new NotImplementedException("InterpreterTester: StopDribbling() not implemented.");
+        }
         public void Stop(int robotID)
         {
             throw new NotImplementedException("The method or operation is not implemented.");

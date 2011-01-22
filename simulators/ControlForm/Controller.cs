@@ -22,7 +22,7 @@ namespace Robocup.ControlForm
 	{
         private const int CONTROL_TIMEOUT = 10;
         static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
-        private const int CHARGE_TIME = 4;  // TODO: madeup value! is this in seconds or milliseconds        
+        private const int CHARGE_TIME = 1000;  // TODO: madeup value! is this in seconds or milliseconds        
 
         private Team _team;
         
@@ -166,7 +166,7 @@ namespace Robocup.ControlForm
                 _charging.Add(robotID);
                 _lastCharge[robotID] = currTime;
 
-                //After 5*charge time, stop charging to save battery
+                //After 5*charge time, stop charging and dribbler to save battery
                 System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
                 {
                     _timers.Remove(robotID);
@@ -174,6 +174,9 @@ namespace Robocup.ControlForm
                     command = new RobotCommand(robotID, RobotCommand.Command.STOP_CHARGING);
                     _cmdSender.Post(command);
                     //Console.WriteLine("Controller: robot {0} stopped charging", robotID);
+
+                    command = new RobotCommand(robotID, RobotCommand.Command.STOP_DRIBBLER);
+                    _cmdSender.Post(command);
 
                     _charging.Remove(robotID);
                 }, null, 5 * CHARGE_TIME, System.Threading.Timeout.Infinite);
@@ -290,6 +293,18 @@ namespace Robocup.ControlForm
             RobotCommand command = new RobotCommand(robotID, new WheelSpeeds());
             _cmdSender.Post(command);
 		}
+
+        public void StartDribbling(int robotID)
+        {
+            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.START_DRIBBLER);
+            _cmdSender.Post(command);
+        }
+
+        public void StopDribbling(int robotID)
+        {
+            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.STOP_DRIBBLER);
+            _cmdSender.Post(command);
+        }
         
         private void followPaths()
         {

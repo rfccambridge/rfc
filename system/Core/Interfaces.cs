@@ -184,7 +184,9 @@ namespace Robocup.Core {
         void Charge(int robotID);
         void BreakBeam(int robotID);
         void Kick(int robotID, Vector2 target);
-        void Stop(int robotID);        
+        void Stop(int robotID);
+        void StartDribbling(int robotID);
+        void StopDribbling(int robotID);
         void LoadConstants();
     }
 
