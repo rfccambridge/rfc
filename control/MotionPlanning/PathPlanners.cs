@@ -52,7 +52,15 @@ namespace Robocup.MotionControl
 
         public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotInfo currentState = predictor.GetRobot(team, id);
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new RobotPath(team, id);
+            }
 
             Vector2 position = currentState.Position;
 
@@ -152,7 +160,15 @@ namespace Robocup.MotionControl
 
         public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
         {
-            RobotInfo currentState = predictor.GetRobot(team, id);
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new RobotPath(team, id);
+            }
 
             Vector2 start = currentState.Position;
             Vector2 end = desiredState.Position;
@@ -482,7 +498,15 @@ namespace Robocup.MotionControl
 			if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
 				obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
 
-			RobotInfo curinfo = predictor.GetRobot(team, id);
+			RobotInfo curinfo;
+            try
+            {
+                curinfo = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new RobotPath(team, id);
+            }
 			List<Vector2> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
 
 			List<RobotInfo> robotPath = new List<RobotInfo>();

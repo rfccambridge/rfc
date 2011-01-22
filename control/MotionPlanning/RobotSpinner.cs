@@ -36,7 +36,15 @@ namespace Robocup.MotionControl
 
         public WheelSpeeds spinTo(Team team, int id, double desiredOrientation, double stopWithin, IPredictor predictor)
         {
-            RobotInfo currentState = predictor.GetRobot(team, id);
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new WheelSpeeds();
+            }
 
             // angleDifference is positive when current robot needs to turn CW, negative when need to go CCW
             double angleDifference = UsefulFunctions.angleDifference(desiredOrientation, currentState.Orientation);
@@ -90,7 +98,15 @@ namespace Robocup.MotionControl
         }
 
         public WheelSpeeds spinTo(Team team, int id, double desiredOrientation, double stopWithin, IPredictor predictor) {
-            RobotInfo currentState = predictor.GetRobot(team, id);
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new WheelSpeeds();
+            }
 
             // angleDifference is positive when current robot needs to turn CW, negative when need to go CCW
             double angleDifference = UsefulFunctions.angleDifference(desiredOrientation, currentState.Orientation);

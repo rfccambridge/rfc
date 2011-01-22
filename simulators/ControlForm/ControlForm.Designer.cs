@@ -209,7 +209,7 @@ namespace Robocup.ControlForm {
             this.cmbRefboxHost.FormattingEnabled = true;
             this.cmbRefboxHost.Items.AddRange(new object[] {
             "224.5.92.12:10100",
-            "224.5.23.1:10100"});
+            "224.5.23.1:10001"});
             this.cmbRefboxHost.Location = new System.Drawing.Point(12, 112);
             this.cmbRefboxHost.Name = "cmbRefboxHost";
             this.cmbRefboxHost.Size = new System.Drawing.Size(132, 21);

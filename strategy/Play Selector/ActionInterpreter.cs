@@ -158,7 +158,7 @@ namespace Robocup.Plays
                 ballinfo = predictor.GetBall();
                 ball = ballinfo.Position;
             }
-            catch (ApplicationException)
+            catch (ApplicationException e)
             {
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;

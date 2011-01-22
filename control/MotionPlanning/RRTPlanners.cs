@@ -328,7 +328,7 @@ namespace Robocup.MotionControl
         	}
         	catch (ApplicationException e)
         	{
-        		throw e;
+                return new RobotPath(team, id);
         	}
 
         	foreach (Obstacle o in obstacles)
@@ -360,7 +360,7 @@ namespace Robocup.MotionControl
 			}
 			catch (ApplicationException e)
 			{
-				throw e;
+                return new MotionPlanningResults(new WheelSpeeds());
 			}
 
             nextWaypointIndex = findNearestWaypointIndex(curinfo, path);

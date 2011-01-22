@@ -88,7 +88,15 @@ namespace Robocup.CoreRobotics
             Team theirTeam = team == Team.Yellow ? Team.Blue : Team.Yellow;
 
             //Use navigator to get information
-            RobotInfo currentState = predictor.GetRobot(team, id);
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(team, id);
+            }
+            catch (ApplicationException e)
+            {
+                return new RobotPath(team, id);
+            }
             
             NavigationResults results = _navigator.navigate(currentState.ID, currentState.Position,
                 desiredState.Position, predictor.GetRobots(team).ToArray(), 

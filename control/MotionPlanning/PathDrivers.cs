@@ -33,7 +33,15 @@ namespace Robocup.MotionControl
             // get parameters from input
             Team team = path.Team;
             int id = path.ID;
-            RobotInfo currentState = predictor.GetRobot(team, id);
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new WheelSpeeds();
+            }
 
             RobotInfo desiredState = path.findNearestWaypoint(currentState);
 
@@ -129,7 +137,17 @@ namespace Robocup.MotionControl
         {
             Team team = path.Team;
             int id = path.ID;
-            RobotInfo currentState = predictor.GetRobot(team, id);
+            RobotInfo currentState;
+
+            try
+            {
+                currentState = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new WheelSpeeds();
+            }
+
             RobotInfo desiredState = path.findNearestWaypoint(currentState);
 
             // speeds default to zero
@@ -293,7 +311,15 @@ namespace Robocup.MotionControl
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
-            RobotInfo currentState = predictor.GetRobot(path.Team, path.ID);
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(path.Team, path.ID);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new WheelSpeeds();
+            }
 
             lastWayPoint = path.findNearestWaypoint(currentState).Position;
             RobotInfo waypointState = new RobotInfo(lastWayPoint, 0, path.ID);
@@ -695,7 +721,15 @@ namespace Robocup.MotionControl
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
-            RobotInfo currentState = predictor.GetRobot(path.Team, path.ID);
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(path.Team, path.ID);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new WheelSpeeds();
+            }
 
             lastWayPoint = path.findNearestWaypoint(currentState).Position;
             RobotInfo waypointState = new RobotInfo(lastWayPoint, 0, path.ID);
@@ -933,8 +967,15 @@ namespace Robocup.MotionControl
         /// </summary>
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
         {
-            RobotInfo currentState = predictor.GetRobot(path.Team, path.ID);
-
+            RobotInfo currentState;
+            try
+            {
+                currentState = predictor.GetRobot(path.Team, path.ID);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new WheelSpeeds();
+            }
             RobotInfo desiredState = path.findNearestWaypoint(currentState);
 
             lastWayPoint = desiredState.Position;
@@ -1255,11 +1296,13 @@ namespace Robocup.MotionControl
             List<Object> itemsToLog = new List<Object>();
 
             RobotInfo curInfo;
-            try {
+            try 
+            {
                 curInfo = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e) {
-                throw e;
+            catch (RobotNotFoundException e) 
+            {
+                return new WheelSpeeds();
             }
 
             Vector2 pathWaypoint = path.findNearestWaypoint(curInfo).Position;
@@ -1448,9 +1491,9 @@ namespace Robocup.MotionControl
 			{
 				curInfo = predictor.GetRobot(team, id);
 			}
-			catch (ApplicationException e)
+			catch (RobotNotFoundException e)
 			{
-				throw e;
+                return new WheelSpeeds();
 			}
 
 			//Vector2 pathWaypoint = path.findNearestWaypoint(curInfo).Position;

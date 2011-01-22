@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using Robocup.Core;
+using Robocup.CoreRobotics;
 
 namespace Robocup.Plays
 {
@@ -43,7 +44,15 @@ namespace Robocup.Plays
         }
         public RobotInfo GetRobot(Team team, int id)
         {
-            RobotInfo robot = predictor.GetRobot(team, id);
+            RobotInfo robot;
+            try
+            {
+                robot = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return null;
+            }
             if (robot != null)
                 return flipRobotInfo(robot);
             return null;

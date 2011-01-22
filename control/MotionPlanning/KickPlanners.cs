@@ -107,7 +107,16 @@ namespace Robocup.MotionControl
             bool breakBeamOn = false;
 
             // find characteristics of field
-            RobotInfo thisrobot = predictor.GetRobot(team, id);
+            RobotInfo thisrobot;
+            try
+            {
+                thisrobot = predictor.GetRobot(team, id);
+            }
+            catch(RobotNotFoundException e)
+            {
+                return new KickPlanningResults(new WheelSpeeds(), false);
+            }
+
             BallInfo ballinfo = predictor.GetBall();
             Vector2 ball = ballinfo.Position;
 
@@ -358,7 +367,15 @@ namespace Robocup.MotionControl
         public Vector2 getDestinationPoint(Team team, int id, Vector2 target, IPredictor predictor)
         {
             // find characteristics of field
-            RobotInfo thisrobot = predictor.GetRobot(team, id);
+            RobotInfo thisrobot;
+            try
+            {
+                thisrobot = predictor.GetRobot(team, id);
+            }
+            catch (RobotNotFoundException e)
+            {
+                return new Vector2(0.0, 0.0); 
+            }
             BallInfo ballinfo = predictor.GetBall();
             Vector2 ball = ballinfo.Position;
 

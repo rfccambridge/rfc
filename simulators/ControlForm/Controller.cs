@@ -178,6 +178,13 @@ namespace Robocup.ControlForm
                     command = new RobotCommand(robotID, RobotCommand.Command.STOP_DRIBBLER);
                     _cmdSender.Post(command);
 
+                    command = new RobotCommand(robotID, RobotCommand.Command.STOP_CHARGING);
+                    _cmdSender.Post(command);
+                    //Console.WriteLine("Controller: robot {0} stopped charging", robotID);
+
+                    command = new RobotCommand(robotID, RobotCommand.Command.STOP_DRIBBLER);
+                    _cmdSender.Post(command);
+
                     _charging.Remove(robotID);
                 }, null, 5 * CHARGE_TIME, System.Threading.Timeout.Infinite);
                 if(_timers.ContainsKey(robotID))
@@ -246,7 +253,7 @@ namespace Robocup.ControlForm
 				orientation = robot.Orientation;
 
 			}
-			catch (ApplicationException e)
+			catch (RobotNotFoundException e)
 			{
 				Console.WriteLine("inside move: Predictor.GetRobot() failed. Dumping exception:\n" + e.ToString());
 				return;
