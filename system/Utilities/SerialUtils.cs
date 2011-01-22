@@ -8,7 +8,7 @@ namespace Robocup.Utilities
 {
     static public class SerialPortManager
     {
-        static readonly string br = "9600";
+        static readonly string br = "38400";
         static readonly string pr = "None";
         static readonly string db = "8";
         static readonly string sb = "One";

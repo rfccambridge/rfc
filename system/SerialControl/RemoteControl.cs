@@ -20,6 +20,9 @@ namespace Robocup.SerialControl {
         private delegate void VoidListBoxObjectIntDelegate(ListBox lst, object item, int maxItems);
         private delegate void VoidListBoxObjectsDelegate(ListBox lst, object[] item);
 
+        public delegate void DataAcquired(object sender);
+        private event DataAcquired OnDataAcquired;
+
         private const int NUM_ROBOTS = 5;
         private const int DEFAULT_SPEED = 40;
         private const string DATA_IN_FILE = "data.csv";
@@ -56,6 +59,12 @@ namespace Robocup.SerialControl {
         private HighResTimer _wheelSpeedFunctionTimer = new HighResTimer();
         private WheelSpeedFunctions.IWheelSpeedFunction _wheelSpeedFunction;
         private double _lastSerialData = 0;
+
+        private HighResTimer _receiveDurationTimer = new HighResTimer();
+        private double _receiveDuration = 0.0;
+        private object _receiveDurationLock = new Object();
+
+        private System.Timers.Timer _guiTimer = new System.Timers.Timer(1000);
 
         public RemoteControl() {           
             InitializeComponent();
@@ -110,6 +119,13 @@ namespace Robocup.SerialControl {
             _noCommandTimer.AutoReset = true;
             _noCommandTimer.Elapsed += _noCommandTimer_Elapsed;
             _noCommandTimer.Start();
+
+            // Update gui timer
+            _guiTimer.AutoReset = true;
+            _guiTimer.Elapsed += guiTimer_Elapsed;
+            _guiTimer.Start();
+
+            OnDataAcquired = this.OnDataAcquiredEvent;
 
             // Global hotkeys
             _keyboardHook.KeyPressed += backspace_GlobalHotkeyPressed;
@@ -388,6 +404,11 @@ namespace Robocup.SerialControl {
                     case Keys.D2:
                     case Keys.D3:
                     case Keys.D4:
+                    case Keys.D5:
+                    case Keys.D6:
+                    case Keys.D7:
+                    case Keys.D8:
+                    case Keys.D9:
                         _curRobot = e.KeyValue - 48;  // 48 is value for Keys.D0
                         lblID.Text = _curRobot.ToString();
                         break;
@@ -470,7 +491,13 @@ namespace Robocup.SerialControl {
                 _cmdReceiver = Messages.CreateServerReceiver<RobotCommand>(int.Parse(txtListenPort.Text));
                 _cmdReceiver.MessageReceived += delegate(RobotCommand command)
                 {
+                    _receiveDurationTimer.Start();
                     sendCommand(command);
+                    _receiveDurationTimer.Stop();
+                    lock (_receiveDurationLock)
+                    {
+                        _receiveDuration = _receiveDurationTimer.Duration;
+                    }
                 };
                 _cmdListening = true;
                 btnCmdListen.Text = "Stop listening";
@@ -809,6 +836,27 @@ namespace Robocup.SerialControl {
 
             showItemRange(listBoxInputHistory, itemsArray);
             _lastSerialData = t;
+        }
+
+        private void udDribblerPower_ValueChanged(object sender, EventArgs e)
+        {
+            RobotCommand.dribblerSpeed = (byte) udDribblerPower.Value;
+        }
+
+        private void guiTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            this.Invoke(this.OnDataAcquired, new object[] { null });
+        }
+
+        private void OnDataAcquiredEvent(object sender)
+        {
+            double duration;
+            lock (_receiveDurationLock)
+            {
+                duration = _receiveDuration;
+            }
+
+            lblDuration.Text = String.Format("{0} ms", duration);
         }
     }
 }

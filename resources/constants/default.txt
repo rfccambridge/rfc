@@ -10,7 +10,7 @@ int NUM_ROBOTS 12
 # RFCSystem constants
 double STRATEGY_FREQUENCY 10
 double SIM_ENGINE_FREQUENCY 20
-double CONTROL_LOOP_FREQUENCY 20
+double CONTROL_LOOP_FREQUENCY 30
 double COMBINE_FREQUENCY 30
 
 int UPDATE_SLEEP_TIME 50
@@ -36,7 +36,7 @@ string PLAY_DIR_BLUE ../../plays/refboxplaysBlue
 
 ## Basic Predictor constants
 double DELTA_DIST_SQ_MERGE .01
-double MAX_SECONDS_TO_KEEP_INFO 0.20
+double MAX_SECONDS_TO_KEEP_INFO 0.80
 
 #flip coordinates in case we are on the wrong side of the field
 bool FLIP_COORDINATES true

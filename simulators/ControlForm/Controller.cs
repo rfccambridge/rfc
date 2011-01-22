@@ -177,7 +177,8 @@ namespace Robocup.ControlForm
 
                     _charging.Remove(robotID);
                 }, null, 5 * CHARGE_TIME, System.Threading.Timeout.Infinite);
-                _timers[robotID] = t;
+                if(_timers.ContainsKey(robotID))
+                    _timers[robotID] = t;
             }
 		}
 

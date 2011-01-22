@@ -102,6 +102,9 @@ namespace Robocup.SerialControl
             this.listBoxInputHistory = new System.Windows.Forms.ListBox();
             this.label3 = new System.Windows.Forms.Label();
             this.lblSpeed = new System.Windows.Forms.Label();
+            this.udDribblerPower = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.lblDuration = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
             label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.udCmdOutCOMPort)).BeginInit();
@@ -112,6 +115,7 @@ namespace Robocup.SerialControl
             ((System.ComponentModel.ISupportInitialize)(this.udBoardID)).BeginInit();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udDataInCOMPort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDribblerPower)).BeginInit();
             this.SuspendLayout();
             // 
             // label7
@@ -155,14 +159,14 @@ namespace Robocup.SerialControl
             this.btnConnectSending.Text = "Connect";
             this.btnConnectSending.UseVisualStyleBackColor = true;
             this.btnConnectSending.Click += new System.EventHandler(this.btnConnectSending_Click);
-            this.btnConnectSending.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyUp);
             this.btnConnectSending.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyDown);
+            this.btnConnectSending.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyUp);
             // 
             // lblSentCommand
             // 
             this.lblSentCommand.AutoSize = true;
             this.lblSentCommand.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSentCommand.Location = new System.Drawing.Point(11, 245);
+            this.lblSentCommand.Location = new System.Drawing.Point(6, 237);
             this.lblSentCommand.Name = "lblSentCommand";
             this.lblSentCommand.Size = new System.Drawing.Size(138, 29);
             this.lblSentCommand.TabIndex = 3;
@@ -172,7 +176,7 @@ namespace Robocup.SerialControl
             // 
             this.lblID.AutoSize = true;
             this.lblID.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblID.Location = new System.Drawing.Point(125, 216);
+            this.lblID.Location = new System.Drawing.Point(120, 208);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(26, 29);
             this.lblID.TabIndex = 45;
@@ -363,6 +367,7 @@ namespace Robocup.SerialControl
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.udDribblerPower);
             this.groupBox4.Controls.Add(this.udBoardID);
             this.groupBox4.Controls.Add(this.chkCfgFeedback);
             this.groupBox4.Controls.Add(this.chkCfgSpewPktStats);
@@ -402,7 +407,7 @@ namespace Robocup.SerialControl
             // 
             // udBoardID
             // 
-            this.udBoardID.Location = new System.Drawing.Point(158, 125);
+            this.udBoardID.Location = new System.Drawing.Point(158, 149);
             this.udBoardID.Name = "udBoardID";
             this.udBoardID.Size = new System.Drawing.Size(114, 20);
             this.udBoardID.TabIndex = 54;
@@ -420,7 +425,7 @@ namespace Robocup.SerialControl
             // chkCfgSpewPktStats
             // 
             this.chkCfgSpewPktStats.AutoSize = true;
-            this.chkCfgSpewPktStats.Location = new System.Drawing.Point(119, 148);
+            this.chkCfgSpewPktStats.Location = new System.Drawing.Point(104, 175);
             this.chkCfgSpewPktStats.Name = "chkCfgSpewPktStats";
             this.chkCfgSpewPktStats.Size = new System.Drawing.Size(99, 17);
             this.chkCfgSpewPktStats.TabIndex = 60;
@@ -449,7 +454,7 @@ namespace Robocup.SerialControl
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(14, 127);
+            this.label8.Location = new System.Drawing.Point(155, 133);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(145, 13);
             this.label8.TabIndex = 56;
@@ -605,7 +610,7 @@ namespace Robocup.SerialControl
             // 
             // btnReset
             // 
-            this.btnReset.Location = new System.Drawing.Point(160, 92);
+            this.btnReset.Location = new System.Drawing.Point(13, 119);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(118, 23);
             this.btnReset.TabIndex = 6;
@@ -615,7 +620,7 @@ namespace Robocup.SerialControl
             // 
             // btnStopDribbler
             // 
-            this.btnStopDribbler.Location = new System.Drawing.Point(160, 69);
+            this.btnStopDribbler.Location = new System.Drawing.Point(160, 93);
             this.btnStopDribbler.Name = "btnStopDribbler";
             this.btnStopDribbler.Size = new System.Drawing.Size(120, 23);
             this.btnStopDribbler.TabIndex = 5;
@@ -740,7 +745,7 @@ namespace Robocup.SerialControl
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(12, 216);
+            this.label5.Location = new System.Drawing.Point(7, 208);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(107, 29);
             this.label5.TabIndex = 66;
@@ -851,7 +856,7 @@ namespace Robocup.SerialControl
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(167, 216);
+            this.label3.Location = new System.Drawing.Point(162, 208);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(91, 29);
             this.label3.TabIndex = 69;
@@ -861,17 +866,55 @@ namespace Robocup.SerialControl
             // 
             this.lblSpeed.AutoSize = true;
             this.lblSpeed.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSpeed.Location = new System.Drawing.Point(264, 216);
+            this.lblSpeed.Location = new System.Drawing.Point(259, 208);
             this.lblSpeed.Name = "lblSpeed";
             this.lblSpeed.Size = new System.Drawing.Size(26, 29);
             this.lblSpeed.TabIndex = 68;
             this.lblSpeed.Text = "0";
+            // 
+            // udDribblerPower
+            // 
+            this.udDribblerPower.Location = new System.Drawing.Point(166, 69);
+            this.udDribblerPower.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.udDribblerPower.Name = "udDribblerPower";
+            this.udDribblerPower.Size = new System.Drawing.Size(110, 20);
+            this.udDribblerPower.TabIndex = 62;
+            this.udDribblerPower.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.udDribblerPower.ValueChanged += new System.EventHandler(this.udDribblerPower_ValueChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(15, 266);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(91, 13);
+            this.label11.TabIndex = 63;
+            this.label11.Text = "Receive duration:";
+            // 
+            // lblDuration
+            // 
+            this.lblDuration.AutoSize = true;
+            this.lblDuration.Location = new System.Drawing.Point(112, 266);
+            this.lblDuration.Name = "lblDuration";
+            this.lblDuration.Size = new System.Drawing.Size(29, 13);
+            this.lblDuration.TabIndex = 63;
+            this.lblDuration.Text = "0 ms";
             // 
             // RemoteControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(646, 703);
+            this.Controls.Add(this.lblDuration);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.lblSpeed);
             this.Controls.Add(this.groupBox5);
@@ -885,10 +928,10 @@ namespace Robocup.SerialControl
             this.Controls.Add(this.txtCommandList);
             this.Name = "RemoteControl";
             this.Text = "Remote Control";
-            this.Load += new System.EventHandler(this.RemoteControl_Load);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyUp);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RemoteControl_FormClosing);
+            this.Load += new System.EventHandler(this.RemoteControl_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.RemoteControl_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.udCmdOutCOMPort)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -902,6 +945,7 @@ namespace Robocup.SerialControl
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udDataInCOMPort)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udDribblerPower)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -981,6 +1025,9 @@ namespace Robocup.SerialControl
         private System.Windows.Forms.CheckBox chkCfgSpewEncoder;
         private System.Windows.Forms.CheckBox chkCfgFeedback;
         private System.Windows.Forms.NumericUpDown udBoardID;
+        private System.Windows.Forms.NumericUpDown udDribblerPower;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label lblDuration;
     }
 }
 

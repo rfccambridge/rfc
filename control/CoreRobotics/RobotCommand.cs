@@ -26,6 +26,8 @@ namespace Robocup.CoreRobotics
         static Command[] _iToCommand;
         static Dictionary<Command, byte> _commandToI;
 
+        public static byte dribblerSpeed = 5;
+
         public WheelSpeeds Speeds;
         public int ID;
         public Command command;
@@ -128,7 +130,7 @@ namespace Robocup.CoreRobotics
                     return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, BoardID, Flags,
                                       (byte)'\\', (byte)'E'};
                 case Command.START_DRIBBLER:
-                    source = (byte)'v'; port = (byte)'d'; arg = (byte)'1';
+                    source = (byte)'v'; port = (byte)'d'; arg = (byte)('0' + (byte)dribblerSpeed);
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg });
                     return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};
