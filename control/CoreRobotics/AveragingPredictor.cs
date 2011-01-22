@@ -21,7 +21,7 @@ namespace Robocup.CoreRobotics
             // The believed state is kept here
             private BallInfo ball = null;
             private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
- 
+
             // For synching the above
             private object ballLock = new object();
             private object robotsLock = new object();
@@ -31,18 +31,20 @@ namespace Robocup.CoreRobotics
             BallInfo ballAtDtStart = null;
             Dictionary<Team, List<RobotInfo>> robotsAtDtStart = new Dictionary<Team, List<RobotInfo>>();
             Dictionary<Team, List<double>> velocityDtStart = new Dictionary<Team, List<double>>();
-            
+
             // For assigning IDs to unidentified robots; one per team
-            Dictionary<Team, int> nextID = new Dictionary<Team,int>();
+            Dictionary<Team, int> nextID = new Dictionary<Team, int>();
 
             // "Constants"
             static double VELOCITY_DT;
             static double WEIGHT_OLD, WEIGHT_NEW;
-        
-            public FieldState() {
+            static bool FLIP_COORDINATES;
+
+            public FieldState()
+            {
                 foreach (Team team in Enum.GetValues(typeof(Team)))
                 {
-                    robots.Add(team, new List<RobotInfo>());                    
+                    robots.Add(team, new List<RobotInfo>());
                     robotsAtDtStart.Add(team, new List<RobotInfo>());
                     velocityDtStart.Add(team, new List<double>());
                     nextID.Add(team, -1);
@@ -54,6 +56,7 @@ namespace Robocup.CoreRobotics
                 VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
                 WEIGHT_OLD = Constants.get<double>("default", "WEIGHT_OLD");
                 WEIGHT_NEW = Constants.get<double>("default", "WEIGHT_NEW");
+                FLIP_COORDINATES = Constants.get<bool>("default", "FLIP_COORDINATES");
             }
 
             // Update the believed state with new observations
@@ -61,10 +64,22 @@ namespace Robocup.CoreRobotics
             {
                 double time = HighResTimer.SecondsSinceStart();
 
+                if (FLIP_COORDINATES)
+                {
+                    VisionMessage newMessage = new VisionMessage(msg.CameraID);
+                    if (msg.Ball != null)
+                        newMessage.Ball = new BallInfo(msg.Ball.Position.rotate(Math.PI));
+                    foreach (VisionMessage.RobotData robotInfo in msg.Robots)
+                        newMessage.Robots.Add(new VisionMessage.RobotData(robotInfo.ID, robotInfo.Team,
+                                                                            robotInfo.Position.rotate(Math.PI), Geometry.UsefulFunctions.angleCheck(robotInfo.Orientation + Math.PI)));
+                    msg = newMessage;
+                }
+
                 #region Update ball
                 if (msg.Ball != null)
                 {
-                    lock (ballLock) {
+                    lock (ballLock)
+                    {
                         // If we see the ball for the fist time, just record it; otherwise update
                         if (ball == null)
                         {
@@ -74,7 +89,7 @@ namespace Robocup.CoreRobotics
                         }
                         else
                         {
-                            BallInfo newBall = msg.Ball;                            
+                            BallInfo newBall = msg.Ball;
 
                             // Update position
                             ball.Position = new Vector2(WEIGHT_OLD * ball.Position + WEIGHT_NEW * newBall.Position);
@@ -98,10 +113,11 @@ namespace Robocup.CoreRobotics
                 }
                 #endregion
 
-                #region Update robots   
-                lock (robotsLock) {
+                #region Update robots
+                lock (robotsLock)
+                {
                     foreach (Robocup.Core.VisionMessage.RobotData newRobotData in msg.Robots)
-                    {                        
+                    {
                         RobotInfo newRobot = new RobotInfo(newRobotData.Position, new Vector2(0, 0), 0,
                             newRobotData.Orientation, newRobotData.Team, newRobotData.ID);
 
@@ -119,15 +135,15 @@ namespace Robocup.CoreRobotics
                             return (robot.Position.distanceSq(newRobot.Position) < DELTA_DIST_SQ_MERGE ||
                                     robot.ID == newRobot.ID);
                         });
-                        
+
                         // Find the matching robot
                         int oldRobotIdx = -1;
                         oldRobotIdx = robots[newRobot.Team].FindIndex(matchByPosPredicate);
                         if (oldRobotIdx >= 0 && newRobot.ID >= 0 && newRobot.ID != robots[newRobot.Team][oldRobotIdx].ID)
                         {
-                                continue;
+                            continue;
                         }
-                        
+
                         int newRobotIdx = -1;
 
                         // If never seen this robot before, then add it; otherwise, update
@@ -163,7 +179,7 @@ namespace Robocup.CoreRobotics
                         }
 
                         // We have just seen this robot
-                        robots[newRobot.Team][newRobotIdx].LastSeen = time;                        
+                        robots[newRobot.Team][newRobotIdx].LastSeen = time;
                     }
                 }
                 #endregion
@@ -172,7 +188,8 @@ namespace Robocup.CoreRobotics
             public BallInfo GetBall()
             {
                 BallInfo retBall;
-                lock (ballLock) {
+                lock (ballLock)
+                {
                     double time = HighResTimer.SecondsSinceStart();
 
                     // Reconsider our belief
@@ -190,7 +207,8 @@ namespace Robocup.CoreRobotics
             public List<RobotInfo> GetRobots(Team team)
             {
                 List<RobotInfo> retRobots;
-                lock (robotsLock) {
+                lock (robotsLock)
+                {
                     double time = HighResTimer.SecondsSinceStart();
 
                     // Reconsider our belief
@@ -200,7 +218,7 @@ namespace Robocup.CoreRobotics
                         if (time - robots[team][i].LastSeen < MAX_SECONDS_TO_KEEP_INFO)
                         {
                             tempRobots.Add(robots[team][i]);
-                        }                 
+                        }
                     }
                     robots[team].Clear();
                     robots[team].AddRange(tempRobots);
@@ -222,7 +240,7 @@ namespace Robocup.CoreRobotics
 
         // Combined state (updated at a specified frequency)
         private BallInfo ball;
-        private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();        
+        private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
 
         // Using independent objects for locking to be able to change the object that 
         // the protected references point to
@@ -258,10 +276,10 @@ namespace Robocup.CoreRobotics
         public void LoadConstants()
         {
             MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
-            VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");            
+            VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
             BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
             DELTA_DIST_SQ_MERGE = Constants.get<double>("default", "DELTA_DIST_SQ_MERGE");
-            
+
             COMBINE_FREQUENCY = Constants.get<double>("default", "COMBINE_FREQUENCY");
             combineTimer.Interval = 1 / COMBINE_FREQUENCY * 1000; // Convert to seconds, and find period 
 
@@ -273,7 +291,7 @@ namespace Robocup.CoreRobotics
 
         public void Update(VisionMessage msg)
         {
-            fieldStates[msg.CameraID].Update(msg);            
+            fieldStates[msg.CameraID].Update(msg);
         }
 
         public BallInfo GetBall()
@@ -292,44 +310,49 @@ namespace Robocup.CoreRobotics
             }
         }
 
-        public List<RobotInfo> GetRobots() {
+        public List<RobotInfo> GetRobots()
+        {
             List<RobotInfo> combined = new List<RobotInfo>();
             foreach (Team team in Enum.GetValues(typeof(Team)))
-                combined.AddRange(GetRobots(team));            
+                combined.AddRange(GetRobots(team));
             return combined;
-        }        
+        }
         public RobotInfo GetRobot(Team team, int id)
         {
             // TODO: this is frequently executed: change to use a dictionary
-            List<RobotInfo> robots = GetRobots(team);            
+            List<RobotInfo> robots = GetRobots(team);
             RobotInfo robot = robots.Find(new Predicate<RobotInfo>(delegate(RobotInfo r)
             {
                 return r.ID == id;
             }));
             if (robot == null)
             {
-                throw new ApplicationException("AveragingPredictor.GetRobot: no robot with id=" + 
+                throw new ApplicationException("AveragingPredictor.GetRobot: no robot with id=" +
                     id.ToString() + " found on team " + team.ToString());
             }
             return robot;
         }
 
-        public void SetBallMark() {     
+        public void SetBallMark()
+        {
             BallInfo ball = GetBall();
-            if (ball == null) {
+            if (ball == null)
+            {
                 //throw new ApplicationException("Cannot mark ball position because no ball is seen.");
                 return;
             }
             markedPosition = ball != null ? new Vector2(ball.Position) : null;
         }
 
-        public void ClearBallMark() {
+        public void ClearBallMark()
+        {
             markedPosition = null;
         }
 
-        public bool HasBallMoved() {
+        public bool HasBallMoved()
+        {
             BallInfo ball = GetBall();
-            bool ret = (ball != null && markedPosition == null) || (ball != null && 
+            bool ret = (ball != null && markedPosition == null) || (ball != null &&
                         markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
             return ret;
         }
