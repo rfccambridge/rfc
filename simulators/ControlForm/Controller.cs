@@ -22,7 +22,9 @@ namespace Robocup.ControlForm
 	{
         private const int CONTROL_TIMEOUT = 10;
         static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
-        private const int CHARGE_TIME = 1000;  // TODO: madeup value! is this in seconds or milliseconds        
+        private const int CHARGE_TIME = 1000;  // milliseconds
+        private const int DRIBBLER_TIMER_PERIOD = 1000; //milliseconds
+        private const double DRIBBLER_TIMEOUT = 6.0; // seconds
 
         private Team _team;
         
@@ -53,6 +55,10 @@ namespace Robocup.ControlForm
         private Dictionary<int, double> _lastCharge = new Dictionary<int, double>();
         private Dictionary<int, System.Threading.Timer> _timers = new Dictionary<int, System.Threading.Timer>();
 
+        private Dictionary<int, double> _lastDribble = new Dictionary<int, double>();
+        private object _dribblingLock = new Object();
+        private System.Timers.Timer _dribblingTimer = new System.Timers.Timer();
+
 		public Controller(
 			Team team,
 			IMotionPlanner planner,
@@ -74,6 +80,10 @@ namespace Robocup.ControlForm
             _followPathsTimer = new System.Timers.Timer();
             _followPathsTimer.AutoReset = true;
             _followPathsTimer.Elapsed += _followPathsTimer_Elapsed;
+
+            _dribblingTimer.AutoReset = true;
+            _dribblingTimer.Elapsed += _dribblingTimer_Elapsed;
+            _dribblingTimer.Interval = DRIBBLER_TIMER_PERIOD;
 
             _pathLocks = new Object[NUM_ROBOTS];
             for (int i = 0; i < NUM_ROBOTS; i++)
@@ -136,6 +146,8 @@ namespace Robocup.ControlForm
                     {
                         _paths[i] = null;
                     }
+
+                    StopDribbling(i);
                 }
 
                 _followPathsTimer.Stop();
@@ -174,16 +186,6 @@ namespace Robocup.ControlForm
                     command = new RobotCommand(robotID, RobotCommand.Command.STOP_CHARGING);
                     _cmdSender.Post(command);
                     //Console.WriteLine("Controller: robot {0} stopped charging", robotID);
-
-                    command = new RobotCommand(robotID, RobotCommand.Command.STOP_DRIBBLER);
-                    _cmdSender.Post(command);
-
-                    command = new RobotCommand(robotID, RobotCommand.Command.STOP_CHARGING);
-                    _cmdSender.Post(command);
-                    //Console.WriteLine("Controller: robot {0} stopped charging", robotID);
-
-                    command = new RobotCommand(robotID, RobotCommand.Command.STOP_DRIBBLER);
-                    _cmdSender.Post(command);
 
                     _charging.Remove(robotID);
                 }, null, 5 * CHARGE_TIME, System.Threading.Timeout.Infinite);
@@ -253,7 +255,7 @@ namespace Robocup.ControlForm
 				orientation = robot.Orientation;
 
 			}
-			catch (RobotNotFoundException e)
+			catch (ApplicationException e)
 			{
 				Console.WriteLine("inside move: Predictor.GetRobot() failed. Dumping exception:\n" + e.ToString());
 				return;
@@ -305,12 +307,36 @@ namespace Robocup.ControlForm
         {
             RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.START_DRIBBLER);
             _cmdSender.Post(command);
+
+            double curTime = HighResTimer.SecondsSinceStart();
+            lock (_dribblingLock)
+            {
+                _lastDribble[robotID] = curTime;
+            }
         }
 
         public void StopDribbling(int robotID)
         {
             RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.STOP_DRIBBLER);
             _cmdSender.Post(command);
+        }
+
+        private void _dribblingTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            lock (_dribblingLock)
+            {
+                double dribbleTime;
+                for (int i = 0; i < NUM_ROBOTS; i++)
+                {
+                    dribbleTime = HighResTimer.SecondsSinceStart() - _lastDribble[i];
+
+                    if (dribbleTime > DRIBBLER_TIMEOUT)
+                    {
+                        RobotCommand command = new RobotCommand(i, RobotCommand.Command.STOP_DRIBBLER);
+                        _cmdSender.Post(command);
+                    }
+                }
+            }
         }
         
         private void followPaths()

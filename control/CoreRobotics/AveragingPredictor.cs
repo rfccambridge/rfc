@@ -8,11 +8,6 @@ using System.Threading;
 
 namespace Robocup.CoreRobotics
 {
-    public class RobotNotFoundException : ApplicationException
-    {
-        public RobotNotFoundException(string message) : base(message) { }
-    }
-
     /// <summary>
     /// A basic implementation of IPredictor that averages values from multiple cameras
     /// </summary>
@@ -332,7 +327,7 @@ namespace Robocup.CoreRobotics
             }));
             if (robot == null)
             {
-                throw new RobotNotFoundException("AveragingPredictor.GetRobot: no robot with id=" +
+                throw new ApplicationException("AveragingPredictor.GetRobot: no robot with id=" +
                     id.ToString() + " found on team " + team.ToString());
             }
             return robot;

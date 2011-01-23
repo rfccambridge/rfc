@@ -123,7 +123,6 @@ namespace Robocup.SerialControl {
             // Update gui timer
             _guiTimer.AutoReset = true;
             _guiTimer.Elapsed += guiTimer_Elapsed;
-            _guiTimer.Start();
 
             OnDataAcquired = this.OnDataAcquiredEvent;
 
@@ -503,6 +502,8 @@ namespace Robocup.SerialControl {
                 btnCmdListen.Text = "Stop listening";
                 lblListenStatus.BackColor = Color.Green;
 
+                _guiTimer.Start();
+
                 // To immediately listen for key events
                 txtCommandList.Focus();
             }
@@ -513,6 +514,8 @@ namespace Robocup.SerialControl {
                 _cmdListening = false;
                 btnCmdListen.Text = "Listen";
                 lblListenStatus.BackColor = Color.Red;
+
+                _guiTimer.Stop();
             }
         }
 
