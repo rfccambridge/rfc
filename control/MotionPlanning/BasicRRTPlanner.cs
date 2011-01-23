@@ -35,14 +35,14 @@ namespace Robocup.MotionControl
             }
         }
 
-        private double goalprob = .1;
+        private double goalprob = .2;
         public double GoalProbability
         {
             get { return goalprob; }
             set { goalprob = value; }
         }
 
-        private double waypointprob = 0.6;
+        private double waypointprob = 0.5;
         public double WaypointProbability
         {
             get { return waypointprob; }

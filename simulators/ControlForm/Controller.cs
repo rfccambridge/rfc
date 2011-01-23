@@ -57,7 +57,7 @@ namespace Robocup.ControlForm
 
         private Dictionary<int, double> _lastDribble = new Dictionary<int, double>();
         private object _dribblingLock = new Object();
-        private System.Timers.Timer _dribblingTimer = new System.Timers.Timer();
+        private System.Timers.Timer _dribblingTimer = new System.Timers.Timer(DRIBBLER_TIMER_PERIOD);
 
 		public Controller(
 			Team team,
@@ -83,7 +83,6 @@ namespace Robocup.ControlForm
 
             _dribblingTimer.AutoReset = true;
             _dribblingTimer.Elapsed += _dribblingTimer_Elapsed;
-            _dribblingTimer.Interval = DRIBBLER_TIMER_PERIOD;
 
             _pathLocks = new Object[NUM_ROBOTS];
             for (int i = 0; i < NUM_ROBOTS; i++)
@@ -130,6 +129,7 @@ namespace Robocup.ControlForm
             {
                 _followPathsTimer.Interval = _controlPeriod;
                 _followPathsTimer.Start();
+                _dribblingTimer.Start();
                 _controlRunning = true;
             }
             else
@@ -151,6 +151,7 @@ namespace Robocup.ControlForm
                 }
 
                 _followPathsTimer.Stop();
+                _dribblingTimer.Stop();
                 _controlRunning = false;
             }
             else
@@ -328,6 +329,9 @@ namespace Robocup.ControlForm
                 double dribbleTime;
                 for (int i = 0; i < NUM_ROBOTS; i++)
                 {
+                    if (!_lastDribble.ContainsKey(i))
+                        continue;
+                    
                     dribbleTime = HighResTimer.SecondsSinceStart() - _lastDribble[i];
 
                     if (dribbleTime > DRIBBLER_TIMEOUT)

@@ -495,8 +495,10 @@ namespace Robocup.MotionControl
 					obstacles.Add(new Obstacle(info.Position, AVOID_DIST));
 			}
 			//If needed, avoid ball
-			if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
-				obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
+            if (avoidBallRadius > 0 &&
+                predictor.GetBall() != null &&
+                predictor.GetBall().Position != null)
+                obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
 
 			RobotInfo curinfo;
             try
