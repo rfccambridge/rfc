@@ -1,5 +1,5 @@
 Metadata:
-type PenaltyKick_Theirs
+playtype PenaltyKick_Theirs
 name main
 score 1
 

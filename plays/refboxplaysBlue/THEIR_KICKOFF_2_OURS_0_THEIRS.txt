@@ -1,7 +1,10 @@
 Metadata:
-type Kickoff_Theirs
+playtype Kickoff_Theirs
 score 200
 name TH_KOFF_2x0
+
+Tactics:
+DumbGoalie
 
 Objects:
 
@@ -15,20 +18,12 @@ centerbottom (point 0 -2.1)
 
 centercircle (circle center 0.7)
 
-ourgoalcloseperim (circle (ourgoal) 0.4)
-
-goaliebot (closest friendly (ourgoal) loose)
-goaliebotpt (pointof goaliebot)
-
 centerbot (closest friendly center loose)
 centerbotpt (pointof centerbot)
 
 centergoalline (line center (ourgoal))
-goaliept (linecircleintersection centergoalline ourgoalcloseperim -1)
-
 centercirclept (linecircleintersection centergoalline centercircle 1)
 
 Conditions:
 Actions:
-(robotpointpointmove goaliebot goaliept center)
 (robotpointpointmove centerbot centercirclept center)

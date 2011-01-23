@@ -1,7 +1,10 @@
 Metadata:
-type KickOff_Ours_Setup
+playtype KickOff_Ours_Setup
 score 400
 name O_KFF_STP_4x0
+
+Tactics:
+DumbGoalie
 
 Objects:
 
@@ -19,15 +22,7 @@ centerpoint (point -0.5 0)
 middleabovepoint (point -2 0.3)
 middlebelowpoint (point -2 -.3)
 
-ourgoalcloseperim (circle (ourgoal) 0.4)
-centergoalline (line center (ourgoal))
-goaliept (linecircleintersection centergoalline ourgoalcloseperim -1)
-
-goaliebot (closest friendly (ourgoal) loose)
-
 centerbot (closest friendly center loose)
-centerbotpt (pointof centerbot)
-
 middleabovebot (closest friendly middleabovepoint loose)
 middlebelowbot (closest friendly middlebelowpoint loose)
 
@@ -36,4 +31,3 @@ Actions:
 (robotpointpointmove middleabovebot middleabovepoint (theirgoal))
 (robotpointpointmove middlebelowbot middlebelowpoint (theirgoal))
 (robotpointpointmove centerbot centerpoint (theirgoal))
-(robotpointpointmove goaliebot goaliept (theirgoal))

@@ -1,5 +1,5 @@
 Metadata:
-type KickOff_Ours
+playtype KickOff_Ours
 name Wall
 score 12
 Objects:

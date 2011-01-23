@@ -7,7 +7,7 @@ using Robocup.Core;
 
 namespace Robocup.Plays
 {
-    internal class DesignerPlay : Play<DesignerExpression>
+    internal abstract class DesignerPlayable : Playable<DesignerExpression>
     {
         #region Lists of Expressions
         /*List<DesignerExpression> points = new List<DesignerExpression>();
@@ -88,13 +88,13 @@ namespace Robocup.Plays
             robots.Add(obj);
         }
 
-        private DesignerBall b;
+        protected DesignerBall b;
         public DesignerBall Ball
         {
             get { return b; }
             set { b = value; }
         }
-        private DesignerExpression fake_ball = new DesignerExpression(new DesignerBall(new Vector2(0, 0)));
+        protected DesignerExpression fake_ball = new DesignerExpression(new DesignerBall(new Vector2(0, 0)));
         public override DesignerExpression TheBall { get { return fake_ball; } }
         #endregion
 
@@ -137,7 +137,8 @@ namespace Robocup.Plays
             else
                 AddPlayObject(exp, name);
         }
-        private bool shouldDelete(DesignerExpression exp, Dictionary<DesignerExpression, bool> todelete)
+        protected Dictionary<DesignerExpression, bool> todelete;
+        protected bool shouldDelete(DesignerExpression exp)
         {
             if (todelete.ContainsKey(exp))
                 return todelete[exp];
@@ -146,37 +147,27 @@ namespace Robocup.Plays
             bool shouldDeleteThis = false;
             for (int i = 0; i < exp.theFunction.NumArguments; i++)
             {
-                shouldDeleteThis |= shouldDelete(exp.getArgument(i), todelete);
+                shouldDeleteThis |= shouldDelete(exp.getArgument(i));
             }
             todelete.Add(exp, shouldDeleteThis);
             return shouldDeleteThis;
         }
-        public void delete(DesignerExpression exp)
+        public virtual void delete(DesignerExpression exp)
         {
-            Dictionary<DesignerExpression, bool> todelete = new Dictionary<DesignerExpression, bool>();
+            todelete = new Dictionary<DesignerExpression, bool>();
             todelete.Add(exp, true);
             foreach (DesignerExpression expr in getAllObjects())
             {
-                if (shouldDelete(expr, todelete))
+                if (shouldDelete(expr))
                 {
                     PlayObjects.Remove(expr.Name);
                     robots.Remove(expr);
                 }
             }
-            List<DesignerExpression> conditionsToRemove = new List<DesignerExpression>();
-            foreach (DesignerExpression expr in Conditions)
-            {
-                if (shouldDelete(expr, todelete))
-                    conditionsToRemove.Add(expr);
-            }
-            foreach (DesignerExpression expr in conditionsToRemove)
-            {
-                Conditions.Remove(expr);
-            }
             List<DesignerExpression> actionsToRemove = new List<DesignerExpression>();
             foreach (DesignerExpression expr in Actions)
             {
-                if (shouldDelete(expr, todelete))
+                if (shouldDelete(expr))
                     actionsToRemove.Add(expr);
             }
             foreach (DesignerExpression expr in actionsToRemove)
@@ -206,7 +197,7 @@ namespace Robocup.Plays
         /// Replaces all occurrences of toReplace with replaceWith that occur anywhere in the
         /// expression tree of current.
         /// </summary>
-        private bool replaceArg(DesignerExpression current, DesignerExpression toReplace,
+        protected bool replaceArg(DesignerExpression current, DesignerExpression toReplace,
             DesignerExpression replaceWith)
         {
             if (!current.IsFunction)
@@ -270,10 +261,6 @@ namespace Robocup.Plays
                     {
                         replaceArg(exp, fake_ball, new_ball);
                     }
-                    foreach (DesignerExpression exp in Conditions)
-                    {
-                        replaceArg(exp, fake_ball, new_ball);
-                    }
                     foreach (DesignerExpression exp in Actions)
                     {
                         replaceArg(exp, fake_ball, new_ball);
@@ -326,6 +313,10 @@ namespace Robocup.Plays
             }
             fake_ball = null;
         }
+    }
+
+    internal class DesignerPlay : DesignerPlayable, IPlay<DesignerExpression>
+    {
         public string Save()
         {
             StringBuilder sb = new StringBuilder();
@@ -372,6 +363,82 @@ namespace Robocup.Plays
             }
             //sb.Insert(0, (sb.ToString().GetHashCode()+"\n"));
             return sb.ToString();
+        }
+
+        public override void delete(DesignerExpression exp)
+        {
+            base.delete(exp);
+
+            // Delete (possibly dependant) conditions
+            List<DesignerExpression> conditionsToRemove = new List<DesignerExpression>();
+            foreach (DesignerExpression expr in Conditions)
+            {
+                if (shouldDelete(expr))
+                    conditionsToRemove.Add(expr);
+            }
+            foreach (DesignerExpression expr in conditionsToRemove)
+            {
+                Conditions.Remove(expr);
+            }
+        }
+
+        public override void SetDesignerData(List<string> data)
+        {
+            base.SetDesignerData(data);
+
+            // Replace ball in conditions
+            if (b != null)
+            {
+                DesignerExpression new_ball = new DesignerExpression(b);
+                foreach (DesignerExpression exp in Conditions)
+                {
+                    replaceArg(exp, fake_ball, new_ball);
+                }
+            }
+        }
+
+        #region IPlay Members
+        List<DesignerExpression> conditions = new List<DesignerExpression>();
+        public List<DesignerExpression> Conditions
+        {
+            get { return conditions; }
+        }
+
+        private PlayType type = PlayType.NormalPlay;
+        public PlayType PlayType
+        {
+            get { return type; }
+            set { type = value; }
+        }
+
+        private double score = 1.0 + new Random().NextDouble() / 100;
+        public double Score
+        {
+            get { return score; }
+            set { score = value; }
+        }
+
+        private int id;
+        public int ID
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        private IList<Playable<DesignerExpression>> tactics = new List<Playable<DesignerExpression>>();
+        public IList<Playable<DesignerExpression>> Tactics
+        {
+            get { return tactics; }
+        }
+        #endregion
+    }
+
+    internal class DesignerTactic : DesignerPlayable, ITactic<DesignerExpression>
+    {
+        private List<DesignerExpression> parameters = new List<DesignerExpression>();
+        public List<DesignerExpression> Parameters
+        {
+            get { return parameters; }
         }
     }
 }

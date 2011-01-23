@@ -1,5 +1,5 @@
 Metadata:
-type NormalPlay
+playtype NormalPlay
 name DEFENSE_3vs2
 score 100
 

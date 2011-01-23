@@ -1,5 +1,5 @@
 Metadata:
-type NormalPlay
+playtype NormalPlay
 score 1.005054
 name pass
 Objects:

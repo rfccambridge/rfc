@@ -1,5 +1,5 @@
 Metadata:
-type NormalPlay
+playtype NormalPlay
 score 15.0001
 Objects:
 topLeftCorner (point -2.9 2.1)

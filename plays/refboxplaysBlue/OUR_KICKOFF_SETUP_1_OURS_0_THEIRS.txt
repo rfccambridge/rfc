@@ -1,5 +1,5 @@
 Metadata:
-type KickOff_Ours_Setup
+playtype KickOff_Ours_Setup
 score 100
 name O_KFF_STP_1x0
 
@@ -9,7 +9,6 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-
 center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)

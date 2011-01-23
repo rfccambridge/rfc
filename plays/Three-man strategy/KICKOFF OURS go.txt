@@ -1,5 +1,5 @@
 Metadata:
-type KickOff_Ours
+playtype KickOff_Ours
 score 1.00239720773063
 Objects:
 topLeftCorner (point -3.05 2.1)

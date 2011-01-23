@@ -1,5 +1,5 @@
 Metadata:
-type KickOff_Theirs
+playtype KickOff_Theirs
 name Kickoff_Theirs_Wall
 score 0.7543067
 Objects:

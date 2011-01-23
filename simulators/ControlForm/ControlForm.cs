@@ -306,10 +306,14 @@ namespace Robocup.ControlForm {
             // There's no better place than lstPlayers to get all the players
             foreach (Player player in lstPlayers.Items)
             {
+                string TACTIC_DIR = Constants.get<string>("default", "TACTIC_DIR");
+
+                Dictionary<string, InterpreterTactic> tacticBook = PlayUtils.loadTactics(TACTIC_DIR);
+
                 // Currently indexing by team, but could index by name or whatever here
                 string PLAY_DIR = Constants.get<string>("default", "PLAY_DIR_" + player.Team.ToString().ToUpper());
 
-                List<InterpreterPlay> playObjs = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR).Keys);
+                List<InterpreterPlay> playObjs = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR, tacticBook).Keys);
                 player.LoadPlays(playObjs);
 
                 // Store for lookup from enable/disable list

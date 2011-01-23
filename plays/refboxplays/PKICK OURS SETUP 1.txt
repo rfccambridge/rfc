@@ -1,5 +1,5 @@
 Metadata:
-type PenaltyKick_Ours_Setup
+playtype PenaltyKick_Ours_Setup
 name Penalty1
 score 100
 Objects:

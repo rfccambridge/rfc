@@ -1,5 +1,5 @@
 Metadata:
-type NormalPlay
+playtype NormalPlay
 score 1.002615
 Objects:
 point2 (pointof ball)

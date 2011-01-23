@@ -1,5 +1,5 @@
 Metadata:
-type NormalPlay
+playtype NormalPlay
 score 10
 Objects:
 ourgoal (point -3.13 0)

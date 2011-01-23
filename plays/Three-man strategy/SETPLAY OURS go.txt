@@ -1,5 +1,5 @@
 Metadata:
-type SetPlay_Ours
+playtype SetPlay_Ours
 score 1.0077557877301
 Objects:
 topLeftCorner (point -3.05 2.1)

@@ -103,7 +103,7 @@ namespace InterpreterTester
             string txt = PlayDesignerInterface.CreateAndRunDesigner(original);
             if (txt != null)
             {
-                InterpreterPlay play = new PlayLoader<InterpreterPlay, InterpreterExpression>(
+                InterpreterPlay play = new PlayLoader<InterpreterPlay, InterpreterTactic, InterpreterExpression>(
                     new InterpreterExpression.Factory()).load(txt);
                 string fname = record.pathname;
                 if (sender == listBoxLeft)
@@ -138,7 +138,7 @@ namespace InterpreterTester
             string txt = PlayDesignerInterface.CreateAndRunDesigner();
             if (txt != null)
             {
-                InterpreterPlay play = new PlayLoader<InterpreterPlay, InterpreterExpression>(
+                InterpreterPlay play = new PlayLoader<InterpreterPlay, InterpreterTactic, InterpreterExpression>(
                     new InterpreterExpression.Factory()).load(txt);
 
                 string fname = "<unsaved>";

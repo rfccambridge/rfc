@@ -1,5 +1,5 @@
 Metadata:
-type PenaltyKick_Ours_Setup
+playtype PenaltyKick_Ours_Setup
 score 10
 Objects:
 point6 (point -2.3 0)

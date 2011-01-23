@@ -1,5 +1,5 @@
 Metadata:
-type SetPlay_Ours
+playtype SetPlay_Ours
 score 101
 Objects:
 ourgoal (point -2.53 0)

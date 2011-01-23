@@ -1,5 +1,5 @@
 Metadata:
-type SetPlay_Theirs
+playtype SetPlay_Theirs
 name assignPlay TheirFreeKick_5_3
 score 440
 Objects:

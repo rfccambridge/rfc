@@ -1,29 +1,12 @@
 Metadata:
-type PenaltyKick_Theirs
+playtype PenaltyKick_Theirs
 score 500
 name Penalty_Their5
+
+Tactics:
+SmartGoalie
+
 Objects:
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
-
-GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
-
-ballpoint (pointof ball)
-ballgoalline (line ballpoint (ourgoal))
-
-endtopgoalpt (point GOALIE_X_POS 2)
-endbottomgoalpt (point GOALIE_X_POS -2)
-
-vertgoalline (line endtopgoalpt endbottomgoalpt)
-
-goaliept (linelineintersection ballgoalline vertgoalline)
-goaliebot (closest friendly (ourgoal) loose)
-goaliebotpt (pointof goaliebot)
-goaltoppt (point GOALIE_X_POS 0.35)
-goalbotpt (point GOALIE_X_POS -0.35)
-
 
 xdistance (- (const-double PENALTY_OFFSET) (/ (const-double FIELD_WIDTH) 2))
 defpoint1 (point xdistance 0.0)
@@ -37,7 +20,6 @@ robot4 (closest friendly defpoint4 loose)
 
 Conditions:
 Actions:
-(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointmove goaliebot goalbotpt) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointmove goaliebot goaltoppt) (robotpointmove goaliebot goaliept)))
 (robotpointpointmove robot1 defpoint1 (ourgoal))
 (robotpointpointmove robot2 defpoint2 (ourgoal))
 (robotpointpointmove robot3 defpoint3 (ourgoal))

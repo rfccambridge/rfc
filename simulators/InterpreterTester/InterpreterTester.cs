@@ -59,6 +59,7 @@ namespace InterpreterTester
 
         string OFFENSE_PLAY_DIR;
         string DEFENSE_PLAY_DIR;
+        string TACTIC_DIR;
 
         Random r = new Random();
 
@@ -111,6 +112,7 @@ namespace InterpreterTester
 
         public void LoadConstants()
         {
+            TACTIC_DIR = Constants.get<string>("default", "TACTIC_DIR");
             OFFENSE_PLAY_DIR = Constants.get<string>("default", "INTERPRETER_TESTER_OFFENSE_PLAY_DIR");
             DEFENSE_PLAY_DIR = Constants.get<string>("default", "INTERPRETER_TESTER_DEFENSE_PLAY_DIR");
         }
@@ -120,13 +122,15 @@ namespace InterpreterTester
             if (play_manager != null)
                 play_manager.Close();
 
+            Dictionary<string, InterpreterTactic> tacticBook = PlayUtils.loadTactics(TACTIC_DIR);
+
             // Player 1 plays
-            Dictionary<InterpreterPlay, string> offensePlays = PlayUtils.loadPlays(OFFENSE_PLAY_DIR);
+            Dictionary<InterpreterPlay, string> offensePlays = PlayUtils.loadPlays(OFFENSE_PLAY_DIR, tacticBook);
             interpreter = new Interpreter(OUR_TEAM, OUR_FIELD_HALF, this, this, null);
             interpreter.LoadPlays(new List<InterpreterPlay>(offensePlays.Keys));
 
             // Player 2 plays
-            Dictionary<InterpreterPlay, string> defensePlays = PlayUtils.loadPlays(DEFENSE_PLAY_DIR);
+            Dictionary<InterpreterPlay, string> defensePlays = PlayUtils.loadPlays(DEFENSE_PLAY_DIR, tacticBook);
             // TODO: Part of fixing InterpreterTester: Flipping should not be necessary, although that depends on the implementation fo this  predictor
             defensiveinterpreter = new Interpreter(THEIR_TEAM, THEIR_FIELD_HALF, this, this, null);
             defensiveinterpreter.LoadPlays(new List<InterpreterPlay>(defensePlays.Keys));

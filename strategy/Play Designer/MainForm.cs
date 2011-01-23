@@ -147,8 +147,8 @@ namespace Robocup.Plays
             init();
             if (toEdit != null)
             {
-                PlayLoader<DesignerPlay, DesignerExpression> loader =
-                    new PlayLoader<DesignerPlay, DesignerExpression>(new DesignerExpression.Factory());
+                PlayLoader<DesignerPlay, DesignerTactic, DesignerExpression> loader =
+                    new PlayLoader<DesignerPlay, DesignerTactic, DesignerExpression>(new DesignerExpression.Factory());
                 play = loader.load(toEdit);
             }
 
@@ -1024,8 +1024,8 @@ namespace Robocup.Plays
             Stream stream = openFileDialog.OpenFile();
             StreamReader sr = new StreamReader(stream);
             string s = sr.ReadToEnd();
-            PlayLoader<DesignerPlay, DesignerExpression> loader =
-                new PlayLoader<DesignerPlay, DesignerExpression>(new DesignerExpression.Factory());
+            PlayLoader<DesignerPlay, DesignerTactic, DesignerExpression> loader =
+                new PlayLoader<DesignerPlay, DesignerTactic, DesignerExpression>(new DesignerExpression.Factory());
             play = loader.load(s);
             /*System.Runtime.Serialization.Formatters.Binary.BinaryFormatter f = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 

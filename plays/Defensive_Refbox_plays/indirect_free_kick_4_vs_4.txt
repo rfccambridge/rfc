@@ -1,7 +1,7 @@
 ### Strategy against 3 attackers.
 
 Metadata:
-type SetPlay_Theirs
+playtype SetPlay_Theirs
 name indirect_free_kick_4_vs_4
 score 440
 

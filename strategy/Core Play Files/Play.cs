@@ -5,68 +5,42 @@ using Robocup.Core;
 
 namespace Robocup.Plays
 {
-    abstract public class Play<T> where T : Expression
+    abstract public class Playable<E> where E : Expression
     {
-        List<T> conditions = new List<T>();
-        public List<T> Conditions
-        {
-            get { return conditions; }
-        }
-        List<T> actions = new List<T>();
-        public List<T> Actions
+        List<E> actions = new List<E>();
+        public List<E> Actions
         {
             get { return actions; }
         }
 
-        private PlayType type = PlayType.NormalPlay;
-        public PlayType PlayType
-        {
-            get { return type; }
-            set { type = value; }
-        }
-        private string name;
+        protected string name;
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
-
-        private double score = 1.0 + new Random().NextDouble() / 100;
-        public double Score
-        {
-            get { return score; }
-            set { score = value; }
-        }
-
-        private int id;
-        public int ID
-        {
-            get { return id; }
-            set { id = value; }
-        }
-
         /// <summary>
         /// This is for loading the play
         /// </summary>
-        public abstract T TheBall { get;}
-        public abstract IList<T> Robots { get;}
+        public abstract E TheBall { get; }
+        public abstract IList<E> Robots { get; }
         /// <summary>
         /// Tries to add a robot.  Note to subclasses: you are guaranteed that all robots that are added
         /// are added through here, but not that all things put through here are robots (others should
         /// be rejected).
         /// </summary>
         /// <param name="exp"></param>
-        public abstract void addRobot(T exp);
+        public abstract void addRobot(E exp);
         public abstract void SetDesignerData(List<string> data);
 
-        private Dictionary<string, T> playObjects = new Dictionary<string, T>();
+        protected Dictionary<string, E> playObjects = new Dictionary<string, E>();
         /// <summary>
         /// This holds all of the "objects" -- the things that actually determine the geometry of the play.
         /// (operational definition: everything but actions and conditions)
         /// Includes both geometry, like lines and segments, but also values, like bools and ints.
         /// The keys are the names of the items
         /// </summary>
-        public Dictionary<string, T> PlayObjects
+        public Dictionary<string, E> PlayObjects
         {
             get { return playObjects; }
         }
@@ -75,9 +49,29 @@ namespace Robocup.Plays
         {
             get { return designerPositions; }
         }*/
-        public List<T> getAllObjects()
+        public List<E> getAllObjects()
         {
-            return new List<T>(playObjects.Values);
+            return new List<E>(playObjects.Values);
         }
+    }
+
+    public interface IPlay<E>
+        where E : Expression
+    {
+        List<E> Conditions { get; }
+        PlayType PlayType { get; set; }
+        double Score { get; set; }
+        int ID { get; set; }
+        IList<Playable<E>> Tactics { get; }
+    }
+
+    public interface ITactic<E>
+        where E : Expression
+    {
+        /// <summary>
+        /// Contains placeholders for tactic parameters.
+        /// When the tactic is loaded into a play, the play will get the expressions passed instead of these.
+        /// </summary>
+        List<E> Parameters { get; }
     }
 }

@@ -1,5 +1,5 @@
 Metadata:
-type Kickoff_Ours
+playtype Kickoff_Ours
 name main
 score 1
 

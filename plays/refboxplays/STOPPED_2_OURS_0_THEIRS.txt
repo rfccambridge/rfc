@@ -1,7 +1,10 @@
 Metadata:
-type Stopped
+playtype Stopped
 score 200
 name ST_2x0
+
+Tactics:
+DumbGoalie
 
 Objects:
 
@@ -15,26 +18,6 @@ centerbottom (point 0 -2.1)
 
 ballpoint (pointof ball)
 ballcircle (circle ballpoint 0.63)
-ballgoalline (line ballpoint (ourgoal))
-
-#begin goalie
-ourgoalwideperim (circle (ourgoal) .9)
-ourgoalcloseperim (circle (ourgoal) 0.4)
-
-defenderpoint (linecircleintersection ballgoalline ourgoalwideperim -1)
-
-GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
-
-endtopgoalpt (point GOALIE_X_POS 2)
-endbottomgoalpt (point GOALIE_X_POS -2)
-vertgoalline (line endtopgoalpt endbottomgoalpt)
-goaliept (linelineintersection ballgoalline vertgoalline)
-goaltoppt (point GOALIE_X_POS 0.35)
-goalbotpt (point GOALIE_X_POS -0.35)
-
-goaliebot (closest friendly (ourgoal) loose)
-
-#end goalie
 
 wall1line (line ballpoint (ourgoal))
 wall1point (linecircleintersection wall1line ballcircle 1)
@@ -45,4 +28,3 @@ wall1bkp (point 1.0 0)
 Conditions:
 Actions:
 (if_Action (inField wall1point) (robotpointpointmove wall1bot wall1point ballpoint) (robotpointpointmove wall1bot wall1bkp ballpoint))
-(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))

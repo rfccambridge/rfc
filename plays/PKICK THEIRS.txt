@@ -1,5 +1,5 @@
 Metadata:
-type PenaltyKick_Theirs
+playtype PenaltyKick_Theirs
 score 1.004478
 Objects:
 ourgoal (point -3.13 0)

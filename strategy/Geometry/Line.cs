@@ -14,6 +14,16 @@ namespace Robocup.Geometry {
 			Vector2 p2 = new Vector2(1.0, 0.0).rotate(direction);
 			points = new Vector2[] { p, p2 };
 		}
+        /// <summary>
+        /// Creates a unit strech inthe x-direction
+        /// </summary>
+        public Line()
+        {
+            points = new Vector2[] {
+                new Vector2(0.0, 0.0),
+                new Vector2(1.0, 0.0)
+            };
+        }
         public Vector2[] getPoints() {
             return points;
             //return new Vector2[] { points[0].getPoint(), points[1].getPoint() };

@@ -1,5 +1,5 @@
 Metadata:
-type SetPlay_Ours
+playtype SetPlay_Ours
 name Refbox_Our_Free_Kick_3
 score 30
 
@@ -8,7 +8,6 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-
 robot1 (closest friendly point1 loose)
 point0 (pointof robot1)
 point1 (pointof ball)

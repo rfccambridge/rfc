@@ -1,5 +1,5 @@
 Metadata:
-type KickOff_Ours
+playtype KickOff_Ours
 score 1001162
 Objects:
 ourgoal (point -2.53 0)

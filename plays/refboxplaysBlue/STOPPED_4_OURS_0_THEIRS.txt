@@ -1,14 +1,13 @@
 Metadata:
-type Stopped
+playtype Stopped
 score 400
 name ST_4x0
 
-Objects:
+Tactics:
+DumbGoalie
+DefendPoint (ourgoal) 0.9 False
 
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
+Objects:
 center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)
@@ -38,29 +37,7 @@ wall2bot (closest friendly wall2point loose)
 wall1bkp (point 1.0 0)
 wall2bkp (point 1.5 -1)
 
-#begin 2 person defense
-ourgoalwideperim (circle (ourgoal) .9)
-ourgoalcloseperim (circle (ourgoal) 0.4)
-
-defenderpoint (linecircleintersection ballgoalline ourgoalwideperim -1)
-
-GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
-
-endtopgoalpt (point GOALIE_X_POS 2)
-endbottomgoalpt (point GOALIE_X_POS -2)
-vertgoalline (line endtopgoalpt endbottomgoalpt)
-goaliept (linelineintersection ballgoalline vertgoalline)
-goaltoppt (point GOALIE_X_POS 0.35)
-goalbotpt (point GOALIE_X_POS -0.35)
-
-goaliebot (closest friendly (ourgoal) loose)
-
-defenderbot (closest friendly defenderpoint loose)
-#end 2 person defense
-
 Conditions:
 Actions:
 (if_Action (inField wall1point) (robotpointpointmove wall1bot wall1point ballpoint) (robotpointpointmove wall1bot wall1bkp ballpoint))
 (if_Action (inField wall2point) (robotpointpointmove wall2bot wall2point ballpoint) (robotpointpointmove wall2bot wall2bkp ballpoint))
-(robotpointpointmove defenderbot defenderpoint ballpoint)
-(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))

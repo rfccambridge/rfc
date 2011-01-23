@@ -1,7 +1,10 @@
 Metadata:
-type Kickoff_Ours_Setup
+playtype Kickoff_Ours_Setup
 score 200
 name O_KFF_STP_2x0
+
+Tactics:
+DumbGoalie
 
 Objects:
 
@@ -9,27 +12,14 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-
 center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)
 
 centerpoint (point -0.3 0)
 
-goaliebot (closest friendly (ourgoal) loose)
 centerbot (closest friendly center loose)
-
-GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
-
-centergoalline (line center (ourgoal))
-
-endtopgoalpt (point GOALIE_X_POS 2)
-endbottomgoalpt (point GOALIE_X_POS -2)
-vertgoalline (line endtopgoalpt endbottomgoalpt)
-
-goaliept (linelineintersection centergoalline vertgoalline)
 
 Conditions:
 Actions:
-(robotpointpointmove goaliebot goaliept center) 
 (robotpointpointmove centerbot centerpoint (theirgoal))

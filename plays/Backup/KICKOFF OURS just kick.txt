@@ -1,5 +1,5 @@
 Metadata:
-type KickOff_Ours
+playtype KickOff_Ours
 score 1.007128
 Objects:
 point6 (pointof ball)

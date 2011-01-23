@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Diagnostics;
+using Robocup.Core;
 
 namespace Robocup.Plays
 {
-    public class InterpreterPlay : Play<InterpreterExpression>
+    abstract public class InterpreterPlayable : Playable<InterpreterExpression>
     {
-        // a play can be enabled or disabled through PlaySelectorForm GUI
-        public bool isEnabled = true;
-
         private bool forceRest(int start)
         {
             for (int i=start;i<Robots.Count;i++){
@@ -177,5 +176,54 @@ namespace Robocup.Plays
             get { return learningdata; }
         }
         #endregion*/
+    }
+
+    public class InterpreterPlay : InterpreterPlayable, IPlay<InterpreterExpression>
+    {
+        #region IPlay members
+        List<InterpreterExpression> conditions = new List<InterpreterExpression>();
+        public List<InterpreterExpression> Conditions
+        {
+            get { return conditions; }
+        }
+
+        private PlayType type = PlayType.NormalPlay;
+        public PlayType PlayType
+        {
+            get { return type; }
+            set { type = value; }
+        }
+
+        private double score = 1.0 + new Random().NextDouble() / 100;
+        public double Score
+        {
+            get { return score; }
+            set { score = value; }
+        }
+
+        private int id;
+        public int ID
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        private IList<Playable<InterpreterExpression>> tactics = new List<Playable<InterpreterExpression>>();
+        public IList<Playable<InterpreterExpression>> Tactics
+        {
+            get { return tactics; }
+        }
+        #endregion
+
+        public bool isEnabled = true;
+    }
+
+    public class InterpreterTactic : InterpreterPlayable, ITactic<InterpreterExpression>
+    {
+        private List<InterpreterExpression> parameters = new List<InterpreterExpression>();
+        public List<InterpreterExpression> Parameters
+        {
+            get { return parameters; }
+        }
     }
 }

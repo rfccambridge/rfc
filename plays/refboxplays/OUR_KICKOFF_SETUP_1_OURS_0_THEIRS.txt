@@ -1,5 +1,5 @@
 Metadata:
-type KickOff_Ours_Setup
+playtype KickOff_Ours_Setup
 score 100
 name O_KFF_STP_1x0
 

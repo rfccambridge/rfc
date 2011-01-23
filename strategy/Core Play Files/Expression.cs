@@ -29,7 +29,7 @@ namespace Robocup.Plays
             return theFunction.Name == functionName;
         }
         object[] arguments=null;
-        protected object[] Arguments
+        public object[] Arguments
         {
             get { return arguments; }
         }

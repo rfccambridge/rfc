@@ -1,5 +1,5 @@
 Metadata:
-type Halt
+playtype Halt
 name main
 score 1
 
@@ -9,6 +9,7 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
+
 
 numRobots (numourbots)
 

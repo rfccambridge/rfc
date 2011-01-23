@@ -31,19 +31,49 @@ namespace Robocup.Plays
             }
         }*/
 
-        public static Dictionary<InterpreterPlay,string> loadPlays(string path)
+        public static Dictionary<string, InterpreterTactic> loadTactics(string path)
+        {
+            Console.WriteLine("Loading tactics directory: " + path);
+            TacticLoader<InterpreterTactic, InterpreterExpression> loader =
+                new TacticLoader<InterpreterTactic, InterpreterExpression>(new InterpreterExpression.Factory());
+            string[] files = Directory.GetFiles(path);
+
+            Dictionary<string, InterpreterTactic> tacticBook = new Dictionary<string, InterpreterTactic>();
+
+            foreach (string fname in files)
+            {
+                if (Path.GetExtension(fname) != ".txt")
+                    continue;
+
+                StreamReader reader = new StreamReader(fname);
+                string filecontents = reader.ReadToEnd();
+                reader.Close();
+                reader.Dispose();
+
+                Console.WriteLine("Loaded: " + fname);
+                InterpreterTactic t = loader.load(filecontents, Path.GetFileNameWithoutExtension(fname));
+
+                if (tacticBook.ContainsKey(t.Name))
+                    throw new ApplicationException("Duplicate tactic with name: " + t.Name);
+
+                tacticBook.Add(t.Name, t);
+            }
+
+            return tacticBook;
+        }
+
+        public static Dictionary<InterpreterPlay,string> loadPlays(string path, Dictionary<string, InterpreterTactic> tacticBook)
         {
             Console.WriteLine("Loading plays directory: " + path);
-            PlayLoader<InterpreterPlay, InterpreterExpression> loader =
-                new PlayLoader<InterpreterPlay, InterpreterExpression>(new InterpreterExpression.Factory());
-            string[] files = System.IO.Directory.GetFiles(path);
+            PlayLoader<InterpreterPlay, InterpreterTactic, InterpreterExpression> loader =
+                new PlayLoader<InterpreterPlay, InterpreterTactic, InterpreterExpression>(new InterpreterExpression.Factory(), tacticBook);
+            string[] files = Directory.GetFiles(path);
             
             Dictionary<InterpreterPlay, string> toRet = new Dictionary<InterpreterPlay, string>();
 
             foreach (string fname in files)
             {
-                string extension = fname.Substring(1 + fname.LastIndexOf('.'));
-                if (extension != "txt")
+                if (Path.GetExtension(fname) != ".txt")
                     continue;
                 StreamReader reader = new StreamReader(fname);
                 string filecontents = reader.ReadToEnd();

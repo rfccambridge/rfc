@@ -1,5 +1,5 @@
 Metadata:
-type KickOff_Theirs
+playtype KickOff_Theirs
 score 100
 Objects:
 topLeftCorner (point -2.9 2.1)

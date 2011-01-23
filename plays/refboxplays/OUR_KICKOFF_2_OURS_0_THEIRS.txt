@@ -1,7 +1,10 @@
 Metadata:
-type Kickoff_Ours
+playtype Kickoff_Ours
 score 200
 name O_KFF_2x0
+
+Tactics:
+Striker
 
 Objects:
 
@@ -15,13 +18,9 @@ centerbottom (point 0 -2.1)
 
 recpoint (point -0.2 -1.0)
 
-centerbot (closest friendly center loose)
-centerbotpt (pointof centerbot)
-
 receiverbot (closest friendly centerbottom loose)
 receiverbotpt (pointof receiverbot)
 
 Conditions:
 Actions:
-(robotpointkick centerbot (theirgoal))
 (robotpointmove receiverbot recpoint)

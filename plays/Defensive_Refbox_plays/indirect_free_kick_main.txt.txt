@@ -1,5 +1,5 @@
 Metadata:
-type SetupPlay_Theirs
+playtype SetupPlay_Theirs
 name main
 
 score 1

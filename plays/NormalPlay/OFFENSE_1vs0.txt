@@ -1,5 +1,5 @@
 Metadata:
-type NormalPlay
+playtype NormalPlay
 name OFFENSE_1vs0
 score 10001.002615
 

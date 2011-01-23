@@ -1,44 +1,14 @@
 Metadata:
-type NormalPlay
+playtype NormalPlay
 name DEFENSE_2vs0
 score 200
 
+Tactics:
+DumbGoalie
+DefendPoint (ourgoal) 0.9 True
+
 Objects:
-topLeftCorner (point -2.4 1.6)
-bottomLeftCorner (point -2.4 -1.6)
-bottomRightCorner (point 2.4 -1.6)
-topRightCorner (point 2.4 1.6)
-
-
-GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
-
-ballpoint (pointof ball)
-ballgoalline (line ballpoint (ourgoal))
-
-ourgoalwideperim (circle (ourgoal) 1.0)
-defensept (linecircleintersection ballgoalline ourgoalwideperim -1)
-defensebot (closest friendly defensept loose)
-defensebotpt (pointof defensebot)
-
-endtopgoalpt (point GOALIE_X_POS 1.6)
-endbottomgoalpt (point GOALIE_X_POS -1.6)
-
-vertgoalline (line endtopgoalpt endbottomgoalpt)
-
-goaliept (linelineintersection ballgoalline vertgoalline)
-goaliebot (closest friendly (ourgoal) loose)
-goaliebotpt (pointof goaliebot)
-goaltoppt (point GOALIE_X_POS 0.35)
-goalbotpt (point GOALIE_X_POS -0.35)
-
-# is either robot going in to kick
-defensedisttoball (pointpointdistance defensebotpt ballpoint)
-
-# should one robot kick
-shouldkick (or (pointInGoal ballpoint) (< defensedisttoball 0.4))
 
 
 Conditions:
 Actions:
-(if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint)))
-(if_Action shouldkick (robotpointkick defensebot (theirgoal)) (robotpointmove defensebot defensept))

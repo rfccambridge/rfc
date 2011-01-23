@@ -1,19 +1,13 @@
 Metadata:
-type SetPlay_Ours
+playtype SetPlay_Ours
 name O_FK_1x0
 score 100
 
+Tactics:
+Striker
+
 Objects:
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
-
-ballpoint (pointof ball)
-
-kickerbot (closest friendly ballpoint loose)
 
 Conditions:
 
 Actions:
-(robotpointkick kickerbot (theirgoal))

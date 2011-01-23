@@ -1,7 +1,10 @@
 Metadata:
-type Kickoff_Theirs
+playtype Kickoff_Theirs
 score 430
 name TH KICKOFF 4x3
+
+Tactics:
+DumbGoalie
 
 Objects:
 
@@ -23,8 +26,7 @@ farvertline (line farvertlinetop farvertlinebottom)
 
 centercircle (circle center 0.7)
 
-#ourgoalwideperim (circle (ourgoal) 1.2)
-ourgoalcloseperim (circle (ourgoal) 0.4)
+
 
 centerenemy (closest enemy center loose)
 topenemy (closest enemy centertop loose)
@@ -33,9 +35,6 @@ bottomenemy (closest enemy centerbottom loose)
 centerenemypt (pointof centerenemy)
 topenemypt (pointof topenemy)
 bottomenemypt (pointof bottomenemy)
-
-goaliebot (closest-with-tags friendly (ourgoal) loose goalie)
-goaliebotpt (pointof goaliebot)
 
 centerbot (closest friendly center loose)
 centerbotpt (pointof centerbot)
@@ -47,7 +46,6 @@ bottombot (closest friendly centerbottom loose)
 bottompt (pointof bottombot)
 
 centergoalline (line center (ourgoal))
-goaliept (linecircleintersection centergoalline ourgoalcloseperim -1)
 
 topline (line topenemypt (ourgoal))
 bottomline (line bottomenemypt (ourgoal))
@@ -62,7 +60,6 @@ centercirclept (linecircleintersection centergoalline centercircle 1)
 
 Conditions:
 Actions:
-(robotpointmove goaliebot goaliept)
 (robotpointmove centerbot centercirclept)
 (if_Action (< (pointpointdistance toppt center) 0.5) (robotpointmove topbot fartoppt) (robotpointmove topbot toppt))
 (if_Action (< (pointpointdistance bottompt center) 0.5) (robotpointmove bottombot farbotpt) (robotpointmove bottombot botpt))

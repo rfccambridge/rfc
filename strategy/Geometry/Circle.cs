@@ -28,5 +28,13 @@ namespace Robocup.Geometry
             this.center = center;
             this.radius = radius;
         }
+        /// <summary>
+        /// Creates a unit circle at the origin
+        /// </summary>
+        public Circle()
+        {
+            this.center = new Vector2();
+            this.radius = 1.0;
+        }
     }
 }

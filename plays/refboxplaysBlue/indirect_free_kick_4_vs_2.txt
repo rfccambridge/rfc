@@ -1,5 +1,5 @@
 Metadata:
-type SetPlay_Theirs
+playtype SetPlay_Theirs
 name TheirFreeKick_4_2
 score 420
 Objects:
@@ -7,7 +7,6 @@ topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
-
 robot1 (closest friendly (ourgoal) loose)
 point0 (pointof robot1)
 point3 (pointof ball)

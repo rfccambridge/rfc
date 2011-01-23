@@ -313,8 +313,11 @@ namespace Robocup.Plays
 
         	            		// get distance of closest robot to line
         	            		List<RobotInfo> allinfos = new List<RobotInfo>();
-        	            		allinfos.AddRange(state.OurTeamInfo);
-        	            		allinfos.AddRange(state.TheirTeamInfo);
+                                if (state != null)  //designer-friendly
+                                {
+                                    allinfos.AddRange(state.OurTeamInfo);
+                                    allinfos.AddRange(state.TheirTeamInfo);
+                                }
         	            		Vector2[] endpoints = line.getPoints();
 
         	            		double rtn = 10000;
