@@ -5,11 +5,11 @@ name Striker
 Parameters:
 
 Objects:
-point2 (pointof ball)
-robot0 (closest friendly point2 loose)
+ballpoint (pointof ball)
+robot0 (closest friendly ballpoint loose)
 
 standbypoint (point -2 0)
-ballpoint (pointof ball)
+
 
 Actions:
 
