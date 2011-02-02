@@ -112,6 +112,8 @@ namespace Robocup.Utilities
         double FIELD_HEIGHT;
         double REFEREE_ZONE_WIDTH;
         double CENTER_CIRCLE_RADIUS;
+        double GOAL_WIDTH;
+        double GOAL_HEIGHT;
 
         FieldDrawerForm _fieldDrawerForm; 
         State _bufferedState = new State();
@@ -146,6 +148,9 @@ namespace Robocup.Utilities
 
             REFEREE_ZONE_WIDTH = Constants.get<double>("plays", "REFEREE_ZONE_WIDTH");
             CENTER_CIRCLE_RADIUS = Constants.get<double>("plays", "CENTER_CIRCLE_RADIUS");
+
+            GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
+            GOAL_WIDTH = Constants.get<double>("plays", "GOAL_WIDTH");
 
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
@@ -520,6 +525,21 @@ namespace Robocup.Utilities
             //GL.Translate(0, 0, 0);            
             GL.Begin(BeginMode.LineLoop);
             OpenTK.Graphics.Glu.Disk(_centerCircleQuadric, 0, CENTER_CIRCLE_RADIUS, SLICES, 1);
+            GL.End();
+
+            //Goals
+            GL.Begin(BeginMode.LineLoop);
+            GL.Vertex2(-FIELD_WIDTH / 2, GOAL_HEIGHT / 2);
+            GL.Vertex2(-FIELD_WIDTH / 2 - GOAL_WIDTH, GOAL_HEIGHT / 2);
+            GL.Vertex2(-FIELD_WIDTH / 2 - GOAL_WIDTH, -GOAL_HEIGHT / 2);
+            GL.Vertex2(-FIELD_WIDTH / 2, -GOAL_HEIGHT / 2);
+            GL.End();
+
+            GL.Begin(BeginMode.LineLoop);
+            GL.Vertex2(FIELD_WIDTH / 2, GOAL_HEIGHT / 2);
+            GL.Vertex2(FIELD_WIDTH / 2 + GOAL_WIDTH, GOAL_HEIGHT / 2);
+            GL.Vertex2(FIELD_WIDTH / 2 + GOAL_WIDTH, -GOAL_HEIGHT / 2);
+            GL.Vertex2(FIELD_WIDTH / 2, -GOAL_HEIGHT / 2);
             GL.End();
         }
 

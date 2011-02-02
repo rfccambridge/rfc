@@ -21,6 +21,8 @@ namespace Robocup.Simulation
         {
             InitializeComponent();
 
+            createScenarios();
+
             // Otherwise focus goes to the console window
             this.BringToFront();
         }
@@ -40,6 +42,17 @@ namespace Robocup.Simulation
             return true;
         }
 
+        private void createScenarios()
+        {
+            SimulatedScenario normal = new NormalGameScenario("Normal game", _physicsEngine);
+            SimulatedScenario shootout = new ShootoutGameScenario("Shootout", _physicsEngine);
+
+            lstScenarios.Items.Add(normal);
+            lstScenarios.Items.Add(shootout);
+
+            lstScenarios.SelectedIndex = 0;
+        }
+
         private void btnSimStartStop_Click(object sender, EventArgs e)
         {
             try
@@ -54,35 +67,52 @@ namespace Robocup.Simulation
                     if (!parseHost(txtSimRefereeHost.Text, out refBoxIp, out refBoxPort)) return;
 
 					int numBlue = int.Parse(txtNumBlue.Text);
-					Debug.Assert(numBlue > 0 && numBlue < 6);
+                    if(txtNumBlue.Enabled && (numBlue <= 0 || numBlue > 5))
+                    {
+                        MessageBox.Show("Number of blue robots must be between 1 and 5");
+                        return;
+                    }
 					int numYellow = int.Parse(txtNumYellow.Text);
-					Debug.Assert(numYellow > 0 && numYellow < 6);
-
+                    if (txtNumYellow.Enabled && (numYellow <= 0 || numYellow > 5))
+                    {
+                        MessageBox.Show("Number of yellow robots must be between 1 and 5");
+                        return;
+                    }
                     // For convenience reload constants on every restart
                     Constants.Load();
                     _physicsEngine.LoadConstants();
 
+                    _physicsEngine.SetScenario(lstScenarios.SelectedItem as SimulatedScenario);
+
                     _physicsEngine.StartCommander(cmdPort);
                     _physicsEngine.StartVision(visionIp, visionPort);
-                    _physicsEngine.StartReferee(refBoxIp, refBoxPort);
+                    
+                    if(chkReferee.Checked)
+                        _physicsEngine.StartReferee(refBoxIp, refBoxPort);
 
                     _physicsEngine.Start(numYellow, numBlue);
 
                     _simRunning = true;
                     btnSimStartStop.Text = "Stop Sim";
                     lblSimListenStatus.BackColor = Color.Green;
+                    chkReferee.Enabled = false;
+                    lstScenarios.Enabled = false;
                 }
                 else
                 {
                     _physicsEngine.Stop();
-
-                    _physicsEngine.StopReferee();
+                    
+                    if(chkReferee.Checked)
+                        _physicsEngine.StopReferee();
+                    
                     _physicsEngine.StopVision();
                     _physicsEngine.StopCommander();
 
                     _simRunning = false;
                     btnSimStartStop.Text = "Start Sim";
                     lblSimListenStatus.BackColor = Color.Red;
+                    chkReferee.Enabled = true;
+                    lstScenarios.Enabled = true;
                 }
             }
             catch (ApplicationException except)
@@ -94,7 +124,7 @@ namespace Robocup.Simulation
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            _physicsEngine.ResetPositions();
+            _physicsEngine.GetScenarioScene();
         }
 
         private void SimulatorForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -116,6 +146,14 @@ namespace Robocup.Simulation
                 Application.Exit();
             });
             shutdownThread.Start();
+        }
+
+        private void lstScenarios_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SimulatedScenario selected = lstScenarios.SelectedItem as SimulatedScenario;
+
+            txtNumBlue.Enabled = selected.SupportsNumbers;
+            txtNumYellow.Enabled = selected.SupportsNumbers;
         }        
     }
 }

@@ -17,6 +17,25 @@ string GAIN_MATRIX -5, 5, 0.2, -0.3, 0.3, 0.75; -5, -5, 0.2, -0.3, -0.3, 0.75; 5
 #double GAIN_MATRIX_SCALE 20
 double GAIN_MATRIX_SCALE 15
 
+# Speed scaling factor- applied in ModelFeedback.cs, and multiplied
+# by the full speed vector
+
+# one constant scales speeds for all robots
+double SPEED_SCALING_FACTOR_ALL 1.15
+
+double SPEED_SCALING_FACTOR_0 1
+double SPEED_SCALING_FACTOR_1 1
+double SPEED_SCALING_FACTOR_2 1
+double SPEED_SCALING_FACTOR_3 1
+double SPEED_SCALING_FACTOR_4 1
+double SPEED_SCALING_FACTOR_5 1
+double SPEED_SCALING_FACTOR_6 1
+double SPEED_SCALING_FACTOR_7 1
+double SPEED_SCALING_FACTOR_8 1
+double SPEED_SCALING_FACTOR_9 1
+double SPEED_SCALING_FACTOR_10 1
+double SPEED_SCALING_FACTOR_11 1
+
 
 ##alpha should be between 0 and 1.
 

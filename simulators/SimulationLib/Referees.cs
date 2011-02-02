@@ -6,6 +6,8 @@ using Robocup.CoreRobotics;
 
 namespace Robocup.Simulation
 {
+    public delegate void GoalScored();
+
     public interface VirtualRef : IReferee
     {
         /// <summary>
@@ -13,13 +15,11 @@ namespace Robocup.Simulation
         /// should move the ball and store (for retrieval through IReferee methods) the play type to be run.
         /// </summary>
         /// <param name="predictor">The IPredictor object that provides field state information</param>
-        /// <param name="move_ball">A delegate that lets the ref move the ball around</param>
-        void RunRef(IPredictor predictor, Action<BallInfo> move_ball);
+        void RunRef(IPredictor predictor);
+        event GoalScored GoalScored;
     }
     public class SimpleReferee : VirtualRef
     {
-        int _ourGoals = 0, _theirGoals = 0;
-
         static double FIELD_WIDTH;
         static double FIELD_HEIGHT;
         static double FIELD_XMIN;
@@ -38,6 +38,8 @@ namespace Robocup.Simulation
             LoadConstants();             
         }
 
+        public event GoalScored GoalScored;
+
         public void LoadConstants()
         {
             // field drawing
@@ -53,19 +55,13 @@ namespace Robocup.Simulation
             GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
         }
 
-        private void goalScored(bool scoredByLeftTeam)
-        {
-            if (scoredByLeftTeam)
-                _ourGoals++;
-            else
-                _theirGoals++;
-        }
-
+#if FALSE
         /// <summary>
         /// The number of consecutive rounds during which play should have been restarted;
         /// </summary>
         int should_restart = 0;
-        public void RunRef(IPredictor predictor, Action<BallInfo> move_ball)
+#endif
+        public void RunRef(IPredictor predictor)
         {
             BallInfo ball = predictor.GetBall();
             // Check for goal
@@ -76,12 +72,12 @@ namespace Robocup.Simulation
                 Math.Abs(ball.Position.Y) <= GOAL_HEIGHT / 2)
                 )
             {
-                Console.WriteLine("Goal Ball reset!");
-                goalScored(ball.Position.X < 0);
-                move_ball(new BallInfo(new Vector2(0, 0)));
+                if (GoalScored != null)
+                    GoalScored();
                 return;
             }
-
+//TODO: Abstract away or remove completely (not working anyway)
+#if FALSE
             bool immobile = false;
             if (ball.Velocity.magnitudeSq() < .003 * .003)
                 immobile = true;
@@ -117,6 +113,7 @@ namespace Robocup.Simulation
             }
             else
                 should_restart = 0;
+#endif
         }
 
         public PlayType GetCurrentPlayType()

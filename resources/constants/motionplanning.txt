@@ -1,24 +1,5 @@
 # Motion planning constants
 
-# Speed scaling factor- applied in ModelFeedback.cs, and multiplied
-# by the full speed vector
-
-# one constant scales speeds for all robots
-double SPEED_SCALING_FACTOR_ALL .9
-
-double SPEED_SCALING_FACTOR_0 .95
-double SPEED_SCALING_FACTOR_1 .95
-double SPEED_SCALING_FACTOR_2 .95
-double SPEED_SCALING_FACTOR_3 1
-double SPEED_SCALING_FACTOR_4 1
-double SPEED_SCALING_FACTOR_5 1
-double SPEED_SCALING_FACTOR_6 1
-double SPEED_SCALING_FACTOR_7 .95
-double SPEED_SCALING_FACTOR_8 1
-double SPEED_SCALING_FACTOR_9 1
-double SPEED_SCALING_FACTOR_10 1
-double SPEED_SCALING_FACTOR_11 1
-
 #general constants used in MotionPlanning
 int NUM_ROBOTS 12
 int MIN_SINGLE_WHEEL_SPEED 0

@@ -25,11 +25,11 @@ namespace Robocup.MotionControl
 
 		public void LoadConstants()
 		{
-            SPEED_SCALING_FACTOR_ALL = Constants.get<double>("motionplanning", "SPEED_SCALING_FACTOR_ALL");
+            SPEED_SCALING_FACTOR_ALL = Constants.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
 
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
-                SPEED_SCALING_FACTORS[i] = Constants.get<double>("motionplanning", "SPEED_SCALING_FACTOR_" + i.ToString());
+                SPEED_SCALING_FACTORS[i] = Constants.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
             }
 
 			GainMatrix = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));

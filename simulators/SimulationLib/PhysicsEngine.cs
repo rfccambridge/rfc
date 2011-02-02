@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Robocup.Core;
 using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 using Robocup.CoreRobotics;
-using System.Threading;
 using Robocup.Utilities;
 using Robocup.MessageSystem;
 
 namespace Robocup.Simulation
 {
-    public class PhysicsEngine
+    public class PhysicsEngine : IPredictor
     {
-        private delegate void VoidDelegate();
-
-        const double INITIAL_BALL_SPEED = 0.3f;
+        const double INITIAL_BALL_SPEED = 0.6f;
 
 		private bool _marking = false;
 		private Vector2 _markedPosition;
@@ -26,6 +24,7 @@ namespace Robocup.Simulation
         static double FIELD_XMAX;
         static double FIELD_YMIN;
         static double FIELD_YMAX;
+        static double GOAL_WIDTH;
 
         private bool running = false;
         private System.Timers.Timer mainTimer = new System.Timers.Timer();
@@ -35,6 +34,9 @@ namespace Robocup.Simulation
 		private int numYellow;
 		private int numBlue;
 
+        public int NumYellow { get { return numYellow; } }
+        public int NumBlue { get { return numBlue; } }
+
         private IMessageReceiver<RobotCommand> cmdReceiver;
 
         private bool visionStarted = false;
@@ -43,12 +45,15 @@ namespace Robocup.Simulation
         private bool refBoxStarted = false;
         SimpleReferee referee;
 
+        private SimulatedScenario scenario;
+        private Object updateScenarioLock = new Object();
+
 		private BallInfo ball = null;
         private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
 
-        Dictionary<Team, Dictionary<int, MovementModeler>> movement_modelers = new Dictionary<Team, Dictionary<int, MovementModeler>>();
-        Dictionary<Team, Dictionary<int, WheelSpeeds>> speeds = new Dictionary<Team, Dictionary<int, WheelSpeeds>>();
-        Dictionary<Team, Dictionary<int, bool>> break_beams = new Dictionary<Team, Dictionary<int, bool>>();
+        private Dictionary<Team, Dictionary<int, MovementModeler>> movement_modelers = new Dictionary<Team, Dictionary<int, MovementModeler>>();
+        private Dictionary<Team, Dictionary<int, WheelSpeeds>> speeds = new Dictionary<Team, Dictionary<int, WheelSpeeds>>();
+        private Dictionary<Team, Dictionary<int, bool>> break_beams = new Dictionary<Team, Dictionary<int, bool>>();
 
 		public PhysicsEngine()
 		{
@@ -62,11 +67,13 @@ namespace Robocup.Simulation
 			
             LoadConstants();
 
+            referee = new SimpleReferee();
+
             mainTimer.AutoReset = true;
             mainTimer.Elapsed += mainTimer_Elapsed;
 		}
-        
-		private void InitState()
+
+        private void InitState()
 		{
 			foreach (Team team in Enum.GetValues(typeof(Team)))
 			{
@@ -75,7 +82,7 @@ namespace Robocup.Simulation
 				speeds[team].Clear();
 			}
 
-			ResetPositions();
+            GetScenarioScene();
 
 			foreach (Team team in Enum.GetValues(typeof(Team)))
 			{
@@ -86,7 +93,8 @@ namespace Robocup.Simulation
 					speeds[team].Add(info.ID, new WheelSpeeds());
 				}
 			}
-            
+
+            referee.GoalScored += scenario.GoalScored;
 		}
 
         public void LoadConstants()
@@ -96,8 +104,11 @@ namespace Robocup.Simulation
             FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
             FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
 
-            FIELD_XMIN = -FIELD_WIDTH / 2;
-            FIELD_XMAX = FIELD_WIDTH / 2;
+            GOAL_WIDTH = Constants.get<double>("plays", "GOAL_WIDTH");
+
+            //Leave a goal depth around the field, so that stuff(ball) is allowed inside the goal
+            FIELD_XMIN = -FIELD_WIDTH / 2 - GOAL_WIDTH;
+            FIELD_XMAX = FIELD_WIDTH / 2 + GOAL_WIDTH;
             FIELD_YMIN = -FIELD_HEIGHT / 2;
             FIELD_YMAX = FIELD_HEIGHT / 2;            
         }
@@ -147,7 +158,7 @@ namespace Robocup.Simulation
             if (refBoxStarted)
                 throw new ApplicationException("Referee already running.");
 
-            //referee.Connect(host, port);
+            referee.Connect(host, port);
 
             refBoxStarted = true;
         }
@@ -157,43 +168,35 @@ namespace Robocup.Simulation
             if (!refBoxStarted)
                 throw new ApplicationException("Referee not running.");
 
-            //referee.Disconnect();
+            referee.Disconnect();
 
             refBoxStarted = false;
         }
 
-        public void ResetPositions()
+        public void SetScenario(SimulatedScenario scenario)
         {
-            List<RobotInfo> yellowRobots = new List<RobotInfo>();
-            List<RobotInfo> blueRobots = new List<RobotInfo>();
+            if (running)
+                throw new ApplicationException("Cannot change scenario while running");
 
-            yellowRobots.Add(new RobotInfo(new Vector2(-1.0, -1), 0, Team.Yellow, 0));
-            if (numYellow > 1)
-				yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 0), 0, Team.Yellow, 1));
-			if (numYellow > 2)
-				yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 1), 0, Team.Yellow, 2));
-			if (numYellow > 3)
-				yellowRobots.Add(new RobotInfo(new Vector2(-2f, -1), 0, Team.Yellow, 3));
-			if (numYellow > 4)
-				yellowRobots.Add(new RobotInfo(new Vector2(-2f, 1), 0, Team.Yellow, 4));
+            if (this.scenario != null)
+                referee.GoalScored -= scenario.GoalScored;
+            
+            this.scenario = scenario;
+        }
 
-            blueRobots.Add(new RobotInfo(new Vector2(1.0, -1), 0, Team.Blue, 5));
-            if (numBlue > 1)
-				blueRobots.Add(new RobotInfo(new Vector2(1.0, 0), 0, Team.Blue, 6));
-			if (numBlue > 2)
-				blueRobots.Add(new RobotInfo(new Vector2(1.0, 1), 0, Team.Blue, 7));
-			if (numBlue > 3)
-				blueRobots.Add(new RobotInfo(new Vector2(2f, -1), 0, Team.Blue, 8));
-			if (numBlue > 4)
-				blueRobots.Add(new RobotInfo(new Vector2(2f, 1), 0, Team.Blue, 9));
+        public void GetScenarioScene()
+        {
+            SimulatorScene scene = scenario.GetScene();
 
-            robots[Team.Yellow].Clear();
-            robots[Team.Blue].Clear();
-
-            robots[Team.Yellow].AddRange(yellowRobots);
-            robots[Team.Blue].AddRange(blueRobots);
-
-            ball = new BallInfo(Vector2.ZERO);
+            lock (updateScenarioLock)
+            {
+                ball = scene.Ball;
+                foreach (Team team in Enum.GetValues(typeof(Team)))
+                {
+                    robots[team].Clear();
+                    robots[team].AddRange(scene.Robots[team]);
+                }
+            }
         }
 
         public void Start(int numYellow, int numBlue)
@@ -231,7 +234,7 @@ namespace Robocup.Simulation
         {            
             foreach (Team team in Enum.GetValues(typeof(Team)))
                 foreach (RobotInfo info in robots[team])
-                    updateRobot(info, movement_modelers[team][info.ID].ModelWheelSpeeds(info, speeds[team][info.ID], dt));
+                    UpdateRobot(info, movement_modelers[team][info.ID].ModelWheelSpeeds(info, speeds[team][info.ID], dt));
 
             //the speed at which the ball will bounce when it hits another robot
             double ballbounce = .005;
@@ -297,26 +300,28 @@ namespace Robocup.Simulation
                     {
                         Vector2 t1 = p1 + .01 * (p1 - p2).normalize();
                         Vector2 t2 = p2 + .01 * (p2 - p1).normalize();
-                        updateRobot(allRobots[i], new RobotInfo(t1, allRobots[i].Orientation,
+                        UpdateRobot(allRobots[i], new RobotInfo(t1, allRobots[i].Orientation,
                             allRobots[i].Team, allRobots[i].ID));
-                        updateRobot(allRobots[j], new RobotInfo(t2, allRobots[j].Orientation,
+                        UpdateRobot(allRobots[j], new RobotInfo(t2, allRobots[j].Orientation,
                             allRobots[j].Team, allRobots[j].ID));
                     }
                 }
             }
 
             // friction
-            updateBall(new BallInfo(newballlocation, newballvelocity));
+            UpdateBall(new BallInfo(newballlocation, newballvelocity));
             
-            // TODO: Implement auto-referee
-            //referee.RunRef(this, UpdateBall);
-
             // Synchronously (at least for now) send out a vision message
             SSLVision.SSL_DetectionFrameManaged frame = constructSSLVisionFrame();
             sslVisionServer.send(frame);
+
+            referee.RunRef(this);
+            //TODO: A dirty hack to allow us to run without a real refbox. Implement based on referee.GetCurrentPlayType()!
+            if (refBoxStarted)
+                referee.SendCommand(RefBoxHandler.START);
         }        
 
-        private void updateRobot(RobotInfo old_info, RobotInfo new_info)
+        public void UpdateRobot(RobotInfo old_info, RobotInfo new_info)
         {
 			if (old_info.Team != new_info.Team)
 				throw new ApplicationException("old robot team and new robot team dont match!");
@@ -336,7 +341,7 @@ namespace Robocup.Simulation
 			}
         }
 
-        private void updateBall(BallInfo new_info)
+        public void UpdateBall(BallInfo new_info)
         {
         	ball.Position = new_info.Position;
         	ball.Velocity = new_info.Velocity;
@@ -390,103 +395,173 @@ namespace Robocup.Simulation
 
         private void cmdReceiver_MessageReceived(RobotCommand command)
         {
-            // This is not the cleanest, but it's ok, because these IDs are also issued by this
-            // engine -- so, the convention is contained. Adding a team into RobotCommand does 
-            // *not* make much sense.
-            Team team = command.ID < 5 ? Team.Yellow : Team.Blue;
-
-            switch (command.command)
+            lock (updateScenarioLock)
             {
-                case RobotCommand.Command.MOVE:
-                    this.speeds[team][command.ID] = command.Speeds;
-                    break;
-                case RobotCommand.Command.KICK:
-                    {
-                        // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist                                                
-                        RobotInfo robot = robots[team].Find(new Predicate<RobotInfo>(delegate(RobotInfo bot)
-                               {
-                                   return bot.ID == command.ID;
-                               }));
-                        // add randomness to actual robot location / direction
-                        //const double randomComponent = initial_ball_speed / 3;            
+                // This is not the cleanest, but it's ok, because these IDs are also issued by this
+                // engine -- so, the convention is contained. Adding a team into RobotCommand does 
+                // *not* make much sense.
+                Team team = command.ID < 5 ? Team.Yellow : Team.Blue;
 
-                        double ballVx = (double)(INITIAL_BALL_SPEED) * Math.Cos(robot.Orientation);
-                        double ballVy = (double)(INITIAL_BALL_SPEED) * Math.Sin(robot.Orientation);
-
-                        Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
-                        //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
-                        //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
-                        //RobotInfo prev = robot;
-                        //const double recoil = .02 / initial_ball_speed; ;
-                        updateBall(new BallInfo(ball.Position, new Vector2(ballVx, ballVy)));
-                        //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
+                switch (command.command)
+                {
+                    case RobotCommand.Command.MOVE:
+                        this.speeds[team][command.ID] = command.Speeds;
                         break;
-                    }
-                case RobotCommand.Command.BREAKBEAM_KICK:
-                    {                        
-                        const double CENTER_TO_KICKER_DIST = 0.070; // m
-                        const double KICKER_ACTIVITY_RADIUS_SQ = 0.04 * 0.04; // m
-
-                        const int BREAKBEAM_CHECK_PERIOD = 100; // ms
-                        const double BREAKBEAM_TIMEOUT = 10; // s
-
-                        if (!break_beams[team].ContainsKey(command.ID)) {
-                            Console.WriteLine("Could not find robot " + command.ID + " on team " + team.ToString());
-                            return;
-                        }
-
-                        if (break_beams[team][command.ID]) break;
-
-                        break_beams[team][command.ID] = true;
-
-                        Thread breakBeamThread = new Thread(delegate(object state)
+                    case RobotCommand.Command.KICK:
                         {
-                            double elapsed;
-                            HighResTimer timeoutTimer = new HighResTimer();
-                            timeoutTimer.Start();
-                            do {
-                                // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist                        
-                                RobotInfo robot = robots[team].Find(new Predicate<RobotInfo>(delegate(RobotInfo bot)
-                                {
-                                    return bot.ID == command.ID;
-                                }));
+                            // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist                                                
+                            RobotInfo robot = robots[team].Find(new Predicate<RobotInfo>(delegate(RobotInfo bot)
+                                   {
+                                       return bot.ID == command.ID;
+                                   }));
+                            // add randomness to actual robot location / direction
+                            //const double randomComponent = initial_ball_speed / 3;            
 
-                                Vector2 orientation = new Vector2(Math.Cos(robot.Orientation), Math.Sin(robot.Orientation));
-                                Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * orientation;
+                            double ballVx = (double)(INITIAL_BALL_SPEED) * Math.Cos(robot.Orientation);
+                            double ballVy = (double)(INITIAL_BALL_SPEED) * Math.Sin(robot.Orientation);
 
-                                //Console.WriteLine("Robot pos: " + robot.Position +
-                                //                  " Kicker pos: " + kickerPosition +
-                                //                  " Ball pos: " + ballInfo.Position +
-                                //                  " Distsq: " + kickerPosition.distanceSq(ballInfo.Position));
-                                if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS_SQ)
-                                {
-                                    double ballVx = (double)(INITIAL_BALL_SPEED) * Math.Cos(robot.Orientation);
-                                    double ballVy = (double)(INITIAL_BALL_SPEED) * Math.Sin(robot.Orientation);
+                            Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
+                            //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
+                            //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
+                            //RobotInfo prev = robot;
+                            //const double recoil = .02 / initial_ball_speed; ;
+                            UpdateBall(new BallInfo(ball.Position, new Vector2(ballVx, ballVy)));
+                            //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
+                            break;
+                        }
+                    case RobotCommand.Command.BREAKBEAM_KICK:
+                        {
+                            const double CENTER_TO_KICKER_DIST = 0.070; // m
+                            const double KICKER_ACTIVITY_RADIUS_SQ = 0.04 * 0.04; // m
 
-                                    Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
-                                    //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
-                                    //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
-                                    //RobotInfo prev = robot;
-                                    //const double recoil = .02 / initial_ball_speed; ;
-                                    updateBall(new BallInfo(ball.Position, new Vector2(ballVx, ballVy)));
-                                    //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
+                            const int BREAKBEAM_CHECK_PERIOD = 100; // ms
+                            const double BREAKBEAM_TIMEOUT = 10; // s
 
-                                    // We kicked get out of the loop and thus kill this thread.
-                                    break;
-                                }
-                                Thread.Sleep(BREAKBEAM_CHECK_PERIOD);
-                                timeoutTimer.Stop();
-                                elapsed = timeoutTimer.Duration;
+                            if (!break_beams[team].ContainsKey(command.ID))
+                            {
+                                Console.WriteLine("Could not find robot " + command.ID + " on team " + team.ToString());
+                                return;
+                            }
+
+                            if (break_beams[team][command.ID]) break;
+
+                            break_beams[team][command.ID] = true;
+
+                            Thread breakBeamThread = new Thread(delegate(object state)
+                            {
+                                double elapsed;
+                                HighResTimer timeoutTimer = new HighResTimer();
                                 timeoutTimer.Start();
-                             } while (elapsed < BREAKBEAM_TIMEOUT);
-                             break_beams[team][command.ID] = false;
-                        });
+                                do
+                                {
+                                    // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist                        
+                                    RobotInfo robot = robots[team].Find(new Predicate<RobotInfo>(delegate(RobotInfo bot)
+                                    {
+                                        return bot.ID == command.ID;
+                                    }));
 
-                        breakBeamThread.Start();
+                                    Vector2 orientation = new Vector2(Math.Cos(robot.Orientation), Math.Sin(robot.Orientation));
+                                    Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * orientation;
 
-                        break;
-                    }
+                                    //Console.WriteLine("Robot pos: " + robot.Position +
+                                    //                  " Kicker pos: " + kickerPosition +
+                                    //                  " Ball pos: " + ballInfo.Position +
+                                    //                  " Distsq: " + kickerPosition.distanceSq(ballInfo.Position));
+                                    if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS_SQ)
+                                    {
+                                        double ballVx = (double)(INITIAL_BALL_SPEED) * Math.Cos(robot.Orientation);
+                                        double ballVy = (double)(INITIAL_BALL_SPEED) * Math.Sin(robot.Orientation);
+
+                                        Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
+                                        //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
+                                        //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
+                                        //RobotInfo prev = robot;
+                                        //const double recoil = .02 / initial_ball_speed; ;
+                                        UpdateBall(new BallInfo(ball.Position, new Vector2(ballVx, ballVy)));
+                                        //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
+
+                                        // We kicked get out of the loop and thus kill this thread.
+                                        break;
+                                    }
+                                    Thread.Sleep(BREAKBEAM_CHECK_PERIOD);
+                                    timeoutTimer.Stop();
+                                    elapsed = timeoutTimer.Duration;
+                                    timeoutTimer.Start();
+                                } while (elapsed < BREAKBEAM_TIMEOUT);
+                                break_beams[team][command.ID] = false;
+                            });
+
+                            breakBeamThread.Start();
+
+                            break;
+                        }
+                }
             }
         }
+       
+        #region IPredictor
+        public List<RobotInfo> GetRobots()
+        {
+            List<RobotInfo> result = new List<RobotInfo>();
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+            {
+                result.AddRange(robots[team]);
+            }
+            return result;
+        }
+
+        public List<RobotInfo> GetRobots(Team team)
+        {
+            return robots[team];
+        }
+
+        public RobotInfo GetRobot(Team team, int id)
+        {
+            RobotInfo result = robots[team].Find(robot => robot.ID == id);
+
+            if (result == null)
+                throw new ApplicationException(String.Format("Simulator can't find robot with id: {0} on team {1}", id, team));
+
+            return result;
+        }
+
+        public BallInfo GetBall()
+        {
+            return ball;
+        }
+
+        public void SetBallMark()
+        {
+            if(ball != null)
+                _markedPosition = ball.Position;
+
+            _marking = true;
+        }
+
+        public void ClearBallMark()
+        {
+            _markedPosition = null;
+            _marking = false;
+        }
+
+        public bool HasBallMoved()
+        {
+            if (!_marking)
+                return false;
+
+            if (_markedPosition == null)
+                return false;
+
+            if (ball == null)
+                return false;
+
+            return _markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST;
+        }
+
+        public void SetPlayType(PlayType newPlayType)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

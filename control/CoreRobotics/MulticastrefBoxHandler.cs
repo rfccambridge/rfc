@@ -174,7 +174,7 @@ namespace Robocup.CoreRobotics
 
     public class MulticastRefBoxSender : RefBoxHandler
     {
-        int cmd_counter = 0;    // counter for current command
+        byte cmd_counter = 0;    // counter for current command
         int goals_blue = 0;      // current score for blue team
         int goals_yellow = 0;    // current score for yellow team
         int time_remaining = 0; // seconds remaining for current game stage (network byte order)
@@ -185,9 +185,12 @@ namespace Robocup.CoreRobotics
                 throw new ApplicationException("Already connected.");
 
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _endPoint = new IPEndPoint(IPAddress.Any, port);
+            IPAddress mcastAddr = IPAddress.Parse(addr);
+            
+            _endPoint = new IPEndPoint(mcastAddr, port);
+            _socket.Connect(_endPoint);
 
-            _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
+            _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(mcastAddr));
         }
 
         protected override void Loop()
@@ -219,6 +222,7 @@ namespace Robocup.CoreRobotics
             packet.goals_yellow = (byte)goals_yellow;
             packet.goals_blue = (byte)goals_blue;
             packet.cmd = command;
+            packet.cmd_counter = cmd_counter;
 
             lock (lastPacketLock)
             {
