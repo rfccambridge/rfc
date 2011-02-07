@@ -12,13 +12,13 @@ namespace Robocup.CoreRobotics
     public class MovementModeler
     {
         static private Random r = new Random();
-        const double rr = 0.09;
+        const double rr = 0.0783;
         double velocityCoe = 127 * 3 / (2 * Math.Sqrt(2)); // assuming maximum velocity is 3m/s
         double angVelocityCoe = 10 * 3 / (2 * Math.Sqrt(2)); 
-        public double changeConstlf = 1;//proportional constant. we set the change is proportional to the gap. 
-        public double changeConstlb = 1;
-        public double changeConstrf = 1;
-        public double changeConstrb = 1;
+        public double changeConstlf = 2.5;//proportional constant. we set the change is proportional to the gap. 
+        public double changeConstlb = 2.5;
+        public double changeConstrf = 2.5;
+        public double changeConstrb = 2.5;
 
         private double GetNewVelocity(double command, double actual, double dt, double changek)
         {
