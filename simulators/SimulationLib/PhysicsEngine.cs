@@ -12,7 +12,17 @@ namespace Robocup.Simulation
 {
     public class PhysicsEngine : IPredictor
     {
-        const double INITIAL_BALL_SPEED = 0.6f;
+        const double KICKED_BALL_SPEED = 3.0;  //In m/s
+
+        const double BALL_ROBOT_ELASTICITY = 0.5; //The fraction of the speed kept when bouncing off a robot
+        const double BALL_WALL_ELASTICITY = 0.9; //The fraction of the speed kept when bouncing off a wall
+        const double BALL_FRICTION = 1.0; //The amount of speed lost per second by the ball
+
+        const double ROBOT_RADIUS = 0.08;
+        const double ROBOT_FRONT_RADIUS = 0.055;
+        const double BALL_RADIUS = 0.02;
+
+        const double COLLISION_RADIUS = BALL_RADIUS + ROBOT_RADIUS;
 
 		private bool _marking = false;
 		private Vector2 _markedPosition;
@@ -236,58 +246,11 @@ namespace Robocup.Simulation
                 foreach (RobotInfo info in robots[team])
                     UpdateRobot(info, movement_modelers[team][info.ID].ModelWheelSpeeds(info, speeds[team][info.ID], dt));
 
-            //the speed at which the ball will bounce when it hits another robot
-            double ballbounce = .005;
-            const double collisionradius = .10;
-            //the fraction of the ball velocity that it loses every second
-            //well, roughly, because compounding counts, so it's off by about a factor of 2.5
-            const double balldecay = 6;
-
-            // run one step of tester
-
-            // update ball location
-            Vector2 newballlocation = ball.Position + dt * ball.Velocity;
-            Vector2 newballvelocity = (1 - dt * balldecay) * ball.Velocity;
-
-            // check for collisions ball-robot, update ball position
-
             List<RobotInfo> allRobots = new List<RobotInfo>();
             foreach (Team team in Enum.GetValues(typeof(Team)))
                 allRobots.AddRange(robots[team]);
 
-            bool collided = false;
-            foreach (RobotInfo r in allRobots)
-            {
-                Vector2 location = r.Position;
-                if (newballlocation.distanceSq(location) <= collisionradius * collisionradius)
-                {
-                    collided = true;
-                    ballbounce = Math.Sqrt((ball.Velocity - r.Velocity).magnitudeSq()) * .02;
-                    newballvelocity = ballbounce * ((ball.Position - location).normalize());
-                    newballlocation = location + (collisionradius + .005) * (ball.Position - location).normalize();
-                    break;
-                }
-            }
-
-            // do wall boundaries
-            if (!collided)
-            {
-                Vector2 ballPos = ball.Position;
-                double ballVx = newballvelocity.X;
-                double ballVy = newballvelocity.Y;
-                if (ballPos.X < FIELD_XMIN)
-                    ballVx = Math.Abs(ballVx);
-                else if (ballPos.X > FIELD_XMAX)
-                    ballVx = -Math.Abs(ballVx);
-                if (ballPos.Y < FIELD_YMIN)
-                    ballVy = Math.Abs(ballVy);
-                else if (ballPos.Y > FIELD_YMAX)
-                    ballVy = -Math.Abs(ballVy);
-                newballvelocity = new Vector2(ballVx, ballVy);
-                newballlocation = new Vector2(ball.Position.X + ballVx, ball.Position.Y + ballVy);
-            }
-            
-            // fix robot-robot collisions
+            // Fix robot-robot collisions
             for (int i = 0; i < allRobots.Count; i++)
             {
                 for (int j = 0; j < allRobots.Count; j++)
@@ -308,8 +271,89 @@ namespace Robocup.Simulation
                 }
             }
 
-            // friction
-            UpdateBall(new BallInfo(newballlocation, newballvelocity));
+            //To get better resolution, accurate bounces, and prevent the ball from going through stuff, 
+            //use dt/64 for the next part, 64 times.
+            dt = dt / 64.0;
+            for (int reps = 0; reps < 64; reps++)
+            {
+                // Update ball location
+                Vector2 newBallLocation = ball.Position + dt * ball.Velocity;
+                Vector2 newBallVelocity;
+                double ballSpeed = ball.Velocity.magnitude();
+                ballSpeed -= BALL_FRICTION * dt;
+                if (ballSpeed <= 0)
+                { ballSpeed = 0; newBallVelocity = Vector2.ZERO; }
+                else
+                { newBallVelocity = ball.Velocity.normalizeToLength(ballSpeed); }
+
+                // Check for collisions ball-robot and update ball position
+                foreach (RobotInfo r in allRobots)
+                {
+                    Vector2 robotLoc = r.Position;
+
+                    bool collided = false;
+                    //Possible collision
+                    if (newBallLocation.distanceSq(robotLoc) <= COLLISION_RADIUS * COLLISION_RADIUS)
+                    {
+                        //We have a virtual line (BALL_RADIUS+ROBOT_FRONT_RADIUS) in front of the robot
+                        //Make sure the ball is on the robot-side of this line as well.
+                        Vector2 robotToBall = newBallLocation - robotLoc;
+                        Vector2 robotOrientationVec = Vector2.GetUnitVector(r.Orientation);
+                        double projectionLen = robotToBall.projectionLength(robotOrientationVec);
+                        if (projectionLen <= BALL_RADIUS + ROBOT_FRONT_RADIUS)
+                            collided = true;
+                    }
+
+                    if (collided)
+                    {
+                        //Compute new position of ball
+                        newBallLocation = robotLoc + (COLLISION_RADIUS + .005) * (ball.Position - robotLoc).normalize();
+
+                        //Compute new velocity of ball
+                        Vector2 relVel = newBallVelocity - r.Velocity; //The relative velocity of the ball to the robot
+                        Vector2 normal = newBallLocation - robotLoc; //The normal to the collision
+
+                        //If somehow the normal is zero or too small, just reflect the ball straight back...
+                        if (normal.magnitudeSq() <= 1e-16)
+                            relVel = -BALL_ROBOT_ELASTICITY * relVel;
+                        else
+                        {
+                            //Perpendicular component is unaffected. Parallel component reverses and
+                            //is discounted by BOUNCE_ELASTICITY
+                            //This is wrong for when the ball hits the front of the robot, but hopefully
+                            //it's not too horrendous of an approximation
+                            relVel = -BALL_ROBOT_ELASTICITY * relVel.parallelComponent(normal)
+                                + relVel.perpendicularComponent(normal);
+                        }
+
+                        //Translate back to absolute velocity
+                        newBallVelocity = relVel + r.Velocity;
+                        break;
+                    }
+                }
+
+                // Do ball-wall collisions
+                {
+                    double ballX = newBallLocation.X;
+                    double ballY = newBallLocation.Y;
+                    double ballVx = newBallVelocity.X;
+                    double ballVy = newBallVelocity.Y;
+                    if (ballX < FIELD_XMIN)
+                    { ballVx = Math.Abs(ballVx) * BALL_WALL_ELASTICITY; ballX = 2 * FIELD_XMIN - ballX; }
+                    else if (ballX > FIELD_XMAX)
+                    { ballVx = -Math.Abs(ballVx) * BALL_WALL_ELASTICITY; ballX = 2 * FIELD_XMAX - ballX; }
+                    if (ballY < FIELD_YMIN)
+                    { ballVy = Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * FIELD_YMIN - ballY; }
+                    else if (ballY > FIELD_YMAX)
+                    { ballVy = -Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * FIELD_YMAX - ballY; }
+
+                    newBallVelocity = new Vector2(ballVx, ballVy);
+                    newBallLocation = new Vector2(ballX, ballY);
+                }
+
+                UpdateBall(new BallInfo(newBallLocation, newBallVelocity));
+                referee.RunRef(this);
+            }
             
             // Synchronously (at least for now) send out a vision message
             SSLVision.SSL_DetectionFrameManaged frame = constructSSLVisionFrame();
@@ -417,8 +461,8 @@ namespace Robocup.Simulation
                             // add randomness to actual robot location / direction
                             //const double randomComponent = initial_ball_speed / 3;            
 
-                            double ballVx = (double)(INITIAL_BALL_SPEED) * Math.Cos(robot.Orientation);
-                            double ballVy = (double)(INITIAL_BALL_SPEED) * Math.Sin(robot.Orientation);
+                            double ballVx = (double)(KICKED_BALL_SPEED) * Math.Cos(robot.Orientation);
+                            double ballVy = (double)(KICKED_BALL_SPEED) * Math.Sin(robot.Orientation);
 
                             Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
                             //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
@@ -469,15 +513,15 @@ namespace Robocup.Simulation
                                     //                  " Distsq: " + kickerPosition.distanceSq(ballInfo.Position));
                                     if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS_SQ)
                                     {
-                                        double ballVx = (double)(INITIAL_BALL_SPEED) * Math.Cos(robot.Orientation);
-                                        double ballVy = (double)(INITIAL_BALL_SPEED) * Math.Sin(robot.Orientation);
-
+                                        double ballVx = (double)(KICKED_BALL_SPEED) * Math.Cos(robot.Orientation);
+                                        double ballVy = (double)(KICKED_BALL_SPEED) * Math.Sin(robot.Orientation);
+                                        Vector2 newVelocity = new Vector2(ballVx, ballVy);
                                         Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
                                         //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
                                         //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
                                         //RobotInfo prev = robot;
                                         //const double recoil = .02 / initial_ball_speed; ;
-                                        UpdateBall(new BallInfo(ball.Position, new Vector2(ballVx, ballVy)));
+                                        UpdateBall(new BallInfo(ball.Position + newVelocity / 100.0, newVelocity));
                                         //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
 
                                         // We kicked get out of the loop and thus kill this thread.
