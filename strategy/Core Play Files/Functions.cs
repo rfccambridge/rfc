@@ -746,6 +746,32 @@ namespace Robocup.Plays
                 return new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2 + 0.08, 0);
             });
 
+            addFunction("theirGoalBestShot", "theirGoalBestShot", "Attempts to find a good location to shoot at", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                double fieldWidth = Constants.get<double>("plays", "FIELD_WIDTH");
+                double goalHeight = Constants.get<double>("plays", "GOAL_HEIGHT");
+                double buffer = 0.02;
+                Vector2 goalEnd0 = new Vector2(fieldWidth / 2, goalHeight / 2 - buffer);
+                Vector2 goalEnd1 = new Vector2(fieldWidth / 2, -goalHeight / 2 + buffer);
+
+                Vector2 bestTarget = (goalEnd0+goalEnd1) / 2.0;
+                double bestBlockedness = Double.PositiveInfinity;
+                for (int i = 0; i <= 16; i++)
+                {
+                    double prop = (double)i/16;
+                    Vector2 target = goalEnd0 + prop * (goalEnd1 - goalEnd0);
+                    double blockedness = TacticsEval.kickBlockedness(state.OurTeamInfo, state.TheirTeamInfo, 
+                        state.ballInfo, target, 0);
+                    if (blockedness < bestBlockedness)
+                    {
+                        bestBlockedness = blockedness;
+                        bestTarget = target;
+                    }
+                }
+                return bestTarget;
+            });
+
+
             #endregion
 
             #region actions
