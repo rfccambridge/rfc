@@ -1,8 +1,10 @@
 # this is a comment
 
-double ROBOT_RADIUS .1
-
-double BALL_RADIUS .02
+double ROBOT_RADIUS 0.1          #this appears to be unused currently, which is good, because it's WRONG!!
+double ROBOT_FRONT_RADIUS 0.055  #this is unused currently
+double OUR_ROBOT_RADIUS .08      #this is unused currently, but we should refactor all the code to use it or something like this
+double THEIR_ROBOT_RADIUS .08    #this is unused currently, but we should refactor all the code to use it or something like this
+double BALL_RADIUS .0215         #this appears to be unused currently, but we should refactor all the code to use it
 
 double CENTER_CIRCLE_RADIUS 0.5
 

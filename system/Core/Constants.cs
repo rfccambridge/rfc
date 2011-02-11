@@ -82,11 +82,15 @@ namespace Robocup.Core
                 string s = reader.ReadLine();
                 if (s == null)
                     break;
+
+                //Remove comments (if we find a # anywhere on the line, remove all chars after it)
+                int commentIndex = s.IndexOf('#');
+                if (commentIndex >= 0)
+                    s = s.Remove(commentIndex);
+
                 if (s.Length == 0)
                     continue;
-                //comment line:
-                if (s[0] == '#')
-                    continue;
+
                 string[] strings = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 //format is:
                 //type name value   
