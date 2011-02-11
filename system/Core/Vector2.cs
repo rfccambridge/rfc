@@ -129,6 +129,15 @@ namespace Robocup.Core
         {
             return X * X + Y * Y;
         }
+
+        /// <summary>
+        /// Returns the the length of this vector.
+        /// </summary>
+        public double magnitude()
+        {
+            return Math.Sqrt(X * X + Y * Y);
+        }
+
         /// <summary>
         /// Returns the angle, in radians, that you must rotate the
         /// vector (1,0) in the counter-clockwise direction until
@@ -189,6 +198,15 @@ namespace Robocup.Core
         {
             return new Vector2(p.X * f, p.Y * f);
         }
+
+        /// <summary>
+        /// Returns this vector scaled by a constant.
+        /// </summary>
+        static public Vector2 operator *(Vector2 p, double f)
+        {
+            return new Vector2(p.X * f, p.Y * f);
+        }
+
         /// <summary>
         /// Returns this vector divided by a constant.
         /// </summary>
@@ -210,7 +228,8 @@ namespace Robocup.Core
 
         /// <summary>
         /// Returns a Vector2 that is parallel to this Vector2 and has length 1.
-        /// Has no meaning for the zero Vector2 (will return NaN).
+        /// Has no meaning for the zero Vector2, (and possibly vectors extremely close to zero?)
+        /// and will return the existing vector unchanged.
         /// </summary>
         public Vector2 normalize()
         {
@@ -222,7 +241,8 @@ namespace Robocup.Core
         }
         /// <summary>
         /// Returns a vector in the same direction as this one, with the desired length.
-        /// Returns NaN for the zero vector.
+        /// For the zero vector (and possibly vectors extremely close to zero), returns the
+        /// existing vector, multiplied by newLength
         /// </summary>
         public Vector2 normalizeToLength(double newLength)
         {
@@ -236,8 +256,57 @@ namespace Robocup.Core
         {
             double c = Math.Cos(angle);
             double s = Math.Sin(angle);
-            return new Vector2(c * X - s * y, c * Y + s * x);
+            //davidwu: is there a reason some values are accessed in upper case, and some in lower case?
+            return new Vector2(c * X - s * y, c * Y + s * x); 
         }
+
+        /// <summary>
+        /// Returns a vector that is this vector rotated 1/4 of a turn in the
+        /// counterclockwise direction.
+        /// </summary>
+        public Vector2 rotatePerpendicular()
+        {
+            return new Vector2(-y, x);
+        }
+
+        /// <summary>
+        /// Returns the length of this vector when projected on to p
+        /// Returns an unspecified result if p is the zero vector.
+        /// </summary>
+        public double projectionLength(Vector2 p)
+        {
+            return this * p / p.magnitude();
+        }
+
+        /// <summary>
+        /// Returns the component of this vector parallel to p
+        /// Returns an unspecified result if p is the zero vector.
+        /// </summary>
+        public Vector2 parallelComponent(Vector2 p)
+        {
+            return (this * p / p.magnitudeSq()) * p;
+        }
+
+        /// <summary>
+        /// Returns the component of this vector perpendicular to p
+        /// Returns an unspecified result if p is the zero vector.
+        /// </summary>
+        public Vector2 perpendicularComponent(Vector2 p)
+        {
+            p = p.rotatePerpendicular();
+            return (this * p / p.magnitudeSq()) * p;
+        }
+
+        /// <summary>
+        /// Returns this vector mirror-reflected over p.
+        /// If p is the zero vector, returns an unspecified result.
+        /// </summary>
+        public Vector2 reflectOver(Vector2 p)
+        {
+            return this - 2.0 * perpendicularComponent(p);
+        }
+
+
         /// <summary>
         /// Provides a string representation of this Vector2.
         /// </summary>
