@@ -148,11 +148,13 @@ namespace Robocup.Plays
     abstract public class PlayBall : GetPointable
     {
         public abstract Vector2 getPoint();
+        public abstract Vector2 getVelocity();
     }
 
     public interface GetPointable
     {
         Vector2 getPoint();
+        Vector2 getVelocity();
     }
 
 }

@@ -131,6 +131,10 @@ namespace Robocup.Plays
         {
             return center;
         }
+        public Vector2 getVelocity()
+        {
+            return Vector2.ZERO;
+        }
         public override string ToString()
         {
             return getName();

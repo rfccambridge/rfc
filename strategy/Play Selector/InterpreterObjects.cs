@@ -12,11 +12,14 @@ namespace Robocup.Plays
         public override Vector2 getPoint()
         {
             if (evaluatorstate.ballInfo != null)
-            {
                 return evaluatorstate.ballInfo.Position;
-            }
-            // otherwise, arbitrarily return <100, 100>
-            return new Vector2(0, 0);
+            return Vector2.ZERO;
+        }
+        public override Vector2 getVelocity()
+        {
+            if (evaluatorstate.ballInfo != null)
+                return evaluatorstate.ballInfo.Velocity;
+            return Vector2.ZERO;
         }
         private EvaluatorState evaluatorstate = null;
         public void setEvaluatorState(EvaluatorState evaluatorstate)

@@ -113,6 +113,10 @@ namespace Robocup.Plays
 		{
 			return thisrobot.Orientation;
 		}
+        public Vector2 getVelocity()
+        {
+            return thisrobot.Velocity;
+        }
         public InterpreterRobotDefinition(bool ours, RobotAssignmentType assignment)
         {
             this.ours = ours;

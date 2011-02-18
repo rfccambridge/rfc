@@ -23,6 +23,10 @@ namespace Robocup.Plays
         {
             return p;
         }
+        public override Vector2 getVelocity()
+        {
+            return Vector2.ZERO;
+        }
         public void setPosition(Vector2 p)
         {
             this.p = p;
