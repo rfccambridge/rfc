@@ -7,6 +7,7 @@ using Robocup.CoreRobotics;
 namespace Robocup.Simulation
 {
     public delegate void GoalScored();
+    public delegate void BallOut(Vector2 lastPosition);
 
     public interface VirtualRef : IReferee
     {
@@ -17,6 +18,7 @@ namespace Robocup.Simulation
         /// <param name="predictor">The IPredictor object that provides field state information</param>
         void RunRef(IPredictor predictor);
         event GoalScored GoalScored;
+        event BallOut BallOut;
     }
     public class SimpleReferee : VirtualRef
     {
@@ -39,6 +41,7 @@ namespace Robocup.Simulation
         }
 
         public event GoalScored GoalScored;
+        public event BallOut BallOut;
 
         public void LoadConstants()
         {
@@ -55,65 +58,33 @@ namespace Robocup.Simulation
             GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
         }
 
-#if FALSE
-        /// <summary>
-        /// The number of consecutive rounds during which play should have been restarted;
-        /// </summary>
-        int should_restart = 0;
-#endif
         public void RunRef(IPredictor predictor)
         {
             BallInfo ball = predictor.GetBall();
-            // Check for goal
-
-            if ((ball.Position.X <= FIELD_XMIN && ball.Position.X >= FIELD_XMIN - GOAL_WIDTH &&
-                Math.Abs(ball.Position.Y) <= GOAL_HEIGHT / 2) ||
-                (ball.Position.X >= FIELD_XMAX && ball.Position.X <= FIELD_XMAX + GOAL_WIDTH &&
-                Math.Abs(ball.Position.Y) <= GOAL_HEIGHT / 2)
-                )
-            {
-                if (GoalScored != null)
-                    GoalScored();
+            if (ball == null)
                 return;
-            }
-//TODO: Abstract away or remove completely (not working anyway)
-#if FALSE
-            bool immobile = false;
-            if (ball.Velocity.magnitudeSq() < .003 * .003)
-                immobile = true;
 
-            // find robot-ball collisions
+            // Ball left the field
+            if (ball.Position.X >= FIELD_XMAX || ball.Position.X <= FIELD_XMIN ||
+                ball.Position.Y >= FIELD_YMAX || ball.Position.Y <= FIELD_YMIN)
             {
-                const double threshsq = .35 * .35;
-                int numTooClose = 0;
-                foreach (RobotInfo info in predictor.GetRobots())
+
+                // Check for goal
+                if ((ball.Position.X <= FIELD_XMIN && ball.Position.X >= FIELD_XMIN - GOAL_WIDTH &&
+                    Math.Abs(ball.Position.Y) <= GOAL_HEIGHT / 2) ||
+                    (ball.Position.X >= FIELD_XMAX && ball.Position.X <= FIELD_XMAX + GOAL_WIDTH &&
+                    Math.Abs(ball.Position.Y) <= GOAL_HEIGHT / 2)
+                    )
                 {
-                    double dist = ball.Position.distanceSq(info.Position);
-                    if (dist < threshsq)
-                        numTooClose++;
+                    if (GoalScored != null)
+                        GoalScored();
+                    return;
                 }
 
-                if (numTooClose >= 4)
-                    immobile = true;
+                // If no goal, ball is simply out
+                if (BallOut != null)
+                    BallOut(ball.Position);
             }
-
-            // increment immobile count
-            if (immobile)
-            {
-                // reset if stuck too long
-                should_restart++;
-                /*if (should_restart > 200)
-                {
-                    Console.WriteLine("STUCK !!!!!!!!!!!!!!!!!!!!!!!!!");
-                    string x = Console.ReadLine();
-                    Console.WriteLine("BS: [ " + x + "]");
-                    move_ball(new BallInfo(new Vector2(0, 0)));
-                    should_restart = 0;
-                }*/
-            }
-            else
-                should_restart = 0;
-#endif
         }
 
         public PlayType GetCurrentPlayType()

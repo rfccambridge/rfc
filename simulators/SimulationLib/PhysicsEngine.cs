@@ -35,6 +35,7 @@ namespace Robocup.Simulation
         static double FIELD_YMIN;
         static double FIELD_YMAX;
         static double GOAL_WIDTH;
+        static double REFEREE_ZONE_WIDTH;
 
         private bool running = false;
         private System.Timers.Timer mainTimer = new System.Timers.Timer();
@@ -105,6 +106,7 @@ namespace Robocup.Simulation
 			}
 
             referee.GoalScored += scenario.GoalScored;
+            referee.BallOut += scenario.BallOut;
 		}
 
         public void LoadConstants()
@@ -113,14 +115,14 @@ namespace Robocup.Simulation
 
             FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
             FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
-
             GOAL_WIDTH = Constants.get<double>("plays", "GOAL_WIDTH");
+            REFEREE_ZONE_WIDTH = Constants.get<double>("plays", "REFEREE_ZONE_WIDTH");
 
-            //Leave a goal depth around the field, so that stuff(ball) is allowed inside the goal
-            FIELD_XMIN = -FIELD_WIDTH / 2 - GOAL_WIDTH;
-            FIELD_XMAX = FIELD_WIDTH / 2 + GOAL_WIDTH;
-            FIELD_YMIN = -FIELD_HEIGHT / 2;
-            FIELD_YMAX = FIELD_HEIGHT / 2;            
+            // Calculate physics based on physical boundaries slightly larger than field
+            FIELD_XMIN = -FIELD_WIDTH / 2 - REFEREE_ZONE_WIDTH;
+            FIELD_XMAX = FIELD_WIDTH / 2 + REFEREE_ZONE_WIDTH;
+            FIELD_YMIN = -FIELD_HEIGHT / 2 - REFEREE_ZONE_WIDTH;
+            FIELD_YMAX = FIELD_HEIGHT / 2 + REFEREE_ZONE_WIDTH;            
         }
 
         public void StartCommander(int port)
@@ -189,7 +191,10 @@ namespace Robocup.Simulation
                 throw new ApplicationException("Cannot change scenario while running");
 
             if (this.scenario != null)
+            {
                 referee.GoalScored -= scenario.GoalScored;
+                referee.BallOut -= scenario.BallOut;
+            }
             
             this.scenario = scenario;
         }

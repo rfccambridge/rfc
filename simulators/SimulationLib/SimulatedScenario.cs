@@ -23,6 +23,7 @@ namespace Robocup.Simulation
         protected PhysicsEngine _engine;
         protected double FIELD_WIDTH;
         protected double FIELD_HEIGHT;
+        protected double FREEKICK_DISTANCE;
 
         public SimulatedScenario(string name, PhysicsEngine engine)
         {
@@ -34,12 +35,14 @@ namespace Robocup.Simulation
 
         public abstract SimulatorScene GetScene();
         public abstract void GoalScored();
+        public abstract void BallOut(Vector2 lastPosition);
         public abstract bool SupportsNumbers { get; }
 
         public virtual void LoadConstants()
         {
             FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
             FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+            FREEKICK_DISTANCE = Constants.get<double>("plays", "FREEKICK_DISTANCE");
         }
 
         public override string ToString()
@@ -48,6 +51,10 @@ namespace Robocup.Simulation
         }
     }
 
+    /// <summary>
+    /// A regular game scenario. On scored, ball is reset to center. When ball out, placed 
+    /// appropriately for a freekick.
+    /// </summary>
     public class NormalGameScenario : SimulatedScenario
     {
         public NormalGameScenario(string name, PhysicsEngine engine) : base(name, engine) { }
@@ -99,8 +106,35 @@ namespace Robocup.Simulation
         {
             _engine.UpdateBall(new BallInfo(Vector2.ZERO));
         }
+
+        public override void BallOut(Vector2 lastPosition)
+        {
+            double freeKickX, freeKickY;
+
+            // Make sure we are some distance away from field lines (as by rule)
+            if (lastPosition.X > FIELD_WIDTH/2 - FREEKICK_DISTANCE)
+                freeKickX = FIELD_WIDTH/2 - FREEKICK_DISTANCE;
+            else if (lastPosition.X < -FIELD_WIDTH/2 + FREEKICK_DISTANCE)
+                freeKickX = -FIELD_WIDTH/2 + FREEKICK_DISTANCE;
+            else
+                freeKickX = lastPosition.X;
+
+            if (lastPosition.Y > FIELD_HEIGHT/2 - FREEKICK_DISTANCE)
+                freeKickY = FIELD_HEIGHT/2 - FREEKICK_DISTANCE;
+            else if (lastPosition.Y < -FIELD_HEIGHT/2 + FREEKICK_DISTANCE)
+                freeKickY = -FIELD_HEIGHT/2 + FREEKICK_DISTANCE;
+            else
+                freeKickY = lastPosition.Y;
+
+            BallInfo newBall = new BallInfo(new Vector2(freeKickX, freeKickY));
+            _engine.UpdateBall(newBall);
+        }
     }
 
+    /// <summary>
+    /// A shootout game scenario. A few predefined shoot positions that get changed on score.
+    /// On ball out, the same position is repeated.
+    /// </summary>
     public class ShootoutGameScenario : SimulatedScenario
     {
         private int _sceneIndex;
@@ -172,5 +206,10 @@ namespace Robocup.Simulation
             _engine.GetScenarioScene();
         }
 
+        public override void BallOut(Vector2 lastPosition)
+        {
+            //Restart from the same shootout position
+            _engine.GetScenarioScene();
+        }
     }
 }

@@ -21,6 +21,9 @@ double FIELD_HEIGHT 4.05
 
 double REFEREE_ZONE_WIDTH 0.1
 
+# minimum distance ball should be placed from boundaries
+double FREEKICK_DISTANCE 0.1
+
 # obsolete, to be removed together with BasicPredictor
 string FIELD_HALF Left
 
