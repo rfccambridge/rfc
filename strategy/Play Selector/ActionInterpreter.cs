@@ -423,7 +423,7 @@ namespace Robocup.Plays
         /// <summary>
         /// Has the robot move to the point target, avoiding all obstacles. takes avoidBall as second argument
         /// </summary>
-        private void Move(int robotID, bool avoidBall, Vector2 target, Vector2 facing)
+        public void Move(int robotID, bool avoidBall, Vector2 target, Vector2 facing)
         {
             double orient = Math.Atan2(facing.Y - target.Y, facing.X - target.X); //hack for different coordinates
             try

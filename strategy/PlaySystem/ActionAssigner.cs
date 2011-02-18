@@ -81,6 +81,12 @@ namespace Robocup.PlaySystem
             actioninterpreter.Move(robotID, target, facing);
         }
 
+        public void Move(int robotID, bool avoidBall, Vector2 target, Vector2 facing)
+        {
+            assignedIDs.Add(robotID);
+            actioninterpreter.Move(robotID, avoidBall, target, facing);
+        }
+
         public void Stop(int robotID)
         {
             assignedIDs.Add(robotID);

@@ -16,5 +16,5 @@ Actions:
 # check if we shouldn't go after the ball- that is, if it is
 # in the goal and there is another robot there
 
-(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick robot0 (theirGoalBestShot)) (robotpointmove robot0 standbypoint))
+(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick robot0 (theirgoal)) (robotpointmove robot0 standbypoint))
 

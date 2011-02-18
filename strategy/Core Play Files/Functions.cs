@@ -161,6 +161,11 @@ namespace Robocup.Plays
             {
                 return ((Vector2)objects[0]).Y;
             });
+            addFunction("getAngle", "Point - cartesian angle", "The angle of point ~, CCW from the x axis", typeof(double),
+                        new Type[] { typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return ((Vector2)objects[0]).cartesianAngle();
+            });
             addFunction("line", "Point, Point - Line", "The line connecting ~ and ~", typeof(Line),
                         new Type[] { typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
             {
@@ -828,6 +833,18 @@ namespace Robocup.Plays
                     Vector2 facing = (Vector2)objects[2];
                     int id = robot.getID();
                     a.Move(id, target, facing);
+                    //Console.WriteLine("robotpointpointmove: r=" + id.ToString() + "target=" + target.ToString() + " facing=" + facing.ToString());
+                }, robot.getID());
+            });
+            addFunction("robotpointpointmovenoavoid", "Robot, Point, Point - Move", "Have robot ~ move to ~, and face ~ (not avoiding ball)", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Robot robot = (Robot)objects[0];
+                return new ActionDefinition(delegate(IActionInterpreter a)
+                {
+                    Vector2 target = (Vector2)objects[1];
+                    Vector2 facing = (Vector2)objects[2];
+                    int id = robot.getID();
+                    a.Move(id, false, target, facing);
                     //Console.WriteLine("robotpointpointmove: r=" + id.ToString() + "target=" + target.ToString() + " facing=" + facing.ToString());
                 }, robot.getID());
             });

@@ -128,6 +128,11 @@ namespace Robocup.Plays
             actionInterpreter.Move(robotID, -target, -facing);
         }
 
+        public void Move(int robotID, bool avoidBall, Vector2 target, Vector2 facing)
+        {
+            actionInterpreter.Move(robotID, avoidBall, -target, -facing);
+        }
+        
         public void Stop(int robotID)
         {
             actionInterpreter.Stop(robotID);
