@@ -1,0 +1,10 @@
+Metadata:
+playtype SetPlay_Theirs
+name TheirFreeKick_1_0
+score 100
+
+Tactics:
+SmartGoalie
+
+Objects:
+Actions:
