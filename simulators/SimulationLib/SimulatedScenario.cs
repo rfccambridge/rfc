@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Robocup.Core;
+using Robocup.CoreRobotics;
 
 namespace Robocup.Simulation
 {
@@ -57,7 +58,12 @@ namespace Robocup.Simulation
     /// </summary>
     public class NormalGameScenario : SimulatedScenario
     {
-        public NormalGameScenario(string name, PhysicsEngine engine) : base(name, engine) { }
+        public NormalGameScenario(string name, PhysicsEngine engine) :
+            base(name, engine)
+        {
+            _engine.Referee.SetCurrentCommand(MulticastRefBoxListener.KICKOFF_BLUE);
+            _engine.Referee.EnqueueCommand(MulticastRefBoxListener.READY, 2000);
+        }
 
         public override bool SupportsNumbers { get { return true; } }
 
@@ -105,6 +111,12 @@ namespace Robocup.Simulation
         public override void GoalScored()
         {
             _engine.UpdateBall(new BallInfo(Vector2.ZERO));
+
+            // Update referee state
+            // XXX: Assume Blue always gets everything for now, implement _engine.LastTouched
+            _engine.Referee.SetCurrentCommand(MulticastRefBoxListener.STOP);
+            _engine.Referee.EnqueueCommand(MulticastRefBoxListener.KICKOFF_BLUE, 5000);
+            _engine.Referee.EnqueueCommand(MulticastRefBoxListener.READY, 2000);
         }
 
         public override void BallOut(Vector2 lastPosition)
@@ -112,22 +124,27 @@ namespace Robocup.Simulation
             double freeKickX, freeKickY;
 
             // Make sure we are some distance away from field lines (as by rule)
-            if (lastPosition.X > FIELD_WIDTH/2 - FREEKICK_DISTANCE)
-                freeKickX = FIELD_WIDTH/2 - FREEKICK_DISTANCE;
-            else if (lastPosition.X < -FIELD_WIDTH/2 + FREEKICK_DISTANCE)
-                freeKickX = -FIELD_WIDTH/2 + FREEKICK_DISTANCE;
+            if (lastPosition.X > FIELD_WIDTH / 2 - FREEKICK_DISTANCE)
+                freeKickX = FIELD_WIDTH / 2 - FREEKICK_DISTANCE;
+            else if (lastPosition.X < -FIELD_WIDTH / 2 + FREEKICK_DISTANCE)
+                freeKickX = -FIELD_WIDTH / 2 + FREEKICK_DISTANCE;
             else
                 freeKickX = lastPosition.X;
 
-            if (lastPosition.Y > FIELD_HEIGHT/2 - FREEKICK_DISTANCE)
-                freeKickY = FIELD_HEIGHT/2 - FREEKICK_DISTANCE;
-            else if (lastPosition.Y < -FIELD_HEIGHT/2 + FREEKICK_DISTANCE)
-                freeKickY = -FIELD_HEIGHT/2 + FREEKICK_DISTANCE;
+            if (lastPosition.Y > FIELD_HEIGHT / 2 - FREEKICK_DISTANCE)
+                freeKickY = FIELD_HEIGHT / 2 - FREEKICK_DISTANCE;
+            else if (lastPosition.Y < -FIELD_HEIGHT / 2 + FREEKICK_DISTANCE)
+                freeKickY = -FIELD_HEIGHT / 2 + FREEKICK_DISTANCE;
             else
                 freeKickY = lastPosition.Y;
 
             BallInfo newBall = new BallInfo(new Vector2(freeKickX, freeKickY));
             _engine.UpdateBall(newBall);
+
+            // Update referee state
+            // XXX: Assume Blue always gets everything for now, implement _engine.LastTouched
+            _engine.Referee.SetCurrentCommand(MulticastRefBoxListener.STOP);
+            _engine.Referee.EnqueueCommand(MulticastRefBoxListener.INDIRECT_BLUE, 5000);
         }
     }
 
@@ -145,6 +162,8 @@ namespace Robocup.Simulation
             : base(name, engine)
         {
             _sceneIndex = 0;
+
+            _engine.Referee.SetCurrentCommand(MulticastRefBoxListener.START);
         }
 
         public override bool SupportsNumbers { get { return false; } }

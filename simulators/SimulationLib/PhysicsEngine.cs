@@ -54,7 +54,8 @@ namespace Robocup.Simulation
         SSLVision.RoboCupSSLServerManaged sslVisionServer;
 
         private bool refBoxStarted = false;
-        SimpleReferee referee;
+        private MulticastRefBoxSender refBoxSender = new MulticastRefBoxSender();
+        public IVirtualReferee Referee;
 
         private SimulatedScenario scenario;
         private Object updateScenarioLock = new Object();
@@ -78,7 +79,7 @@ namespace Robocup.Simulation
 			
             LoadConstants();
 
-            referee = new SimpleReferee();
+            Referee = new SimpleReferee();
 
             mainTimer.AutoReset = true;
             mainTimer.Elapsed += mainTimer_Elapsed;
@@ -105,8 +106,8 @@ namespace Robocup.Simulation
 				}
 			}
 
-            referee.GoalScored += scenario.GoalScored;
-            referee.BallOut += scenario.BallOut;
+            Referee.GoalScored += scenario.GoalScored;
+            Referee.BallOut += scenario.BallOut;
 		}
 
         public void LoadConstants()
@@ -170,7 +171,7 @@ namespace Robocup.Simulation
             if (refBoxStarted)
                 throw new ApplicationException("Referee already running.");
 
-            referee.Connect(host, port);
+            refBoxSender.Connect(host, port);
 
             refBoxStarted = true;
         }
@@ -180,7 +181,7 @@ namespace Robocup.Simulation
             if (!refBoxStarted)
                 throw new ApplicationException("Referee not running.");
 
-            referee.Disconnect();
+            refBoxSender.Disconnect();
 
             refBoxStarted = false;
         }
@@ -192,8 +193,8 @@ namespace Robocup.Simulation
 
             if (this.scenario != null)
             {
-                referee.GoalScored -= scenario.GoalScored;
-                referee.BallOut -= scenario.BallOut;
+                Referee.GoalScored -= scenario.GoalScored;
+                Referee.BallOut -= scenario.BallOut;
             }
             
             this.scenario = scenario;
@@ -357,17 +358,16 @@ namespace Robocup.Simulation
                 }
 
                 UpdateBall(new BallInfo(newBallLocation, newBallVelocity));
-                referee.RunRef(this);
+                Referee.RunRef(this);
             }
             
             // Synchronously (at least for now) send out a vision message
             SSLVision.SSL_DetectionFrameManaged frame = constructSSLVisionFrame();
             sslVisionServer.send(frame);
 
-            referee.RunRef(this);
-            //TODO: A dirty hack to allow us to run without a real refbox. Implement based on referee.GetCurrentPlayType()!
+            Referee.RunRef(this);
             if (refBoxStarted)
-                referee.SendCommand(RefBoxHandler.START);
+                refBoxSender.SendCommand(Referee.GetLastCommand());
         }        
 
         public void UpdateRobot(RobotInfo old_info, RobotInfo new_info)
