@@ -205,7 +205,12 @@ namespace Robocup.CoreRobotics
 
         public void SendCommand(char command)
         {
-            cmd_counter++;
+            lock (lastPacketLock)
+            {
+                if (command != _lastPacket.cmd)
+                    cmd_counter++;
+            }
+
             switch (command)
             {
                 case 'g':

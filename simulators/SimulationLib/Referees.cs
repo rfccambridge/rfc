@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Robocup.Core;
 using Robocup.CoreRobotics;
 
@@ -9,7 +10,7 @@ namespace Robocup.Simulation
     public delegate void GoalScored();
     public delegate void BallOut(Vector2 lastPosition);
 
-    public interface VirtualRef : IReferee
+    public interface IVirtualReferee
     {
         /// <summary>
         /// Takes as an argument the field state (in the form of a predictor object), and a way to move the ball;
@@ -17,10 +18,19 @@ namespace Robocup.Simulation
         /// </summary>
         /// <param name="predictor">The IPredictor object that provides field state information</param>
         void RunRef(IPredictor predictor);
+        void SetCurrentCommand(char commandToRun);
+        /// <summary>
+        /// Allows the automated referee to emit command sequences (f.e. stop->free_kick_blue)
+        /// </summary>
+        /// <param name="dealy">delay in wall clock (not simulated) time, in milliseconds</param>
+        void EnqueueCommand(char command, int dealy);
+        char GetLastCommand();
+        void LoadConstants();
         event GoalScored GoalScored;
         event BallOut BallOut;
     }
-    public class SimpleReferee : VirtualRef
+
+    public class SimpleReferee : IVirtualReferee
     {
         static double FIELD_WIDTH;
         static double FIELD_HEIGHT;
@@ -31,11 +41,16 @@ namespace Robocup.Simulation
         static double GOAL_WIDTH;
         static double GOAL_HEIGHT;
 
-        MulticastRefBoxSender sender;
+        private char command;
+        private Object commandLock = new Object();
+        private Queue<Pair<char, int>> commandQueue = new Queue<Pair<char, int>>();
+        private System.Threading.Timer commandQueueTimer;
 
         public SimpleReferee()
         {
-            sender = new MulticastRefBoxSender();
+            command = MulticastRefBoxSender.HALT;
+            commandQueueTimer = new System.Threading.Timer(CommandQueueTimer_Elapsed);
+            commandQueueTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
             LoadConstants();             
         }
@@ -87,24 +102,47 @@ namespace Robocup.Simulation
             }
         }
 
-        public PlayType GetCurrentPlayType()
+        public void SetCurrentCommand(char commandToRun)
         {
-            return PlayType.NormalPlay;
+            lock (commandLock)
+            {
+                command = commandToRun;
+                commandQueue.Clear();
+            }
         }
 
-        public void Connect(string host, int port)
+        public void EnqueueCommand(char command, int delay)
         {
-            sender.Connect(host, port);
+            lock (commandLock)
+            {
+                commandQueue.Enqueue(new Pair<char, int>(command, delay));
+
+                // If adding to head, enable queue timier
+                if (commandQueue.Count == 1)
+                    commandQueueTimer.Change(delay, System.Threading.Timeout.Infinite);
+            }
         }
 
-        public void Disconnect()
+        private void CommandQueueTimer_Elapsed(Object stateInfo)
         {
-            sender.Disconnect();
+            lock (commandLock)
+            {
+                if (commandQueue.Count > 0)
+                    command = commandQueue.Dequeue().First;
+
+                if (commandQueue.Count > 0)
+                    commandQueueTimer.Change(commandQueue.Peek().Second, System.Threading.Timeout.Infinite);
+                else
+                    commandQueueTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+            }
         }
 
-        public void SendCommand(char command)
+        public char GetLastCommand()
         {
-            sender.SendCommand(command);
+            lock (commandLock)
+            {
+                return command;
+            }
         }
     }
 }
