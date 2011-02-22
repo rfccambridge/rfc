@@ -1,0 +1,17 @@
+Metadata:
+playtype KickOff_Theirs
+name main
+score 1
+
+Objects:
+
+numRobots (numourbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+(if_Action (= numRobots 1) (assignPlay TH_KOFF_1x0) nothing)
+
+(if_Action (= numRobots 2) (assignPlay TH_KOFF_2x0) nothing)
