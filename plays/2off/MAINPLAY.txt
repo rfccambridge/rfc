@@ -2,6 +2,8 @@ Metadata:
 playtype NormalPlay
 name main
 
+#TEST COMMENT BY TOMO
+
 Objects:
 
 topLeftCorner (point -3.05 2.1)
