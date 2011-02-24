@@ -767,24 +767,87 @@ namespace Robocup.Plays
             {
                 double fieldWidth = Constants.get<double>("plays", "FIELD_WIDTH");
                 double goalHeight = Constants.get<double>("plays", "GOAL_HEIGHT");
-                double buffer = 0.02;
+
+                double buffer = 0.01;
+                double posUncertainty = 0.03;
+                int numIncrements = 24;
+
                 Vector2 goalEnd0 = new Vector2(fieldWidth / 2, goalHeight / 2 - buffer);
                 Vector2 goalEnd1 = new Vector2(fieldWidth / 2, -goalHeight / 2 + buffer);
 
+                int besti = 0;
                 Vector2 bestTarget = (goalEnd0 + goalEnd1) / 2.0;
                 double bestBlockedness = Double.PositiveInfinity;
-                for (int i = 0; i <= 16; i++)
+
+                //Interpolate between the ends of the goal, testing the point every increment
+                for (int i = 0; i <= numIncrements; i++)
                 {
-                    double prop = (double)i / 16;
+                    double prop = (double)i / numIncrements;
                     Vector2 target = goalEnd0 + prop * (goalEnd1 - goalEnd0);
+
+                    //How blocked is it if we shoot to this point?
                     double blockedness = TacticsEval.kickBlockedness(state.OurTeamInfo, state.TheirTeamInfo,
                         state.ballInfo, target, 0);
+
+                    //Penalize shots that go really close to the edge of the goal
+                    double edgeDistance = (goalHeight - 2 * buffer) * Math.Min(prop, 1 - prop);
+                    double denom = 0.5 + (edgeDistance / posUncertainty);
+                    double penalty = 1 / (denom * denom);
+                    blockedness = blockedness + (1 - blockedness) * penalty;
+
+                    //Take the best
                     if (blockedness < bestBlockedness)
                     {
+                        besti = i;
                         bestBlockedness = blockedness;
                         bestTarget = target;
                     }
                 }
+                Console.WriteLine("Best blockedness: " + bestBlockedness + " (" + besti + ")");
+                return bestTarget;
+            });
+
+            addFunction("theirGoalBestShot2", "theirGoalBestShot2", "Attempts to find a good location to shoot at", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                double fieldWidth = Constants.get<double>("plays", "FIELD_WIDTH");
+                double goalHeight = Constants.get<double>("plays", "GOAL_HEIGHT");
+
+                double buffer = 0.01;
+                int numIncrements = 24;
+
+                Vector2 goalEnd0 = new Vector2(fieldWidth / 2, goalHeight / 2 - buffer);
+                Vector2 goalEnd1 = new Vector2(fieldWidth / 2, -goalHeight / 2 + buffer);
+
+                int besti = 0;
+                Vector2 bestTarget = (goalEnd0 + goalEnd1) / 2.0;
+                double bestDist = 0;
+
+                BallInfo ball = state.ballInfo;
+                if (ball == null)
+                    return bestTarget;
+
+                //Interpolate between the ends of the goal, testing the point every increment
+                for (int i = 0; i <= numIncrements; i++)
+                {
+                    double prop = (double)i / numIncrements;
+                    Vector2 target = goalEnd0 + prop * (goalEnd1 - goalEnd0);
+
+                    //Distance from enemy robots
+                    double enemyDist = TacticsEval.kickClosestDistFromThem(state.TheirTeamInfo, state.ballInfo, target);
+
+                    //Distance from goal wall
+                    double edgeDistance = goalHeight * Math.Min(prop, 1 - prop);
+                    double effectiveDist = 0.25 * Math.Sqrt(edgeDistance) + Math.Sqrt(enemyDist);
+
+                    //Take the best
+                    if (effectiveDist > bestDist)
+                    {
+                        besti = i;
+                        bestDist = effectiveDist;
+                        bestTarget = target;
+                    }
+                }
+                Console.WriteLine("Best dist: " + bestDist + " (" + besti + ")");
                 return bestTarget;
             });
 
