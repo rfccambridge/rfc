@@ -1,0 +1,15 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_2vs2
+score 200
+
+Tactics:
+AttackSide True
+AttackSide False
+
+
+Objects:
+
+
+Conditions:
+Actions:

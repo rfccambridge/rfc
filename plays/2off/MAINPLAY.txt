@@ -21,4 +21,4 @@ Actions:
 
 (if_Action (= numRobots 1) (assignPlay OFFENSE_1vs0) nothing)
 
-(if_Action (= numRobots 2) (assignPlay OFFENSE_2vs0) nothing)
+(if_Action (= numRobots 2) (assignPlay OFFENSE_2vs2) nothing)

@@ -1,0 +1,64 @@
+Metadata:
+type tactic
+name AttackSide
+
+Parameters:
+imontop bool
+
+Objects:
+
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
+GOAL_MINIMUM (const-double GOAL_MINIMUM)
+BALL_IN_RANGE (const-double BALL_IN_RANGE)
+SUPPORT_AVOID (const-double SUPPORT_AVOID)
+CLEAR_DIST (const-double CLEAR_DIST)
+SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
+
+ballpoint (pointof ball)
+
+robot0 (closest friendly topCenter loose)
+robot1 (closest friendly bottomCenter loose)
+
+robot0ontop (> (getYcoord (pointof robot0)) (getYcoord (pointof robot1)))
+
+topbot (if_robot robot0ontop robot0 robot1)
+bottombot (if_robot robot0ontop robot1 robot0)
+
+myrobot (if_robot imontop topbot bottombot)
+mypoint (pointof myrobot)
+otherrobot (if_robot imontop bottombot topbot)
+otherrobotpoint (pointof otherrobot)
+
+ballY (getYcoord ballpoint)
+ballontop (> ballY 0)
+ballonbottom (<= ballY 0)
+ballonmyside (if_bool imontop ballontop ballonbottom)
+
+goalTop (pointadd (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+goalMiddle (theirgoal)
+goalBottom (pointsubtract (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+
+pos1Y (if_double imontop 1.0 -1.0)
+pos2Y (if_double imontop 1.75 -1.75)
+pos3Y (if_double imontop 1.5 -1.5) 
+
+pos1 (point 4.5 pos1Y)
+pos2 (point 3.5 pos2Y)
+pos3 (point 5.5 pos3Y)
+
+target (if_point (pathClear ballpoint goalTop CLEAR_DIST) goalTop (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle (if_point (pathClear ballpoint goalBottom CLEAR_DIST) goalBottom otherrobotpoint)))
+
+bestposition (if_point (pathClear pos1 goalMiddle CLEAR_DIST) pos1 (if_point (pathClear pos2 goalMiddle CLEAR_DIST) pos2 pos3))
+
+
+Actions:
+
+(if_Action ballonmyside (robotpointkick myrobot target) (robotpointmove myrobot bestposition))
