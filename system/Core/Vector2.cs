@@ -256,7 +256,6 @@ namespace Robocup.Core
         {
             double c = Math.Cos(angle);
             double s = Math.Sin(angle);
-            //davidwu: is there a reason some values are accessed in upper case, and some in lower case?
             return new Vector2(c * X - s * y, c * Y + s * x); 
         }
 
