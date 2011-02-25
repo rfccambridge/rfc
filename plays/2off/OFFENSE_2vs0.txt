@@ -21,12 +21,12 @@ CLEAR_DIST (const-double CLEAR_DIST)
 SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
 
 # Our Constants
-XINTERLOW (getXcoord (point 0.5 0))
-XINTERHIGH (getXcoord (point 1.8 0))
+XINTERLOW (getXcoord (point 0.8 0))
+XINTERHIGH (getXcoord (point 2 0))
 PASSMARGIN (getXcoord (point 0.2 0))
 STRIDE (getXcoord (point 1 0))
 BALLRANGE (getXcoord (point 1.75 0))
-DEFLECT_RADIUS (getXcoord (point 0.2 0))
+DEFLECT_RADIUS (getXcoord (point 1 0))
 DEFLECT_MARGIN (getXcoord (point 0.2 0))
 
 ballpoint (pointof ball)
@@ -62,7 +62,7 @@ point2 supportrobotpoint
 toposition (if_Action ballpositive (robotpointkick robot0 point1) (robotpointkick robot0 point2))
 goaltop (point 3.025 -0.34)
 goalbot (point 3.025 0.34)
-# stuff form ourstriker END
+# stuff from ourstriker END
 
 
 
