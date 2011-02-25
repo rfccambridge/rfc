@@ -35,5 +35,5 @@ supportbot (closest friendly center loose)
 
 Conditions:
 Actions:
-(if_Action (inField wall1point) (robotpointpointmove wall1bot wall1point ballpoint) (robotpointpointmove wall1bot atkpt ballpoint))
+(if_Action (inField wall1point) (robotpointpointmove wall1bot (point (+ (getXcoord wall1point) 0.5) (getYcoord wall1point)) ballpoint) (robotpointpointmove wall1bot atkpt ballpoint))
 (if_Action (inField opppoint) (robotpointpointmove supportbot opppoint ballpoint) (robotpointpointmove supportbot atkpt ballpoint))
