@@ -5,8 +5,8 @@ name Cover
 Parameters:
 
 Objects:
-goaliebot (closest friendly (ourgoal) loose)
-goaliebotpt (pointof goaliebot)
+robot0 (closest friendly (ourgoal) loose)
+robotpt (pointof robot0)
 goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)
 
@@ -15,20 +15,22 @@ GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 
 endtopgoalpt (point GOALIE_X_POS 1.6)
 endbottomgoalpt (point GOALIE_X_POS -1.6)
 vertgoalline (line endtopgoalpt endbottomgoalpt)
-midpointgoal (endtopgoalpt endbottomgoalpt)
+goalpt (point GOALIE_X_POS 0)
 radius (+ 0.5 0.1)
-radiusaroundgoal (midpointgoal radius)
+radiusaroundgoal (circle goalpt radius)
 
 #ball geometry
 ballpoint (pointof ball)
 ballgoalline (line ballpoint (ourgoal))
 ballverticalpt (linelineintersection ballgoalline vertgoalline)
+ballradiusintersectpt (linecircleintersection ballgoalline radiusaroundgoal -1)
 
 #ball-velocity projected geometry
 ballvelocity (velocityof ball)
 balldirection (getAngle ballvelocity)
 ballprojline (linedirection ballpoint balldirection)
 ballprojverticalpt (linelineintersection ballprojline vertgoalline)
+ballprojradiusintersectpt (linecircleintersection ballprojline radiusaroundgoal -1)
 
 #attacker geometry
 attacker (closest enemy ballpoint loose)
@@ -36,17 +38,15 @@ attackerpt (pointof attacker)
 attackerorient (orientationof attacker)
 attackerline (linedirection attackerpt attackerorient)
 attackerverticalpt (linelineintersection attackerline vertgoalline)
-attackerradiusintersectpt (linecircleintersection (attackerline radiusaroundgoal))
+attackerradiusintersectpt (linecircleintersection attackerline radiusaroundgoal -1)
 
 # should the goalie try to kick the ball?
 goalieshouldkick (pointInGoal ballpoint)
 
-kickaction (robotpointkick goaliebot (theirgoal))
-attackeraction (robotpointpointmove goaliebot attackerverticalpt attackerpt)
-projballaction (robotpointpointmovenoavoid goaliebot ballprojverticalpt ballpoint)
-ballaction (robotpointpointmove goaliebot ballverticalpt ballpoint)
-topaction (robotpointpointmove goaliebot goaltoppt ballpoint)
-bottomaction (robotpointpointmove goaliebot goalbotpt ballpoint)
+kickaction (robotpointkick robot0 (theirgoal))
+attackeraction (robotpointpointmove robot0 attackerradiusintersectpt attackerpt)
+projballaction (robotpointpointmovenoavoid robot0 ballprojradiusintersectpt ballpoint)
+ballaction (robotpointpointmove robot0 ballradiusintersectpt ballpoint)
 
 attackeraimsgoal (and (> (getYcoord attackerverticalpt) (getYcoord goalbotpt)) (< (getYcoord attackerverticalpt) (getYcoord goaltoppt)))
 attackerhasball (< (pointpointdistance ballpoint attackerpt) 0.12)
@@ -54,6 +54,5 @@ ballaimsgoal (and (> (getYcoord ballprojverticalpt) (getYcoord goalbotpt)) (< (g
 ballmoves (> (pointpointdistance ballvelocity (point 0 0)) 0.05)
 
 Conditions:
-
 Actions:
-(if_Action((attackerhasball) (pointpointmove goaliebot attackerradiusintersectpt) (pointpointmove goaliebot midpointgoal)))
+(if_Action goalieshouldkick kickaction (if_Action (and attackeraimsgoal attackerhasball) attackeraction (if_Action  (and ballaimsgoal ballmoves) projballaction ballaction)))
