@@ -132,7 +132,7 @@ namespace Robocup.MotionControl
     public class TangentBugPlanner : IPathPlanner
     {
         double LOOK_AHEAD_DIST;
-        double AVOID_DIST;
+        double TBUG_AVOID_DIST;
         double MIN_ABS_VAL_STICK;
         public double WAYPOINT_DIST;
         double EXTRA_GOAL_DIST;
@@ -192,7 +192,7 @@ namespace Robocup.MotionControl
             {
                 if (info.ID != id) {
                     obstaclePositions.Add(info.Position);
-                    obstacleSizes.Add(AVOID_DIST);
+                    obstacleSizes.Add(TBUG_AVOID_DIST);
                 }
                 //Console.WriteLine(info.ToString());
             }
@@ -352,7 +352,7 @@ namespace Robocup.MotionControl
             Constants.Load("motionplanning");
 
             LOOK_AHEAD_DIST = Constants.get<double>("motionplanning", "LOOK_AHEAD_DIST");
-            AVOID_DIST = Constants.get<double>("motionplanning", "AVOID_DIST");
+            TBUG_AVOID_DIST = Constants.get<double>("motionplanning", "TBUG_AVOID_DIST");
             WAYPOINT_DIST = Constants.get<double>("motionplanning", "WAYPOINT_DIST");
             MIN_ABS_VAL_STICK = Constants.get<double>("motionplanning", "MIN_ABS_VAL_STICK");
             EXTRA_GOAL_DIST = Constants.get<double>("motionplanning", "EXTRA_GOAL_DIST");
@@ -409,7 +409,7 @@ namespace Robocup.MotionControl
             double opposite = hypotenuse * Math.Sin(angleBetween);
 
             //return whether the obstacle is far enough off path or is completely out of way
-            return (opposite > AVOID_DIST);
+            return (opposite > TBUG_AVOID_DIST);
         }
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace Robocup.MotionControl
 	/// </summary>
 	public class BasicRRTMotionPlanner : IPathPlanner
 	{
-		double AVOID_DIST;
+		double RRT_OBSTACLE_AVOID_DIST;
 		double STEADY_STATE_SPEED;
 
 		private readonly BasicRRTPlanner<Vector2, Vector2Tree> planner;
@@ -492,7 +492,7 @@ namespace Robocup.MotionControl
 			foreach (RobotInfo info in predictor.GetRobots())
 			{
 				if (info.Team != team || info.ID != id)
-					obstacles.Add(new Obstacle(info.Position, AVOID_DIST));
+                    obstacles.Add(new Obstacle(info.Position, RRT_OBSTACLE_AVOID_DIST));
 			}
 			//If needed, avoid ball
             if (avoidBallRadius > 0 &&
@@ -538,7 +538,7 @@ namespace Robocup.MotionControl
 
         public class BidirectionalRRTMotionPlanner : IPathPlanner
 	{
-		double AVOID_DIST;
+		double RRT_OBSTACLE_AVOID_DIST;
 		double STEADY_STATE_SPEED;
 
 		private readonly BidirectionalRRTPlanner<Vector2,Vector2, Vector2Tree, Vector2Tree> planner;
@@ -587,9 +587,9 @@ namespace Robocup.MotionControl
 		}
          * */
 
-		public void ReloadConstants()
+        public void ReloadConstants()
 		{
-			AVOID_DIST = Constants.get<double>("motionplanning", "AVOID_DIST");
+            RRT_OBSTACLE_AVOID_DIST = Constants.get<double>("motionplanning", "RRT_OBSTACLE_AVOID_DIST");
 			STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
 		}
 	}
