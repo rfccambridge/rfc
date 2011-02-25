@@ -1,0 +1,53 @@
+Metadata:
+type tactic
+name BlockPath
+
+Parameters:
+point_defended point
+distance double
+should_kick bool
+
+Objects:
+perimeter (circle point_defended distance)
+
+ballpoint (pointof ball)
+
+ballline (line ballpoint point_defended)
+
+defensept (linecircleintersection ballline perimeter -1)
+
+defensebot (closest friendly defensept loose)
+defensebotpt (pointof defensebot)
+
+# is defender going in to kick
+defensedisttoball (pointpointdistance defensebotpt ballpoint)
+
+
+
+# should robot kick
+do_kick (and should_kick (< defensedisttoball 0.4))
+
+# offense bot closest to the ball
+offensebot (closest enemy ballpoint loose)
+offbotpt (pointof offensebot)
+
+offdistball (pointpointdistance offbotpt ballpoint)
+# distance of the offensebot closest to the ball
+
+
+# distance of the offensebot to the goal
+offdistgoal (pointpointdistance ballpoint (ourgoal))
+
+#distance from goal on the line from ball to goal
+radius (max .45 (* offdistgoal 0.85))
+
+blockpathpt (linecircleintersection (line ballpoint (ourgoal)) (circle (ourgoal) radius) -1)
+
+Actions:
+(if_Action do_kick (robotpointkick defensebot (theirgoal)) (robotpointpointmove defensebot blockpathpt ballpoint))
+
+#(if_Action do_kick 
+#	(robotpointkick defensebot (theirgoal)) 
+#	(if_Action (< offdistball .5)
+#		(robotpointpointmove defensebot (if_Action blockpath ballpoint)
+#		(robotpointpointmove defensebot defensept ballpoint)))

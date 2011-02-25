@@ -1,0 +1,21 @@
+Metadata:
+type tactic
+name BlockPass
+
+Parameters:
+
+
+Objects: 
+robot0 (closest friendly ballpoint loose)
+robot0pt (pointof robot0)
+ballpoint (pointof ball)
+farEnemyPos (farEnemyRobotPos ballpoint)
+
+lineToEnemy (line ballpoint farEnemyPos)
+perimeter (circle ballpoint (* (pointpointdistance ballpoint farEnemyPos) .8))
+goToPt (linecircleintersection lineToEnemy perimeter 1)
+
+
+
+Actions:
+(robotpointpointmove robot0 goToPt ballpoint)

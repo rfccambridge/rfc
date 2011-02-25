@@ -1,0 +1,7 @@
+CAN'T SCORE, WON'T SCORE
+
+1)
+
+a) Our strategy is to have a smart goalie block most of the shots with another robot cutting off the angle by coming out to meet the shooter and blocking the initial shot.  Since passing currently isn't that accurate, and we don't have any offense that passes to model against, we didn't worry about the robot passing for a quick shot. (We do have a strategy that blocks the path from the ball to the other offensive robot in order to prevent passes. However, when we tried to integrate the two, we ran into the problem where the two players switch between who they are marking, frequently allowing for a wide open shot. We will work on this problem more this week.) The blocking robot goes up 85% of the way on the path from the goal to the ball. It gets close to block off a good deal of the angle the offensive robot has on the goal. Also, we make sure that the robot stays out of the goal area. This blocking robot retains some of the earlier DefendPoint robot behaviors, meaning it will kick the ball away towards the other goal.
+
+b) sOur defense stopped the the simple offense every time, and they did not score in a 10-minute game. Since the simple offense ignores the defense, they kick it into the defender every time.  Since we never saw the offense score, we don't know how long it would take for it to score 10 goals.
