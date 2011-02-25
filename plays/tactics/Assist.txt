@@ -1,0 +1,18 @@
+Metadata:
+type tactic
+name Assist
+
+Parameters:
+
+Objects:
+ballpoint (pointof ball)
+ballpositive (< 0 (getYcoord ballpoint))
+deflection_point (if_point ballpositive (point 2.8 -0.35) (point 2.8 0.35))
+
+assistrobot (closest friendly (theirgoal) loose)
+
+assist (robotpointmove assistrobot deflection_point)
+
+Conditions:
+Actions:
+assist
