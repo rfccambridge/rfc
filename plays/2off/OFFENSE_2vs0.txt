@@ -22,10 +22,12 @@ SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
 
 # Our Constants
 XINTERLOW (getXcoord (point 0.5 0))
-XINTERHIGH (getXcoord (point 1.5 0))
-PASSMARGIN (getXcoord (point 0 0))
-STRIDE (getXcoord (point 0.5 0))
-BALLRANGE (getXcoord (point 1 0))
+XINTERHIGH (getXcoord (point 1.8 0))
+PASSMARGIN (getXcoord (point 0.2 0))
+STRIDE (getXcoord (point 1 0))
+BALLRANGE (getXcoord (point 1.75 0))
+DEFLECT_RADIUS (getXcoord (point 0.2 0))
+DEFLECT_MARGIN (getXcoord (point 0.2 0))
 
 ballpoint (pointof ball)
 numbots (numourbots)
@@ -40,12 +42,12 @@ ballinrange (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE)
 ballpositive (< 0 (getYcoord ballpoint))
 
 
-
 theirgoalcircle (circle (theirgoal) STANDBY_DISTANCE)
 theirgoalpositivequad (linecircleintersection (line (theirgoal) topCenter) theirgoalcircle 1)
 theirgoalnegativequad (linecircleintersection (line (theirgoal) bottomCenter) theirgoalcircle 1)
 
 standby_point (if_point ballpositive theirgoalnegativequad theirgoalpositivequad)
+deflection_point (if_point ballpositive (point 2.5 -0.35) (point 2.5 0.35))
 
 robot0 (closest friendly ballpoint loose)
 robot1 (closest friendly balldestination loose)
@@ -55,9 +57,9 @@ robot1point (pointof robot1)
 
 # stuff from ourstriker START
 
-point1 (point 2.2 1)
-point2 (point 2.2 -1) 
-toposition (if_Action (< (getYcoord ballpoint) 0) (robotpointkick robot0 point1) (robotpointkick robot0 point2))
+point1 supportrobotpoint
+point2 supportrobotpoint
+toposition (if_Action ballpositive (robotpointkick robot0 point1) (robotpointkick robot0 point2))
 goaltop (point 3.025 -0.34)
 goalbot (point 3.025 0.34)
 # stuff form ourstriker END
@@ -95,21 +97,33 @@ trypass (if_Action (and passsupportopen supporthasshot) passsupport kicktogoal)
 
 # START
 xdiff (- xsupport xkicker)
-hasxinterval (and (> xdiff XINTERLOW) (< xdiff XINTERHIGH))
+hasxinterval (and (> xdiff 0) (and (> xdiff XINTERLOW) (< xdiff XINTERHIGH)))
 
 supportrelay (if_Action (> xdiff XINTERHIGH) (robotpointmove supportrobot (point (- xsupport STRIDE) ysupport)) (if_Action (< xdiff XINTERLOW) (robotpointmove supportrobot (point (+ xsupport STRIDE) ysupport)) (donothing supportrobot)))
 
-supportstandby (robotpointmove supportrobot standby_point)
+supportstandby (robotpointmove supportrobot deflection_point)
 
 ourstriker (if_Action (> (pointpointdistance robot0point (theirgoal)) BALLRANGE) toposition (if_Action (pathClear goaltop robot0point 0.15) (robotpointkick robot0 goalbot) (if_Action (pathClear goalbot robot0point 0.15) (robotpointkick robot0 goalbot)(if_Action (pathClear (theirgoal) robot0point 0.15) (robotpointkick robot0 (theirgoal)) toposition))))
 
-pass (robotpointkick kickerrobot (point (+ xsupport PASSMARGIN) ysupport))
+rollpass (robotpointkick kickerrobot (point (+ xsupport PASSMARGIN) ysupport))
+pass (if_Action passsupportopen passsupport rollpass) 
+bump (robotpointbump kickerrobot (point (+ xsupport PASSMARGIN) ysupport))
 wait (donothing kickerrobot)
+deflect (robotpointkick kickerrobot (point (+ xsupport DEFLECT_MARGIN) ysupport))
 
 waitpass (if_Action hasxinterval pass wait)
+waitbump (if_Action hasxinterval bump wait)
+
+#Deflection Code
+hasdeflect (angleBetweenThreePoints supportrobotpoint kickerrobotpoint (theirgoal))
+
+supportindeflectpoint (< (pointpointdistance deflection_point supportrobotpoint) DEFLECT_RADIUS)
+waitdeflect (if_Action supportindeflectpoint deflect wait)
+
+
 #END
 
-kickinrange ourstriker
+kickinrange (if_Action (> xsupport 1.8) waitdeflect ourstriker)
 kickoutrange waitpass
 
 kick (if_Action ballinrange kickinrange kickoutrange)

@@ -5,16 +5,65 @@ name Striker
 Parameters:
 
 Objects:
-ballpoint (pointof ball)
-robot0 (closest friendly ballpoint loose)
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+BALLRANGE (getXcoord (point 1.75 0))
 
+ballpoint (pointof ball)
+circleball (circle ballpoint BALL_KICK_DIST)
+balltogoal (line ballpoint (theirgoal))
+balldestination (linecircleintersection balltogoal circleball 1)
 standbypoint (point -2 0)
+
+robot0 (closest friendly ballpoint loose)
+robot1 (closest friendly balldestination loose)
+robot0point (pointof robot0)
+robot1point (pointof robot1)
+
+robot0closesttoball (< (pointpointdistance robot0point ballpoint) (pointpointdistance robot1point ballpoint))
+
+kickerrobot (if_robot robot0closesttoball robot0 robot1)
+supportrobot (if_robot robot0closesttoball robot1 robot0)
+
+kickerrobotpoint (if_point robot0closesttoball robot0point robot1point)
+supportrobotpoint (if_point robot0closesttoball robot1point robot0point)
+ballpositive (< 0 (getYcoord ballpoint))
+
+xsupport (getXcoord supportrobotpoint)
+xkicker (getXcoord kickerrobotpoint)
+ysupport (getYcoord supportrobotpoint)
+ykicker (getYcoord kickerrobotpoint)
+
+point1 supportrobotpoint
+point2 supportrobotpoint
+toposition (if_Action ballpositive (robotpointkick robot0 point1) (robotpointkick robot0 point2))
+goaltop (point 3.025 -0.34)
+goalbot (point 3.025 0.34)
+
+DEFLECT_RADIUS (getXcoord (point 0.8 0))
+DEFLECT_MARGIN (getXcoord (point 0.2 0))
+
+deflection_point (if_point ballpositive (point 2.5 -0.35) (point 2.5 0.35))
+
+ourstriker (if_Action (> (pointpointdistance robot0point (theirgoal)) BALLRANGE) toposition (if_Action (pathClear goaltop robot0point 0.15) (robotpointkick robot0 goalbot) (if_Action (pathClear goalbot robot0point 0.15) (robotpointkick robot0 goalbot)(if_Action (pathClear (theirgoal) robot0point 0.15) (robotpointkick robot0 (theirgoal)) toposition))))
+
+wait (donothing kickerrobot)
+deflect (robotpointkick kickerrobot (point (+ xsupport DEFLECT_MARGIN) ysupport))
+
+supportindeflectpoint (< (pointpointdistance deflection_point supportrobotpoint) DEFLECT_RADIUS)
+waitdeflect (if_Action supportindeflectpoint deflect wait)
+
+
+kick (if_Action (< xsupport 1.8) ourstriker waitdeflect)
+
 
 
 Actions:
+kick
+
+
 
 # check if we shouldn't go after the ball- that is, if it is
 # in the goal and there is another robot there
 
-(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick robot0 (theirgoal)) (robotpointmove robot0 standbypoint))
+#(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick robot0 (theirgoal)) #(robotpointmove robot0 standbypoint))
 
