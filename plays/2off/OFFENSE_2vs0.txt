@@ -62,7 +62,7 @@ kickerhasshot (pathClear kickerrobotpoint (theirgoal) CLEAR_DIST)
 supporthasshot (pathClear supportrobotpoint (theirgoal) CLEAR_DIST)
 
 passsupport (robotpointkick kickerrobot supportrobotpoint)
-kicktogoal (robotpointkick kickerrobot (theirgoal))
+kicktogoal (robotpointkick kickerrobot (theirGoalBestShot))
 
 trypass (if_Action (and passsupportopen supporthasshot) passsupport kicktogoal)
 
