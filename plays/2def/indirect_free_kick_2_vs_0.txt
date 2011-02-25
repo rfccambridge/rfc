@@ -5,7 +5,7 @@ score 200
 
 Tactics:
 SmartGoalie
-DefendPoint (ourgoal) 0.9 True
+DefendPoint (ourgoal) 0.9 False
 
 Objects:
 Actions:
