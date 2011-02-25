@@ -4,7 +4,7 @@ name DEFENSE_2vs1
 score 250
 
 Tactics:
-Cover
+SmartGoalie
 Pressure
 
 Objects:
