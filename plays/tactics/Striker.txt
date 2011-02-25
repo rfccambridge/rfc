@@ -9,12 +9,21 @@ ballpoint (pointof ball)
 robot0 (closest friendly ballpoint loose)
 
 standbypoint (point -2 0)
+top-goal (/ (const-double GOAL_HEIGHT) 2)
+top-bound (/ (const-double FIELD_HEIGHT) 4)
+low-bound (* -1 top-bound)
+shoot-from-x (/ (const-double FIELD_WIDTH) 4)
+lgoal (point (getXcoord (theirgoal)) top-goal)
+rgoal (point (getXcoord (theirgoal)) (* -1 top-goal))
+cur-x (getXcoord (pointof robot0))
+cur-y (getYcoord (pointof robot0))
 
+target-shoot (if_point (pathClear (pointof robot0) (theirgoal) (const-double BALL_RADIUS)) (theirgoal) (if_point (pathClear (pointof robot0) lgoal (const-double BALL_RADIUS)) lgoal (if_point (pathClear (pointof robot0) rgoal (const-double BALL_RADIUS)) rgoal (point shoot-from-x 0))))
+target (if_point (or (< cur-y low-bound) (> cur-y top-bound)) (point cur-x 0) target-shoot)
 
 Actions:
 
 # check if we shouldn't go after the ball- that is, if it is
 # in the goal and there is another robot there
 
-(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick robot0 (theirgoal)) (robotpointmove robot0 standbypoint))
-
+(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick robot0 target) (robotpointmove robot0 standbypoint))
