@@ -4,7 +4,7 @@ name O_FK_2x0
 score 200
 
 Tactics:
-DumbGoalie
+Assist
 Striker
 
 Objects:
