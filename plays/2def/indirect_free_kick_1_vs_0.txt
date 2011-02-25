@@ -4,7 +4,7 @@ name TheirFreeKick_1_0
 score 100
 
 Tactics:
-SmartGoalie
+BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .5) True
 
 Objects:
 Actions:

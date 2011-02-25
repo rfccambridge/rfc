@@ -4,7 +4,9 @@ score 200
 name TH_KOFF_2x0
 
 Tactics:
-DumbGoalie
+SmartGoalie
+BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .5) True
+
 
 Objects:
 
