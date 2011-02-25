@@ -12,7 +12,6 @@ standbypoint (point -2 0)
 
 
 Actions:
-
 # check if we shouldn't go after the ball- that is, if it is
 # in the goal and there is another robot there
 
