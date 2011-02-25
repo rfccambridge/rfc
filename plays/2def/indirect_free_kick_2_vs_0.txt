@@ -5,7 +5,7 @@ score 200
 
 Tactics:
 SmartGoalie
-DefendPoint (ourgoal) 0.9 True
+AnnoyBot
 
 Objects:
 Actions:

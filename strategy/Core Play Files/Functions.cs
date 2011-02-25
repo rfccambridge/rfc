@@ -146,6 +146,7 @@ namespace Robocup.Plays
 
             #region geometric functions
 
+            
             addFunction("point", "X, Y - Point", "The point ~, ~", typeof(Vector2),
                         new Type[] { typeof(double), typeof(double) }, delegate(EvaluatorState state, object[] objects)
             {
@@ -746,6 +747,16 @@ namespace Robocup.Plays
             addFunction("ourgoal", "OurGoal", "Our goal position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
                 return new Vector2(-1 * Constants.get<double>("plays", "FIELD_WIDTH") / 2 - 0.08, 0);
+            });
+
+            addFunction("bottompost", "BottomPost", "Our bottom post position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                return new Vector2(-1 * Constants.get<double>("plays", "FIELD_WIDTH") / 2 - 0.08, -0.35);
+            });
+
+            addFunction("toppost", "TopPost", "Our top post position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                return new Vector2(-1 * Constants.get<double>("plays", "FIELD_WIDTH") / 2 - 0.08, 0.35);
             });
 
             addFunction("theirgoal", "TheirGoal", "Their goal position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)

@@ -4,7 +4,7 @@ score 100
 name TH_KOFF_1x0
 
 Tactics:
-DumbGoalie
+SmartGoalie
 
 Objects:
 

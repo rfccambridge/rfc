@@ -4,8 +4,12 @@ name main
 
 Objects:
 
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
 numRobots (numourbots)
-numTheir (numtheirbots)
 
 nothing (nullAction)
 
@@ -13,9 +17,7 @@ Conditions:
 
 Actions:
 
-(if_Action (and (= numRobots 1) (= numTheir 0)) (assignPlay DEFENSE_1vs0) nothing)
-(if_Action (and (= numRobots 1) (> numTheir 0)) (assignPlay DEFENSE_1vs1) nothing)
+(if_Action (= numRobots 1) (assignPlay DEFENSE_1vs0) nothing)
 
-(if_Action (and (= numRobots 2) (= numTheir 0)) (assignPlay DEFENSE_2vs0) nothing)
-(if_Action (and (= numRobots 2) (> numTheir 0)) (assignPlay DEFENSE_2vs1) nothing)
+(if_Action (= numRobots 2) (assignPlay DEFENSE_2vs2) nothing)
 
