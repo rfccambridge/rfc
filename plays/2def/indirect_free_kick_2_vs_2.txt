@@ -4,8 +4,8 @@ name TheirFreeKick_2_2
 score 200
 
 Tactics:
-Cover
 PassCover
+SmartGoalie
 
 Objects:
 Actions:
