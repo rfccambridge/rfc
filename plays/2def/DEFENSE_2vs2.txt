@@ -1,0 +1,16 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_2vs2
+score 250
+
+Tactics:
+#BlockPass
+#DefendPoint (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .03) True
+BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .03) True
+SmartGoalie
+
+Objects:
+
+
+Conditions:
+Actions:
