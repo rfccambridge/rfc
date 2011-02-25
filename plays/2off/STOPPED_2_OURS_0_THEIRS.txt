@@ -4,23 +4,41 @@ score 200
 name ST_2x0
 
 Tactics:
-DumbGoalie
 
 Objects:
 
-center (point 0 0)
-centertop (point 0 2.1)
-centerbottom (point 0 -2.1)
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
+GOAL_MINIMUM (const-double GOAL_MINIMUM)
+BALL_IN_RANGE (const-double BALL_IN_RANGE)
+SUPPORT_AVOID (const-double SUPPORT_AVOID)
+CLEAR_DIST (const-double CLEAR_DIST)
+SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
 
 ballpoint (pointof ball)
-ballcircle (circle ballpoint 0.63)
 
-wall1line (line ballpoint (ourgoal))
-wall1point (linecircleintersection wall1line ballcircle 1)
+topbot (closest friendly topCenter loose)
+bottombot (closest friendly bottomCenter loose)
+toppoint (pointof topbot)
+bottompoint (pointof bottombot)
 
-wall1bot (closest friendly wall1point loose)
-wall1bkp (point 1.0 0)
+
+pos1top (point 1.5 1.0)
+pos2top (point 0.5 1.75)
+pos3top (point 2.5 1.5)
+
+pos1bottom (point 1.5 -1.0)
+pos2bottom (point 0.5 -1.75)
+pos3bottom (point 2.5 -1.5)
 
 Conditions:
 Actions:
-(if_Action (inField wall1point) (robotpointpointmove wall1bot wall1point ballpoint) (robotpointpointmove wall1bot wall1bkp ballpoint))
+(robotpointmove topbot pos1top)
+(robotpointmove bottombot pos1bottom)

@@ -1,0 +1,62 @@
+Metadata:
+playtype NormalPlay
+name SIDE_OFFENSE_2vs2
+score 200
+
+Tactics:
+
+Objects:
+
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
+GOAL_MINIMUM (const-double GOAL_MINIMUM)
+BALL_IN_RANGE (const-double BALL_IN_RANGE)
+SUPPORT_AVOID (const-double SUPPORT_AVOID)
+CLEAR_DIST (const-double CLEAR_DIST)
+SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
+
+ballpoint (pointof ball)
+
+topbot (closest friendly topCenter loose)
+bottombot (closest friendly bottomCenter loose)
+toppoint (pointof topbot)
+bottompoint (pointof bottombot)
+
+ballY (getYcoord ballpoint)
+ballontop (> ballY 0)
+ballonbottom (not ballontop)
+
+goalTop (pointadd (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+goalMiddle (theirgoal)
+goalBottom (pointsubtract (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+
+pos1top (point 1.5 1.0)
+pos2top (point 0.5 1.75)
+pos3top (point 2.5 1.5)
+
+pos1bottom (point 1.5 -1.0)
+pos2bottom (point 0.5 -1.75)
+pos3bottom (point 2.5 -1.5)
+
+toptarget (if_point (pathClear ballpoint goalTop CLEAR_DIST) goalTop (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle (if_point (pathClear ballpoint goalBottom CLEAR_DIST) goalBottom bottompoint)))
+
+bottomtarget (if_point (pathClear ballpoint goalTop CLEAR_DIST) goalTop (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle (if_point (pathClear ballpoint goalBottom CLEAR_DIST) goalBottom toppoint)))
+
+topbestposition (if_point (pathClear pos1top goalMiddle CLEAR_DIST) pos1top (if_point (pathClear pos2top goalMiddle CLEAR_DIST) pos2top pos3top))
+
+bottombestposition (if_point (pathClear pos1bottom goalMiddle CLEAR_DIST) pos1bottom (if_point (pathClear pos2bottom goalMiddle CLEAR_DIST) pos2bottom pos3bottom))
+
+Conditions:
+
+Actions:
+(if_Action ballontop (robotpointkick topbot toptarget) (robotpointpointmove topbot topbestposition goalMiddle))
+(if_Action ballonbottom (robotpointkick bottombot bottomtarget) (robotpointpointmove bottombot bottombestposition goalMiddle))
+#(robotpointpointmove bottombot bottombestposition goalTop)
+#(robotpointpointmove topbot topbestposition goalBottom)

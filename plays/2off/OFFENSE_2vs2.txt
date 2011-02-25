@@ -4,8 +4,8 @@ name OFFENSE_2vs2
 score 200
 
 Tactics:
-AttackSide True
-AttackSide False
+AttackSide2 True
+AttackSide2 False
 
 
 Objects:
