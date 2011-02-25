@@ -7,7 +7,7 @@ Parameters:
 Objects:
 
 CLEAR_DIST (const-double CLEAR_DIST)
-GOAL_MINIMUM (const-double GOAL_MINIMUM)
+goalminfk (- (const-double GOAL_MINIMUM) 0.3)
 
 ballpoint (pointof ball)
 
@@ -22,8 +22,8 @@ goalBottom (pointsubtract (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2))
 
 ballonbottom (< ballY 0)
 
-supportposTop (pointsubtract goalTop (point GOAL_MINIMUM 0))
-supportposBot (pointsubtract goalBottom (point GOAL_MINIMUM 0))
+supportposTop (pointsubtract goalTop (point goalminfk 0))
+supportposBot (pointsubtract goalBottom (point goalminfk 0))
 
 bestkickposition (if_point ballonbottom (if_point (pathClear ballpoint supportposTop CLEAR_DIST) supportposTop goalMiddle) (if_point (pathClear ballpoint supportposBot CLEAR_DIST) supportposBot goalMiddle))
 
