@@ -417,9 +417,7 @@ namespace Robocup.Plays
                         typeof(bool), new Type[] { typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
             {
                 Vector2 point = (Vector2)objects[0];
-                bool result = ((point.X <= BasicCoordinateConverter.FIELD_WIDTH / 2) && (point.X >= -BasicCoordinateConverter.FIELD_WIDTH / 2)
-                    && (point.Y <= BasicCoordinateConverter.FIELD_HEIGHT / 2) && (point.Y >= -BasicCoordinateConverter.FIELD_HEIGHT / 2));
-                return result;
+                return TacticsEval.BallIsInField(point);
             });
 
             /*addFunction("closest_now", "Team, point - closest robot", "return the nearest robot to the point", typeof(Robot), new Type[] { typeof(TeamCondition), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)

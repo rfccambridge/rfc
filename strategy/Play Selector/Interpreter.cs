@@ -191,6 +191,17 @@ namespace Robocup.Plays
                     fieldDrawer.UpdatePlayName(team, robot.ID, "N/A");
             }
                 
+            // If the ball is not in the field, just return true after setting
+            // running to false.
+            Vector2 ballPosition = ballinfo.Position;
+            if (!TacticsEval.BallIsInField(ballPosition))
+            {
+                lock (run_lock)
+                {
+                    running = false;
+                }
+                return true;
+            }
 
             List<InterpreterPlay> plays_to_run = plays.FindAll(
                 delegate(InterpreterPlay play) { return play.PlayType == type && play.isEnabled; });
