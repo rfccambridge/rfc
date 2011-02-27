@@ -122,7 +122,7 @@ namespace Robocup.CoreRobotics
 
         abstract public void Connect(string addr, int port);
         abstract protected void Loop();
-        
+
         public void Disconnect()
         {
             if (_socket == null)
@@ -172,13 +172,85 @@ namespace Robocup.CoreRobotics
 
     }
 
+    public class MultiCastRefBoxRouter : RefBoxHandler
+    {
+        public static int REFBOX_PORT;
+        static List<int> listenerPorts;
+        List<Socket> senderSockets;
+
+        public void MultiCastRefBoxRouter()
+        {
+            LoadConstants();
+        }
+
+        public static void LoadConstants()
+        {
+            REFBOX_PORT = 200;
+            // initalize the listener ports via magic
+        }
+
+        public void Forward()
+        {
+            if (!ConnectReceiverSocket("foo", 300))
+                return;
+            for (int i = 0; i < listenerPorts.Count; i++ )
+            {
+                ConnectSenderSocket(senderSockets[i], "helloo", listenerPorts[i]);
+            }
+        }
+
+        // bind to refbox_port
+        // while receive:
+        //    receive
+        //    forward to port1
+        //    forward to port2
+
+        public bool ConnectSenderSocket(Socket socket, String addr, int port)
+        {
+            if (socket != null)
+                return false;
+
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            IPAddress mcastAddr = IPAddress.Parse(addr);
+
+            _endPoint = new IPEndPoint(mcastAddr, port);
+            socket.Connect(_endPoint);
+
+            socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(mcastAddr));
+
+            return true;
+        }
+
+        public bool ConnectReceiverSocket(string addr, int port)
+        {
+            if (_socket != null)
+                return false;
+
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            _endPoint = new IPEndPoint(IPAddress.Any, 6000);
+
+            try
+            {
+                _socket.Bind(_endPoint);
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("Receiver already bound to refbox, not connecting.");
+                return false;
+            }
+            _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
+
+            return true;
+        }
+    }
+
     public class MulticastRefBoxSender : RefBoxHandler
     {
         byte cmd_counter = 0;    // counter for current command
         int goals_blue = 0;      // current score for blue team
         int goals_yellow = 0;    // current score for yellow team
         int time_remaining = 0; // seconds remaining for current game stage (network byte order)
-        
+
         override public void Connect(String addr, int port)
         {
             if (_socket != null)
@@ -186,7 +258,7 @@ namespace Robocup.CoreRobotics
 
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPAddress mcastAddr = IPAddress.Parse(addr);
-            
+
             _endPoint = new IPEndPoint(mcastAddr, port);
             _socket.Connect(_endPoint);
 
@@ -258,7 +330,7 @@ namespace Robocup.CoreRobotics
                 throw new ApplicationException("Already connected.");
 
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _endPoint = new IPEndPoint(IPAddress.Any, port);
+            _endPoint = new IPEndPoint(IPAddress.Any, 6000);
 
             _socket.Bind(_endPoint);
             _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
