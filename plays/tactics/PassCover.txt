@@ -5,20 +5,27 @@ name PassCover
 Parameters:
 
 Objects:
-
-standbypoint (point -2 0)
-
 ballpoint (pointof ball)
+
 robot0 (closest friendly ballpoint loose)
 
-ttarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) 2))
-btarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) -2))
+#kicker (closest enemy ballpoint loose)
+receiver (closest enemy ballpoint loose)
 
-standby (and (pointInGoal ballpoint) (robotInGoal))
+#kickerpoint (pointof kicker)
+receiverpoint (pointof receiver)
+
+kickerreceiverline (line ballpoint receiverpoint)
+receivergoalline (line receiverpoint (ourgoal))
+
+freekickzone (circle ballpoint 0.6)
+
+krintersept (pointdirectiondistance ballpoint receiverpoint 0.6)
+rgintersept (pointdirectiondistance receiverpoint (ourgoal) 0.6)
 
 Actions:
+#if receiver is inside freekickzone, position to intersept shot from receiver to goal
+#if receiver is outside freekickzone, position to intersept pass from kicker to receiver
 
-# check if we shouldn't go after the ball- that is, if it is
-# in the goal and there is another robot there
+(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmove robot0 rgintersept ballpoint) (robotpointpointmove robot0 krintersept ballpoint))
 
-(if_Action standby (robotpointmove robot0 standbypoint) (if_Action (pathClear ballpoint (theirgoal) 3.0) (robotpointkick robot0 (theirgoal)) (if_Action (pathClear ballpoint ttarget 3.0) (robotpointkick robot0 ttarget) (robotpointkick robot0 btarget))))

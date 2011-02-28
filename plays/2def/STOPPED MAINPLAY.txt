@@ -6,6 +6,7 @@ score 1
 Objects:
 
 numRobots (numourbots)
+numTheir (numtheirbots)
 
 nothing (nullAction)
 
@@ -13,5 +14,5 @@ Conditions:
 
 Actions:
 (if_Action (= numRobots 1) (assignPlay ST_1x0) nothing)
-
-(if_Action (= numRobots 2) (assignPlay ST_2x0) nothing)
+(if_Action (and (= numRobots 2) (= numTheir 1)) (assignPlay ST_2x1) nothing)
+(if_Action (and (= numRobots 2) (> numTheir 1)) (assignPlay ST_2x2) nothing)

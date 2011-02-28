@@ -1,11 +1,13 @@
 Metadata:
-playtype SetPlay_Theirs
-name TheirFreeKick_2_2
+playtype Stopped
 score 200
+name ST_2x2
 
 Tactics:
 SmartGoalie
 PassCover
 
 Objects:
+
+Conditions:
 Actions:
