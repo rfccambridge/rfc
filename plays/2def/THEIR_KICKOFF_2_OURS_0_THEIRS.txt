@@ -4,22 +4,9 @@ score 200
 name TH_KOFF_2x0
 
 Tactics:
-DumbGoalie
-
+SmartGoalie
+DefendPoint (ourgoal) 2.45 False
 Objects:
-
-center (point 0 0)
-centertop (point 0 2.1)
-centerbottom (point 0 -2.1)
-
-centercircle (circle center 0.7)
-
-centerbot (closest friendly center loose)
-centerbotpt (pointof centerbot)
-
-centergoalline (line center (ourgoal))
-centercirclept (linecircleintersection centergoalline centercircle 1)
 
 Conditions:
 Actions:
-(robotpointpointmove centerbot centercirclept center)
