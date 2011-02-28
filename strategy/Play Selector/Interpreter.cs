@@ -118,6 +118,8 @@ namespace Robocup.Plays
         {
             actioninterpreter.LoadConstants();
 
+            TacticsEval.LoadConstants();
+
             // load the new play system's constants
             playAssigner.ReloadConstants();
 
@@ -193,9 +195,12 @@ namespace Robocup.Plays
                 
             // If the ball is not in the field, just return true after setting
             // running to false.
-            Vector2 ballPosition = ballinfo.Position;
-            if (!TacticsEval.BallIsInField(ballPosition))
+            if (ballinfo == null || !TacticsEval.InField(ballinfo.Position))
             {
+                foreach (InterpreterRobotInfo robot in ourteaminfo)
+                {
+                    actioninterpreter.Stop(robot.ID);
+                }
                 lock (run_lock)
                 {
                     running = false;

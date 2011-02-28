@@ -6,27 +6,26 @@ using Robocup.Core;
 
 namespace Robocup.Plays
 {
-    public class TacticsEval
+    public static class TacticsEval
     {
         const double KICK_SPEED = 6; //in m/s
         const double ROBOT_MAX_ACCEL = 2.5; //in m/s^2
         //const double ROBOT_MAX_SPEED = 2; //in m/s
 
-        public static double FIELD_WIDTH;
-        public static double FIELD_HEIGHT;
-        public TacticsEval()
-        {
-            LoadConstants();
-        }
-
+        static double FIELD_WIDTH;
+        static double FIELD_HEIGHT;
+        
         public static void LoadConstants()
         {
             FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
             FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
         }
 
-        public static bool BallIsInField(Vector2 point)
+        public static bool InField(Vector2 point)
         {
+            if (point == null)
+                return false;
+
             bool result = ((point.X <= FIELD_WIDTH / 2) && (point.X >= - FIELD_WIDTH / 2)
                         && (point.Y <= FIELD_HEIGHT / 2) && (point.Y >= - FIELD_HEIGHT / 2));
             return result;
