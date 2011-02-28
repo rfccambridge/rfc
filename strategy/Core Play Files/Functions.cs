@@ -556,6 +556,84 @@ namespace Robocup.Plays
                                 return robot1;
                             }
                         });
+            addFunction("angleBetweenBallMidGoalTopSideofRobot", "Point,Point,Point - Angle",
+                    "The angle between the rays connecting Point ~ with Point ~ and Point ~", typeof(double),
+                    new Type[] { typeof(Vector2), typeof(Vector2), typeof(Vector2) },
+                    delegate(EvaluatorState state, object[] objects)
+                    {
+                        Vector2 p1, p2, p3;
+                        p1 = (Vector2)objects[0];
+                        p2 = (Vector2)objects[1];
+                        p3 = (Vector2)objects[2];
+                        Vector2 v1, v2;
+                        v1 = new Vector2(p1.X - p2.X, p1.Y - p2.Y);
+                        v2 = new Vector2(p1.X - p3.X, p1.Y - p3.Y + .09);
+                        //p1 is the vertex of the angle
+                        double dotproduct = v1.X * v2.X + v1.Y * v2.Y;
+                        double angle = Math.Acos(dotproduct / Math.Sqrt((v1.X * v1.X + v1.Y * v1.Y) * (v2.X * v2.X + v2.Y * v2.Y)));
+                        return angle;
+                    });
+            addFunction("angleBetweenBallMidGoalBottomSideofRobot", "Point,Point,Point - Angle",
+                                "The angle between the rays connecting Point ~ with Point ~ and Point ~", typeof(double),
+                                new Type[] { typeof(Vector2), typeof(Vector2), typeof(Vector2) },
+                                delegate(EvaluatorState state, object[] objects)
+                                {
+                                    Vector2 p1, p2, p3;
+                                    p1 = (Vector2)objects[0];
+                                    p2 = (Vector2)objects[1];
+                                    p3 = (Vector2)objects[2];
+                                    Vector2 v1, v2;
+                                    v1 = new Vector2((p1.X - p2.X), (p1.Y - p2.Y));
+                                    v2 = new Vector2((p1.X - p3.X), (p1.Y - p3.Y - .09));
+                                    //p1 is the vertex of the angle
+                                    double dotproduct = v1.X * v2.X + v1.Y * v2.Y;
+                                    double angle = Math.Acos(dotproduct / Math.Sqrt((v1.X * v1.X + v1.Y * v1.Y) * (v2.X * v2.X + v2.Y * v2.Y)));
+                                    return angle;
+                                });
+            //Takes angle between ball, top of annoyBot, and center of goal as first angle; angle between ball,
+            //bottom of annoyBot, and center of goal as second angle; and position of ball as third argument;
+            //and point OURGOAL as fourth argument; and width of goal GOALWIDTH as fifth
+            addFunction("bestGoaliePosition", "Angle,Angle,Point,Point,Length - Point",
+                            "The angle between the rays connecting Point ~ with Point ~ and Point ~", typeof(Vector2),
+                            new Type[] { typeof(double), typeof(double), typeof(Vector2), typeof(Vector2), typeof(double) },
+                            delegate(EvaluatorState state, object[] objects)
+                            {
+                                Vector2 p1, p2;
+                                p1 = (Vector2)objects[2];
+                                p2 = (Vector2)objects[3];
+                                double a1, a2, bally, goalwidth;
+                                a1 = (double)objects[0];
+                                a2 = (double)objects[1];
+                                bally = p2.Y;
+                                goalwidth = (double)objects[4];
+                                double dist = p1.X - p2.X;
+
+                                //offset for bottom angle
+                                double offset1 = dist / a2 + 0.00000001;
+
+                                //offset for top angle
+                                double offset2 = dist / a1 + 0.00000001;
+                                //if possible shot at bottom corner of goal
+                                if ((bally - offset1) > (0 - goalwidth / 2))
+                                {
+                                    Vector2 point = new Vector2(0, bally - offset1);
+                                    return point;
+                                }
+                                else
+                                {
+                                    //if possible shot at top corner of goal
+                                    if ((bally + offset2) < goalwidth / 2)
+                                    {
+                                        Vector2 point = new Vector2(0, (bally + offset2));
+                                        return point;
+                                    }
+                                    else
+                                    //no possible shot, center goalie
+                                    {
+                                        return p2;
+                                    }
+                                }
+                            });
 
             #endregion
 

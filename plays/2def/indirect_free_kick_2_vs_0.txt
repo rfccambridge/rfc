@@ -5,7 +5,7 @@ score 200
 
 Tactics:
 SmartGoalie
-AnnoyBot
+FreeKickBot
 
 Objects:
 Actions:

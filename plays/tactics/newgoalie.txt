@@ -1,0 +1,26 @@
+Metadata:
+type tactic
+name SmartGoalie
+
+Parameters:
+
+Objects:
+goaliebot (closest friendly (ourgoal) loose)
+goaliebotpt (pointof goaliebot)
+
+#ball geometry
+ballpoint (pointof ball)
+ballgoalline (line ballpoint (ourgoal))
+
+#annoyBot location
+annoyBot (closest friendly ballpoint loose)
+annoyPoint (pointof annoyBot)
+
+# should the goalie try to kick the ball?
+goalieshouldkick (pointInGoal ballpoint)
+
+kickaction (robotpointkick goaliebot (theirgoal))
+
+Conditions:
+Actions:
+(if_Action goalieshouldkick kickaction (robotpointmove goaliebot (bestGoaliePosition (angleBetweenBallMidGoalTopSideofRobot ballpoint annoyPoint (ourgoal)) (angleBetweenBallMidGoalBottomSideofRobot ballpoint annoyPoint (ourgoal)) ballpoint (ourgoal) 0.7)))
