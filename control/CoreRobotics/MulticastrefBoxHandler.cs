@@ -8,6 +8,19 @@ using Robocup.Core;
 
 namespace Robocup.CoreRobotics
 {
+    internal static class Parameters
+    {
+        public static IPAddress routerIP = IPAddress.Loopback;
+        public static List<int> routerPorts;
+
+        static Parameters()
+        {
+            routerPorts = new List<int>();
+            routerPorts.Add(5000);
+            routerPorts.Add(5001);
+        }
+    }
+
     abstract public class RefBoxHandler : IRefBoxHandler
     {
         public struct RefBoxPacket
@@ -123,7 +136,7 @@ namespace Robocup.CoreRobotics
         abstract public void Connect(string addr, int port);
         abstract protected void Loop();
 
-        public void Disconnect()
+        public virtual void Disconnect()
         {
             if (_socket == null)
                 throw new ApplicationException("Not connected.");
@@ -134,13 +147,13 @@ namespace Robocup.CoreRobotics
             _socket = null;
         }
 
-        public void Start()
+        public virtual void Start()
         {
             _handlerThread = new Thread(new ThreadStart(Loop));
             _handlerThread.Start();
         }
 
-        public void Stop()
+        public virtual void Stop()
         {
             _handlerThread.Abort();
             _handlerThread = null;
@@ -174,62 +187,88 @@ namespace Robocup.CoreRobotics
 
     public class MultiCastRefBoxRouter : RefBoxHandler
     {
-        public static int REFBOX_PORT;
-        static List<int> listenerPorts;
         List<Socket> senderSockets;
+        bool routing;
 
-        public void MultiCastRefBoxRouter()
+        public MultiCastRefBoxRouter()
         {
-            LoadConstants();
+            senderSockets = new List<Socket>();
         }
 
-        public static void LoadConstants()
+        /// <summary>
+        /// Router tries to connect to the actual refbox and opens
+        /// several sender connections for multiple listeners to listen on.
+        /// If it can't bind to listener socket, another router is running,
+        /// so there's no need to run this one.
+        /// </summary>
+        /// <param name="address">Multicast address refbox is sending to</param>
+        /// <param name="port">Port of the multicast</param>
+        override public void Connect(string address, int port)
         {
-            REFBOX_PORT = 200;
-            // initalize the listener ports via magic
-        }
-
-        public void Forward()
-        {
-            if (!ConnectReceiverSocket("foo", 300))
-                return;
-            for (int i = 0; i < listenerPorts.Count; i++ )
-                ConnectSenderSocket(senderSockets[i], "helloo", listenerPorts[i]);
-
-            RefBoxPacket packet = new RefBoxPacket();
-            byte[] message = new byte[packet.getSize()]; 
-            int rcv = _socket.ReceiveFrom(message, 0, packet.getSize(), SocketFlags.None, ref _endPoint);
-
-            if (rcv == packet.getSize())
+            if (!ConnectReceiverSocket(address, port))
             {
-                for(int i = 0; i < senderSockets.Count; i++ )
-                    senderSockets[i].SendTo(message, _endPoint);
+                routing = false;
+                return;
+            }
+
+            routing = true;
+            for (int i = 0; i < Parameters.routerPorts.Count; i++)
+            {
+                Socket socket = null;
+                ConnectSenderSocket(ref socket, Parameters.routerIP, Parameters.routerPorts[i]);
+                senderSockets.Add(socket);
             }
         }
 
-        public bool ConnectSenderSocket(Socket socket, String addr, int port)
+        public override void Disconnect()
         {
-            if (socket != null)
-                return false;
+            base.Disconnect();
 
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPAddress mcastAddr = IPAddress.Parse(addr);
-
-            _endPoint = new IPEndPoint(mcastAddr, port);
-            socket.Connect(_endPoint);
-
-            socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(mcastAddr));
-
-            return true;
+            foreach (Socket socket in senderSockets)
+            {
+                socket.Close();
+                socket.Dispose();
+            }
+            senderSockets.Clear();
         }
 
-        public bool ConnectReceiverSocket(string addr, int port)
+        protected override void Loop()
+        {
+            if (!routing)
+                return;
+
+            RefBoxPacket packet = new RefBoxPacket();
+            while (true)
+            {
+                byte[] message = new byte[packet.getSize()];
+                int rcv = _socket.ReceiveFrom(message, 0, packet.getSize(), SocketFlags.None, ref _endPoint);
+
+                if (rcv == packet.getSize())
+                {
+                    for (int i = 0; i < senderSockets.Count; i++)
+                        senderSockets[i].Send(message);
+                }
+            }
+        }
+
+        protected void ConnectSenderSocket(ref Socket socket, IPAddress addr, int port)
+        {
+            if (socket != null)
+                return;
+
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+            IPEndPoint currEndPoint = new IPEndPoint(addr, port);
+            socket.Connect(currEndPoint);
+        }
+
+        protected bool ConnectReceiverSocket(string addr, int port)
         {
             if (_socket != null)
                 return false;
 
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _endPoint = new IPEndPoint(IPAddress.Any, 6000);
+            _endPoint = new IPEndPoint(IPAddress.Any, port);
 
             try
             {
@@ -237,7 +276,7 @@ namespace Robocup.CoreRobotics
             }
             catch (SocketException)
             {
-                Console.WriteLine("Receiver already bound to refbox, not connecting.");
+                Console.WriteLine("Another receiver already bound to refbox, not connecting.");
                 return false;
             }
             _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
@@ -324,18 +363,62 @@ namespace Robocup.CoreRobotics
 
     public class MulticastRefBoxListener : RefBoxHandler, IRefBoxListener
     {
+        protected MultiCastRefBoxRouter router = new MultiCastRefBoxRouter();
+
         public event EventHandler<EventArgs<char>> PacketReceived;
 
+        /// <summary>
+        /// Connects to refobx through a router. First, tries to setup a router listening
+        /// to muticast addr:port.If it can't, a router is already running, so we can just try and connect to it.
+        /// </summary>
+        /// <param name="addr">Multicast address of refbox</param>
+        /// <param name="port">Refbox port</param>
         override public void Connect(string addr, int port)
         {
             if (_socket != null)
                 throw new ApplicationException("Already connected.");
 
-            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _endPoint = new IPEndPoint(IPAddress.Any, 6000);
+            router.Connect(addr, port);
 
-            _socket.Bind(_endPoint);
-            _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            bool bound = false;
+
+            for (int i = 0; i < Parameters.routerPorts.Count; i++)
+            {
+                _endPoint = new IPEndPoint(Parameters.routerIP, Parameters.routerPorts[i]);
+                try
+                {
+                    _socket.Bind(_endPoint);
+                    bound = true;
+                }
+                catch (SocketException e)
+                {
+                    Console.WriteLine("RefBoxListener failed to connect to port {0}!", Parameters.routerPorts[i]);
+                }
+
+                if (bound)
+                    break;
+            }
+            if (!_socket.IsBound)
+                throw new ApplicationException("RefBoxListener failed to connect to all router ports!");
+        }
+
+        public override void Disconnect()
+        {
+            router.Disconnect();
+            base.Disconnect();
+        }
+
+        public override void Start()
+        {
+            router.Start();
+            base.Start();
+        }
+
+        public override void Stop()
+        {
+            router.Stop();
+            base.Stop();
         }
 
         public bool IsReceiving()
