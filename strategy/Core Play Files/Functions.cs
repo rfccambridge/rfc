@@ -176,6 +176,15 @@ namespace Robocup.Plays
             {
                 return new Line((Vector2)objects[0], (double)objects[1]);
             });
+            addFunction("pointdirectiondistance", "Point, Point, Distance - Point", "The point ~ away from point ~ oriented at ~", typeof(Vector2),
+                        new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+                        {
+                            Vector2 temp = (Vector2)objects[1] - (Vector2)objects[0];
+                            double direction = temp.cartesianAngle();
+                            Vector2 p = new Vector2((double)objects[2], 0.0).rotate(direction);
+                            p = p + (Vector2)objects[0];
+                            return p;
+                        });
             addFunction("circle", "Point, Radius - Circle", "The circle with ~ as its center, and radius ~",
                         typeof(Circle), new Type[] { typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
             {
@@ -464,11 +473,11 @@ namespace Robocup.Plays
                             return new Vector2(p1.X + v.X, p1.Y + v.Y);
                         });
             addFunction("numberOfRobotsInACircle", "Circle, Team - Number of Robots",
-                        "In a circle ~, the number of Robots of the Team ~ in it", typeof(int),
+                        "In a circle ~, the number of Robots of the Team ~ in it", typeof(double),
                         new Type[] { typeof(Circle), typeof(TeamCondition) },
                         delegate(EvaluatorState state, object[] objects)
                         {
-                            int count = 0;
+                            double count = 0;
                             TeamCondition condition = (TeamCondition)objects[1];
                             List<RobotInfo> allinfos = new List<RobotInfo>();
                             if (condition.maybeOurs())
