@@ -194,16 +194,18 @@ namespace Robocup.CoreRobotics
             if (!ConnectReceiverSocket("foo", 300))
                 return;
             for (int i = 0; i < listenerPorts.Count; i++ )
-            {
                 ConnectSenderSocket(senderSockets[i], "helloo", listenerPorts[i]);
+
+            RefBoxPacket packet = new RefBoxPacket();
+            byte[] message = new byte[packet.getSize()]; 
+            int rcv = _socket.ReceiveFrom(message, 0, packet.getSize(), SocketFlags.None, ref _endPoint);
+
+            if (rcv == packet.getSize())
+            {
+                for(int i = 0; i < senderSockets.Count; i++ )
+                    senderSockets[i].SendTo(message, _endPoint);
             }
         }
-
-        // bind to refbox_port
-        // while receive:
-        //    receive
-        //    forward to port1
-        //    forward to port2
 
         public bool ConnectSenderSocket(Socket socket, String addr, int port)
         {
