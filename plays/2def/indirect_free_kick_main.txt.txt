@@ -1,0 +1,19 @@
+Metadata:
+playtype SetPlay_Theirs
+name main
+
+score 1
+
+Objects:
+
+numRobots (numourbots)
+numTheir (numtheirbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+(if_Action (= numRobots 1) (assignPlay TheirFreeKick_1_0) nothing)
+
+(if_Action (= numRobots 2) (assignPlay TheirFreeKick_2_0) nothing)

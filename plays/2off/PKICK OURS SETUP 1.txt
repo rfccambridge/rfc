@@ -1,0 +1,22 @@
+Metadata:
+playtype PenaltyKick_Ours_Setup
+name Penalty1
+score 100
+Objects:
+point6 (point -2.3 0)
+point2 (point 1.8 0)
+robot0 (closest friendly point2 loose)
+point3 (point 1 1)
+point4 (point 1 0)
+point5 (point 1 -1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+point1 (pointof robot0)
+Conditions:
+Actions:
+(robotpointpointmove robot0 point2 (theirgoal))
+DesignerData:
+robot0 <-0.1042,-1.124>
+

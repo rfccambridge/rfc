@@ -12,7 +12,7 @@ namespace Robocup.Geometry {
         }
 		public Line(Vector2 p, double direction){
 			Vector2 p2 = new Vector2(1.0, 0.0).rotate(direction);
-			points = new Vector2[] { p, p2 };
+			points = new Vector2[] { p, p+p2 };
 		}
         /// <summary>
         /// Creates a unit strech inthe x-direction
