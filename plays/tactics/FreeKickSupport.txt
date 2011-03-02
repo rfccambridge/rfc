@@ -1,0 +1,34 @@
+Metadata:
+type tactic
+name FreeKickSupport
+
+Parameters:
+
+Objects:
+
+CLEAR_DIST (const-double CLEAR_DIST)
+goalminfk (- (const-double GOAL_MINIMUM) 0.3)
+
+ballpoint (pointof ball)
+
+supportbot (closest friendly (theirgoal) loose)
+
+ballX (getXcoord ballpoint)
+ballY (getYcoord ballpoint)
+
+goalTop (pointadd (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+goalMiddle (theirgoal)
+goalBottom (pointsubtract (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+
+ballonbottom (< ballY 0)
+
+supportposTop (pointsubtract goalTop (point goalminfk 0))
+supportposBot (pointsubtract goalBottom (point goalminfk 0))
+supportposMid (pointsubtract goalMiddle (point goalminfk 0))
+
+bestsupportposition (if_point ballonbottom (if_point (pathClear ballpoint supportposTop CLEAR_DIST) supportposTop supportposMid) (if_point (pathClear ballpoint supportposBot CLEAR_DIST) supportposBot supportposMid))
+
+
+Actions:
+
+(robotpointmove supportbot bestsupportposition)

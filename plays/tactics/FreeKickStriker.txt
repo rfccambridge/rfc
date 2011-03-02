@@ -1,0 +1,33 @@
+Metadata:
+type tactic
+name FreeKickStriker
+
+Parameters:
+
+Objects:
+
+CLEAR_DIST (const-double CLEAR_DIST)
+goalminfk (- (const-double GOAL_MINIMUM) 0.3)
+
+ballpoint (pointof ball)
+
+myrobot (closest friendly ballpoint loose)
+
+ballX (getXcoord ballpoint)
+ballY (getYcoord ballpoint)
+
+goalTop (pointadd (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+goalMiddle (theirgoal)
+goalBottom (pointsubtract (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+
+ballonbottom (< ballY 0)
+
+supportposTop (pointsubtract goalTop (point goalminfk 0))
+supportposBot (pointsubtract goalBottom (point goalminfk 0))
+
+bestkickposition (if_point ballonbottom (if_point (pathClear ballpoint supportposTop CLEAR_DIST) supportposTop goalMiddle) (if_point (pathClear ballpoint supportposBot CLEAR_DIST) supportposBot goalMiddle))
+
+
+Actions:
+
+(robotpointkick myrobot bestkickposition)
