@@ -29,6 +29,8 @@ bottombot (closest friendly bottomCenter loose)
 toppoint (pointof topbot)
 bottompoint (pointof bottombot)
 
+ballontop (> (getYcoord ballpoint) 0.1)
+ballonbottom (not ballontop)
 
 pos1top (point 1.5 1.0)
 pos2top (point 0.5 1.75)
@@ -40,5 +42,5 @@ pos3bottom (point 2.5 -1.5)
 
 Conditions:
 Actions:
-(robotpointmove topbot pos1top)
-(robotpointmove bottombot pos1bottom)
+(if_Action ballontop (if_Action (> (pointpointdistance ballpoint toppoint) .5) (robotpointmove topbot ballpoint) (donothing topbot)) (donothing topbot))
+(if_Action ballonbottom (if_Action (> (pointpointdistance ballpoint bottompoint) .5) (robotpointmove bottombot ballpoint) (donothing bottombot)) (donothing bottombot))

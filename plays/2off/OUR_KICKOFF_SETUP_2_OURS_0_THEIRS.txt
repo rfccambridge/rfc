@@ -4,7 +4,7 @@ score 200
 name O_KFF_STP_2x0
 
 Tactics:
-DumbGoalie
+
 
 Objects:
 
