@@ -1,11 +1,14 @@
 Metadata:
 playtype NormalPlay
-name SIDE_OFFENSE_2vs2
+name SIDE_OFFENSE_STATIONARY
 score 200
 
 Tactics:
 
 Objects:
+
+wayTop (point 0 1000.0)
+wayBottom (point 0 -1000.0)
 
 topCenter (point 0 2.1)
 bottomCenter (point 0 -2.1)
@@ -25,7 +28,7 @@ SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
 ballpoint (pointof ball)
 
 topbot (closest friendly topCenter loose)
-bottombot (closest friendly topCenter loose)
+bottombot (closest friendly bottomCenter loose)
 toppoint (pointof topbot)
 bottompoint (pointof bottombot)
 
@@ -38,13 +41,10 @@ goalTop (pointadd (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
 goalMiddle (theirgoal)
 goalBottom (pointsubtract (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
 
-pos1top (point 1.5 1.0)
-pos2top (point 0.5 1.75)
-pos3top (point 2.5 1.5)
 
-pos1bottom (point 1.5 -1.0)
-pos2bottom (point 0.5 -1.75)
-pos3bottom (point 2.5 -1.5)
+
+receivertop (point 2.5 0.25)
+receiverbottom (point 2.5 0.25)
 
 # Where to kick to if you do have the ball. Shoot if possible, otherwise pass
 topgoaltarget (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle goalBottom)
@@ -52,17 +52,8 @@ toptarget (if_point (and ballinrange (pathClear ballpoint topgoaltarget CLEAR_DI
 bottomgoaltarget (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle goalTop)
 bottomtarget (if_point (and ballinrange (pathClear ballpoint bottomgoaltarget CLEAR_DIST)) bottomgoaltarget toppoint)
 
-#toptarget (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle (if_point (pathClear ballpoint goalBottom CLEAR_DIST) goalBottom bottompoint))
-#bottomtarget (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle (if_point (pathClear ballpoint goalTop CLEAR_DIST) goalTop toppoint))
-
-# Best position to wait in if you don't have the ball
-topbestposition (if_point (pathClear pos1top goalMiddle CLEAR_DIST) pos1top (if_point (pathClear pos2top goalMiddle CLEAR_DIST) pos2top pos3top))
-bottombestposition (if_point (pathClear pos1bottom goalMiddle CLEAR_DIST) pos1bottom (if_point (pathClear pos2bottom goalMiddle CLEAR_DIST) pos2bottom pos3bottom))
-
 Conditions:
 
 Actions:
-(if_Action ballontop (robotpointkick topbot toptarget) (robotpointpointmove topbot topbestposition goalMiddle))
-(if_Action ballonbottom (robotpointkick bottombot bottomtarget) (robotpointpointmove bottombot bottombestposition goalMiddle))
-#(robotpointpointmove bottombot bottombestposition goalTop)
-#(robotpointpointmove topbot topbestposition goalBottom)
+(if_Action ballontop (robotpointkick topbot toptarget) (robotpointpointmove topbot receivertop topCenter))
+(if_Action ballonbottom (robotpointkick bottombot bottomtarget) (robotpointpointmove bottombot receiverbottom bottomCenter))
