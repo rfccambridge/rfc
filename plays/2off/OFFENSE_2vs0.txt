@@ -30,19 +30,24 @@ ballpositive (< 0 (getYcoord ballpoint))
 
 goaltop (point 3.025 -0.33)
 goalbottom (point 3.025 0.33)
-
+recpoint (point -0.2 -1)
 
 deflection_point (if_point ballpositive (point 2.8 -0.35) (point 2.8 0.35))
-
+deflection_point_upper (if_point ballpositive (point 0 -0.5) (point 0 0.5))
+deflection_point_mid (if_point ballpositive (point 1.4 -0.5) (point 1.4 0.5))
 ## Robot Initialization ##
 kickerrobot (closest friendly ballpoint loose)
 assistrobot (closest friendly (theirgoal) loose)
 kickerrobotpoint (pointof kickerrobot)
 assistrobotpoint (pointof assistrobot)
 
-kick (if_Action (and ballinrange (pathClear kickerrobotpoint (theirgoal) 0.15)) (robotpointkick kickerrobot (theirgoal))(if_Action (and ballinrange (pathClear kickerrobotpoint goaltop 0.15)) (robotpointkick kickerrobot goaltop) (if_Action (and ballinrange (pathClear kickerrobotpoint goalbottom 0.15)) (robotpointkick kickerrobot goalbottom) (if_Action (pathClear kickerrobotpoint deflection_point 0.15) (robotpointkick kickerrobot deflection_point) (robotpointbump kickerrobot (point 1.5 0))))))
+xsupport (getXcoord kickerrobotpoint)
+ysupport (getYcoord assistrobotpoint)
 
-assist (robotpointmove assistrobot deflection_point)
+
+kick (if_Action (and (= xsupport -0.2) (= ysupport -1)) (robotpointkick kickerrobot assistrobotpoint) (if_Action (and ballinrange (pathClear kickerrobotpoint (theirgoal) 0.15)) (robotpointkick kickerrobot (theirgoal))(if_Action (and ballinrange (pathClear kickerrobotpoint goaltop 0.15)) (robotpointkick kickerrobot goaltop) (if_Action (and ballinrange (pathClear kickerrobotpoint goalbottom 0.15)) (robotpointkick kickerrobot goalbottom) (if_Action (pathClear kickerrobotpoint assistrobotpoint 0.15) (robotpointkick kickerrobot assistrobotpoint) (robotpointkick kickerrobot (point 1.5 0)))))))
+
+assist (if_Action (< (getXcoord kickerrobotpoint) 0) (robotpointmove assistrobot deflection_point_upper) (if_Action (pathClear kickerrobotpoint deflection_point 0.25) (robotpointmove assistrobot deflection_point)(robotpointmove assistrobot deflection_point_mid)))
 
 Conditions:
 Actions:
