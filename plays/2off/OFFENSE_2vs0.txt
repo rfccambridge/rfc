@@ -50,6 +50,8 @@ supportrobot (if_robot robot0closesttoball robot1 robot0)
 kickerrobotpoint (if_point robot0closesttoball robot0point robot1point)
 supportrobotpoint (if_point robot0closesttoball robot1point robot0point)
 
+nearsupportrobotpoint (point (+ (getXcoord supportrobotpoint) 0.15) (+ (getYcoord supportrobotpoint) 0.15))
+
 supportgotounblocked (if_point (pointAboveLine supportrobotpoint balltogoal) (pointadd balldestination addtosupport) (pointsubtract balldestination addtosupport))
 
 supportgotoblocked (if_point (pointAboveLine supportrobotpoint balltogoal) (pointadd balldestination addtosupportpass) (pointsubtract balldestination addtosupportpass))
@@ -61,16 +63,17 @@ passsupportopen (pathClear ballpoint supportrobotpoint CLEAR_DIST)
 kickerhasshot (pathClear kickerrobotpoint (theirgoal) CLEAR_DIST)
 supporthasshot (pathClear supportrobotpoint (theirgoal) CLEAR_DIST)
 
-passsupport (robotpointkick kickerrobot supportrobotpoint)
+passsupport (robotpointkick kickerrobot nearsupportrobotpoint)
 kicktogoal (robotpointkick kickerrobot (theirGoalBestShot))
 
-trypass (if_Action (and passsupportopen supporthasshot) passsupport kicktogoal)
+#trypass (if_Action (and passsupportopen supporthasshot) passsupport kicktogoal)
+trypass (if_Action passsupportopen passsupport kicktogoal)
 
 supportrelay (robotpointmove supportrobot supportgoto)
 supportstandby (robotpointmove supportrobot standby_point)
 
 kickinrange kicktogoal
-kickoutrange kicktogoal
+kickoutrange trypass
 
 kick (if_Action ballinrange kickinrange kickoutrange)
 support (if_Action ballinrange supportstandby supportrelay)
