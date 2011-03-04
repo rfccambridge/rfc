@@ -329,6 +329,34 @@ namespace Robocup.Plays
 
                         });
 
+            addFunction("farEnemyRobotPos", "SCREW YOU", "Enemy that's farthest from given point ~ ", typeof(Vector2),
+                        new Type[] { typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+                        {
+                            List<RobotInfo> allinfos = new List<RobotInfo>();
+                            if (state != null)  //designer-friendly
+                            {
+                                allinfos.AddRange(state.TheirTeamInfo);
+                            }
+
+                            double maxDist = 0;
+                            Vector2 farPos = new Vector2(-3, .175);
+                            foreach (RobotInfo r in allinfos)
+                            {
+                                Vector2 position = r.Position;
+
+                                double dist = UsefulFunctions.distance((Vector2)objects[0], position);
+                                if (dist > maxDist)
+                                {
+                                    maxDist = dist;
+                                    farPos = position;
+                                }
+
+                            }
+
+                            return farPos;
+
+                        });
+
             addFunction("robotInGoal", "Robot in Goal",
                         "Whether there is a robot (any robot) in a goal", typeof(bool),
                         new Type[] { },
