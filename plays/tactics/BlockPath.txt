@@ -24,8 +24,6 @@ defensedisttoball (pointpointdistance defensebotpt ballpoint)
 
 
 
-# should robot kick
-do_kick (and should_kick (< defensedisttoball 0.4))
 
 # offense bot closest to the ball
 offensebot (closest enemy ballpoint loose)
@@ -40,6 +38,10 @@ offdistgoal (pointpointdistance ballpoint (ourgoal))
 
 #distance from goal on the line from ball to goal
 radius (max .45 (* offdistgoal 0.85))
+
+
+# should robot kick; Robot will kick if parameter passed in is True, it is closer to the ball than the enemy robots, and the path from the ball to the goal is clear)
+do_kick (and (and should_kick (< defensedisttoball offdistball)) (pathClear ballpoint (theirgoal) (pointpointdistance defensebotpt (theirgoal))))
 
 blockpathpt (linecircleintersection (line ballpoint (ourgoal)) (circle (ourgoal) radius) -1)
 
