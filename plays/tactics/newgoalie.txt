@@ -1,6 +1,6 @@
 Metadata:
 type tactic
-name SmartGoalie
+name SmartGoalieTODO
 
 Parameters:
 

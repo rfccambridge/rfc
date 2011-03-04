@@ -1,0 +1,55 @@
+Metadata:
+type tactic
+name AnnoyBot2
+
+Parameters:
+
+Objects:
+
+ballpoint (pointof ball)
+
+#ASK SVILEN ABOUT TRACKING THE WRONG ROBOT
+enemybot (closest enemy ballpoint loose)
+enemybotpt (pointof enemybot)
+enemyYcoord (getYcoord enemybotpt)
+
+annoyperimeter (circle (ourgoal) 1.00)
+
+enemyangle (orientationof enemybot)
+2piminenemyangle (- 3.14 enemyangle)
+
+#TO DO reimplement ballline
+ballline (line enemybotpt (ourgoal))
+midline (line (theirgoal) (ourgoal))
+defensept (linecircleintersection ballline annoyperimeter -1)
+
+defensebot (closest friendly defensept loose)
+defensebotpt (pointof defensebot)
+
+lineenemytoppost (line enemybotpt (toppost))
+lineenemybottpost (line enemybotpt (bottompost))
+anglegoal (angleBetweenTwoLines lineenemytoppost lineenemybottpost)
+
+
+enemypositivex (line enemybotpt (point (/ (const-double FIELD_WIDTH) 2) enemyYcoord))
+
+angleposXtoppost (angleBetweenTwoLines lineenemytoppost enemypositivex)
+angleposXbottpost (angleBetweenTwoLines lineenemybottpost enemypositivex)
+
+pointintsectannoytoppost (linecircleintersection lineenemytoppost annoyperimeter -1)
+pointintsectannoybottpost (linecircleintersection lineenemybottpost annoyperimeter -1)
+
+# is defender going in to kick
+defensedisttoball (pointpointdistance defensebotpt ballpoint)
+attackistoball (pointpointdistance enemybotpt ballpoint)
+
+# should robot kick
+do_kick (< defensedisttoball attackistoball)
+
+theirgoalx (getXcoord (theirgoal))
+ourgoalx (getXcoord (ourgoal))
+bottomcorner (point theirgoalx -1.95)
+topcorner (point theirgoalx 1.95)
+
+Actions:
+(if_Action do_kick (robotpointkick defensebot (theirgoal)) (if_Action (pointAboveLine enemybotpt midline) (if_Action (< 2piminenemyangle angleposXbottpost) (if_Action (< 2piminenemyangle angleposXtoppost) (robotpointmove defensebot pointintsectannoytoppost) (robotpointmove defensebot defensept)) (robotpointmove defensebot pointintsectannoybottpost))   (if_Action (< enemyangle angleposXtoppost) (if_Action (< enemyangle angleposXbottpost) (robotpointmove defensebot pointintsectannoybottpost) (robotpointmove defensebot defensept)) (robotpointmove defensebot pointintsectannoytoppost))))

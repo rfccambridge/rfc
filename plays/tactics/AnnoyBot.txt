@@ -16,7 +16,7 @@ enemyYcoord (getYcoord enemybotpt)
 annoyperimeter (circle enemybotpt 0.20)
 
 enemyangle (orientationof enemybot)
-2piminenemyangle (- 6.28 enemyangle)
+2piminenemyangle (- 3.14 enemyangle)
 
 #TO DO reimplement ballline
 ballline (linedirection enemybotpt enemyangle)
@@ -44,7 +44,12 @@ defensedisttoball (pointpointdistance defensebotpt ballpoint)
 attackistoball (pointpointdistance enemybotpt ballpoint)
 
 # should robot kick
-do_kick (< 0.04 (- defensedisttoball attackistoball))
+do_kick (< defensedisttoball attackistoball)
+
+theirgoalx (getXcoord (theirgoal))
+ourgoalx (getXcoord (ourgoal))
+bottomcorner (point theirgoalx -1.95)
+topcorner (point theirgoalx 1.95)
 
 Actions:
-(if_Action do_kick (robotpointkick defensebot (theirgoal)) (if_Action (pointAboveLine enemybotpt midline) (if_Action (< 2piminenemyangle angleposXbottpost) (if_Action (< 2piminenemyangle angleposXtoppost) (robotpointmove defensebot pointintsectannoytoppost) (robotpointmove defensebot defensept)) (robotpointmove defensebot pointintsectannoybottpost))   (if_Action (< enemyangle angleposXtoppost) (if_Action (< enemyangle angleposXbottpost) (robotpointmove defensebot pointintsectannoybottpost) (robotpointmove defensebot defensept)) (robotpointmove defensebot pointintsectannoytoppost))))
+(if_Action do_kick (if_Action (not (pointAboveLine defensebotpt midline))(if_Action (pathClear defensebotpt bottomcorner .5) (robotpointkick defensebot bottomcorner) (if_Action (pathClear defensebotpt (theirgoal) .5) (robotpointkick defensebot (theirgoal)) (robotpointkick defensebot bottomcorner))) (if_Action (pathClear defensebotpt topcorner .5) (robotpointkick defensebot topcorner) (if_Action (pathClear defensebotpt (theirgoal) .5) (robotpointkick defensebot topcorner) (robotpointkick defensebot bottomcorner)))) (if_Action (pointAboveLine enemybotpt midline) (if_Action (< 2piminenemyangle angleposXbottpost) (if_Action (< 2piminenemyangle angleposXtoppost) (robotpointmove defensebot pointintsectannoytoppost) (robotpointmove defensebot defensept)) (robotpointmove defensebot pointintsectannoybottpost))   (if_Action (< enemyangle angleposXtoppost) (if_Action (< enemyangle angleposXbottpost) (robotpointmove defensebot pointintsectannoybottpost) (robotpointmove defensebot defensept)) (robotpointmove defensebot pointintsectannoytoppost))))

@@ -1,7 +1,6 @@
 Metadata:
 type tactic
-name SmartGoalieOLD
-
+name SmartGoalie
 Parameters:
 
 Objects:

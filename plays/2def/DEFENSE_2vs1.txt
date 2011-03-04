@@ -4,7 +4,7 @@ name DEFENSE_2vs2
 score 250
 
 Tactics:
-SmartGoalie
+AnnoyBot2
 AnnoyBot
 
 Objects:
