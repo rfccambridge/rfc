@@ -7,9 +7,29 @@ using Robocup.Geometry;
 
 namespace Robocup.Plays
 {
-    class TacticsEval
+    public static class TacticsEval
     {
 
+       
+        static double FIELD_WIDTH;
+        static double FIELD_HEIGHT;
+        
+        public static void LoadConstants()
+        {
+            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+        }
+
+        public static bool InField(Vector2 point)
+        {
+            if (point == null)
+                return false;
+
+            bool result = ((point.X <= FIELD_WIDTH / 2) && (point.X >= - FIELD_WIDTH / 2)
+                        && (point.Y <= FIELD_HEIGHT / 2) && (point.Y >= - FIELD_HEIGHT / 2));
+            return result;
+        }
+        
         //For reference, 
         //                   O
         //                   | x
@@ -24,8 +44,7 @@ namespace Robocup.Plays
         // 0.3m - 0.37
         // 0.5m - 0.12
         // 1.0m - 0.01
-        public static double kickBlockednessLinear(RobotInfo[] theirRobots, BallInfo ball, Vector2 target)
-        {
+        public static double kickBlockednessLinear(RobotInfo[] theirRobots, BallInfo ball, Vector2 target){
             if (ball == null)
                 return 0;
 
