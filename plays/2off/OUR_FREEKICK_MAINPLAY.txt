@@ -12,6 +12,6 @@ nothing (nullAction)
 Conditions:
 
 Actions:
-(if_Action (= numRobots 1) (assignPlay O_FK_1x0) nothing)
+(if_Action (= numRobots 1) (assignPlay BALL_OFFENSE_STATIONARY) nothing)
 
-(if_Action (= numRobots 2) (assignPlay O_FK_2x0) nothing)
+(if_Action (= numRobots 2) (assignPlay BALL_OFFENSE_STATIONARY) nothing)
