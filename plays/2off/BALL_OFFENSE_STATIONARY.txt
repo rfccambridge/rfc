@@ -1,0 +1,57 @@
+Metadata:
+playtype NormalPlay
+name BALL_OFFENSE_STATIONARY
+score 200
+
+Tactics:
+
+Objects:
+
+wayTop (point 0 1000.0)
+wayBottom (point 0 -1000.0)
+
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
+GOAL_MINIMUM (const-double GOAL_MINIMUM)
+BALL_IN_RANGE (const-double BALL_IN_RANGE)
+SUPPORT_AVOID (const-double SUPPORT_AVOID)
+CLEAR_DIST (const-double CLEAR_DIST)
+SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
+
+ballpoint (pointof ball)
+
+ballY (getYcoord ballpoint)
+ballX (getXcoord ballpoint)
+ballontop (> ballY 0.1)
+ballonbottom (not ballontop)
+ballinrange (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE)
+
+goalTop (pointadd (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+goalMiddle (theirgoal)
+goalBottom (pointsubtract (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+
+
+kickbot (closest friendly ballpoint loose)
+supportbot (closest friendly ballpoint loose)
+
+
+deflectpos (if_point ballontop (point 2 -0.3) (point 2 0.3))
+supportfrom (if_point (< ballX -1) topCenter deflectpos)
+
+goaltarget (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle (if_point (pathClear ballpoint goalTop CLEAR_DIST) goalTop goalBottom))
+target (if_point (pathClear ballpoint goaltarget CLEAR_DIST) goaltarget (pointof supportbot))
+
+
+Conditions:
+
+Actions:
+(robotpointkick kickbot target)
+(robotpointmove supportbot supportfrom)
+
