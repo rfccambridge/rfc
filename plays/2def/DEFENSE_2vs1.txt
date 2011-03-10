@@ -4,8 +4,8 @@ name DEFENSE_2vs1
 score 250
 
 Tactics:
-Pressure
 Cover
+Pressure
 
 Objects:
 

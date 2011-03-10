@@ -46,7 +46,7 @@ attackerclosestrobot (linelineintersection attackerintersect attackerline)
 
 # should the robot try to kick the ball?
 ballzone (circle ballpoint 0.6)
-robotshouldkick (< (pointpointdistance defensebotpt ballpoint) 0.4)
+robotshouldkick (or (> (- (pointpointdistance attackerpt ballpoint) (pointpointdistance defensebotpt ballpoint)) 0.75) (and (< (pointpointdistance defensebotpt ballpoint) 0.1) (< (pointpointdistance attackerpt ballpoint) 0.25)))
 
 # Places to kick the ball
 toptarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) 2))
