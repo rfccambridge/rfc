@@ -4,8 +4,11 @@ name DEFENSE_2vs1
 score 250
 
 Tactics:
+
 SmartGoalie
-BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .03) True
+BlockPath (ourgoal) (* .85 (pointpointdistance (ourgoal) (pointof ball))) False
+
+
 
 Objects:
 

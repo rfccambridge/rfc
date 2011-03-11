@@ -5,7 +5,7 @@ score 200
 
 Tactics:
 SmartGoalie
-BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .03) True
+DefendPoint (ourgoal) (* .85 (- (pointpointdistance (ourgoal) (pointof ball)) .03)) False
 
 Objects:
 

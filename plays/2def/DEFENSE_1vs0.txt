@@ -4,7 +4,7 @@ name DEFENSE_1vs0
 score 100
 
 Tactics:
-BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .03) True
+DefendPoint (ourgoal) (* .85 (- (pointpointdistance (ourgoal) (pointof ball)) .03)) False
 
 Objects:
 

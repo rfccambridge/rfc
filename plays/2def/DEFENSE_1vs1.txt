@@ -4,7 +4,7 @@ name DEFENSE_1vs1
 score 150
 
 Tactics:
-SmartGoalie
+BlockPath (ourgoal) (* .85 (pointpointdistance (ourgoal) (pointof ball))) False
 
 Objects:
 

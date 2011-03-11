@@ -4,7 +4,7 @@ score 100
 name TH_KOFF_1x0
 
 Tactics:
-BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .5) True
+BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .6) False
 
 Objects:
 

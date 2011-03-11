@@ -33,11 +33,11 @@ offdistball (pointpointdistance offbotpt ballpoint)
 # distance of the offensebot closest to the ball
 
 
-# distance of the offensebot to the goal
+# distance of the ball to the goal
 offdistgoal (pointpointdistance ballpoint (ourgoal))
 
 #distance from goal on the line from ball to goal
-radius (max .45 (* offdistgoal 0.85))
+radius (max .45 distance )
 
 
 # should robot kick; Robot will kick if parameter passed in is True, it is closer to the ball than the enemy robots, and the path from the ball to the goal is clear)

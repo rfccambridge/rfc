@@ -5,7 +5,7 @@ name TH_KOFF_2x0
 
 Tactics:
 SmartGoalie
-BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .5) True
+BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .6) False
 
 
 Objects:

@@ -6,8 +6,9 @@ score 250
 Tactics:
 #BlockPass
 #DefendPoint (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .03) True
-BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .03) True
+BlockPath (ourgoal) (* .85 (pointpointdistance (ourgoal) (pointof ball))) True
 SmartGoalie
+
 
 Objects:
 

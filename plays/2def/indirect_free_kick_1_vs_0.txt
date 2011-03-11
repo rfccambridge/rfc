@@ -4,7 +4,7 @@ name TheirFreeKick_1_0
 score 100
 
 Tactics:
-BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .5) True
+BlockPath (ourgoal) (- (pointpointdistance (ourgoal) (pointof ball)) .6) False
 
 Objects:
 Actions:
