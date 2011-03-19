@@ -478,28 +478,37 @@ namespace Robocup.MotionControl
 		double RRT_OBSTACLE_AVOID_DIST;
 		double STEADY_STATE_SPEED;
 
+        private int numPathIterations = 8;
+        private int numSmoothIterations = 5;
+        private readonly bool doPathSmoothing;
+
 		private readonly BasicRRTPlanner<Vector2, Vector2Tree> planner;
 
-		public BasicRRTMotionPlanner()
+		public BasicRRTMotionPlanner(bool doPathSmoothing)
 		{
+            this.doPathSmoothing = doPathSmoothing;
 			planner = new BasicRRTPlanner<Vector2, Vector2Tree>(Common.ExtendVV, Common.RandomStateV);
 		}
 
 		public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
 		{
+            //Build obstacles!-------------------------------
 			List<Obstacle> obstacles = new List<Obstacle>();
-			//Aviod all robots, but myself
+
+            //Avoid all robots, except myself
 			foreach (RobotInfo info in predictor.GetRobots())
 			{
 				if (info.Team != team || info.ID != id)
                     obstacles.Add(new Obstacle(info.Position, RRT_OBSTACLE_AVOID_DIST));
 			}
-			//If needed, avoid ball
+
+            //If needed, avoid ball
             if (avoidBallRadius > 0 &&
                 predictor.GetBall() != null &&
                 predictor.GetBall().Position != null)
                 obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
 
+            //Try to find myself
 			RobotInfo curinfo;
             try
             {
@@ -509,21 +518,43 @@ namespace Robocup.MotionControl
             {
                 return new RobotPath(team, id);
             }
-			List<Vector2> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
 
+            //Plan!
+            List<Vector2> bestPath = null;
+            double bestPathLen = 0;
+            for (int i = 0; i < numPathIterations; i++)
+            {
+                List<Vector2> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
+
+                //Smooth the path if desired
+                if (doPathSmoothing)
+                {
+                    for (int j = 0; j < numSmoothIterations; j++)
+                        smoothPath(path, obstacles);
+                }
+
+                double len = pathLen(path);
+                if (len < bestPathLen || bestPath == null)
+                {
+                    bestPathLen = len;
+                    bestPath = path;
+                }
+            }
+
+            //Convert the path
 			List<RobotInfo> robotPath = new List<RobotInfo>();
 
 			//Overly simplistic conversion from planning on position vectors to RobotInfo that has orientation and velocity information
 			//velocity at every waypoint just points to next one with constant speed
-			for (int i = 0; i < path.Count; i++)
+            for (int i = 0; i < bestPath.Count; i++)
 			{
 				//0-th waypoint is current state, driver won't like it
 				if (i == 0)
 					continue;
 
-				RobotInfo waypoint = new RobotInfo(path[i], desiredState.Orientation, team, id);				
-				if (i < path.Count - 1)
-					waypoint.Velocity = (path[i + 1] - path[i]).normalizeToLength(STEADY_STATE_SPEED);
+                RobotInfo waypoint = new RobotInfo(bestPath[i], desiredState.Orientation, team, id);
+                if (i < bestPath.Count - 1)
+                    waypoint.Velocity = (bestPath[i + 1] - bestPath[i]).normalizeToLength(STEADY_STATE_SPEED);
 				else
 					waypoint.Velocity = new Vector2(0, 0); //Stop at destination
 				
@@ -534,58 +565,95 @@ namespace Robocup.MotionControl
 		}
 
 
-        /*
+        private double pathLen(List<Vector2> path)
+        {
+            double len = 0;
+            for (int i = 0; i < path.Count-1; i++)
+                len += (path[i + 1] - path[i]).magnitude();
+            return len;
+        }
 
-        public class BidirectionalRRTMotionPlanner : IPathPlanner
-	{
-		double RRT_OBSTACLE_AVOID_DIST;
-		double STEADY_STATE_SPEED;
+        private void smoothPath(List<Vector2> path, List<Obstacle> obstacles)
+        {
+            //Compute sharpness of each bend
+            int len = path.Count;
+            if(len <= 2)
+                return;
+            double[] sharpnessArr = new double[len-2];
+            int[] indexArr = new int[len-2];
 
-		private readonly BidirectionalRRTPlanner<Vector2,Vector2, Vector2Tree, Vector2Tree> planner;
+            for (int i = 1; i < len-1; i++)
+            {
+                Vector2 vec1 = path[i] - path[i-1];
+                Vector2 vec2 = path[i+1] - path[i];
+                double sharpness;
+                if (vec1.magnitudeSq() < 1e-16 || vec2.magnitudeSq() < 1e-16)
+                    sharpness = 0;
+                else
+                    sharpness = Math.Abs(UsefulFunctions.angleDifference(vec1.cartesianAngle(), vec2.cartesianAngle()));
+                sharpnessArr[i - 1] = sharpness;
+                indexArr[i - 1] = i;
+            }
 
-		public BidirectionalRRTMotionPlanner()
-		{
-			planner = new BidirectionalRRTPlanner<Vector2, Vector2, Vector2Tree, Vector2Tree>(Common.ExtendVV, Common.ExtendVV, Common.ExtendVV, Common.ExtendVV, Common.RandomStateV, Common.RandomStateV);
-		}
+            //Sort the most sharp to the front
+            //Insertion sort, currently
+            for (int i = 1; i < len - 2; i++)
+            {
+                int j = i;
+                while (j > 0 && sharpnessArr[j - 1] < sharpnessArr[j])
+                {
+                    int temp = indexArr[j - 1];
+                    indexArr[j - 1] = indexArr[j];
+                    indexArr[j] = temp;
+                    double temp2 = sharpnessArr[j - 1];
+                    sharpnessArr[j - 1] = sharpnessArr[j];
+                    sharpnessArr[j] = temp2;
+                }
+            }
 
-		public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
-		{
-			List<Obstacle> obstacles = new List<Obstacle>();
-			//Aviod all robots, but myself
-			foreach (RobotInfo info in predictor.GetRobots())
-			{
-				if (info.Team != team || info.ID != id)
-					obstacles.Add(new Obstacle(info.Position, AVOID_DIST));
-			}
-			//If needed, avoid ball
-			if (avoidBallRadius > 0 && predictor.GetBall().Position != null)
-				obstacles.Add(new Obstacle(predictor.GetBall().Position, avoidBallRadius));
+            //Now, in order of sharpness, attempt to smooth the path
+            for (int i = 0; i < len - 2; i++)
+            {
+                int idx = indexArr[i];
 
-			RobotInfo curinfo = predictor.GetRobot(team, id);
-			Pair<List<Vector2>, List<Vector2>> path = planner.Plan(curinfo.Position, desiredState.Position, obstacles);
+                Vector2 cur = path[idx];
+                Vector2 prev = path[idx-1];
+                Vector2 next = path[idx+1];
+                Vector2 mid = (prev + next) / 2.0;
 
-			List<RobotInfo> robotPath = new List<RobotInfo>();
+                //Try just using the mid outright
+                if (!Common.SegmentBlocked(prev,next,obstacles))
+                {
+                    if ((next - prev).magnitudeSq() <= 0.2 * 0.2)
+                    {
+                        path.RemoveAt(idx); for (int j = i + 1; j < len - 2; j++)
+                            if (indexArr[j] > idx) indexArr[j]--; continue;
+                    }
+                    else
+                    {
+                        path[idx] = mid;
+                    }
+                }
 
-			//Overly simplistic conversion from planning on position vectors to RobotInfo that has orientation and velocity information
-			//velocity at every waypoint just points to next one with constant speed
-			for (int i = 0; i < path.Count; i++)
-			{
-				//0-th waypoint is current state, driver won't like it
-				if (i == 0)
-					continue;
+                //Try smoothing partway to the mid
+                Vector2 curmid2 = (cur + mid) / 2.0;
+                if (!Common.SegmentBlocked(prev, curmid2, obstacles) && !Common.SegmentBlocked(curmid2, next, obstacles))
+                { path[idx] = curmid2; continue; }
 
-				RobotInfo waypoint = new RobotInfo(path[i], desiredState.Orientation, team, id);				
-				if (i < path.Count - 1)
-					waypoint.Velocity = (path[i + 1] - path[i]).normalizeToLength(STEADY_STATE_SPEED);
-				else
-					waypoint.Velocity = new Vector2(0, 0); //Stop at destination
-				
-				robotPath.Add(waypoint);
-			}
+                //Try smoothing partway to the mid
+                Vector2 curmid4 = (cur*3 + mid) / 4.0;
+                if (!Common.SegmentBlocked(prev, curmid4, obstacles) && !Common.SegmentBlocked(curmid4, next, obstacles))
+                { path[idx] = curmid4; continue; }
 
-			return new RobotPath(robotPath);
-		}
-         * */
+                //Try smoothing partway to the mid
+                Vector2 curmid8 = (cur * 7 + mid) / 8.0;
+                if (!Common.SegmentBlocked(prev, curmid8, obstacles) && !Common.SegmentBlocked(curmid8, next, obstacles))
+                { path[idx] = curmid8; continue; }
+
+                //No? Okay, we can't smooth this one any more
+            }
+        }
+
 
         public void ReloadConstants()
 		{
