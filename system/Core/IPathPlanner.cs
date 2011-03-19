@@ -6,8 +6,6 @@ using System.Drawing;
 
 namespace Robocup.CoreRobotics
 {
-    
-    // This interface is still under construction- please do not use.
     /// <summary>
     /// The parent class for motion planners that are separated into planner and driver classes
     /// planner and driver should be initialized in constructor
