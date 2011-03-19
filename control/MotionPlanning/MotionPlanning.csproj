@@ -76,9 +76,7 @@
     <Compile Include="RobotSpinner.cs" />
     <Compile Include="RRTPlanners.cs" />
     <Compile Include="SearchTree.cs" />
-    <Compile Include="Smoother.cs" />
     <Compile Include="SpeedTest.cs" />
-    <Compile Include="StickyPath.cs" />
     <Compile Include="TestRRTPlanner.cs" />
     <Compile Include="Vector2NNFinder.cs" />
   </ItemGroup>

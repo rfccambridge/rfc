@@ -62,40 +62,6 @@ namespace Robocup.MotionControl
             return ExtendVV(start, end.Position, state);
         }
 
-        //TODO separate movementmodeler for each robot
-        static readonly MovementModeler mm = new MovementModeler();
-        const double extendTime = .5;
-        static public ExtendResults<RobotInfo> ExtendRRThrough(RobotInfo start, RobotInfo end, object state)
-        {
-            List<Obstacle> obstacles = (List<Obstacle>)state;
-            ExtendResultType result = ExtendResultType.Success;
-            WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeedsThrough(start, end);
-            RobotInfo newInfo = mm.ModelWheelSpeeds(start, ws, extendTime);
-            if (end.Position.distanceSq(start.Position) < .1 * .1)
-            {
-                //newInfo = destination;
-                result = ExtendResultType.Destination;
-            }
-            if (Blocked(newInfo.Position, obstacles))
-                result = ExtendResultType.Blocked;
-            return new ExtendResults<RobotInfo>(newInfo, result);
-        }
-        static public ExtendResults<RobotInfo> ExtendRVThrough(RobotInfo start, Vector2 end, object state)
-        {
-            List<Obstacle> obstacles = (List<Obstacle>)state;
-            ExtendResultType result = ExtendResultType.Success;
-            WheelSpeeds ws = WheelSpeedsExtender.GetWheelSpeedsThrough(start, end);
-            RobotInfo newInfo = mm.ModelWheelSpeeds(start, ws, extendTime);
-            if (end.distanceSq(start.Position) < .1 * .1)
-            {
-                //newInfo = destination;
-                result = ExtendResultType.Destination;
-            }
-            if (Blocked(newInfo.Position, obstacles))
-                result = ExtendResultType.Blocked;
-            return new ExtendResults<RobotInfo>(newInfo, result);
-        }
-
         static public bool Blocked(Vector2 point, List<Obstacle> obstacles)
         {
             foreach (Obstacle o in obstacles)
@@ -141,93 +107,6 @@ namespace Robocup.MotionControl
         {
             return new Vector2((r.NextDouble() - .5) * 2 * 2.75, (r.NextDouble() - .5) * 2 * 2);
         }
-        static public RobotInfo RandomStateR()
-        {
-            Vector2 position = new Vector2((r.NextDouble() - .5) * 2 * 2.75, (r.NextDouble() - .5) * 2 * 2);
-            return new RobotInfo(position, 0, -1);
-        }        
 
-        // constrains to between [-pi, pi]
-        static private double constrainAngle(double angle)
-        {
-            while (angle > Math.PI)
-            {
-                angle -= 2 * Math.PI;
-            }
-            while (angle < -Math.PI)
-            {
-                angle += 2 * Math.PI;
-            }
-            return angle;
-        }
-
-        // return +1 if we need to turn counter-clockwise to get to goal.
-        // later make this do PID on angle?
-        const double ANGLE_THRESHOLD = 0.15;
-        static private double getTurnDirection(double startOrient, double goalOrient)
-        {
-
-            // change goalOrient to startOrient frame
-            double orientationDelta = constrainAngle(goalOrient - startOrient);
-            if (Math.Abs(orientationDelta) < ANGLE_THRESHOLD)
-                return 0.0;
-            else if (orientationDelta > 0)
-                return 1.0;
-            else
-                return -1.0;
-
-        }
-        // hack to add in orientation information: add PID here
-        static public WheelSpeeds addOrientation(double startOrientation, double goalOrientation, WheelSpeeds speeds)
-        {
-            const double turnSpeed = 3.0;
-            // we need orientation and speed information 
-            int turnIncrement = (int)(turnSpeed * getTurnDirection(startOrientation, goalOrientation));
-            //Console.WriteLine("TURNINCREMENT: " + turnIncrement);
-
-            speeds.lf += -1 * turnIncrement;
-            speeds.rf += turnIncrement;
-            speeds.lb += -1 * turnIncrement;
-            speeds.rb += turnIncrement;
-
-            return speeds;
-        }
-        static public void DrawVector2Tree(Vector2Tree tree, Color color, Graphics g, ICoordinateConverter c)
-        {
-            if (tree == null)
-                return;
-            Brush b = new SolidBrush(color);
-
-            foreach (Vector2 v in tree.AllNodes())
-            {
-                g.FillRectangle(b, c.fieldtopixelX(v.X) - 1, c.fieldtopixelY(v.Y) - 1, 2, 2);
-            }
-
-            b.Dispose();
-        }
-        static public void DrawRobotInfoTree(RobotInfoTree tree, Color color, Graphics g, ICoordinateConverter c)
-        {
-            if (tree == null)
-                return;
-            Brush b = new SolidBrush(color);
-            Pen p = new Pen(Color.Black);
-
-            foreach (RobotInfo info in tree.AllNodes())
-            {
-                Vector2 v = info.Position;
-                g.FillRectangle(b, c.fieldtopixelX(v.X) - 1, c.fieldtopixelY(v.Y) - 1, 3, 3);
-                RobotInfo prev = tree.ParentNode(info);
-                if (prev != null)
-                {
-                    Vector2 v2 = prev.Position;
-                    g.DrawLine(p, (float)c.fieldtopixelX(v.X), (float)c.fieldtopixelY(v.Y),
-                        (float)c.fieldtopixelX(v2.X), (float)c.fieldtopixelY(v2.Y));
-                }
-            }
-
-            p.Dispose();
-            b.Dispose();
-        }    
-            
     }
 }
