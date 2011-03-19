@@ -71,10 +71,6 @@ namespace Robocup.MotionControl
         int SATURATION_LIMIT;
 
         int[] saturation_counters;
-
-        // Planner for spinning
-        //DirectRobotSpinner spinplanner;
-        PIDRobotSpinner spinplanner;
         
         public FeedbackVeerKickPlanner(IMotionPlanner regularPlanner)
         {
@@ -85,7 +81,6 @@ namespace Robocup.MotionControl
 
             this.regularPlanner = regularPlanner;
             loop = new PIDLoop("kickplanning", "point1orientation");
-            spinplanner = new PIDRobotSpinner();
 
             saturation_counters = new int[NUM_ROBOTS];
 
@@ -130,17 +125,12 @@ namespace Robocup.MotionControl
 
             // Define points to go to at different stages
             Vector2 p1 = extend(target, ball, DIST_BEHIND_BALL);
-            //Vector2 p2 = extend(thisrobot.Position, ball, DIST_THROUGH_BALL);
-            //Vector2 p2 = ball;
             Vector2 p2 = extend(target, ball, -DIST_THROUGH_BALL);
-            //double desiredOrientation = ballToTarget.cartesianAngle();
 
             // CHANGE!
             double desiredOrientation = robotToBall.cartesianAngle();
 
             double distToPoint1 = Math.Sqrt(thisrobot.Position.distanceSq(p1));
-
-            //Console.WriteLine("dist to point 1 " + distToPoint1);
 
             // Find lateral and parallel distances
             // First find angle from ball to robot, if the vector from the target through the
@@ -150,9 +140,6 @@ namespace Robocup.MotionControl
 
             double lateralDistance = distRobotToBall * Math.Sin(ballToRobotAngle);
             double parallelDistance = distRobotToBall * Math.Cos(ballToRobotAngle);
-
-            //Console.WriteLine("Parallel distance " + parallelDistance);
-            //Console.WriteLine("Lateral distance " + lateralDistance);
 
             // check whether robot is in necessary range to go to point 2
             bool inRangeContinue = (lateralDistance < MAX_LATERAL_GO_THROUGH &&
@@ -170,65 +157,6 @@ namespace Robocup.MotionControl
             bool orientationCorrect = (Math.Abs(diffOrientation) < MAX_DIFF_ORIENTATION_POINT_1);
 
             bool pointSwitch = (pointClose && orientationCorrect);
-
-            /*// if close enough to point for dumb planning but not for final, switch to dumb planner
-            if ((pointCloseTranslate && !pointClose && goingToPoint1))
-            {
-                RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
-                speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
-                return new KickPlanningResults(speeds, false);
-            }*/
-
-            // if close enough to point but orientation is off,
-            // first use IRobotSpinner to correct orientation
-            //if (pointCloseLateral && !orientationCorrect)
-
-            //Console.WriteLine(" orientationDiff " + diffOrientation + "Robot position: " + thisrobot.Position + " ball position " + ball);
-            
-            // spin robot to correct orientation
-            /*if (pointClose && (!orientationCorrect) && goingToPoint1)
-            {
-                Console.WriteLine("SPINNING: distance is " + distToPoint1 + "\t Angle difference is " + diffOrientation);
-                speeds = spinplanner.spinTo(id, desiredOrientation, MAX_DIFF_ORIENTATION_POINT_1, predictor);
-                //RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
-                //speeds = dumbPlanner.PlanMotion(id, desiredState, predictor, 0).wheel_speeds;
-                // DO NOT CHARGE WHILE SPINNING
-                return new KickPlanningResults(speeds, false);
-            }*/
-            if (pointClose && goingToPoint1) {
-                //spinSatisfied = true;
-                //return new KickPlanningResults(new WheelSpeeds(), false);
-            }
-            
-
-            // if orientation is correct, move laterally
-            /*if (pointCloseLateral && !pointClose && orientationCorrect)
-            {
-                // positive means robot moves left, negative menas robot moves right
-                if (lateralDistance > 0)
-                    speeds = LeftSpeed;
-                else
-                    speeds = RightSpeed;
-                return new KickPlanningResults(speeds, false);
-            }*/
-
-            // if close to point and orientation is on but haven't started charging yet, wait
-            //DateTime nowCached = DateTime.Now;
-            //if ((pointSwitch && (nowCached - _timesStartedCharging[id]).TotalMilliseconds < TIME_WAIT_POINT_1 ||
-            //    _timesStartedCharging[id] == arbitraryPastTime)) {
-            //    if (_timesStartedCharging[id] == arbitraryPastTime) {
-            //        _timesStartedCharging[id] = nowCached;
-            //    }
-
-            //    // return empty speeds, telling it to charge the kicker
-            //    WheelSpeeds tempSpeeds = new WheelSpeeds();
-            //    return new KickPlanningResults(tempSpeeds, true);
-            //}
-
-
-            //if (pointSwitch && (nowCached - _timesStartedCharging[id]).TotalMilliseconds > 5000) {
-            //    _timesStartedCharging[id] = arbitraryPastTime;
-            //}
 
             // if the robot is close to point 1, or if it is in continuation range and already going
             // to point two, go to point two
@@ -262,10 +190,8 @@ namespace Robocup.MotionControl
             else
             {
                 RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, id);
-                //speeds = new WheelSpeeds();
             	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0);
 				speeds = dumbPlanner.FollowPath(path,predictor).wheel_speeds;// This is the "normal one"
-                //speeds = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0).wheel_speeds;
 
                 // FOR NOW!!! Go forwards rather than use PID feedback. Meant to fix forward curving problem
                 //speeds = new WheelSpeeds(10, 10, 10, 10);                
@@ -274,32 +200,11 @@ namespace Robocup.MotionControl
 
             // ignore above code on break beam (remove later, this is at competition and we are concerned about quick
             // reversibility), instead decide whether to turn on the break beam based on the distance to the ball
-
             breakBeamOn = (distRobotToBall <= BALL_DISTANCE_CHARGE);
 
             // return a KickPlanningResults object with the appropriate information on
             // wheel speeds and break beam
-
             return new KickPlanningResults(speeds, breakBeamOn);
-
-            /*
-            //position the robot close enough to the ball so that it can kick soon,
-            //but far enough so that the break-beam doesn't trigger
-
-            Vector2 farDestination = extend(target, ball, 2 * kickDistance);
-
-            Vector2 ballToTarget = (target - ball).normalize();
-            Vector2 robotToBall = (ball - thisrobot.Position).normalize();
-            Vector2 robotToTarget = (target - thisrobot.Position).normalize();
-
-            bool behindBall = (robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq());
-
-            //Vector2 actualDestination = extend(target, ball, 0.75*kickDistance);
-            Vector2 actualDestination = ball + (target - ball).normalizeToLength(kickDistance * 2);
-            double destinationAngle = targetAngle(ball, target);
-            double theta = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), ballToTarget.cartesianAngle()));
-            double distRobotToBall = Math.Sqrt(thisrobot.Position.distanceSq(ball));
-            double lateralDistance = distRobotToBall * Math.Sin(theta);*/
         }
 
 
@@ -343,7 +248,6 @@ namespace Robocup.MotionControl
 
             regularPlanner.LoadConstants();
             slowPlanner.LoadConstants();            
-            spinplanner.ReloadConstants();
             loop.ReloadConstants();            
         }
 
