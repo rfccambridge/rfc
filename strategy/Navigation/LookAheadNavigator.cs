@@ -13,7 +13,6 @@ namespace Navigation
         //When the tester queries for any Navigator classes, it can't create a generic class,
         //because it won't know what generic type parameters to provide.
         public class LookAheadBug : LookAheadNavigator<Navigation.Examples.BugNavigator> { }
-        public class LookAheadPotential : LookAheadNavigator<PotentialBasedNavigator> { }
 
 
         /// <summary>

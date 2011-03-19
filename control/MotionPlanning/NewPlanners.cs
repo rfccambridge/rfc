@@ -12,8 +12,6 @@ using Navigation.Examples;
 using System.IO;
 using Robocup.Utilities;
 
-using Navigator = Navigation.Examples.LookAheadPotential;
-
 namespace Robocup.MotionControl
 {
     //contains planners written, both for testing and practical purposes, for
