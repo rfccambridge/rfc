@@ -35,7 +35,7 @@ namespace Robocup.CoreRobotics
         public WheelSpeeds Convert(double forward, double lateral, double angularV)
         {
             const double WHEEL_R = 0.0782828; //distance from the center of the robot to the wheels in meters
-            const double ANGLE_AXIS_TO_WHEEL = 41 * Math.PI / 180;
+            const double ANGLE_AXIS_TO_WHEEL = 45 * Math.PI / 180;
 
             //I assume the x command is effectively in m/s, so r the radius of the wheels from the center of
             //the robot is in meters
@@ -46,20 +46,13 @@ namespace Robocup.CoreRobotics
             double sing = Math.Sin(ANGLE_AXIS_TO_WHEEL);
             double cosg = Math.Cos(ANGLE_AXIS_TO_WHEEL);
 
-            //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
+            //wheel one is the front right wheel  wheel 2 is the front left wheel, 
+            //and so on around the the robot counterclockwise
 
-            double _rf = -(sing * lateral + cosg * forward - WHEEL_R * angularV);
-            double _lf = -(sing * lateral - cosg * forward - WHEEL_R * angularV);
-            double _lb = -(-sing * lateral - cosg * forward - WHEEL_R * angularV);
-            double _rb = -(-sing * lateral + cosg * forward - WHEEL_R * angularV);
-
-            /*int scaleUpFactor = 2;
-            if (Math.Abs(_lf) < 10 && Math.Abs(_rf) < 10 && Math.Abs(_lb) < 10 && Math.Abs(_rb) < 10) {
-                _lf *= scaleUpFactor;
-                _rf *= scaleUpFactor;
-                _lb *= scaleUpFactor;
-                _rb *= scaleUpFactor;
-            }*/
+            double _rf = -sing * lateral - cosg * forward + WHEEL_R * angularV;
+            double _lf = -sing * lateral + cosg * forward + WHEEL_R * angularV;
+            double _lb =  sing * lateral + cosg * forward + WHEEL_R * angularV;
+            double _rb =  sing * lateral - cosg * forward + WHEEL_R * angularV;
 
             int lf, rf, lb, rb;
             lf = (int)_lf;
