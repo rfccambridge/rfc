@@ -35,7 +35,7 @@ namespace Robocup.CoreRobotics
         public WheelSpeeds Convert(double forward, double lateral, double angularV)
         {
             const double WHEEL_R = 0.0782828; //distance from the center of the robot to the wheels in meters
-            const double ANGLE_AXIS_TO_WHEEL = 45 * Math.PI / 180;
+            const double ANGLE_AXIS_TO_WHEEL = 41 * Math.PI / 180;
 
             //I assume the x command is effectively in m/s, so r the radius of the wheels from the center of
             //the robot is in meters
