@@ -33,7 +33,6 @@ namespace Robocup.ControlForm
         private FieldDrawer _fieldDrawer;
 
         private IMotionPlanner _planner;
-        private IMotionPlanner _regularPlanner;
 		private IKickPlanner _kickPlanner;		        
 
 		private RobotPath[] _paths;
@@ -70,8 +69,7 @@ namespace Robocup.ControlForm
 			_predictor = predictor;
 			_fieldDrawer = fieldDrawer;
 
-			_regularPlanner = new TangentBugFeedbackMotionPlanner();
-			_kickPlanner = new FeedbackVeerKickPlanner(_regularPlanner);
+			_kickPlanner = new FeedbackVeerKickPlanner(new TangentBugFeedbackMotionPlanner());
 
 			_paths = new RobotPath[NUM_ROBOTS];
 			_followsSincePlan = new int[NUM_ROBOTS];
