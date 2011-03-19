@@ -154,6 +154,12 @@ namespace Robocup.Simulation
 
             txtNumBlue.Enabled = selected.SupportsNumbers;
             txtNumYellow.Enabled = selected.SupportsNumbers;
-        }        
+        }
+
+
+        private void noisyVisionBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            _physicsEngine.SetNoisyVision(noisyVisionBox.Checked);            
+        }
     }
 }
