@@ -267,7 +267,11 @@ namespace Robocup.ControlForm
 
         protected override void doAction()
         {
-            if (_waypoints.Count > 0)
+            if (_predictor.GetBall() != null)
+            {
+                Console.WriteLine(_predictor.GetBall().Velocity.magnitude());
+            }
+                if (_waypoints.Count > 0)
                 _actionInterpreter.BeamKick(_robotID, _waypoints[0].Position);
             else
                 Console.WriteLine("BeamKickPlayer: no target waypoint to kick to.");

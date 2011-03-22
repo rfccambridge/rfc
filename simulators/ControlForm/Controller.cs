@@ -177,7 +177,7 @@ namespace Robocup.ControlForm
                 //    return;
                 //}
 
-                RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.START_VARIABLE_CHARGING);
+                RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.START_CHARGING);
                 command.kickerStrength = strength;
                 _cmdSender.Post(command);
                 //Console.WriteLine("Controller: robot {0} is charging for a break-beam kick", robotID);
