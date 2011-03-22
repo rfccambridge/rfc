@@ -12,6 +12,7 @@ namespace Robocup.CoreRobotics
             MOVE,
             KICK,            
             START_CHARGING,
+            START_VARIABLE_CHARGING,
             STOP_CHARGING,
             BREAKBEAM_KICK,
             START_DRIBBLER,
@@ -27,6 +28,10 @@ namespace Robocup.CoreRobotics
         static Dictionary<Command, byte> _commandToI;
 
         public static byte dribblerSpeed = 5;
+        public int kickerStrength = MAX_KICKER_STRENGTH;
+
+        public const int MAX_KICKER_STRENGTH = 5;
+        public const int MIN_KICKER_STRENGTH = 1;
 
         public WheelSpeeds Speeds;
         public int ID;
@@ -139,12 +144,19 @@ namespace Robocup.CoreRobotics
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg });
                     return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};
-                case Command.KICK:           source = (byte)'v'; port = (byte)'k'; break;
-                case Command.START_CHARGING: source = (byte)'v'; port = (byte)'c'; break;
-                case Command.STOP_CHARGING:  source = (byte)'v'; port = (byte)'s'; break;
-                case Command.BREAKBEAM_KICK: source = (byte)'v'; port = (byte)'b'; break;
-                case Command.DISCHARGE:      source = (byte)'v'; port = (byte)'p'; break;
-                case Command.RESET:          source = (byte)'v'; port = (byte)'r'; break;
+                case Command.START_VARIABLE_CHARGING:
+                    if (kickerStrength > MAX_KICKER_STRENGTH) kickerStrength = MAX_KICKER_STRENGTH;
+                    if (kickerStrength < MIN_KICKER_STRENGTH) kickerStrength = MIN_KICKER_STRENGTH;
+                    source = (byte)'v'; port = (byte)'v'; arg = (byte)('0' + (byte) kickerStrength);
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg });
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
+                                      (byte)'\\', (byte)'E'};
+                case Command.KICK:              source = (byte)'v'; port = (byte)'k'; break;
+                case Command.START_CHARGING:    source = (byte)'v'; port = (byte)'c'; break;
+                case Command.STOP_CHARGING:     source = (byte)'v'; port = (byte)'s'; break;
+                case Command.BREAKBEAM_KICK:    source = (byte)'v'; port = (byte)'b'; break;
+                case Command.DISCHARGE:         source = (byte)'v'; port = (byte)'p'; break;
+                case Command.RESET:             source = (byte)'v'; port = (byte)'r'; break;
                 default:
                     throw new ApplicationException("Don't know how to package command: " + command.ToString());
             }
