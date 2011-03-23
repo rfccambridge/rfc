@@ -15,6 +15,7 @@ namespace Robocup.CoreRobotics
             START_VARIABLE_CHARGING,
             STOP_CHARGING,
             BREAKBEAM_KICK,
+            FULL_BREAKBEAM_KICK,
             START_DRIBBLER,
             STOP_DRIBBLER,
             DISCHARGE,
@@ -148,6 +149,13 @@ namespace Robocup.CoreRobotics
                     if (kickerStrength > MAX_KICKER_STRENGTH) kickerStrength = MAX_KICKER_STRENGTH;
                     if (kickerStrength < MIN_KICKER_STRENGTH) kickerStrength = MIN_KICKER_STRENGTH;
                     source = (byte)'v'; port = (byte)'v'; arg = (byte)('0' + (byte) kickerStrength);
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg });
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
+                                      (byte)'\\', (byte)'E'};
+                case Command.FULL_BREAKBEAM_KICK:
+                    if (kickerStrength > MAX_KICKER_STRENGTH) kickerStrength = MAX_KICKER_STRENGTH;
+                    if (kickerStrength < MIN_KICKER_STRENGTH) kickerStrength = MIN_KICKER_STRENGTH;
+                    source = (byte)'v'; port = (byte)'f'; arg = (byte)('0' + (byte) kickerStrength);
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg });
                     return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};

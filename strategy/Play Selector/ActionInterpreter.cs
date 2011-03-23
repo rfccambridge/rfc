@@ -380,8 +380,8 @@ namespace Robocup.Plays
             {
                 if (VERBOSE)
                     Console.WriteLine("Turning on break beam and moving towards the ball to kick.");
-                commander.BreakBeam(robotID);
-                commander.StartDribbling(robotID);
+                commander.BreakBeam(robotID, strength);
+                //commander.StartDribbling(robotID);
                 commander.Move(
                         robotID,
                         false, // don't avoid the ball, we are kicking it

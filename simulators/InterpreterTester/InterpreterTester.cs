@@ -667,7 +667,7 @@ namespace InterpreterTester
         public void beamKick(int robotID, bool somethign) {
             throw new NotImplementedException("InterpereterTester: beamKick() not implemented.");
         }
-        public void BreakBeam(int robotId)
+        public void BreakBeam(int robotId, int strength)
         {
             throw new NotImplementedException("InterpereterTester: BreakBream() not implemented.");
         }

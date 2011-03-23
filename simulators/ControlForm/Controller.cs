@@ -270,9 +270,10 @@ namespace Robocup.ControlForm
 			Move(robotID, avoidBall, destination, orientation); //TODO make it the current robot position
 		}
 
-        public void BreakBeam(int robotID)
+        public void BreakBeam(int robotID, int strength)
         {
-            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.BREAKBEAM_KICK);
+            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+            command.kickerStrength = strength;
             _cmdSender.Post(command);
         }
 
