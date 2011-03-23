@@ -14,6 +14,7 @@
 #Final version
 string GAIN_MATRIX -5, 5, 0.2, -0.3, 0.3, 0.75; -5, -5, 0.2, -0.3, -0.3, 0.75; 5, -5, 0.2, 0.3, -0.3, 0.75; 5, 5, 0.2, 0.3, 0.3, 0.75
 
+
 #double GAIN_MATRIX_SCALE 20
 double GAIN_MATRIX_SCALE 15
 
@@ -21,7 +22,7 @@ double GAIN_MATRIX_SCALE 15
 # by the full speed vector
 
 # one constant scales speeds for all robots
-double SPEED_SCALING_FACTOR_ALL 1.15
+double SPEED_SCALING_FACTOR_ALL 0.9
 
 double SPEED_SCALING_FACTOR_0 1
 double SPEED_SCALING_FACTOR_1 1
