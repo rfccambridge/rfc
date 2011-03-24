@@ -1,0 +1,29 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_5vs1
+score 3.002615
+
+Objects:
+
+ballpoint (pointof ball)
+
+goalie (closest friendly (ourgoal) loose)
+shooter (closest friendly ballpt loose)
+shooterpt (pointof shooter)
+pressure (closest enemy shooterpt loose)
+pressurept (pointof pressure)
+blocker (closest friendly pressurept loose)
+support (closest friendly (theirgoal) loose)
+safety (closest friendly (ourgoal) loose)
+enemyshooter (closest enemy ballpoint loose)
+
+Tactics:
+
+Goalie goalie enemyshooter
+Shooter shooter support
+Blocker blocker pressure
+Support support shooter
+Safety safety
+
+Conditions:
+Actions:
