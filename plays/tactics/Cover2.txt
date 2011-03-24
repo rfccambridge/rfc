@@ -1,0 +1,71 @@
+Metadata:
+type tactic
+name Cover2
+
+Parameters:
+bot robot
+
+Objects:
+defensebot (closest friendly (ourgoal) loose)
+defensebotpt (pointof defensebot)
+
+#goal geometry
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
+goaltoppt (point GOALIE_X_POS 0.35)
+goalbotpt (point GOALIE_X_POS -0.35)
+vertgoalline (line goaltoppt goalbotpt)
+
+#ball geometry
+ballpoint (pointof ball)
+ballgoalline (line ballpoint (ourgoal))
+ballverticalpt (linelineintersection ballgoalline vertgoalline)
+ballinterseptpt (pointdirectiondistance ballverticalpt ballpoint (* 0.3 (pointpointdistance ballverticalpt ballpoint)))
+
+#ball-velocity projected geometry
+ballvelocity (velocityof ball)
+balldirection (getAngle ballvelocity)
+ballprojline (linedirection ballpoint balldirection)
+ballprojverticalpt (linelineintersection ballprojline vertgoalline)
+ballprojinterseptpt (pointdirectiondistance ballprojverticalpt ballpoint (* 0.3 (pointpointdistance ballprojverticalpt ballpoint)))
+ballprojvector (pointsubtract ballinterseptpt ballprojverticalpt)
+ballprojangle (getAngle ballprojvector) 
+ballprojintersect (linedirection defensebotpt (+ ballprojangle 1.57))
+ballprojclosestrobot (linelineintersection ballprojintersect ballprojline)
+
+
+#attacker geometry
+attacker (closest enemy ballpoint loose)
+attackerpt (pointof attacker)
+attackerorient (orientationof attacker)
+attackerline (linedirection attackerpt attackerorient)
+attackerverticalpt (linelineintersection attackerline vertgoalline)
+attackerinterseptpt (pointdirectiondistance attackerverticalpt ballpoint (* 0.3 (pointpointdistance attackerverticalpt ballpoint)))
+attackervector (pointsubtract ballinterseptpt ballverticalpt)
+attackerangle (getAngle attackervector) 
+attackerintersect (linedirection defensebotpt (+ attackerangle 1.57))
+attackerclosestrobot (linelineintersection attackerintersect attackerline)
+
+# should the robot try to kick the ball?
+ballzone (circle ballpoint 0.6)
+robotshouldkick (or (> (- (pointpointdistance attackerpt ballpoint) (pointpointdistance defensebotpt ballpoint)) 0.75) (and (< (pointpointdistance defensebotpt ballpoint) 0.1) (< (pointpointdistance attackerpt ballpoint) 0.25)))
+
+# Places to kick the ball
+toptarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) 2))
+bottarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) -2))
+
+kickaction (if_Action (pathClear ballpoint (theirgoal) 2.0) (robotpointkick defensebot (theirgoal)) (if_Action (pathClear ballpoint bottarget 2.0) (robotpointkick defensebot bottarget) (robotpointkick defensebot toptarget)))
+attackeraction (if_Action onattackerline (robotpointpointmovenoavoid defensebot attackerinterseptpt ballpoint) (robotpointpointmovenoavoid defensebot attackerclosestrobot ballpoint))
+projballaction (if_Action onballprojline (robotpointpointmovenoavoid defensebot ballprojinterseptpt ballpoint) (robotpointpointmovenoavoid defensebot ballprojclosestrobot ballpoint))
+ballaction (robotpointpointmovenoavoid defensebot ballverticalpt ballpoint)
+
+attackeraimsgoal (and (> (getYcoord attackerverticalpt) (getYcoord goalbotpt)) (< (getYcoord attackerverticalpt) (getYcoord goaltoppt)))
+attackerhasball (< (pointpointdistance ballpoint attackerpt) 0.12)
+ballaimsgoal (and (> (getYcoord ballprojverticalpt) (getYcoord goalbotpt)) (< (getYcoord ballprojverticalpt) (getYcoord goaltoppt)))
+ballmoves (> (pointpointdistance ballvelocity (point 0 0)) 0.05)
+onballprojline (and (> (- ballprojangle (getAngle (pointsubtract ballprojverticalpt defensebotpt))) -0.0349)  (< (- ballprojangle (getAngle (pointsubtract ballprojverticalpt defensebotpt))) 0.0349))
+onattackerline (and (> (- attackerangle (getAngle (pointsubtract attackerverticalpt defensebotpt))) -0.0349)  (< (- attackerangle (getAngle (pointsubtract attackerverticalpt defensebotpt))) 0.0349))
+
+Conditions:
+Actions:
+
+(if_Action robotshouldkick kickaction (if_Action (and attackeraimsgoal attackerhasball) attackeraction (if_Action  (and ballaimsgoal ballmoves) projballaction ballaction)))

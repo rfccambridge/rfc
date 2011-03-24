@@ -3,14 +3,15 @@ type tactic
 name Pressure
 
 Parameters:
+bot PlayRobotDefinition
 
 Objects:
 
 standbypoint (point -2 0)
 
 ballpoint (pointof ball)
-robot0 (closest friendly ballpoint loose)
-robotpt (pointof robot0)
+bot (closest friendly ballpoint loose)
+robotpt (pointof bot)
 
 #Should the robot kick?
 distance (pointpointdistance robotpt ballpoint)
@@ -21,8 +22,8 @@ robotshouldkick (= (numberOfRobotsInACircle ballzone enemy) 0)
 toptarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) 2))
 bottarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) -2))
 
-kickactionagg (if_Action (pathClear ballpoint bottarget 2.0) (robotpointkick robot0 bottarget) (robotpointkick robot0 toptarget))
-movetoblock (robotpointpointmove robot0 (pointdirectiondistance (ourgoal) ballpoint (* 0.9 (pointpointdistance (ourgoal) ballpoint))) ballpoint)
+kickactionagg (if_Action (pathClear ballpoint bottarget 2.0) (robotpointkick bot bottarget) (robotpointkick bot toptarget))
+movetoblock (robotpointpointmove bot (pointdirectiondistance (ourgoal) ballpoint (* 0.9 (pointpointdistance (ourgoal) ballpoint))) ballpoint)
 kickactiondef (if_Action robotshouldkick kickactionagg movetoblock)
 standby (and (pointInGoal ballpoint) (robotInGoal))
 
@@ -31,4 +32,4 @@ Actions:
 # check if we shouldn't go after the ball- that is, if it is
 # in the goal and there is another robot there
 
-(if_Action standby (robotpointmove robot0 standbypoint) kickactiondef)
+(if_Action standby (robotpointmove bot standbypoint) kickactiondef)

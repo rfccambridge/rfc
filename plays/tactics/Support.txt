@@ -1,0 +1,10 @@
+Metadata:
+type tactic
+name Support
+
+Parameters:
+bot PlayRobotDefinition
+
+Objects:
+
+Actions:

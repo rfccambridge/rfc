@@ -1,10 +1,10 @@
 Metadata:
 type tactic
-name Cover
+name Blocker
 
 Parameters:
 bot PlayRobotDefinition
-support PlayRobotDefinition
+pressure PlayRobotDefinition
 
 Objects:
 ballpoint (pointof ball)
