@@ -3,18 +3,15 @@ playtype NormalPlay
 name main
 
 Objects:
-
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
-
 numRobots (numourbots)
-
+numTheirRobots (numtheirbots)
 nothing (nullAction)
 
-Conditions:
+ballpoint (pointof ball)
+possessionRange (circle ballpoint 0.01)
+offense (= (numberOfRobotsInACircle enemy possessionRange) 0)
 
+Conditions:
 Actions:
 
 (if_Action (= numRobots 1) (assignPlay DEFENSE_1vs0) nothing)
@@ -22,22 +19,12 @@ Actions:
 (if_Action (= numRobots 2) (assignPlay DEFENSE_1vs0) nothing)
 (if_Action (= numRobots 2) (assignPlay OFFENSE_1vs0) nothing)
 
-#(if_Action (= numRobots 3) (assignPlay DEFENSE_3vs2) nothing)
-
-#(if_Action (= numRobots 3) (assignPlay OFFENSE_2vs0) nothing)
-#(if_Action (= numRobots 3) (assignPlay DEFENSE_1vs0) nothing)
-
 (if_Action (= numRobots 3) (assignPlay DEFENSE_2vs0) nothing)
 (if_Action (= numRobots 3) (assignPlay OFFENSE_1vs0) nothing)
 
 (if_Action (= numRobots 4) (assignPlay DEFENSE_3vs0) nothing)
 (if_Action (= numRobots 4) (assignPlay OFFENSE_1vs0) nothing)
 
-#(if_Action (= numRobots 4) (assignPlay OFFENSE_2vs0) nothing)
-#(if_Action (= numRobots 4) (assignPlay DEFENSE_2vs0) nothing)
-
-#(if_Action (= numRobots 5) (assignPlay OFFENSE_3vs0) nothing)
-#(if_Action (= numRobots 5) (assignPlay DEFENSE_2vs0) nothing)
-(if_Action (= numRobots 5) (assignPlay DEFENSE_3vs0) nothing)
-(if_Action (= numRobots 5) (assignPlay OFFENSE_2vs0) nothing)
-
+(if_Action (and (= numRobots 5) (> numTheirBots 1)) (if_Action offense (assignPlay OFFENSE_5vs1) 
+(assignPlay DEFENSE_5vs2)) 
+(if_Action (and (= numRobots 5) (= numTheirBots 1)) (assignPlay OFFENSE_5vs1) (assignPlay OFFENSE_1vs0)))
