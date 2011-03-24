@@ -1,0 +1,35 @@
+Metadata:
+playtype Stopped
+score 200
+name ST_2x0
+
+Tactics:
+#DumbGoalie
+
+Objects:
+
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+ballpoint (pointof ball)
+ballcircle (circle ballpoint 0.63)
+
+
+
+wall1line (line ballpoint (ourgoal))
+wall1point (linecircleintersection wall1line ballcircle 1)
+
+
+
+getterbot (closest friendly wall1point loose)
+
+supportbot (closest friendly center loose)
+supportbotpoint (pointof supportbot)
+
+
+
+Conditions:
+Actions:
+(if_Action (inField wall1point) (robotpointpointmove getterbot ballpoint (theirgoal)) (robotpointpointmove getterbot center ballpoint))
+(if_Action (inField wall1point) (robotpointpointmove supportbot wall1point ballpoint) (robotpointpointmove supportbot center ballpoint))

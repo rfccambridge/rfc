@@ -1,0 +1,29 @@
+Metadata:
+playtype SetPlay_Theirs
+name TheirFreeKick_2_0
+score 200
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+robot1 (closest friendly (ourgoal) loose)
+point0 (pointof robot1)
+robot2 (closest friendly point6 loose)
+point1 (pointof robot2)
+point3 (pointof ball)
+line4 (line point3 (ourgoal))
+circle5 (circle point3 0.60)
+point6 (linecircleintersection line4 circle5 1)
+
+circle10 (circle (ourgoal) 0.40)
+point11 (linecircleintersection line4 circle10 1)
+Conditions:
+Actions:
+(robotpointmove robot1 point11)
+(robotpointmove robot2 point6)
+DesignerData:
+ball <-1.25,-1.05>
+robot1 <-2.75,-0.03>
+robot2 <-1.62,-0.21>
+

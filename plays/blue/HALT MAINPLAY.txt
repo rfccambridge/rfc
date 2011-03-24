@@ -1,0 +1,29 @@
+Metadata:
+playtype Halt
+name main
+score 1
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+
+numRobots (numourbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+(if_Action (= numRobots 1) nothing nothing)
+
+(if_Action (= numRobots 2) nothing nothing)
+
+(if_Action (= numRobots 3) nothing nothing)
+
+(if_Action (= numRobots 4) nothing nothing)
+
+(if_Action (= numRobots 5) nothing nothing)

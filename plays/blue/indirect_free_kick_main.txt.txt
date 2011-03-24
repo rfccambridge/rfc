@@ -1,0 +1,39 @@
+Metadata:
+playtype SetPlay_Theirs
+name main
+
+score 1
+
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+numRobots (numourbots)
+numTheir (numtheirbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+(if_Action (= numRobots 1) (assignPlay TheirFreeKick_1_0) nothing)
+
+(if_Action (= numRobots 2) (assignPlay TheirFreeKick_2_0) nothing)
+
+(if_Action (and (= numRobots 3) (= numTheir 0)) (assignPlay TheirFreeKick_3_0) nothing)
+(if_Action (and (= numRobots 3) (= numTheir 1)) (assignPlay TheirFreeKick_3_0) nothing)
+(if_Action (and (= numRobots 3) (> numTheir 1)) (assignPlay TheirFreeKick_3_2) nothing)
+
+(if_Action (and (= numRobots 4) (= numTheir 0)) (assignPlay TheirFreeKick_3_0) nothing)
+(if_Action (and (= numRobots 4) (= numTheir 2)) (assignPlay TheirFreeKick_4_2) nothing)
+(if_Action (and (= numRobots 4) (> numTheir 2)) (assignPlay TheirFreeKick_4_3_ng) nothing)
+
+(if_Action (and (= numRobots 5) (= numTheir 0)) (assignPlay TheirFreeKick_3_0) nothing)
+(if_Action (and (= numRobots 5) (= numTheir 1)) (assignPlay TheirFreeKick_3_0) nothing)
+(if_Action (and (= numRobots 5) (= numTheir 2)) (assignPlay TheirFreeKick_3_2) nothing)
+(if_Action (and (= numRobots 5) (= numTheir 3)) (assignPlay TheirFreeKick_5_3) nothing)
+(if_Action (and (= numRobots 5) (> numTheir 3)) (assignPlay TheirFreeKick_5_4) nothing)
+
+

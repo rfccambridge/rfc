@@ -1,0 +1,43 @@
+Metadata:
+playtype NormalPlay
+name main
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+numRobots (numourbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+
+(if_Action (= numRobots 1) (assignPlay OFFENSE_1vs0) nothing)
+
+(if_Action (= numRobots 2) (assignPlay DEFENSE_1vs0) nothing)
+(if_Action (= numRobots 2) (assignPlay OFFENSE_1vs0) nothing)
+
+#(if_Action (= numRobots 3) (assignPlay DEFENSE_3vs2) nothing)
+
+#(if_Action (= numRobots 3) (assignPlay OFFENSE_2vs0) nothing)
+#(if_Action (= numRobots 3) (assignPlay DEFENSE_1vs0) nothing)
+
+(if_Action (= numRobots 3) (assignPlay DEFENSE_2vs0) nothing)
+(if_Action (= numRobots 3) (assignPlay OFFENSE_1vs0) nothing)
+
+(if_Action (= numRobots 4) (assignPlay DEFENSE_3vs0) nothing)
+(if_Action (= numRobots 4) (assignPlay OFFENSE_1vs0) nothing)
+
+#(if_Action (= numRobots 4) (assignPlay OFFENSE_2vs0) nothing)
+#(if_Action (= numRobots 4) (assignPlay DEFENSE_2vs0) nothing)
+
+#(if_Action (= numRobots 5) (assignPlay OFFENSE_3vs0) nothing)
+#(if_Action (= numRobots 5) (assignPlay DEFENSE_2vs0) nothing)
+(if_Action (= numRobots 5) (assignPlay DEFENSE_3vs0) nothing)
+(if_Action (= numRobots 5) (assignPlay OFFENSE_2vs0) nothing)
+

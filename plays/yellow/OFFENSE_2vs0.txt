@@ -1,0 +1,57 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_2vs0
+score 200
+
+Objects:
+
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
+GOAL_MINIMUM (const-double GOAL_MINIMUM)
+BALL_IN_RANGE (const-double BALL_IN_RANGE)
+SUPPORT_AVOID (const-double SUPPORT_AVOID)
+CLEAR_DIST (const-double CLEAR_DIST)
+SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
+
+############################################################################################
+ballpoint (pointof ball)
+numbots (numourbots)
+
+
+ballinrange (and (and (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE) (> (getYcoord ballpoint) (- (* .732 (getXcoord ballpoint)) 3.13))) (> (getYcoord ballpoint) (- (* .732 (getXcoord ballpoint)) 3.13)) )
+ballpositive (< 0 (getYcoord ballpoint))
+
+goaltop (point 3.025 -0.33)
+goalbottom (point 3.025 0.33)
+recpoint (point -0.2 -1)
+
+deflection_point (if_point ballpositive (point 2.8 -0.35) (point 2.8 0.35))
+deflection_point_upper (if_point ballpositive (point 0 -0.5) (point 0 0.5))
+deflection_point_mid (if_point ballpositive (point 1.4 -0.5) (point 1.4 0.5))
+## Robot Initialization ##
+kickerrobot (closest friendly ballpoint loose)
+assistrobot (closest friendly (theirgoal) loose)
+kickerrobotpoint (pointof kickerrobot)
+assistrobotpoint (pointof assistrobot)
+
+xsupport (getXcoord kickerrobotpoint)
+ysupport (getYcoord assistrobotpoint)
+
+
+kick (if_Action (and (= xsupport -0.2) (= ysupport -1)) (robotpointkick kickerrobot assistrobotpoint) (if_Action (and ballinrange (pathClear kickerrobotpoint (theirgoal) 0.15)) (robotpointkick kickerrobot (theirgoal))(if_Action (and ballinrange (pathClear kickerrobotpoint goaltop 0.15)) (robotpointkick kickerrobot goaltop) (if_Action (and ballinrange (pathClear kickerrobotpoint goalbottom 0.15)) (robotpointkick kickerrobot goalbottom) (if_Action (pathClear kickerrobotpoint assistrobotpoint 0.15) (robotpointkick kickerrobot assistrobotpoint) (robotpointkick kickerrobot (point 1.5 0)))))))
+
+assist (if_Action (< (getXcoord kickerrobotpoint) 0) (robotpointmove assistrobot deflection_point_upper) (if_Action (pathClear kickerrobotpoint deflection_point 0.25) (robotpointmove assistrobot deflection_point)(robotpointmove assistrobot deflection_point_mid)))
+
+Conditions:
+Actions:
+kick
+assist
+
+############################################################################################

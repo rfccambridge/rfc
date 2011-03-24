@@ -1,0 +1,24 @@
+Metadata:
+playtype PenaltyKick_Theirs
+score 400
+name Penalty_Their4
+
+Tactics:
+SmartGoalie
+
+Objects:
+
+xdistance (- (const-double PENALTY_OFFSET) (/ (const-double FIELD_WIDTH) 2))
+defpoint1 (point xdistance 0.0)
+robot1 (closest friendly defpoint1 loose)
+defpoint2 (point xdistance 1.0)
+robot2 (closest friendly defpoint2 loose)
+defpoint3 (point xdistance -1.0)
+robot3 (closest friendly defpoint3 loose)
+
+
+Conditions:
+Actions:
+(robotpointpointmove robot1 defpoint1 (ourgoal))
+(robotpointpointmove robot2 defpoint2 (ourgoal))
+(robotpointpointmove robot3 defpoint3 (ourgoal))

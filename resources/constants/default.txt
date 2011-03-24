@@ -36,8 +36,10 @@ string TACTIC_DIR ../../plays/tactics
 #string PLAY_DIR ../../plays/TECHNICAL_CHALLENGES
 #string PLAY_DIR ../../plays/NormalPlay
 #string PLAY_DIR_YELLOW ../../plays/temp
-string PLAY_DIR_YELLOW ../../plays/2def
-string PLAY_DIR_BLUE ../../plays/2off
+#string PLAY_DIR_YELLOW ../../plays/2def
+#string PLAY_DIR_BLUE ../../plays/2off
+string PLAY_DIR_YELLOW ../../plays/yellow
+string PLAY_DIR_BLUE ../../plays/blue
 
 
 ## Basic Predictor constants
