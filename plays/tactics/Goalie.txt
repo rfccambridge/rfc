@@ -4,6 +4,7 @@ name Goalie
 
 Parameters:
 bot PlayRobotDefinition
+shooter PlayRobotDefinition
 
 Objects:
 botpt (pointof bot)
@@ -27,28 +28,28 @@ balldirection (getAngle ballvelocity)
 ballprojline (linedirection ballpoint balldirection)
 ballprojverticalpt (linelineintersection ballprojline vertgoalline)
 
-#attacker geometry
-attacker (closest enemy ballpoint loose)
-attackerpt (pointof attacker)
-attackerorient (orientationof attacker)
-attackerline (linedirection attackerpt attackerorient)
-attackerverticalpt (linelineintersection attackerline vertgoalline)
+#shooter geometry
+shooter (closest enemy ballpoint loose)
+shooterpt (pointof shooter)
+shooterorient (orientationof shooter)
+shooterline (linedirection shooterpt shooterorient)
+shooterverticalpt (linelineintersection shooterline vertgoalline)
 
 # should the goalie try to kick the ball?
 goalieshouldkick (pointInGoal ballpoint)
 
 kickaction (robotpointkick bot (theirgoal))
-attackeraction (robotpointpointmove bot attackerverticalpt attackerpt)
+shooteraction (robotpointpointmove bot shooterverticalpt shooterpt)
 projballaction (robotpointpointmovenoavoid bot ballprojverticalpt ballpoint)
 ballaction (robotpointpointmove bot ballverticalpt ballpoint)
 topaction (robotpointpointmove bot goaltoppt ballpoint)
 bottomaction (robotpointpointmove bot goalbotpt ballpoint)
 
-attackeraimsgoal (and (> (getYcoord attackerverticalpt) (getYcoord goalbotpt)) (< (getYcoord attackerverticalpt) (getYcoord goaltoppt)))
-attackerhasball (< (pointpointdistance ballpoint attackerpt) 0.12)
+shooteraimsgoal (and (> (getYcoord shooterverticalpt) (getYcoord goalbotpt)) (< (getYcoord shooterverticalpt) (getYcoord goaltoppt)))
+shooterhasball (< (pointpointdistance ballpoint shooterpt) 0.12)
 ballaimsgoal (and (> (getYcoord ballprojverticalpt) (getYcoord goalbotpt)) (< (getYcoord ballprojverticalpt) (getYcoord goaltoppt)))
 ballmoves (> (pointpointdistance ballvelocity (point 0 0)) 0.05)
 
 Conditions:
 Actions:
-(if_Action goalieshouldkick kickaction (if_Action (and attackeraimsgoal attackerhasball) attackeraction (if_Action  (and ballaimsgoal ballmoves) projballaction (if_Action (< (getYcoord ballverticalpt) (getYcoord goalbotpt)) bottomaction (if_Action (> (getYcoord ballverticalpt) (getYcoord goaltoppt)) topaction ballaction)))))
+(if_Action goalieshouldkick kickaction (if_Action (and shooteraimsgoal shooterhasball) shooteraction (if_Action  (and ballaimsgoal ballmoves) projballaction (if_Action (< (getYcoord ballverticalpt) (getYcoord goalbotpt)) bottomaction (if_Action (> (getYcoord ballverticalpt) (getYcoord goaltoppt)) topaction ballaction)))))

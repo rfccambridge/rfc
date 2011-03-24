@@ -26,5 +26,5 @@ Actions:
 #if support is inside freekickzone, position to intersept shot from support to goal
 #if support is outside freekickzone, position to intersept pass from kicker to support
 
-(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmove bot rgintersept ballpoint) (robotpointpointmove bot krintersept ballpoint))
+#(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmove bot rgintersept ballpoint) (robotpointpointmove bot krintersept ballpoint))
 

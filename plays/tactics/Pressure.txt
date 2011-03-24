@@ -10,7 +10,6 @@ Objects:
 standbypoint (point -2 0)
 
 ballpoint (pointof ball)
-bot (closest friendly ballpoint loose)
 robotpt (pointof bot)
 
 #Should the robot kick?

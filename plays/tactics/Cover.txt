@@ -4,27 +4,26 @@ name Cover
 
 Parameters:
 bot PlayRobotDefinition
-support PlayRobotDefinition
+support1 PlayRobotDefinition
+support2 PlayRobotDefinition
+support3 PlayRobotDefinition
 
 Objects:
 ballpoint (pointof ball)
 
-bot (closest friendly ballpoint loose)
+#decide which support robot to target
+kickzone (circle ballpoint 0.7)
+#the line below probably won't work
+target support1
+targetpoint (pointof target)
 
-#kickerpoint (pointof kicker)
-supportpoint (pointof support)
+kickertargetline (line ballpoint targetpoint)
 
-kickersupportline (line ballpoint supportpoint)
-supportgoalline (line supportpoint (ourgoal))
-
-freekickzone (circle ballpoint 0.6)
-
-krintersept (pointdirectiondistance ballpoint supportpoint 0.6)
-rgintersept (pointdirectiondistance supportpoint (ourgoal) 0.6)
+ktintersept (pointdirectiondistance ballpoint targetpoint 0.5)
 
 Actions:
 #if support is inside freekickzone, position to intersept shot from support to goal
 #if support is outside freekickzone, position to intersept pass from kicker to support
 
-(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmove bot rgintersept ballpoint) (robotpointpointmove bot krintersept ballpoint))
+(robotpointpointmove bot ktintersept ballpoint)
 

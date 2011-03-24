@@ -9,7 +9,7 @@ Objects:
 ballpoint (pointof ball)
 ballgoalline (line ballpoint (ourgoal))
 ballverticalpt (linelineintersection ballgoalline vertgoalline)
-ballinterseptpt (pointdirectiondistance ballverticalpt ballpoint  0.7)
+ballinterceptpt (pointdirectiondistance ballverticalpt ballpoint  0.7)
 botpt (pointof bot)
 disttoball (pointpointdistance botpt ballpoint)
 ballzone (circle ballpoint (+ disttoball 0.01))
@@ -20,7 +20,7 @@ toptarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT)
 bottarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) -4))
 
 kickaction (if_Action (pathClear ballpoint (theirgoal) 2.0) (robotpointkick bot (theirgoal)) (if_Action (pathClear ballpoint bottarget 2.0) (robotpointkick bot bottarget) (robotpointkick bot toptarget)))
-defendaction (robotpointpointmovenoavoid bot ballverticalpt ballpoint)
+defendaction (robotpointpointmovenoavoid bot ballinterceptpt ballpoint)
 
 Conditions:
 Actions:
