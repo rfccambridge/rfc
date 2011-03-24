@@ -25,6 +25,5 @@ Actions:
 (if_Action (= numRobots 4) (assignPlay DEFENSE_3vs0) nothing)
 (if_Action (= numRobots 4) (assignPlay OFFENSE_1vs0) nothing)
 
-(if_Action (and (= numRobots 5) (> numTheirBots 1)) (if_Action offense (assignPlay OFFENSE_5vs1) 
-(assignPlay DEFENSE_5vs2)) 
-(if_Action (and (= numRobots 5) (= numTheirBots 1)) (assignPlay OFFENSE_5vs1) (assignPlay OFFENSE_1vs0)))
+(if_Action (and (= numRobots 5) (= numTheirBots 5)) (if_Action offense (assignPlay OFFENSE_5vs1) 
+(assignPlay DEFENSE_5vs5)) nothing)
