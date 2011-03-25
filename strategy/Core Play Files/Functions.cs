@@ -800,7 +800,7 @@ namespace Robocup.Plays
                         besti = i;
                     }
                 }
-                Console.WriteLine("Best blockedness: " + bestBlockedness + " (" + besti + ")");
+                
                 double bestProp = (double)besti / numIncrements;
                 return goalEnd0 + bestProp * (goalEnd1 - goalEnd0);
             });
