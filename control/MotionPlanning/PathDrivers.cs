@@ -1264,7 +1264,7 @@ namespace Robocup.MotionControl
 
         static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");       
 
-        private double MIN_SQ_DIST_TO_WP;
+        private double MIN_DIST_TO_WP;
         private double MIN_ANGLE_DIFF_TO_WP;
         private int LOG_EVERY_MSEC;
 
@@ -1313,7 +1313,8 @@ namespace Robocup.MotionControl
 
             WheelSpeeds wheelSpeeds;
 
-            if (wpDistanceSq > MIN_SQ_DIST_TO_WP || angleDiff > MIN_ANGLE_DIFF_TO_WP) {
+            if (wpDistanceSq > MIN_DIST_TO_WP * MIN_DIST_TO_WP || angleDiff > MIN_ANGLE_DIFF_TO_WP)
+            {
                 //If we are far enough from actual destination (carrot on a stick), 
                 //calculate speeds using default feedback loop
                 if (wpDistanceSq >= PLANNER_WAYPOINT_DISTANCE * PLANNER_WAYPOINT_DISTANCE) {
@@ -1380,7 +1381,7 @@ namespace Robocup.MotionControl
             LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
             //PLANNER_WAYPOINT_DISTANCE = Constants.get<double>("motionplanning", "PLANNER_WAYPOINT_DISTANCE");
 
-            MIN_SQ_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_SQ_DIST_TO_WP");
+            MIN_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_DIST_TO_WP");
             MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
 
             // TODO: What is _longRangeDriver? Doesn't compile!
@@ -1456,7 +1457,7 @@ namespace Robocup.MotionControl
 		private ModelFeedback[] feedbackObjs;
 		public ModelFeedback GetFeedbackObj(int robotID) { return feedbackObjs[robotID]; }
 
-		private double MIN_SQ_DIST_TO_WP;
+        private double MIN_DIST_TO_WP;
 		private double MIN_ANGLE_DIFF_TO_WP;
 	
 		private int LOG_EVERY_MSEC;
@@ -1484,8 +1485,8 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 feedbackObjs[robotID].LoadConstants();
 
-			LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");			
-			MIN_SQ_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_SQ_DIST_TO_WP");
+			LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
+            MIN_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_DIST_TO_WP");
 			MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
 		}
 
@@ -1514,8 +1515,11 @@ namespace Robocup.MotionControl
 
 			//Note: ModelFeeback cares about desired velocities!!!
 			//We should make sure the planner returns a plan with velocities set accordingly
-			
-			if (wpDistanceSq > MIN_SQ_DIST_TO_WP || angleDiff > MIN_ANGLE_DIFF_TO_WP)
+
+            //Yay hacky hack hack
+            double minDistWp = useFixedSpeedHackProp ? 0.005 : MIN_DIST_TO_WP;
+
+            if (wpDistanceSq > minDistWp * minDistWp || angleDiff > MIN_ANGLE_DIFF_TO_WP)
 			{
                 if (useFixedSpeedHackProp)
                 {
@@ -1532,7 +1536,7 @@ namespace Robocup.MotionControl
 			}
 			else
 			{
-				//Console.WriteLine("Close enough to point, stopping now.");
+				//Close enough to point, stopping now
 				wheelSpeeds = new WheelSpeeds();
 			}
 
