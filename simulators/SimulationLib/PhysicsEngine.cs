@@ -481,7 +481,9 @@ namespace Robocup.Simulation
                             //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
                             break;
                         }
+                        //TODO: Make the simulator handle these differently/appropriately
                     case RobotCommand.Command.BREAKBEAM_KICK:
+                    case RobotCommand.Command.FULL_BREAKBEAM_KICK:
                         {
                             const double CENTER_TO_KICKER_DIST = 0.070; // m
                             const double KICKER_ACTIVITY_RADIUS_SQ = 0.04 * 0.04; // m
