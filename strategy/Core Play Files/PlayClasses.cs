@@ -140,7 +140,7 @@ namespace Robocup.Plays
     /// <summary>
     /// Robot definition used by the play system. Must be default-creatable.
     /// </summary>
-    public class PlayRobotDefinition : Robot
+    public class PlayRobotDefinition : Robot, GetPointable
     {
         public PlayRobotDefinition()
         {
@@ -154,6 +154,10 @@ namespace Robocup.Plays
             throw new InvalidOperationException("Placeholder only, should never get called");
         }
         public virtual Vector2 getPoint()
+        {
+            throw new InvalidOperationException("Placeholder only, should never get called");
+        }
+        public virtual Vector2 getVelocity()
         {
             throw new InvalidOperationException("Placeholder only, should never get called");
         }
