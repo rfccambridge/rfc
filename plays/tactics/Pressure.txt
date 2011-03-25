@@ -3,7 +3,7 @@ type tactic
 name Pressure
 
 Parameters:
-bot PlayRobotDefinition
+bot robot
 
 Objects:
 

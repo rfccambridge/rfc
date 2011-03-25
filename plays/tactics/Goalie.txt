@@ -3,8 +3,8 @@ type tactic
 name Goalie
 
 Parameters:
-bot PlayRobotDefinition
-shooter PlayRobotDefinition
+bot robot
+shooter robot
 
 Objects:
 botpt (pointof bot)

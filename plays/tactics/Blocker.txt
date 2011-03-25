@@ -3,8 +3,8 @@ type tactic
 name Blocker
 
 Parameters:
-bot PlayRobotDefinition
-pressure PlayRobotDefinition
+bot robot
+pressure robot
 
 Objects:
 ballpoint (pointof ball)

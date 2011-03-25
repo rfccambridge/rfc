@@ -8,10 +8,10 @@
 int NUM_ROBOTS 12
 
 # RFCSystem constants
-double STRATEGY_FREQUENCY 30
+double STRATEGY_FREQUENCY 10
 double SIM_ENGINE_FREQUENCY 20
-double CONTROL_LOOP_FREQUENCY 60
-double COMBINE_FREQUENCY 60
+double CONTROL_LOOP_FREQUENCY 10
+double COMBINE_FREQUENCY 20
 
 int UPDATE_SLEEP_TIME 50
 int REBOOT_TIME 15000
@@ -31,24 +31,21 @@ string TACTIC_DIR ../../plays/tactics
 
 #string PLAY_DIR ../../plays/ATTACK
 #string PLAY_DIR ../../plays/defense
-#string PLAY_DIR_YELLOW ../../plays/refboxplays
-#string PLAY_DIR_BLUE ../../plays/refboxplaysBlue
+string PLAY_DIR_YELLOW ../../plays/refboxplays
+string PLAY_DIR_BLUE ../../plays/refboxplaysBlue
 #string PLAY_DIR ../../plays/TECHNICAL_CHALLENGES
 #string PLAY_DIR ../../plays/NormalPlay
 #string PLAY_DIR_YELLOW ../../plays/temp
-string PLAY_DIR_YELLOW ../../plays/2def
-string PLAY_DIR_BLUE ../../plays/2off
-
 
 ## Basic Predictor constants
 double DELTA_DIST_SQ_MERGE .01
-double MAX_SECONDS_TO_KEEP_INFO 0.80
+double MAX_SECONDS_TO_KEEP_INFO 0.10
 
 #flip coordinates in case we are on the wrong side of the field
-bool FLIP_COORDINATES true
+bool FLIP_COORDINATES false
 
 # in seconds
-double VELOCITY_DT 0.03
+double VELOCITY_DT 0.1
 double VELOCITY_WEIGHT_OLD 0.5
 double VELOCITY_WEIGHT_NEW 0.5
 double POSITION_WEIGHT_OLD 0.5

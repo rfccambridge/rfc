@@ -3,18 +3,17 @@ type tactic
 name Cover
 
 Parameters:
-bot PlayRobotDefinition
-support1 PlayRobotDefinition
-support2 PlayRobotDefinition
-support3 PlayRobotDefinition
+bot robot
+support1 robot
+support2 robot
+support3 robot
 
 Objects:
 ballpoint (pointof ball)
 
 #decide which support robot to target
-kickzone (circle ballpoint 0.7)
 #the line below probably won't work
-target support1
+target (if_robot (> (pointpointdistance (pointof support3) ballpoint) 0.7) support3 (if_robot (> pointpointdistance (pointof support2) ballpoint) support2 support1))
 targetpoint (pointof target)
 
 kickertargetline (line ballpoint targetpoint)

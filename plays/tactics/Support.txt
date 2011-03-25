@@ -3,7 +3,7 @@ type tactic
 name Support
 
 Parameters:
-bot PlayRobotDefinition
+bot robot
 
 Objects:
 
