@@ -1461,6 +1461,8 @@ namespace Robocup.MotionControl
 	
 		private int LOG_EVERY_MSEC;
 
+        bool useFixedSpeedHackProp;
+
 		public ModelFeedbackDriver()
 		{
 			feedbackObjs = new ModelFeedback[NUM_ROBOTS];
@@ -1468,7 +1470,14 @@ namespace Robocup.MotionControl
                 feedbackObjs[robotID] = new ModelFeedback();
 
 			ReloadConstants();
+            useFixedSpeedHackProp = false;
 		}
+
+        public void UseFixedSpeedHackProp()
+        {
+            useFixedSpeedHackProp = true;
+        }
+
 
 		public void ReloadConstants()
 		{   
@@ -1496,9 +1505,6 @@ namespace Robocup.MotionControl
                 return new WheelSpeeds();
 			}
 
-			//Vector2 pathWaypoint = path.findNearestWaypoint(curInfo).Position;
-			//RobotInfo nextWaypoint = new RobotInfo(pathWaypoint, desiredState.Orientation, curInfo.ID);
-
 			RobotInfo nextWaypoint = path.findNearestWaypoint(curInfo);
 
 			double wpDistanceSq = curInfo.Position.distanceSq(nextWaypoint.Position);
@@ -1511,6 +1517,17 @@ namespace Robocup.MotionControl
 			
 			if (wpDistanceSq > MIN_SQ_DIST_TO_WP || angleDiff > MIN_ANGLE_DIFF_TO_WP)
 			{
+                if (useFixedSpeedHackProp)
+                {
+                    double distanceLeft = 0.0;
+                    for (int i = 0; i < path.Waypoints.Count-1; i++)
+                    {
+                        distanceLeft += (path[i + 1].Position - path[i].Position).magnitude();
+                    }
+                    double hackProp = 1.0 - 1.0 / (7*7*distanceLeft*distanceLeft + 1.0);
+                    feedbackObjs[id].SetFixedSpeedHackProp(hackProp);
+                }
+
 				wheelSpeeds = feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);				
 			}
 			else
