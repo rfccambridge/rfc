@@ -171,7 +171,7 @@ namespace Robocup.Core
             return new Vector2(-p.X, -p.Y);
         }
         /// <summary>
-        /// Returns the distance between this point and another point.
+        /// Returns the squared distance between this point and another point.
         /// Returns the same value (within tolerance) as (p1-p2).magnitudeSq()
         /// </summary>
         public double distanceSq(Vector2 p2)
@@ -184,6 +184,21 @@ namespace Robocup.Core
             return (X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y);
             //depends on whether or not the compiler is inlining them
         }
+        /// <summary>
+        /// Returns the distance between this point and another point.
+        /// Returns the same value (within tolerance) as (p1-p2).magnitudeSq()
+        /// </summary>
+        public double distance(Vector2 p2)
+        {
+            if (p2 == null)
+                return double.PositiveInfinity;
+            //less safe but faster?:
+            //return (x - p2.x) * (x - p2.x) + (y - p2.y) * (y - p2.y);
+            //more safe but slower?
+            return Math.Sqrt((X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y));
+            //depends on whether or not the compiler is inlining them
+        }
+
         /// <summary>
         /// Returns the dot product of two Vector2's
         /// </summary>
