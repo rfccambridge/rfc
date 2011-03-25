@@ -33,7 +33,7 @@ namespace Robocup.ControlForm
         private FieldDrawer _fieldDrawer;
 
         private IMotionPlanner _planner;
-		private IKickPlanner _kickPlanner;		        
+		private IKickPlanner _kickPlanner;
 
 		private RobotPath[] _paths;
         private Object[] _pathLocks;
@@ -232,8 +232,8 @@ namespace Robocup.ControlForm
                 if (DRAW_PATH)
                     _fieldDrawer.DrawPath(currPath);
                 //Arrow showing final destination
-                _fieldDrawer.DrawArrow(_team, currPath.ID, ArrowType.Destination,
-                    destination.Position);
+                // _fieldDrawer.DrawArrow(_team, currPath.ID, ArrowType.Destination,
+                //    destination.Position);
                 //currPath.getFinalState().Position);
             }
 

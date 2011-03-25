@@ -8,19 +8,28 @@ namespace Robocup.MotionControl
 	// Essential job is to calculate command based on current & desired (position, orientation, velocity, angular velocity)
 	public class ModelFeedback
 	{
+        //4x6 GainMatrix that converts error vector to command
+		public Matrix GAIN_MATRIX = null;
+
         // scaling factor applied to the matrix
         static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
-        double [] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS];
+        double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
+        private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
+        private double WAYPOINT_DIST;
 
-        private double SPEED_SCALING_FACTOR_ALL;
+        private double fixedSpeedHackProp;
 
 		public ModelFeedback()
 		{
 			LoadConstants();
+            this.fixedSpeedHackProp = 0;
 		}
 
-		//4x6 GainMatrix that converts error vector to command
-		public Matrix GainMatrix = null;
+        public void SetFixedSpeedHackProp(double prop)
+        {
+            fixedSpeedHackProp = prop;
+        }
+
 
 		public void LoadConstants()
 		{
@@ -31,11 +40,13 @@ namespace Robocup.MotionControl
                 SPEED_SCALING_FACTORS[i] = Constants.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
             }
 
-			GainMatrix = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));
-            GainMatrix *= Constants.get<double>("control", "GAIN_MATRIX_SCALE");
+			GAIN_MATRIX = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));
+            GAIN_MATRIX *= Constants.get<double>("control", "GAIN_MATRIX_SCALE");
 			
-			if(GainMatrix.ColumnCount != 6 || GainMatrix.RowCount != 4)
+			if(GAIN_MATRIX.ColumnCount != 6 || GAIN_MATRIX.RowCount != 4)
 				throw new ApplicationException("Invalid dimensoins of GAIN_MATRIX in control.txt!");
+
+            WAYPOINT_DIST = Constants.get<double>("motionplanning", "WAYPOINT_DIST");
 		}
 
 		/// <summary>
@@ -68,10 +79,24 @@ namespace Robocup.MotionControl
                                                        {      0,      0,   0,-sTheta, cTheta,   0},
                                                        {      0,      0,   0,      0,      0,   1}};
             Matrix globalToLocalMatrix = new Matrix(globalToLocal);
-            
+
+            //We do a hack here for now. For motion planners who actually like to set their waypoints denser or sparser
+            //than tangentbug, they can use fixedSpeedHackProp to artificially extend the desired waypoint out to the
+            //same distance that tangentbug would put it.
+            //Properly, we should alter this code to not do something like this. Maybe we can convert fixedSpeedHackProp
+            //into a "desired precision" variable, where setting the desired precision interpolates between just moving
+            //at full speed and actually using the gain matrix for precision placement.
+            Vector2 dPos = desiredState.Position - currentState.Position;
+            if(fixedSpeedHackProp > 0)
+            {
+                double magnitude = dPos.magnitude();
+                if (desiredState.Velocity != Vector2.ZERO)
+                { dPos = dPos.normalizeToLength(fixedSpeedHackProp * WAYPOINT_DIST + (1 - fixedSpeedHackProp) * magnitude); }
+            }
+
 			Matrix errorVector = new Matrix(6,1);
-			errorVector[1] = new Complex(desiredState.Position.X - currentState.Position.X);
-			errorVector[2] = new Complex(desiredState.Position.Y - currentState.Position.Y);
+            errorVector[1] = new Complex(dPos.X);
+            errorVector[2] = new Complex(dPos.Y);
             errorVector[3] = new Complex(dTheta);
 			errorVector[4] = new Complex(desiredState.Velocity.X - currentState.Velocity.X);
 			errorVector[5] = new Complex(desiredState.Velocity.Y - currentState.Velocity.Y);
@@ -81,7 +106,7 @@ namespace Robocup.MotionControl
 
             //Multiply by the gain matrix, which specifies the wheel speeds that should be given in response to each
             //error component.
-            Matrix commandVector = GainMatrix * localError;
+            Matrix commandVector = GAIN_MATRIX * localError;
 
             //Scale the speeds, both globally and per-robot.
             commandVector = SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[currentState.ID] * commandVector;

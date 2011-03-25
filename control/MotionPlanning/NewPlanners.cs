@@ -1073,13 +1073,14 @@ namespace Robocup.MotionControl
 
     public class SmoothedRRTModelFeedbackMotionPlanner : PlannerDriver
     {
-        static BasicRRTMotionPlanner pathplanner = new BasicRRTMotionPlanner(true);
+        static SmoothRRTPlanner pathplanner = new SmoothRRTPlanner();
         public static ModelFeedbackDriver pathdriver = new ModelFeedbackDriver();
 
         public SmoothedRRTModelFeedbackMotionPlanner()
             : base(pathplanner, pathdriver)
         {
             LoadConstants();
+            pathdriver.UseFixedSpeedHackProp();
         }
     }
 

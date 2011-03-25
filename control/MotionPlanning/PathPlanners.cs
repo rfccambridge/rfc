@@ -540,18 +540,17 @@ namespace Robocup.MotionControl
                     bestPath = path;
                 }
             }
+            
 
             //Convert the path
 			List<RobotInfo> robotPath = new List<RobotInfo>();
 
+            
 			//Overly simplistic conversion from planning on position vectors to RobotInfo that has orientation and velocity information
 			//velocity at every waypoint just points to next one with constant speed
-            for (int i = 0; i < bestPath.Count; i++)
+            //0th waypoint is current state - skip it, driver won't like it.
+            for (int i = 1; i < bestPath.Count; i++)
 			{
-				//0-th waypoint is current state, driver won't like it
-				if (i == 0)
-					continue;
-
                 RobotInfo waypoint = new RobotInfo(bestPath[i], desiredState.Orientation, team, id);
                 if (i < bestPath.Count - 1)
                     waypoint.Velocity = (bestPath[i + 1] - bestPath[i]).normalizeToLength(STEADY_STATE_SPEED);
@@ -560,6 +559,10 @@ namespace Robocup.MotionControl
 				
 				robotPath.Add(waypoint);
 			}
+
+            if (bestPath.Count <= 1)
+                return new RobotPath(team, id);
+            
 
 			return new RobotPath(robotPath);
 		}
