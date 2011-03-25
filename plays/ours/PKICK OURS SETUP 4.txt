@@ -1,0 +1,28 @@
+Metadata:
+playtype PenaltyKick_Ours_Setup
+name Penalty4
+score 400
+Objects:
+point6 (point -2.3 0)
+robot13 (closest friendly point6 loose)
+point2 (point 1.8 0)
+robot0 (closest friendly point2 loose)
+point3 (point 1 1)
+robot7 (closest friendly point3 loose)
+point4 (point 1 0)
+robot9 (closest friendly point4 loose)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+point1 (pointof robot0)
+point8 (pointof robot7)
+point10 (pointof robot9)
+point14 (pointof robot13)
+Conditions:
+Actions:
+(robotpointpointmove robot7 point3 (theirgoal))
+(robotpointpointmove robot9 point4 (theirgoal))
+(robotpointpointmove robot13 point6 (theirgoal))
+(robotpointpointmove robot0 point2 (theirgoal))
+
