@@ -4,17 +4,26 @@ name Safety
 
 Parameters:
 bot robot
+botpt point
 
 Objects:
+
+goaltoppt (point GOALIE_X_POS 0.35)
+goalbotpt (point GOALIE_X_POS -0.35)
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
+endtopgoalpt (point GOALIE_X_POS 1.6)
+endbottomgoalpt (point GOALIE_X_POS -1.6)
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+
 ballpoint (pointof ball)
 ballgoalline (line ballpoint (ourgoal))
 ballverticalpt (linelineintersection ballgoalline vertgoalline)
 ballinterceptpt (pointdirectiondistance ballverticalpt ballpoint  0.7)
-botpt (pointof bot)
+#botpt (pointof bot)
 disttoball (pointpointdistance botpt ballpoint)
 ballzone (circle ballpoint (+ disttoball 0.01))
 
-shouldkick (= (numberOfRobotsInACircle friendly ballzone) 1)
+shouldkick (= (numberOfRobotsInACircle ballzone friendly) 1)
 
 toptarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) 4))
 bottarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) -4))

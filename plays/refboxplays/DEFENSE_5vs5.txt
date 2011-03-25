@@ -15,15 +15,15 @@ pressure (closest friendly ballpoint loose)
 support1 (closest enemy (ourgoal) loose)
 support2 (closest enemy (ourgoal) loose)
 support3 (closest enemy (ourgoal) loose)
-
+cover (closest friendly (pointof support1) loose)
 
 Tactics:
 
-Goalie goalie shooter
-Balance balance1 1.0
-Balance balance2 2.0
-Pressure pressure
-Cover cover support1 support2 support3
+Goalie goalie (pointof goalie) shooter (pointof shooter)
+Balance balance1 (pointof balance1) 0.0
+Balance balance2 (pointof balance2) 1.0
+Pressure pressure (pointof pressure)
+Cover cover (pointof cover) support1 (pointof support1) support2 (pointof support2) support3 (pointof support3)
 
 Conditions:
 Actions:

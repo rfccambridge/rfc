@@ -4,10 +4,12 @@ name Goalie
 
 Parameters:
 bot robot
+botpt point
 shooter robot
+shooterpt point
 
 Objects:
-botpt (pointof bot)
+#botpt (pointof bot)
 goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)
 
@@ -29,8 +31,7 @@ ballprojline (linedirection ballpoint balldirection)
 ballprojverticalpt (linelineintersection ballprojline vertgoalline)
 
 #shooter geometry
-shooter (closest enemy ballpoint loose)
-shooterpt (pointof shooter)
+#shooterpt (pointof shooter)
 shooterorient (orientationof shooter)
 shooterline (linedirection shooterpt shooterorient)
 shooterverticalpt (linelineintersection shooterline vertgoalline)

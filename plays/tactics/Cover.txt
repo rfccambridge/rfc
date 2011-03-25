@@ -4,17 +4,22 @@ name Cover
 
 Parameters:
 bot robot
+filler1 point
 support1 robot
+targetpoint point
 support2 robot
+filler2 point
 support3 robot
+filler3 point
 
 Objects:
 ballpoint (pointof ball)
 
 #decide which support robot to target
 #the line below probably won't work
-target (if_robot (> (pointpointdistance (pointof support3) ballpoint) 0.7) support3 (if_robot (> pointpointdistance (pointof support2) ballpoint) support2 support1))
-targetpoint (pointof target)
+#target (if_robot (> (pointpointdistance (pointof support3) ballpoint) 0.7) support3 (if_robot (> pointpointdistance (pointof support2) ballpoint) support2 support1))
+target (if_robot true support1 support1)
+#targetpoint (pointof target)
 
 kickertargetline (line ballpoint targetpoint)
 

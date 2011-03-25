@@ -4,16 +4,20 @@ name Shooter
 
 Parameters:
 bot robot
+robotpoint point
+support robot
+supportpt point
 
-standbypoint (point -2 0)
+Objects:
+standbypoint (point -2.0 0.0)
 layup (point 1.8 .05)
-range (+ 1.4 0.0)
+range (+ 3.0 0.0)
 
 WIDE (- (/ (const-double FIELD_WIDTH) 2) 1.5)
 BACK (+ (/ (const-double FIELD_WIDTH) 2) 0.18)
 ballpoint (pointof ball)
-robotpoint (pointof bot)
- 
+#robotpoint (pointof bot)
+
 widetop (point WIDE (/ (const-double FIELD_HEIGHT) 2))
 widebot (point WIDE (/ (const-double FIELD_HEIGHT) -2))
 ltarget (point BACK 0.35) 
@@ -23,7 +27,7 @@ rpost (point (/ (const-double FIELD_WIDTH) 2) -0.35)
 goalgoalline (line (ourgoal) (theirgoal))
 widetopline (line widetop lpost)
 widebotline (line widebot rpost)
- 
+
 standby (and (pointInGoal ballpoint) (robotInGoal))
 wide (or (pointAboveLine ballpoint widetopline) (not (pointAboveLine ballpoint widebotline)))
 near (and (and (< (getYcoord ballpoint) 0.35) (> (getYcoord ballpoint) -0.35)) (< (pointpointdistance ballpoint (theirgoal)) 0.5))
@@ -31,10 +35,9 @@ OOR (> (pointpointdistance ballpoint (theirgoal)) range)
 JOOR (< (- (pointpointdistance ballpoint (theirgoal)) range) 0.5)
 top (pointAboveLine ballpoint goalgoalline)
 
- Actions:
- 
- # check if we shouldn't go after the ball- that is, if it is
- # in the goal and there is another robot there
- 
+Actions:
+
+# check if we shouldn't go after the ball- that is, if it is
+# in the goal and there is another robot there
+
 (if_Action standby (robotpointmove bot standbypoint) (if_Action wide (robotpointkick bot layup) (if_Action near (if_Action top (robotpointkick bot ltarget) (robotpointkick bot rtarget)) (if_Action OOR (if_Action JOOR (robotpointkick bot layup) (robotpointkick bot lpost)) (if_Action top (robotpointkick bot rtarget) (robotpointkick bot ltarget))))))
- 

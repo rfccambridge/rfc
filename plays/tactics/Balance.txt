@@ -1,9 +1,10 @@
 Metadata:
 type tactic
-name TwoManWall
+name Balance
 
 Parameters:
-bot RobotInfo
+bot robot
+twomanbotpt point
 bot_number double
 
 Objects:
@@ -19,7 +20,7 @@ wallcircle (circle wallmainpt 0.17)
 
 twomanpt (if_point (= bot_number 0) (circlecircleintersection wallcircle perimeter -1) (circlecircleintersection wallcircle perimeter 1))
 
-twomanbotpt (pointof bot)
+#twomanbotpt (pointof bot)
 
 # is defender going in to kick
 defensedisttoball (pointpointdistance twomanbotpt ballpoint)

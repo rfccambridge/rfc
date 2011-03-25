@@ -4,6 +4,9 @@ name Support
 
 Parameters:
 bot robot
+filler point
+shooter robot
+shooterpt point
 
 Objects:
 

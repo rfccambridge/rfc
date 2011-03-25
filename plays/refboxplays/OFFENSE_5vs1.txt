@@ -8,7 +8,7 @@ Objects:
 ballpoint (pointof ball)
 
 goalie (closest friendly (ourgoal) loose)
-shooter (closest friendly ballpt loose)
+shooter (closest friendly ballpoint loose)
 shooterpt (pointof shooter)
 pressure (closest enemy shooterpt loose)
 pressurept (pointof pressure)
@@ -19,11 +19,11 @@ enemyshooter (closest enemy ballpoint loose)
 
 Tactics:
 
-Goalie goalie enemyshooter
-Shooter shooter support
-Blocker blocker pressure
-Support support shooter
-Safety safety
+Goalie goalie (pointof goalie) enemyshooter (pointof enemyshooter)
+Shooter shooter (pointof shooter) support (pointof support)
+Blocker blocker (pointof blocker) pressure (pointof pressure)
+Support support (pointof support) shooter (pointof shooter)
+Safety safety (pointof safety)
 
 Conditions:
 Actions:
