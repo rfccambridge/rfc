@@ -367,7 +367,7 @@ namespace Robocup.MotionControl
             
         }
 
-        //Try a bunch of smoothed paths and take the best one
+        //Try a bunch of paths and take the best one
         public List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState, double avoidBallRadius)
         {
             RobotInfo currentState;
