@@ -526,7 +526,9 @@ namespace Robocup.SerialControl {
 
         private void btnStartCharging_Click(object sender, EventArgs e)
         {
-            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_CHARGING));
+            RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.START_VARIABLE_CHARGING);
+            command.kickerStrength = (int)udKickStrength.Value;
+            sendCommand(command);
         }        
 
         private void btnStopCharging_Click(object sender, EventArgs e)
@@ -536,7 +538,9 @@ namespace Robocup.SerialControl {
 
         private void btnBreakBeamKick_Click(object sender, EventArgs e)
         {
-            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.BREAKBEAM_KICK));
+            RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+            command.kickerStrength = (int)udKickStrength.Value;
+            sendCommand(command);
         }
 
         private void btnStartDribbler_Click(object sender, EventArgs e)

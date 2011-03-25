@@ -154,9 +154,14 @@ namespace Robocup.ControlForm
             }
             else
                 throw new Exception("Trying to stop controller when it's not running.");
-        }                
+        }
 
-		public void Charge(int robotID)
+        public void Charge(int robotID)
+        {
+            this.Charge(robotID, RobotCommand.MAX_KICKER_STRENGTH);
+        }
+
+		public void Charge(int robotID, int strength)
 		{
             lock (_charging)
             {
@@ -170,7 +175,8 @@ namespace Robocup.ControlForm
                 //    return;
                 //}
 
-                RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.START_CHARGING);
+                RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.START_VARIABLE_CHARGING);
+                command.kickerStrength = strength;
                 _cmdSender.Post(command);
                 //Console.WriteLine("Controller: robot {0} is charging for a break-beam kick", robotID);
 
@@ -262,9 +268,10 @@ namespace Robocup.ControlForm
 			Move(robotID, avoidBall, destination, orientation); //TODO make it the current robot position
 		}
 
-        public void BreakBeam(int robotID)
+        public void BreakBeam(int robotID, int strength)
         {
-            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.BREAKBEAM_KICK);
+            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+            command.kickerStrength = strength;
             _cmdSender.Post(command);
         }
 

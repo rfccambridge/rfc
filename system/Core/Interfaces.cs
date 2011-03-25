@@ -149,7 +149,9 @@ namespace Robocup.Core {
     public interface IActionInterpreter
     {
         void Charge(int robotID);
+        void Charge(int robotID, int strength);
         void Kick(int robotID, Vector2 target);
+        void Kick(int robotID, Vector2 target, int stregnth);
         void Bump(int robotID, Vector2 target);
         void Move(int robotID, Vector2 target);
         void Move(int robotID, Vector2 target, Vector2 facing);
@@ -183,7 +185,8 @@ namespace Robocup.Core {
         /// </summary>
         void Move(RobotInfo robotID, bool avoidBall);
         void Charge(int robotID);
-        void BreakBeam(int robotID);
+        void Charge(int robotID, int strength);
+        void BreakBeam(int robotID, int strength);        
         void Kick(int robotID, Vector2 target);
         void Stop(int robotID);
         void StartDribbling(int robotID);

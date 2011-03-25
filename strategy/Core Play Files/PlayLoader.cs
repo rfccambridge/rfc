@@ -309,7 +309,13 @@ namespace Robocup.Plays
                     E fake_param = tactic.Parameters[i];
                     E new_param = getObject(strings[i + 1], tactic.Parameters[i].ReturnType);
                     string param_name = prefix + fake_param.Name;
-                    addToPlay(param_name, new_param);
+                    
+                    // Special case for adding robot definitions to save us from double-counting num robots
+                    if (new_param.IsFunction && 
+                        typeof(PlayRobotDefinition).IsAssignableFrom(new_param.ReturnType))
+                        play.PlayObjects.Add(param_name, new_param);
+                    else
+                        addToPlay(param_name, new_param);
                 }
 
                 foreach (E currObject in tactic.getAllObjects())
@@ -522,8 +528,16 @@ namespace Robocup.Plays
 
                 // Get the parameter type
                 Type partype = parseParameterType(strings[1]);
-                // And create a dummy instance of it, invoking the parameterless constructor
-                Object fake_param = Activator.CreateInstance(partype);
+
+                // Dummy instance of the object that will get replaced
+                Object fake_param;
+                
+                // Invoke the parameterless constructor to create dummy
+                // XXX: We are making a strong assumption here that the type is
+                // creatable (not an abstract class, f.e.). This forces us to use
+                // non-abstract classes (and not interfaces) with parameterless constructors
+                // for things we want to pass as parameters.
+                fake_param = Activator.CreateInstance(partype);
 
                 E fake_expr = factory.Create(fake_param);
                 addToPlay(name, fake_expr);

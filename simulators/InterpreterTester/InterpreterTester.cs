@@ -660,10 +660,14 @@ namespace InterpreterTester
         public void Charge(int robotID) {
             throw new NotImplementedException("InterpereterTester: charge() not implemented.");
         }
+        public void Charge(int robotID, int strength)
+        {
+            throw new NotImplementedException("InterpereterTester: charge() not implemented.");
+        }
         public void beamKick(int robotID, bool somethign) {
             throw new NotImplementedException("InterpereterTester: beamKick() not implemented.");
         }
-        public void BreakBeam(int robotId)
+        public void BreakBeam(int robotId, int strength)
         {
             throw new NotImplementedException("InterpereterTester: BreakBream() not implemented.");
         }
