@@ -4,14 +4,13 @@ name Pressure
 
 Parameters:
 bot robot
-robotpt point
 
 Objects:
 
 standbypoint (point -2 0)
 
 ballpoint (pointof ball)
-#robotpt (pointof bot)
+robotpt (pointof bot)
 
 #Should the robot kick?
 distance (pointpointdistance robotpt ballpoint)

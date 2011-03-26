@@ -5,25 +5,12 @@ name Cover
 Parameters:
 bot robot
 targetpoint point
-filler2 point
-filler3 point
 
 Objects:
 ballpoint (pointof ball)
-
-#decide which support robot to target
-#the line below probably won't work
-#target (if_robot (> (pointpointdistance (pointof support3) ballpoint) 0.7) support3 (if_robot (> pointpointdistance (pointof support2) ballpoint) support2 support1))
-target (if_robot true support1 support1)
-#targetpoint (pointof target)
-
 kickertargetline (line ballpoint targetpoint)
-
 ktintersept (pointdirectiondistance ballpoint targetpoint 0.5)
 
 Actions:
-#if support is inside freekickzone, position to intersept shot from support to goal
-#if support is outside freekickzone, position to intersept pass from kicker to support
-
 (robotpointpointmove bot ktintersept ballpoint)
 

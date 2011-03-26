@@ -5,7 +5,6 @@ name Support
 Parameters:
 bot robot
 shooter robot
-shooterpt point
 
 Objects:
 

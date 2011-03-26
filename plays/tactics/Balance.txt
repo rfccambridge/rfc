@@ -4,23 +4,16 @@ name Balance
 
 Parameters:
 bot robot
-twomanbotpt point
 bot_number double
 
 Objects:
 perimeter (circle (ourgoal) 0.7)
-
 ballpoint (pointof ball)
-
 ballline (line ballpoint (ourgoal))
-
 wallmainpt (linecircleintersection ballline perimeter -1)
-
 wallcircle (circle wallmainpt 0.17)
-
 twomanpt (if_point (= bot_number 0.0) (circlecircleintersection wallcircle perimeter -1) (circlecircleintersection wallcircle perimeter 1))
-
-#twomanbotpt (pointof bot)
+twomanbotpt (pointof bot)
 
 # is defender going in to kick
 defensedisttoball (pointpointdistance twomanbotpt ballpoint)

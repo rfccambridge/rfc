@@ -19,11 +19,11 @@ enemyshooter (closest enemy ballpoint loose)
 
 Tactics:
 
-Goalie goalie enemyshooter (pointof enemyshooter)
-Shooter shooter support (pointof support)
+Goalie goalie enemyshooter
+Shooter shooter support
 Blocker blocker (pointof pressure)
-Support support shooter (pointof shooter)
-Safety safety (pointof safety)
+Support support shooter
+Safety safety
 
 Conditions:
 Actions:
