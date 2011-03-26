@@ -4,9 +4,7 @@ name Blocker
 
 Parameters:
 bot robot
-filler point
-pressure robot
-supportpoint point
+pressurept point
 
 Objects:
 ballpoint (pointof ball)
@@ -14,17 +12,17 @@ ballpoint (pointof ball)
 #kickerpoint (pointof kicker)
 #supportpoint (pointof support)
 
-kickersupportline (line ballpoint supportpoint)
-supportgoalline (line supportpoint (ourgoal))
+#kickersupportline (line ballpoint supportpoint)
+#supportgoalline (line supportpoint (ourgoal))
 
-freekickzone (circle ballpoint 0.6)
+#freekickzone (circle ballpoint 0.6)
 
-krintersept (pointdirectiondistance ballpoint supportpoint 0.6)
-rgintersept (pointdirectiondistance supportpoint (ourgoal) 0.6)
+#krintersept (pointdirectiondistance ballpoint supportpoint 0.6)
+#rgintersept (pointdirectiondistance supportpoint (ourgoal) 0.6)
 
 Actions:
 #if support is inside freekickzone, position to intersept shot from support to goal
 #if support is outside freekickzone, position to intersept pass from kicker to support
 
-(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmove bot rgintersept ballpoint) (robotpointpointmove bot krintersept ballpoint))
+#(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmove bot rgintersept ballpoint) (robotpointpointmove bot krintersept ballpoint))
 

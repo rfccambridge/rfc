@@ -19,11 +19,11 @@ cover (closest friendly (pointof support1) loose)
 
 Tactics:
 
-Goalie goalie (pointof goalie) shooter (pointof shooter)
+Goalie goalie shooter (pointof shooter)
 Balance balance1 (pointof balance1) 0.0
 Balance balance2 (pointof balance2) 1.0
 Pressure pressure (pointof pressure)
-Cover cover (pointof cover) support1 (pointof support1) support2 (pointof support2) support3 (pointof support3)
+Cover cover (pointof support1) (pointof support2) (pointof support3)
 
 Conditions:
 Actions:

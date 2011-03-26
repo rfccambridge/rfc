@@ -4,7 +4,6 @@ name Shooter
 
 Parameters:
 bot robot
-robotpoint point
 support robot
 supportpt point
 
@@ -16,7 +15,6 @@ range (+ 3.0 0.0)
 WIDE (- (/ (const-double FIELD_WIDTH) 2) 1.5)
 BACK (+ (/ (const-double FIELD_WIDTH) 2) 0.18)
 ballpoint (pointof ball)
-#robotpoint (pointof bot)
 
 widetop (point WIDE (/ (const-double FIELD_HEIGHT) 2))
 widebot (point WIDE (/ (const-double FIELD_HEIGHT) -2))

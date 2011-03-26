@@ -4,12 +4,8 @@ name Cover
 
 Parameters:
 bot robot
-filler1 point
-support1 robot
 targetpoint point
-support2 robot
 filler2 point
-support3 robot
 filler3 point
 
 Objects:
