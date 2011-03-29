@@ -341,7 +341,7 @@ namespace Robocup.Plays
             {
                 if (VERBOSE)
                     Console.WriteLine("Close to the ball. CHARGING!");
-                
+
                 commander.Charge(robotID, strength);
             }
 
