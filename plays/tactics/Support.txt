@@ -7,5 +7,31 @@ bot robot
 shooter robot
 
 Objects:
+passiveLpt (point 1.8 0.5)
+passiveRpt (point 1.8 -0.5)
+shooterpt (pointof shooter)
+receiveLpt (point (+ (getXcoord shooterpt) 1) (getYcoord shooterpt))
+receiveRpt (point (+ (getXcoord shooterpt) 1) (/ (getYcoord shooterpt) -1)
+
+topassiveL (line bot passiveLpt) 
+topassiveR (line bot passiveRpt)
+shootertogoal (line shooterpt theirgoal)
+passiveLbad (linelineintersection topassiveL shootertogoal)
+passiveRbad (linelineintersection topassiveR shootertogoal)
+
+possession (< (pointpointdistance ballpoint (shooterpt)) 0.4) 
+cleargoal (pathClear shooterpt theirgoal)
+canscore (and (possession cleargoal))
+
+clearreceiveL (pathClear shooterpt receiveLpt)
+clearreceiveR (pathClear shooterpt receiveRpt)
 
 Actions:
+
+#check if our shooter has ball and can kick into goal
+#if shooter is blocked by enemy or doesn't have ball, position self to
+accept pass from shooter
+#if shooter can kick, stand by the goal in case he misses
+
+
+(if_Action canscore (if_Action passiveLbad (robotpointmove bot passiveRpt) (robotpointmove bot passiveLpt)) (if_Action clearReceiveL (robotpointmove bot receiveLpt) (robotpointmove bot receiveRpt))
