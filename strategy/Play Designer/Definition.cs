@@ -38,6 +38,10 @@ namespace Robocup.Plays
 		{
 			throw new NotImplementedException("This method is not implemented.");
 		}
+        public override Vector2 getVelocity()
+        {
+            throw new NotImplementedException("This method is not implemented.");
+        }
         public override bool Ours
         {
             //get { return ((DesignerRobot)robot.getValue(0)).Ours; }

@@ -57,10 +57,22 @@ namespace Robocup.PlaySystem
             actioninterpreter.Charge(robotID);
         }
 
+        public void Charge(int robotID, int strength)
+        {
+            assignedIDs.Add(robotID);
+            actioninterpreter.Charge(robotID, strength);
+        }
+
         public void Kick(int robotID, Vector2 target)
         {
             assignedIDs.Add(robotID);
             actioninterpreter.Kick(robotID, target);
+        }
+
+        public void Kick(int robotID, Vector2 target, int strength)
+        {
+            assignedIDs.Add(robotID);
+            actioninterpreter.Kick(robotID, target, strength);
         }
 
         public void Bump(int robotID, Vector2 target)

@@ -270,8 +270,11 @@ namespace InterpreterTester
             Console.WriteLine(timer.Duration * 1000 + " ms for getting ready to interpreter.interpret()");
             timer.Start();
 #endif
-            interpreter.interpret(playType);
-            defensiveinterpreter.interpret(playType);
+            Score score = new Score();
+            score.SetScore(OUR_TEAM, ourgoals);
+            score.SetScore(THEIR_TEAM, theirgoals);
+            interpreter.interpret(playType, score);
+            defensiveinterpreter.interpret(playType, score);
 #if TIMING
             timer.Stop();
             Console.WriteLine(timer.Duration * 1000 + " ms for calling interpreter.interpret()");
@@ -660,10 +663,14 @@ namespace InterpreterTester
         public void Charge(int robotID) {
             throw new NotImplementedException("InterpereterTester: charge() not implemented.");
         }
+        public void Charge(int robotID, int strength)
+        {
+            throw new NotImplementedException("InterpereterTester: charge() not implemented.");
+        }
         public void beamKick(int robotID, bool somethign) {
             throw new NotImplementedException("InterpereterTester: beamKick() not implemented.");
         }
-        public void BreakBeam(int robotId)
+        public void BreakBeam(int robotId, int strength)
         {
             throw new NotImplementedException("InterpereterTester: BreakBream() not implemented.");
         }

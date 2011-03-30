@@ -29,12 +29,24 @@ namespace Robocup.Plays
         {
             get { return ball; }
         }
-        public EvaluatorState(InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo, int tickNum)
+        private int ourgoals;
+        public int OurGoals
+        {
+            get { return ourgoals; }
+        }
+        private int theirgoals;
+        public int TheirGoals
+        {
+            get { return theirgoals; }
+        }
+        public EvaluatorState(InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo, int ourgoals, int theirgoals, int tickNum)
         {
             this.ourteaminfo = ourteaminfo;
             this.theirteaminfo = theirteaminfo;
             this.ball = ballinfo;
             this.tick = tickNum;
+            this.ourgoals = ourgoals;
+            this.theirgoals = theirgoals;
         }
     }
 }

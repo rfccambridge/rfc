@@ -74,11 +74,11 @@ namespace Robocup.SerialControl {
                   ",      ============= rotate anti-clockwise\r\n" +
                   ".      ============= rotate clockwise\r\n" +
                   "b      ============= enable break-beam\r\n" +
+                  "f      ============= full-strength break-beam\r\n" +
                   "c      ============= start charging kicker\r\n" +
                   "k      ============= stop charging kicker\r\n" +
                   "space  ============= fire kicker\r\n" +
                   "d      ============= dribbler on\r\n" +
-                  "f      ============= dribbler off\r\n" +
                   "=      ============= speed up\r\n" +
                   "-      ============= speed down\r\n" +
                   "p      ============= stop\r\n" +
@@ -368,6 +368,11 @@ namespace Robocup.SerialControl {
                     case Keys.B: // b break-beam kick                        
                         sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.BREAKBEAM_KICK));
                         break;
+                    case Keys.F: // f full break-beam kick                        
+                        RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                        command.KickerStrength = (byte)udKickStrength.Value;
+                        sendCommand(command);
+                        break;
                     case Keys.C: // c charge kicker
                         sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_CHARGING));
                         break;
@@ -379,9 +384,6 @@ namespace Robocup.SerialControl {
                         break;                    
                     case Keys.D: // d dribbler on
                         sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_DRIBBLER));
-                        break;
-                    case Keys.F: // f dribbler off
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.STOP_DRIBBLER));
                         break;
                     case Keys.P: // p stop   
                         sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
@@ -526,7 +528,9 @@ namespace Robocup.SerialControl {
 
         private void btnStartCharging_Click(object sender, EventArgs e)
         {
-            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_CHARGING));
+            RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.START_VARIABLE_CHARGING);
+            command.KickerStrength = (byte)udKickStrength.Value;
+            sendCommand(command);
         }        
 
         private void btnStopCharging_Click(object sender, EventArgs e)
@@ -536,7 +540,9 @@ namespace Robocup.SerialControl {
 
         private void btnBreakBeamKick_Click(object sender, EventArgs e)
         {
-            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.BREAKBEAM_KICK));
+            RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+            command.KickerStrength = (byte)udKickStrength.Value;
+            sendCommand(command);
         }
 
         private void btnStartDribbler_Click(object sender, EventArgs e)
@@ -843,7 +849,7 @@ namespace Robocup.SerialControl {
 
         private void udDribblerPower_ValueChanged(object sender, EventArgs e)
         {
-            RobotCommand.dribblerSpeed = (byte) udDribblerPower.Value;
+            RobotCommand.DribblerSpeed = (byte) udDribblerPower.Value;
         }
 
         private void guiTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
