@@ -44,6 +44,7 @@ namespace Robocup.Core {
     public interface IReferee
     {
         PlayType GetCurrentPlayType();
+        Score GetScore();
         void LoadConstants();
     }
     public interface IRefBoxHandler
@@ -54,6 +55,7 @@ namespace Robocup.Core {
         void Stop();        
         int GetCmdCounter();
         char GetLastCommand();
+        Score GetScore();
     }
     public interface IRefBoxListener : IRefBoxHandler
     {

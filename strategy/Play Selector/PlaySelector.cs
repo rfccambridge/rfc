@@ -57,10 +57,10 @@ namespace Robocup.Plays
 
         Random r = new Random();
         public SelectorResults selectPlays(List<InterpreterPlay> plays, InterpreterRobotInfo[] ourteaminfo, 
-            InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo,
+            InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo, int ourgoals, int theirgoals,
             List<InterpreterPlay> preferedPlays, List<SelectorResults.RobotAssignments> lastAssignments)
         {
-            evaluator.updateConditions(ourteaminfo, theirteaminfo, ballinfo);
+            evaluator.updateConditions(ourteaminfo, theirteaminfo, ballinfo, ourgoals, theirgoals);
 
             //Array.Sort(plays, new PlayComparer(preferedPlays));
             plays.Sort(new RandomizedPlayComparer(preferedPlays, 20, .3));
