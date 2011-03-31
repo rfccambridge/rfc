@@ -889,6 +889,21 @@ namespace Robocup.Plays
                 return new ActionDefinition();
             });
             #endregion
+
+            // CHESS HELPER FUNCTIONS
+            #region ChessHelpers
+            addFunction("inRegion", "Point inside circular region?", "Whether the point ~ is inside circle with center ~ and radius ~.", typeof(bool), new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return ChessHelpers.inRegion((Vector2)objects[0], (Vector2)objects[1], (double)objects[2]);
+            });
+
+            addFunction("numEnemyRobotsOnOurHalf", "Number of enemy robots on our half", "how many enemy robots are on our half", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                return ChessHelpers.numEnemyRobotsOnOurHalf(state.TheirTeamInfo);
+            });
+
+            #endregion
+
         }
         static Function()
         {
@@ -902,5 +917,8 @@ namespace Robocup.Plays
 
             return (projpoint.Y < point.Y);
         }
+
+      
+
     }
 }
