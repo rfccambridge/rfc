@@ -9,7 +9,7 @@ targetpoint point
 Objects:
 ballpoint (pointof ball)
 kickertargetline (line ballpoint targetpoint)
-ktintersept (pointdirectiondistance ballpoint targetpoint 0.5)
+ktintersept (pointdirectiondistance ballpoint targetpoint 0.7)
 
 Actions:
 (robotpointpointmovenoavoid bot ktintersept ballpoint)

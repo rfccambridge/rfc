@@ -17,13 +17,5 @@ nothing (nullAction)
 Conditions:
 
 Actions:
-(if_Action (= numRobots 1) (assignPlay Penalty) nothing)
 
-(if_Action (= numRobots 2) (assignPlay Penalty) nothing)
-
-(if_Action (= numRobots 3) (assignPlay Penalty) nothing)
-
-(if_Action (= numRobots 4) (assignPlay Penalty) nothing)
-
-(if_Action (= numRobots 5) (assignPlay Penalty) nothing)
 

@@ -10,6 +10,7 @@ nothing (nullAction)
 ballpoint (pointof ball)
 possessionRange (circle ballpoint 0.1)
 offense (or (and (= (numberOfRobotsInACircle possessionRange enemy) 0) (< (closestRobotToPoint ballpoint friendly) (closestRobotToPoint ballpoint enemy))) (= numTheir 1))
+#offense (< 1.0 0.0)
 
 Conditions:
 Actions:

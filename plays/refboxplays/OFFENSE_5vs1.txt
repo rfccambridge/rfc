@@ -17,6 +17,7 @@ blocker (closest friendly pressurept loose)
 support (closest friendly (theirgoal) loose)
 safety (closest friendly (ourgoal) loose)
 
+
 Tactics:
 
 Goalie goalie enemyshooter

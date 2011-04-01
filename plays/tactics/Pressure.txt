@@ -22,7 +22,7 @@ toptarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT)
 bottarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) -2))
 
 kickactionagg (if_Action (pathClear ballpoint bottarget 2.0) (robotpointkick bot bottarget) (robotpointkick bot toptarget))
-movetoblock (robotpointpointmove bot (pointdirectiondistance (ourgoal) ballpoint (* 0.9 (pointpointdistance (ourgoal) ballpoint))) ballpoint)
+movetoblock (robotpointpointmove bot (pointdirectiondistance (ourgoal) ballpoint (- (pointpointdistance (ourgoal) ballpoint) 0.4)) ballpoint)
 kickactiondef (if_Action robotshouldkick kickactionagg movetoblock)
 standby (and (pointInGoal ballpoint) (robotInGoal))
 
