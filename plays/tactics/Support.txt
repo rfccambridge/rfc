@@ -7,31 +7,31 @@ bot robot
 shooter robot
 
 Objects:
+ballpoint (pointof ball)
 passiveLpt (point 1.8 0.5)
 passiveRpt (point 1.8 -0.5)
 shooterpt (pointof shooter)
-receiveLpt (point (+ (getXcoord shooterpt) 1) (getYcoord shooterpt))
-receiveRpt (point (+ (getXcoord shooterpt) 1) (/ (getYcoord shooterpt) -1)
+receiveLpt (point (+ (getXcoord shooterpt) 1.0) (getYcoord shooterpt))
+receiveRpt (point (+ (getXcoord shooterpt) 1.0) (/ (getYcoord shooterpt) -1.0)
 
-topassiveL (line bot passiveLpt) 
-topassiveR (line bot passiveRpt)
-shootertogoal (line shooterpt theirgoal)
-passiveLbad (linelineintersection topassiveL shootertogoal)
-passiveRbad (linelineintersection topassiveR shootertogoal)
+topassiveL (line shooterpt passiveLpt) 
+topassiveR (line shooterpt passiveRpt)
+shootertogoal (line shooterpt (theirgoal))
+passiveLbad (or (< (angleBetweenTwoLines shootertogoal topassiveL) 0.3) (< (linelength topassiveL) 0.2))
 
-possession (< (pointpointdistance ballpoint (shooterpt)) 0.4) 
-cleargoal (pathClear shooterpt theirgoal)
-canscore (and (possession cleargoal))
+possession (< (pointpointdistance ballpoint shooterpt) 0.4) 
+cleargoal (pathClear shooterpt (theirgoal) 3.0)
+canscore (and possession cleargoal)
 
-clearreceiveL (pathClear shooterpt receiveLpt)
-clearreceiveR (pathClear shooterpt receiveRpt)
+clearreceiveL (pathClear shooterpt receiveLpt 3.0)
+clearreceiveR (pathClear shooterpt receiveRpt 3.0)
 
 Actions:
 
 #check if our shooter has ball and can kick into goal
 #if shooter is blocked by enemy or doesn't have ball, position self to
-accept pass from shooter
+#accept pass from shooter
 #if shooter can kick, stand by the goal in case he misses
 
 
-(if_Action canscore (if_Action passiveLbad (robotpointmove bot passiveRpt) (robotpointmove bot passiveLpt)) (if_Action clearReceiveL (robotpointmove bot receiveLpt) (robotpointmove bot receiveRpt))
+(if_Action canscore (if_Action passiveLbad (robotpointmove bot passiveRpt) (robotpointmove bot passiveLpt)) (if_Action clearreceiveL (robotpointmove bot receiveLpt) (robotpointmove bot receiveRpt)))
