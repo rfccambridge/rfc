@@ -150,7 +150,7 @@ namespace Robocup.Plays
 
         /// <returns>Returns true if it actually interpreted,
         /// false if it quit because it was already interpreting.</returns>
-        public bool interpret(PlayType type)
+        public bool interpret(PlayType type, Score score)
         {
             // if the appropriate constant is set, use the new play system
             if (USE_C_SHARP_PLAY_SYSTEM) {
@@ -208,10 +208,13 @@ namespace Robocup.Plays
                 return true;
             }
 
+            int ourgoals = (team == Team.Blue) ? score.GoalsBlue : score.GoalsYellow;
+            int theirgoals = (team == Team.Blue) ? score.GoalsYellow : score.GoalsBlue;
+
             List<InterpreterPlay> plays_to_run = plays.FindAll(
                 delegate(InterpreterPlay play) { return play.PlayType == type && play.isEnabled; });
             //find all the actions we want to do
-            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, 
+            SelectorResults results = selector.selectPlays(plays_to_run, ourteaminfo, theirteaminfo, ballinfo, ourgoals, theirgoals,
                                                            lastRunPlays, lastAssignments);
 
             lastAssignments = results.Assignments;

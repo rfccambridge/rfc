@@ -28,8 +28,8 @@ namespace Robocup.CoreRobotics
         static Command[] _iToCommand;
         static Dictionary<Command, byte> _commandToI;
 
-        public static byte dribblerSpeed = 5;
-        public int kickerStrength = MAX_KICKER_STRENGTH;
+        public static byte DribblerSpeed = 5;
+        public byte KickerStrength = MAX_KICKER_STRENGTH;
 
         public const int MAX_KICKER_STRENGTH = 5;
         public const int MIN_KICKER_STRENGTH = 1;
@@ -136,7 +136,7 @@ namespace Robocup.CoreRobotics
                     return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, BoardID, Flags,
                                       (byte)'\\', (byte)'E'};
                 case Command.START_DRIBBLER:
-                    source = (byte)'v'; port = (byte)'d'; arg = (byte)('0' + (byte)dribblerSpeed);
+                    source = (byte)'v'; port = (byte)'d'; arg = (byte)('0' + (byte)DribblerSpeed);
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg });
                     return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};
@@ -146,16 +146,16 @@ namespace Robocup.CoreRobotics
                     return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};
                 case Command.START_VARIABLE_CHARGING:
-                    if (kickerStrength > MAX_KICKER_STRENGTH) kickerStrength = MAX_KICKER_STRENGTH;
-                    if (kickerStrength < MIN_KICKER_STRENGTH) kickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'v'; arg = (byte)('0' + (byte) kickerStrength);
+                    if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
+                    if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
+                    source = (byte)'v'; port = (byte)'v'; arg = (byte)('0' + (byte) KickerStrength);
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg });
                     return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};
                 case Command.FULL_BREAKBEAM_KICK:
-                    if (kickerStrength > MAX_KICKER_STRENGTH) kickerStrength = MAX_KICKER_STRENGTH;
-                    if (kickerStrength < MIN_KICKER_STRENGTH) kickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'f'; arg = (byte)('0' + (byte) kickerStrength);
+                    if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
+                    if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
+                    source = (byte)'v'; port = (byte)'f'; arg = (byte)('0' + (byte) KickerStrength);
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg });
                     return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
                                       (byte)'\\', (byte)'E'};
@@ -213,6 +213,13 @@ namespace Robocup.CoreRobotics
                     BoardID = buff[4];
                     Flags = buff[5];
                     break;
+                case Command.FULL_BREAKBEAM_KICK:
+                case Command.START_VARIABLE_CHARGING:
+                    KickerStrength = buff[4];
+                    break;
+                case Command.START_DRIBBLER:
+                    DribblerSpeed = buff[4];
+                    break;
             }
         }
 
@@ -238,6 +245,13 @@ namespace Robocup.CoreRobotics
                 case Command.SET_CFG_FLAGS:
                     buff[4] = BoardID;
                     buff[5] = Flags;
+                    break;
+                case Command.FULL_BREAKBEAM_KICK:
+                case Command.START_VARIABLE_CHARGING:
+                    buff[4] = KickerStrength;
+                    break;
+                case Command.START_DRIBBLER:
+                    buff[4] = DribblerSpeed;
                     break;
             }
 

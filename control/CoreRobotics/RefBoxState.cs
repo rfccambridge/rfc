@@ -64,6 +64,11 @@ namespace Robocup.CoreRobotics
             predictor_marking = false;
         }
 
+        public Score GetScore()
+        {
+            return _refboxListener.GetScore();
+        }
+
         public PlayType GetCurrentPlayType()
         {
             // Default game state is stopped if there is no refbox connected

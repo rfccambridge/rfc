@@ -7,7 +7,7 @@ using Robocup.Core;
 
 namespace Robocup.Plays
 {
-    abstract class InterpreterRobotDefinition : PlayRobotDefinition, GetPointable
+    abstract class InterpreterRobotDefinition : PlayRobotDefinition
     {
         //static public void addDefinitionFunctions(){
         //    Function.addFunction("closest","Point - Closest Robot",typeof(InterpreterRobot),new Type[]{typeof(TeamCondition),typeof(InterpreterPoint)
@@ -113,7 +113,7 @@ namespace Robocup.Plays
 		{
 			return thisrobot.Orientation;
 		}
-        public Vector2 getVelocity()
+        public override Vector2 getVelocity()
         {
             return thisrobot.Velocity;
         }
