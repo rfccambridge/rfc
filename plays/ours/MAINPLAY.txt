@@ -38,6 +38,8 @@ Actions:
 
 #(if_Action (= numRobots 5) (assignPlay OFFENSE_3vs0) nothing)
 #(if_Action (= numRobots 5) (assignPlay DEFENSE_2vs0) nothing)
-(if_Action (= numRobots 5) (assignPlay DEFENSE_3vs0) nothing)
-(if_Action (= numRobots 5) (assignPlay SIDE_OFFENSE_STATIONARY) nothing)
+#(if_Action (= numRobots 5) (assignPlay DEFENSE_3vs0) nothing)
+#(if_Action (= numRobots 5) (assignPlay SIDE_OFFENSE_STATIONARY) nothing)
 
+# Erfan, change the second assignPlay when DEFENSE_5vs0 is ready
+(if_Action (and (= numRobots 5) (= (prioritize) 0.0)) (assignPlay OFFENSE_5vs0) (assignPlay OFFENSE_5vs0))

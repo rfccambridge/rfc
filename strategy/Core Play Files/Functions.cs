@@ -656,6 +656,17 @@ namespace Robocup.Plays
             #endregion
 
             #region misc
+            addFunction("prioritize", "Prioritize", "Determines role assignment based on ball position", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                // Positive is closer to their goal
+                if (state.ballInfo.Position.X >= 0)
+                    return 0.0;
+                // 0 is for offense
+                else
+                    return 1.0;
+                // 1 is for defense
+
+            });
             addFunction("numourbots", " - # our robots", "The number of robots currently on our team", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
                 return (double)state.OurTeamInfo.Length;
