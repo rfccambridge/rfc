@@ -1,0 +1,20 @@
+Metadata:
+playtype SetPlay_Theirs
+name main
+
+score 1
+
+Objects:
+numRobots (numourbots)
+numTheir (numtheirbots)
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+(if_Action (= numRobots 5) (if_Action (= numTheir 1) (assignPlay FKICK_T_3vs1) (if_Action (= numTheir 2) (assignPlay FKICK_T_4vs2) (if_Action (= numTheir 3) (assignPlay FKICK_T_5vs3) (assignPlay FKICK_T_5vs4)))) nothing)
+(if_Action (= numRobots 4) (if_Action (= numTheir 1) (assignPlay FKICK_T_3vs1) (if_Action (= numTheir 2) (assignPlay FKICK_T_4vs2) (if_Action (= numTheir 3) (assignPlay FKICK_T_4vs3) (assignPlay FKICK_T_4vs4)))) nothing)
+(if_Action (= numRobots 3) (assignPlay FKICK_T_3vs1) nothing)
+(if_Action (= numRobots 2) (assignPlay FKICK_T_2vs1) nothing)
+(if_Action (= numRobots 1) (assignPlay DEFENSE_1vs1) nothing)
+

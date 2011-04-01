@@ -1,0 +1,24 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_4vs1
+score 3.002615
+
+Objects:
+
+ballpoint (pointof ball)
+
+enemyshooter (closest enemy ballpoint loose)
+goalie (closest friendly (ourgoal) loose)
+shooter (closest friendly ballpoint loose)
+support (closest friendly (theirgoal) loose)
+safety (closest friendly (ourgoal) loose)
+
+Tactics:
+
+Goalie goalie enemyshooter
+Shooter shooter support
+Support support shooter
+Safety safety
+
+Conditions:
+Actions:

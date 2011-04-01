@@ -1,0 +1,27 @@
+Metadata:
+playtype NormalPlay
+name FKICK_T_4vs3
+score 300
+
+Objects: 
+
+ballpoint (pointof ball)
+
+goalie (closest friendly (ourgoal) loose)
+balance1 (closest friendly (ourgoal) loose)
+balance2 (closest friendly (ourgoal) loose)
+shooter (closest enemy ballpoint loose)
+support1 (closest enemy (ourgoal) loose)
+support2 (closest enemy (ourgoal) loose)
+targetpt (if_point (> (pointpointdistance (pointof support1) ballpoint) 0.7) (pointof support1) (if_point (> (pointpointdistance (pointof support2) ballpoint) 0.7) (pointof support2) (pointof support1)))
+cover (closest friendly targetpt loose)
+
+Tactics:
+
+Goalie goalie shooter 
+Balance balance1 0.0
+Balance balance2 1.0
+FreeKickCover cover targetpt
+
+Conditions:
+Actions:

@@ -1,0 +1,20 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_2vs1
+score 300
+
+Objects: 
+
+ballpoint (pointof ball)
+
+goalie (closest friendly (ourgoal) loose)
+shooter (closest enemy ballpoint loose)
+pressure (closest friendly ballpoint loose)
+
+Tactics:
+
+Goalie goalie shooter 
+Pressure pressure
+
+Conditions:
+Actions:

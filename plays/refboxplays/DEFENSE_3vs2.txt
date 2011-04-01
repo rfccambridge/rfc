@@ -1,0 +1,24 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_3vs2
+score 300
+
+Objects: 
+
+ballpoint (pointof ball)
+
+goalie (closest friendly (ourgoal) loose)
+shooter (closest enemy ballpoint loose)
+pressure (closest friendly ballpoint loose)
+support1 (closest enemy (ourgoal) loose)
+targetpt (pointof support1)
+cover (closest friendly targetpt loose)
+
+Tactics:
+
+Goalie goalie shooter 
+Pressure pressure
+Cover cover targetpt
+
+Conditions:
+Actions:

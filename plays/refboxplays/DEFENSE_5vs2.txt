@@ -1,0 +1,28 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_5vs2
+score 300
+
+Objects: 
+
+ballpoint (pointof ball)
+
+goalie (closest friendly (ourgoal) loose)
+balance1 (closest friendly (ourgoal) loose)
+balance2 (closest friendly (ourgoal) loose)
+shooter (closest enemy ballpoint loose)
+pressure (closest friendly ballpoint loose)
+support1 (closest enemy (ourgoal) loose)
+targetpt (pointof support1)
+cover (closest friendly targetpt loose)
+
+Tactics:
+
+Goalie goalie shooter 
+Balance balance1 0.0
+Balance balance2 1.0
+Pressure pressure
+Cover cover targetpt
+
+Conditions:
+Actions:

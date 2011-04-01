@@ -1,0 +1,21 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_2vs1
+score 3.002615
+
+Objects:
+
+ballpoint (pointof ball)
+
+enemyshooter (closest enemy ballpoint loose)
+goalie (closest friendly (ourgoal) loose)
+shooter (closest friendly ballpoint loose)
+
+Tactics:
+
+Goalie goalie enemyshooter
+#This is a bit of a hack
+Shooter shooter shooter
+
+Conditions:
+Actions:

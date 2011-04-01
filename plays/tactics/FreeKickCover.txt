@@ -1,31 +1,25 @@
 Metadata:
 type tactic
-name PassCover
+name FreeKickCover
 
 Parameters:
+bot robot
+target point
 
 Objects:
 ballpoint (pointof ball)
 
-robot0 (closest friendly ballpoint loose)
-
-#kicker (closest enemy ballpoint loose)
-receiver (closest enemy ballpoint loose)
-
-#kickerpoint (pointof kicker)
-receiverpoint (pointof receiver)
-
-kickerreceiverline (line ballpoint receiverpoint)
-receivergoalline (line receiverpoint (ourgoal))
+kickerreceiverline (line ballpoint target)
+receivergoalline (line target (ourgoal))
 
 freekickzone (circle ballpoint 0.6)
 
-krintersept (pointdirectiondistance ballpoint receiverpoint 0.6)
-rgintersept (pointdirectiondistance receiverpoint (ourgoal) 0.6)
+krintersept (pointdirectiondistance ballpoint target 0.6)
+rgintersept (pointdirectiondistance target (ourgoal) 0.6)
 
 Actions:
 #if receiver is inside freekickzone, position to intersept shot from receiver to goal
 #if receiver is outside freekickzone, position to intersept pass from kicker to receiver
 
-(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmove robot0 rgintersept ballpoint) (robotpointpointmove robot0 krintersept ballpoint))
+(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmove bot rgintersept ballpoint) (robotpointpointmove bot krintersept ballpoint))
 

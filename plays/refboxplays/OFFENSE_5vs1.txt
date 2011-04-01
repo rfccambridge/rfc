@@ -7,6 +7,7 @@ Objects:
 
 ballpoint (pointof ball)
 
+enemyshooter (closest enemy ballpoint loose)
 goalie (closest friendly (ourgoal) loose)
 shooter (closest friendly ballpoint loose)
 shooterpt (pointof shooter)
@@ -15,7 +16,6 @@ pressurept (pointof pressure)
 blocker (closest friendly pressurept loose)
 support (closest friendly (theirgoal) loose)
 safety (closest friendly (ourgoal) loose)
-enemyshooter (closest enemy ballpoint loose)
 
 Tactics:
 

@@ -3,8 +3,15 @@ playtype NormalPlay
 name DEFENSE_1vs1
 score 150
 
+Objects:
+
+ballpoint (pointof ball)
+
+goalie (closest friendly (ourgoal) loose)
+shooter (closest enemy ballpoint loose)
+
 Tactics:
-SmartGoalie
+Goalie goalie shooter
 
 Objects:
 
