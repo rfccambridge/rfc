@@ -11,7 +11,7 @@ perimeter (circle (ourgoal) 0.7)
 ballpoint (pointof ball)
 ballline (line ballpoint (ourgoal))
 wallmainpt (linecircleintersection ballline perimeter -1)
-wallcircle (circle wallmainpt 0.17)
+wallcircle (circle wallmainpt 0.1)
 twomanpt (if_point (= bot_number 0.0) (circlecircleintersection wallcircle perimeter -1) (circlecircleintersection wallcircle perimeter 1))
 twomanbotpt (pointof bot)
 

@@ -293,7 +293,33 @@ namespace Robocup.Plays
                             }
                             return rtn;
                         });
-
+            addFunction("closestRobotToPoint", "Point, Team - closest robot",
+                       "The distance from the line ~ to the closest robot on team ~ (excluding the robots that are the endpoints of the line)",
+                       typeof(double), new Type[] { typeof(Vector2), typeof(TeamCondition) },
+                       delegate(EvaluatorState state, object[] objects)
+                       {
+                           double rtn = 1000000;
+#if DEBUG
+                           if (state == null)
+                               throw new ApplicationException(
+                                   "tried to call a function that needed an evaluatorState without one!");
+#endif
+                           Vector2 point = (Vector2)objects[0];
+                           TeamCondition condition = (TeamCondition)objects[1];
+                           List<RobotInfo> allinfos = new List<RobotInfo>();
+                           if (condition.maybeOurs())
+                               allinfos.AddRange(state.OurTeamInfo);
+                           if (condition.maybeTheirs())
+                               allinfos.AddRange(state.TheirTeamInfo);
+                           foreach (RobotInfo r in allinfos)
+                           {
+                               Vector2 position = r.Position;
+                               if (position == point)
+                                   continue;
+                               rtn = Math.Min(rtn, UsefulFunctions.distance(position, point));
+                           }
+                           return rtn;
+                       });
             addFunction("pointAboveLine", "Point, Line - Above", "Whether point ~ is above line ~", typeof(bool),
                         new Type[] { typeof(Vector2), typeof(Line) }, delegate(EvaluatorState state, object[] objects)
             {
@@ -813,7 +839,7 @@ namespace Robocup.Plays
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
-            addFunction("robotvariablepointkick", "Robot, Point, Strength - Kick", "Have robot ~ kick the ball to ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Double)}, delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointkick", "Robot, Point, Strength - Kick", "Have robot ~ kick the ball to ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Double)}, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];
                 Vector2 p = (Vector2)objects[1];
