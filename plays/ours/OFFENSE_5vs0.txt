@@ -4,9 +4,9 @@ name OFFENSE_5vs0
 score 500
 
 Tactics:
-SmartGoalie
+#SmartGoalie
 TwoManWall (ourgoal) 0.9 True 0
-#TwoManWall (ourgoal) 0.9 True 1
+TwoManWall (ourgoal) 0.9 True 1
 
 # Are robots assigned correctly such that no one's role will be reassigned?
 # Is code under Actions in correct order/valid?
