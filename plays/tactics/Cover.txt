@@ -12,5 +12,5 @@ kickertargetline (line ballpoint targetpoint)
 ktintersept (pointdirectiondistance ballpoint targetpoint 0.5)
 
 Actions:
-(robotpointpointmove bot ktintersept ballpoint)
+(robotpointpointmovenoavoid bot ktintersept ballpoint)
 

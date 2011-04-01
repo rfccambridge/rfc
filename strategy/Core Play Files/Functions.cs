@@ -839,7 +839,7 @@ namespace Robocup.Plays
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
-            addFunction("robotpointkick", "Robot, Point, Strength - Kick", "Have robot ~ kick the ball to ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Double)}, delegate(EvaluatorState state, object[] objects)
+            addFunction("robotvariablepointkick", "Robot, Point, Strength - Kick", "Have robot ~ kick the ball to ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Double)}, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];
                 Vector2 p = (Vector2)objects[1];

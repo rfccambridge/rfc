@@ -22,4 +22,4 @@ defensedisttoball (pointpointdistance twomanbotpt ballpoint)
 do_kick  (and (< defensedisttoball 0.2) (= bot_number 0.0))
 
 Actions:
-(if_Action do_kick (robotpointkick bot (theirgoal)) (robotpointpointmove bot twomanpt ballpoint))
+(if_Action do_kick (robotpointkick bot (theirgoal)) (robotpointpointmovenoavoid bot twomanpt ballpoint))
