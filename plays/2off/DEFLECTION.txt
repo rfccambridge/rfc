@@ -1,0 +1,14 @@
+Metadata:
+playtype NormalPlay
+name DEFLECTION
+score 200
+
+Tactics:
+Shooter
+Deflector
+
+Objects:
+
+Conditions:
+
+Actions:
