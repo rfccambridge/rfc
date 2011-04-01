@@ -3,8 +3,8 @@ playtype Stopped
 score 200
 name ST_2x0
 
-Tactics:
-DumbGoalie
+#Tactics:
+#DumbGoalie
 
 Objects:
 
