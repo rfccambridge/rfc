@@ -1,0 +1,67 @@
+Metadata:
+type tactic
+name BallGuard
+
+Parameters:
+
+Objects:
+defensebot (closest friendly (ourgoal) loose)
+defensebotpt (pointof defensebot)
+
+#goal
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
+goaltoppt (point GOALIE_X_POS 0.35)
+goalbotpt (point GOALIE_X_POS -0.35)
+goalline (line goaltoppt goalbotpt)
+
+#ball
+ballpoint (pointof ball)
+ballgoalline (line ballpoint (ourgoal))
+ballentrypt (linelineintersection ballgoalline goalline)
+ballinterceptpt (pointdirectiondistance ballentrypt ballpoint (* 0.3 (pointpointdistance ballentrypt ballpoint)))
+ballvelocity (velocityof ball)
+balldirection (getAngle ballvelocity)
+ballprojline (linedirection ballpoint balldirection)
+ballprojentrypt (linelineintersection ballprojline goalline)
+ballprojinterceptpt (pointdirectiondistance ballprojentrypt ballpoint (* 0.3 (pointpointdistance ballprojentrypt ballpoint)))
+ballprojvector (pointsubtract ballinterceptpt ballprojentrypt)
+ballprojangle (getAngle ballprojvector) 
+ballprojintersect (linedirection defensebotpt (+ ballprojangle 1.57))
+ballprojclosestrobot (linelineintersection ballprojintersect ballprojline)
+
+#attacker geometry
+attacker (closest enemy ballpoint loose)
+attackerpt (pointof attacker)
+attackerorient (orientationof attacker)
+attackerline (linedirection attackerpt attackerorient)
+attackergoalpt (linelineintersection attackerline goalline)
+attackerinterceptpt (pointdirectiondistance attackergoalpt ballpoint (* 0.3 (pointpointdistance attackergoalpt ballpoint)))
+attackervector (pointsubtract ballinterceptpt ballentrypt)
+attackerangle (getAngle attackervector) 
+attackerintersect (linedirection defensebotpt (+ attackerangle 1.57))
+attackerclosestrobot (linelineintersection attackerintersect attackerline)
+
+#Decide whether to clear the ball
+ballzone (circle ballpoint 0.6)
+robotshouldkick (or (> (- (pointpointdistance attackerpt ballpoint) (pointpointdistance defensebotpt ballpoint)) 0.75) (and (< (pointpointdistance defensebotpt ballpoint) 0.1) (< (pointpointdistance attackerpt ballpoint) 0.25)))
+
+#Clear the ball to
+toptarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) 2))
+bottarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) -2))
+
+attackeraimsgoal (and (> (getYcoord attackergoalpt) (getYcoord goalbotpt)) (< (getYcoord attackergoalpt) (getYcoord goaltoppt)))
+attackerhasball (< (pointpointdistance ballpoint attackerpt) 0.12)
+ballaimsgoal (and (> (getYcoord ballprojentrypt) (getYcoord goalbotpt)) (< (getYcoord ballprojentrypt) (getYcoord goaltoppt)))
+ballmoves (> (pointpointdistance ballvelocity (point 0 0)) 0.05)
+onballprojline (and (> (- ballprojangle (getAngle (pointsubtract ballprojentrypt defensebotpt))) -0.0349)  (< (- ballprojangle (getAngle (pointsubtract ballprojentrypt defensebotpt))) 0.0349))
+onattackerline (and (> (- attackerangle (getAngle (pointsubtract attackergoalpt defensebotpt))) -0.0349)  (< (- attackerangle (getAngle (pointsubtract attackergoalpt defensebotpt))) 0.0349))
+
+kickaction (if_Action (pathClear ballpoint (theirgoal) 2.0) (robotpointkick defensebot (theirgoal)) (if_Action (pathClear ballpoint bottarget 2.0) (robotpointkick defensebot bottarget) (robotpointkick defensebot toptarget)))
+attackeraction (if_Action onattackerline (robotpointpointmovenoavoid defensebot attackerinterceptpt ballpoint) (robotpointpointmovenoavoid defensebot attackerclosestrobot ballpoint))
+projballaction (if_Action onballprojline (robotpointpointmovenoavoid defensebot ballprojinterceptpt ballpoint) (robotpointpointmovenoavoid defensebot ballprojclosestrobot ballpoint))
+ballaction (robotpointpointmovenoavoid defensebot ballentrypt ballpoint)
+
+Conditions:
+Actions:
+
+(if_Action robotshouldkick kickaction (if_Action (and attackeraimsgoal attackerhasball) attackeraction (if_Action  (and ballaimsgoal ballmoves) projballaction ballaction)))

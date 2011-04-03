@@ -214,6 +214,17 @@ namespace Robocup.Plays
                             return Intersections.intersect(line, circle, (int)objects[2]);
                             //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
                         });
+            addFunction("pointdirectiondistance", "Point, Direction, Distance - Point",
+                                    "The point ~, translated in the direction of point ~ by distance ~", typeof(Vector2),
+                                    new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) },
+
+                                    delegate(EvaluatorState state, object[] objects)
+                                    {
+                                        Line line = new Line((Vector2)objects[0], (Vector2)objects[1]);
+                                        Circle circle = new Circle((Vector2)objects[0], (double)objects[2]);
+                                        return Intersections.intersect(line, circle, 1);
+                                        //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
+                                    });
             addFunction("circlecircleintersection", "Circle, Circle - Intersection",
                         "The intersection of circles ~ and ~, number ~", typeof(Vector2),
                         new Type[] { typeof(Circle), typeof(Circle), typeof(int) },
@@ -687,6 +698,10 @@ namespace Robocup.Plays
             {
                 return Core.Constants.get<bool>("plays", (string)objects[0]);
             });
+            addFunction("veritas", "veritas", "veritas", typeof(bool), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return true;
+            });
             addFunction("const-string", "string constant", "The (string) constant ~", typeof(string), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
                 return Core.Constants.get<string>("plays", (string)objects[0]);
@@ -815,6 +830,17 @@ namespace Robocup.Plays
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
+            /*
+            addFunction("robotpointkickvar", "Robot, Point - Kick, Strength", "Have robot ~ kick the ball to ~ with strength level ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Robot robot = (Robot)objects[0];
+                Vector2 p = (Vector2)objects[1];
+                double s = (double)objects[2]; 
+                return new ActionDefinition(delegate(IActionInterpreter a)
+                {
+                    a.Kick(robot.getID(), p);
+                }, robot.getID());
+            }); */
             addFunction("robotpointbump", "Robot, Point - bump", "Have robot ~ bump the ball to ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];

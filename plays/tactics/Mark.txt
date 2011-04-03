@@ -1,0 +1,39 @@
+Metadata:
+type tactic
+name Mark
+
+Parameters:
+#point_defended point
+#distance double
+#should_kick bool
+
+Objects:
+attacker0 (closest enemy ballpoint loose)
+attacker1 (closest enemy ballpoint loose)
+
+point_defended (pointof attacker1)
+#should_kick (veritas 0.0)
+#tmppt (point 0.5 0.5)
+#distance (getXcoord tmppt)
+should_kick true
+distance 0.5
+
+perimeter (circle point_defended distance)
+
+ballpoint (pointof ball)
+
+ballline (line ballpoint point_defended)
+
+defensept (linecircleintersection ballline perimeter -1)
+
+defensebot (closest friendly defensept loose)
+defensebotpt (pointof defensebot)
+
+# is defender going in to kick
+defensedisttoball (pointpointdistance defensebotpt ballpoint)
+
+# should robot kick
+do_kick (and should_kick (< defensedisttoball 0.4))
+
+Actions:
+(if_Action do_kick (robotpointkick defensebot (theirgoal)) (robotpointpointmove defensebot defensept ballpoint))

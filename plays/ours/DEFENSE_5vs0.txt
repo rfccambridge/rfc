@@ -1,0 +1,17 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_5vs0
+score 500
+
+Tactics:
+Mark
+SmartGoalie
+#BallGuard
+#ClearBot
+#BallGuard
+
+Objects:
+
+Conditions:
+
+Actions:
