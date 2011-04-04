@@ -474,7 +474,7 @@ namespace Robocup.Plays
                             return new Vector2(p1.X + v.X, p1.Y + v.Y);
                         });
             addFunction("numberOfRobotsInACircle", "Circle, Team - Number of Robots",
-                        "In a circle ~, the number of Robots of the Team ~ in it", typeof(int),
+                        "In a circle ~, the number of Robots of the Team ~ in it", typeof(double),
                         new Type[] { typeof(Circle), typeof(TeamCondition) },
                         delegate(EvaluatorState state, object[] objects)
                         {
@@ -490,7 +490,7 @@ namespace Robocup.Plays
                                 if (((Circle)objects[0]).distanceFromCenter(r.Position) <= ((Circle)objects[0]).Radius)
                                     count++;
                             }
-                            return count;
+                            return (double)count;
                         });
             addFunction("angleBetweenTwoLines", "Line,Line - Angle", "The angle between line ~ and line ~", typeof(double),
                         new Type[] { typeof(Line), typeof(Line) },
@@ -921,6 +921,15 @@ namespace Robocup.Plays
                             return Intersections.intersect(line, circle, 1);
                             //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
                         });
+            
+            addFunction("linetopoint", "Line, Double - Point", "Returns point that is ~ distance from the origin of the line ~", typeof(Vector2),
+            new Type[] { typeof(Line), typeof(double) },
+            delegate(EvaluatorState state, object[] objects)
+            {
+                Line line = (Line)objects[0];
+                Circle circle = new Circle((Vector2)objects[0], (double)objects[1]);
+                return Intersections.intersect(line, circle, 0);
+            });
 
             addFunction("robotpointkickvar", "Robot, Point - Kick, Strength", "Have robot ~ kick the ball to ~ with strength level ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
             {

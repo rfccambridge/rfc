@@ -6,46 +6,49 @@ Parameters:
 
 Objects:
 
+# Local Constants
+REGION_RADIUS (double 1)
+VICINITY (double 0.3)
+RANGE (double 2)
+PI (double 3.1415)
+
+
 # Regions
 regionpoint1 (point 2.4 -1.2)
 regionpoint2 (point 2.4 0)
 regionpoint3 (point 2.4 1.2)
-radius (getXcoord (point 1 0)) # TODO get rid of hack 
 
 # Ball and robots
 ballpoint (pointof ball)
 attacker (closest friendly ballpoint loose)
 attackerpoint (pointof attacker)
-supporter (closest friendly regioncenter loose)
+supporter (closest friendly regionpoint2 loose)
 supporterpoint (pointof supporter)
 
 # BALL 
-ballinrange (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE)
+ballinrange (< (pointpointdistance ballpoint (theirgoal)) RANGE)
 ballvelocity (velocityof ball)
 balldirection (getAngle ballvelocity)
 ballprojline (linedirection ballpoint balldirection)
-ballprojpoint (linearInterpolation linedirection 0.5)
-
+ballprojpoint (linetopoint ballprojline 0.5)
 
 # SUPPORTER 
 
 # Geometry
-vicinity (getXcoord (point 0.3 0))
-supportercircle (circle supporterpoint vicinity)
-
+supportercircle (circle supporterpoint VICINITY)
 passdistance (pointpointdistance ballpoint supporterpoint)
 passangle (angleBetweenTwoLines ballprojline (line ballpoint supporterpoint)) 
-projpassdest (pointtrans ballpoint ballprojpoint passdistance)
-passdiffvector (pointsubtract projballdest supporterpoint)
-passdiffline (line projballdest supporterpoint)
-passdiffdistance (pointpoint distance projballdest supporterpoint)
+projpassdestpoint (linetopoint ballprojline passdistance)
+passdiffvector (pointsubtract projpassdestpoint supporterpoint)
+passdiffline (line projpassdestpoint supporterpoint)
+passdiffdistance (pointpointdistance projpassdestpoint supporterpoint)
 
 # Booleans
-supporterinregion1 (inRegion supporterpoint regionpoint1 radius) 
-supporterinregion2 (inRegion supporterpoint regionpoint2 radius) 
-supporterinregion3 (inRegion supporterpoint regionpoint3 radius) 
+supporterinregion1 (inRegion supporterpoint regionpoint1 REGION_RADIUS) 
+supporterinregion2 (inRegion supporterpoint regionpoint2 REGION_RADIUS) 
+supporterinregion3 (inRegion supporterpoint regionpoint3 REGION_RADIUS) 
 
-supporterinrange (< (pointpointdistance supporterpoint (theirGoalBestShot)) BALL_IN_RANGE)
+supporterinrange (< (pointpointdistance supporterpoint (theirGoalBestShot)) RANGE)
 
 supportershotclear (pathClear supporterpoint (theirGoalBestShot) 0.2)
 
@@ -59,28 +62,30 @@ supporterfree (= 0 (numberOfRobotsInACircle supportercircle enemy))
 
 ballpassed (< passdiffdistance 0.2) 
 
+shotongoal (bool false)
+
 # Movement
-gotoregion1 (robotpointmove supporter regionpoint1)
-gotoregion2 (robotpointmove supporter regionpoint2)
-gotoregion3 (robotpointmove supporter regionpoint3)
+gotoregion1 (robotpointpointmovenoavoid supporter regionpoint1 ballpoint)
+gotoregion2 (robotpointpointmovenoavoid supporter regionpoint2 ballpoint)
+gotoregion3 (robotpointpointmovenoavoid supporter regionpoint3 ballpoint)
 
 # Actions
 getinrange (if_Action (< (getYcoord ballpoint) 0) gotoregion1 gotoregion3)
 
-changeregion (if_Action (inRegion supportpoint region1 radius) gotoregion2 (if_Action (inRegion supportpoint region2 radius) gotoregion3 gotoregion1))
+changeregion (if_Action (inRegion supporterpoint regionpoint1 REGION_RADIUS) gotoregion2 (if_Action (inRegion supporterpoint regionpoint2 REGION_RADIUS) gotoregion3 gotoregion1))
 
-waitforpass (donothing)
+waitforpass (donothing supporter)
 
 meetpass (robotpointpointmovenoavoid supporter ballpoint ballpoint) 
 
 # TODO getoutofway
-getoutofway (donothing)
+getoutofway (donothing supporter)
 
 # TODO improveshootangle
-improveshootangle (donothing)
+improveshootangle (donothing supporter)
 
 # TODO improvepassangle 
-improvepassangle (donothing)
+improvepassangle (donothing supporter)
 
 # Decision tree
 #support 
@@ -97,20 +102,22 @@ improvepassangle (donothing)
 #				improvepassangle)
 #			changeregion))
 #	getinrange)
-	
-support (if_Action supporterinrange (if_Action ballpassed (if_Action shotongoal getoutofway meetpass) (if_Action supporterfree (if_Action clearpass (if_Action clearshot waitforpass improveshootangle) improvepassangle) changeregion)) getinrange)
+
+support (if_Action supporterinrange (if_Action ballpassed (if_Action shotongoal meetpass meetpass) (if_Action supporterfree (if_Action passclear (if_Action supportershotclear waitforpass waitforpass) waitforpass) changeregion)) getinrange)
 
 # ATTACKER 
 # Geometry
-attackercircle (circle attackerpoint vicinity)
 
-dribbleuppoint (point (+ (getXcoord attackerpoint) vicinity) (+ (getYcoord attackerpoint) 0))
+attackercircle (circle attackerpoint VICINITY)
+
+dribbleuppoint (point (+ (getXcoord attackerpoint) VICINITY) (+ (getYcoord attackerpoint) 0))
 
 closestenemypoint (pointof (closest enemy attackerpoint loose))
 
-enemyattackercircleintersect (linecircleintersection (line attackerpoint closestenemypoint) attackercircle)
+enemyattackercircleintersect (linecircleintersection (line attackerpoint closestenemypoint) attackercircle 1)
 
 dribbleawaypoint (rotatePointAroundAnotherPoint attackerpoint enemyattackercircleintersect PI)
+
 
 # booleans
 attackerhasshot (and ballinrange (pathClear ballpoint (theirGoalBestShot) 0.2))
@@ -134,10 +141,8 @@ dribbleaway (robotpointdribble attacker dribbleawaypoint)
 #			(if_Action passclear
 #				pass
 #				dribbleaway))))
-			
-attack (if_Action attackerhasshot shoot (if_Action (and passclear supporterhasshot) pass (if_Action attackerfree dribbleup (if_Action passclear pass dribbleaway))))
-	
 
+attack (if_Action attackerhasshot shoot (if_Action (and passclear supporterhasshot) pass (if_Action attackerfree dribbleup (if_Action passclear pass dribbleaway))))
 
 Actions:
 attack
