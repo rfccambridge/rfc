@@ -1,0 +1,144 @@
+Metadata:
+type tactic
+name StandardAttack
+
+Parameters:
+
+Objects:
+
+# Regions
+regionpoint1 (point 2.4 -1.2)
+regionpoint2 (point 2.4 0)
+regionpoint3 (point 2.4 1.2)
+radius (getXcoord (point 1 0)) # TODO get rid of hack 
+
+# Ball and robots
+ballpoint (pointof ball)
+attacker (closest friendly ballpoint loose)
+attackerpoint (pointof attacker)
+supporter (closest friendly regioncenter loose)
+supporterpoint (pointof supporter)
+
+# BALL 
+ballinrange (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE)
+ballvelocity (velocityof ball)
+balldirection (getAngle ballvelocity)
+ballprojline (linedirection ballpoint balldirection)
+ballprojpoint (linearInterpolation linedirection 0.5)
+
+
+# SUPPORTER 
+
+# Geometry
+vicinity (getXcoord (point 0.3 0))
+supportercircle (circle supporterpoint vicinity)
+
+passdistance (pointpointdistance ballpoint supporterpoint)
+passangle (angleBetweenTwoLines ballprojline (line ballpoint supporterpoint)) 
+projpassdest (pointtrans ballpoint ballprojpoint passdistance)
+passdiffvector (pointsubtract projballdest supporterpoint)
+passdiffline (line projballdest supporterpoint)
+passdiffdistance (pointpoint distance projballdest supporterpoint)
+
+# Booleans
+supporterinregion1 (inRegion supporterpoint regionpoint1 radius) 
+supporterinregion2 (inRegion supporterpoint regionpoint2 radius) 
+supporterinregion3 (inRegion supporterpoint regionpoint3 radius) 
+
+supporterinrange (< (pointpointdistance supporterpoint (theirGoalBestShot)) BALL_IN_RANGE)
+
+supportershotclear (pathClear supporterpoint (theirGoalBestShot) 0.2)
+
+supporterhasshot (and supporterinrange supportershotclear)
+
+passclear (pathClear ballpoint supporterpoint 0.2)
+
+supporterwellpositioned (and supporterhasshot passclear) 
+
+supporterfree (= 0 (numberOfRobotsInACircle supportercircle enemy))
+
+ballpassed (< passdiffdistance 0.2) 
+
+# Movement
+gotoregion1 (robotpointmove supporter regionpoint1)
+gotoregion2 (robotpointmove supporter regionpoint2)
+gotoregion3 (robotpointmove supporter regionpoint3)
+
+# Actions
+getinrange (if_Action (< (getYcoord ballpoint) 0) gotoregion1 gotoregion3)
+
+changeregion (if_Action (inRegion supportpoint region1 radius) gotoregion2 (if_Action (inRegion supportpoint region2 radius) gotoregion3 gotoregion1))
+
+waitforpass (donothing)
+
+meetpass (robotpointpointmovenoavoid supporter ballpoint ballpoint) 
+
+# TODO getoutofway
+getoutofway (donothing)
+
+# TODO improveshootangle
+improveshootangle (donothing)
+
+# TODO improvepassangle 
+improvepassangle (donothing)
+
+# Decision tree
+#support 
+#(if_Action supporterinrange 
+#	(if_Action ballpassed
+#		(if_Action shotongoal
+#			getoutofway
+#			meetpass)
+#		(if_Action supporterfree
+#			(if_Action clearpass
+#				(if_Action clearshot
+#					waitforpass
+#					improveshootangle)
+#				improvepassangle)
+#			changeregion))
+#	getinrange)
+	
+support (if_Action supporterinrange (if_Action ballpassed (if_Action shotongoal getoutofway meetpass) (if_Action supporterfree (if_Action clearpass (if_Action clearshot waitforpass improveshootangle) improvepassangle) changeregion)) getinrange)
+
+# ATTACKER 
+# Geometry
+attackercircle (circle attackerpoint vicinity)
+
+dribbleuppoint (point (+ (getXcoord attackerpoint) vicinity) (+ (getYcoord attackerpoint) 0))
+
+closestenemypoint (pointof (closest enemy attackerpoint loose))
+
+enemyattackercircleintersect (linecircleintersection (line attackerpoint closestenemypoint) attackercircle)
+
+dribbleawaypoint (rotatePointAroundAnotherPoint attackerpoint enemyattackercircleintersect PI)
+
+# booleans
+attackerhasshot (and ballinrange (pathClear ballpoint (theirGoalBestShot) 0.2))
+
+attackerfree (= 0 (numberOfRobotsInACircle attackercircle enemy))
+
+# Actions
+shoot (robotpointkick attacker (theirGoalBestShot))
+pass (robotpointkick attacker supporterpoint)
+dribbleup (robotpointdribble attacker dribbleuppoint)
+dribbleaway (robotpointdribble attacker dribbleawaypoint)
+
+# Decision tree
+#attack 
+#(if_Action attackerhasshot 
+#	shoot
+#	(if_Action (and passclear supporterhasshot)
+#		pass
+#		(if_Action attackerfree
+#			dribbleup
+#			(if_Action passclear
+#				pass
+#				dribbleaway))))
+			
+attack (if_Action attackerhasshot shoot (if_Action (and passclear supporterhasshot) pass (if_Action attackerfree dribbleup (if_Action passclear pass dribbleaway))))
+	
+
+
+Actions:
+attack
+support

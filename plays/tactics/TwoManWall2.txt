@@ -1,0 +1,34 @@
+Metadata:
+type tactic
+name TwoManWall2
+
+Parameters:
+point_defended point
+distance double
+should_kick bool
+bot_number double
+
+Objects:
+perimeter (circle point_defended distance)
+
+ballpoint (pointof ball)
+
+ballline (line ballpoint point_defended)
+
+wallmainpt (linecircleintersection ballline perimeter -1)
+
+wallcircle (circle wallmainpt 0.17)
+
+twomanpt (if_point (= bot_number 0) (circlecircleintersection wallcircle perimeter -1) (circlecircleintersection wallcircle perimeter 1))
+
+twomanbot (closest friendly twomanpt loose)
+twomanbotpt (pointof twomanbot)
+
+# is defender going in to kick
+defensedisttoball (pointpointdistance twomanbotpt ballpoint)
+
+# should robot kick
+do_kick (and should_kick (< defensedisttoball 0.4))
+
+Actions:
+(if_Action do_kick (robotpointkick twomanbot (theirgoal)) (robotpointpointmove twomanbot twomanpt ballpoint))

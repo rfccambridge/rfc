@@ -902,6 +902,28 @@ namespace Robocup.Plays
                 return ChessHelpers.numEnemyRobotsOnOurHalf(state.TheirTeamInfo);
             });
 
+            addFunction("pointtrans", "pointtrans","pointtrans", typeof(Vector2),
+                        new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) },
+                        delegate(EvaluatorState state, object[] objects)
+                        {
+                            Line line = new Line((Vector2)objects[0], (Vector2)objects[1]);
+                            Circle circle = new Circle((Vector2)objects[0], (double)objects[2]);
+                            return Intersections.intersect(line, circle, 1);
+                            //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
+                        });
+
+            addFunction("robotpointkickvar", "Robot, Point - Kick, Strength", "Have robot ~ kick the ball to ~ with strength level ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Robot robot = (Robot)objects[0];
+                Vector2 p = (Vector2)objects[1];
+                double s = (double)objects[2];
+                return new ActionDefinition(delegate(IActionInterpreter a)
+                {
+                    //a.Kick(robot.getID(), p, s);
+                    a.Kick(robot.getID(), p);
+                }, robot.getID());
+            });
+
             #endregion
 
         }

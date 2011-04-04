@@ -1,0 +1,33 @@
+Metadata:
+type tactic
+name StandardAttack
+
+
+Parameters:
+
+Objects:
+
+# Regions
+regionpoint1 (point 2.4 -1.2)
+regionpoint2 (point 2.4 0)
+regionpoint3 (point 2.4 1.2)
+radius 1 
+
+# Ball and robots
+ballpoint (pointof ball)
+attacker (closest friendly ballpoint loose)
+attackerpoint (pointof attacker)
+supporter (closest friendly regioncenter loose)
+supporterpoint (pointof supporter)
+
+# BALL 
+ballinrange (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE)
+ballvelocity (velocityof ball)
+balldirection (getAngle ballvelocity)
+ballprojline (linedirection ballpoint balldirection)
+ballprojpoint (linearInterpolation linedirection 0.5)
+
+
+
+Actions:
+
