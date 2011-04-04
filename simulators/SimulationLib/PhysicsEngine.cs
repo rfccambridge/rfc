@@ -12,6 +12,7 @@ namespace Robocup.Simulation
 {
     public class PhysicsEngine : IPredictor
     {
+        // TODO 189: Your job is to characterize this for different kick strengths
         const double KICKED_BALL_SPEED = 3.0;  //In m/s
 
         const double BALL_ROBOT_ELASTICITY = 0.5; //The fraction of the speed kept when bouncing off a robot
@@ -65,6 +66,7 @@ namespace Robocup.Simulation
 
         private Dictionary<Team, Dictionary<int, MovementModeler>> movement_modelers = new Dictionary<Team, Dictionary<int, MovementModeler>>();
         private Dictionary<Team, Dictionary<int, WheelSpeeds>> speeds = new Dictionary<Team, Dictionary<int, WheelSpeeds>>();
+        // TODO 189: Your job is to maintain state about the level of charge on the robots
         private Dictionary<Team, Dictionary<int, bool>> break_beams = new Dictionary<Team, Dictionary<int, bool>>();
 
 		public PhysicsEngine()
@@ -456,6 +458,7 @@ namespace Robocup.Simulation
                     case RobotCommand.Command.MOVE:
                         this.speeds[team][command.ID] = command.Speeds;
                         break;
+                    // TODO 189: Your job is to capture START_CHARGING and START_VARIABLE_CHARGING commands
                     case RobotCommand.Command.KICK:
                         {
                             // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist                                                
@@ -478,7 +481,9 @@ namespace Robocup.Simulation
                             //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
                             break;
                         }
+                        //TODO: Make the simulator handle these differently/appropriately
                     case RobotCommand.Command.BREAKBEAM_KICK:
+                    case RobotCommand.Command.FULL_BREAKBEAM_KICK:
                         {
                             const double CENTER_TO_KICKER_DIST = 0.070; // m
                             const double KICKER_ACTIVITY_RADIUS_SQ = 0.04 * 0.04; // m
