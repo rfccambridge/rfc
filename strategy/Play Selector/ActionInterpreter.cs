@@ -139,7 +139,10 @@ namespace Robocup.Plays
         {
             commander.Charge(robotID);
         }
-
+        public void Charge(int robotID, int strength)
+        {
+            commander.Charge(robotID, strength);
+        }
 
         private readonly double bumpDistance = 0.2;
         private readonly double bumpOrientationOffset = Math.PI / 6;
@@ -199,13 +202,13 @@ namespace Robocup.Plays
         /// This method does all the necessary work to get a robot to kick the ball to a certain point.
         /// This should make other functions easier, such as a moving pass.
         /// </summary>
-        public void Kick(int robotID, Vector2 target)
+        public void Kick(int robotID, Vector2 target, int strength)
         {
             //DEBUG!
 
-            BeamKick(robotID, target);
+            BeamKick(robotID, target, strength);
             return;
-
+#if FALSE
             RobotInfo thisrobot;
             Vector2 ball;
             BallInfo ballinfo;
@@ -270,6 +273,14 @@ namespace Robocup.Plays
                     new Vector2(destination.X, destination.Y),
                     destinationAngle);
             }
+#endif
+        }
+        /// <summary>
+        /// Overloaded version of the above (with default kick stregth)
+        /// </summary>
+        public void Kick(int robotID, Vector2 target)
+        {
+            BeamKick(robotID, target);
         }
 
         /// <summary>
@@ -277,7 +288,7 @@ namespace Robocup.Plays
         /// The main difference is that closeness to the ball is determined by a break-beam sensor on the robot itself and 
         /// that is, hopefully, much more accurate than vision distances.
         /// </summary>
-        public void BeamKick(int robotID, Vector2 target)
+        public void BeamKick(int robotID, Vector2 target, int strength = RobotCommand.MAX_KICKER_STRENGTH)
         {
             RobotInfo thisrobot;
             Vector2 ball;
@@ -330,8 +341,8 @@ namespace Robocup.Plays
             {
                 if (VERBOSE)
                     Console.WriteLine("Close to the ball. CHARGING!");
-                
-                commander.Charge(robotID);
+
+                commander.Charge(robotID, strength);
             }
 
             if (VERBOSE)
@@ -369,8 +380,8 @@ namespace Robocup.Plays
             {
                 if (VERBOSE)
                     Console.WriteLine("Turning on break beam and moving towards the ball to kick.");
-                commander.BreakBeam(robotID);
-                commander.StartDribbling(robotID);
+                commander.BreakBeam(robotID, strength);
+                //commander.StartDribbling(robotID);
                 commander.Move(
                         robotID,
                         false, // don't avoid the ball, we are kicking it

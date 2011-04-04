@@ -48,10 +48,10 @@ namespace Robocup.Plays
         /// <summary>
         /// Updates the conditions, and the tick will be increased by one.
         /// </summary>
-        public void updateConditions(InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo)
+        public void updateConditions(InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo, int ourgoals, int theirgoals)
         {
             synchronizedTick++;
-            state = new EvaluatorState(ourteaminfo, theirteaminfo, ballinfo, synchronizedTick);
+            state = new EvaluatorState(ourteaminfo, theirteaminfo, ballinfo, ourgoals, theirgoals, synchronizedTick);
         }
         private void clearAssignments()
         {

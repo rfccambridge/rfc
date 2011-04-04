@@ -88,6 +88,8 @@ namespace Robocup.Plays
                 return "<circle>";
             else if (t == typeof(int))
                 return "<int>";
+            else if (t == typeof(bool))
+                return "<bool>";
             else if (t == typeof(ActionDefinition))
                 return "<Action>";
             else if (t == typeof(Robot))
@@ -104,6 +106,14 @@ namespace Robocup.Plays
                     return objects[1];
                 else
                     return objects[2];
+            });
+        }
+        private static void addConstruct(Type t)
+        {
+            string name = cleanUpName(getStringFromType(t));
+            addFunction(name, name, "Declare type-safe " + name, t, new Type[] { t }, delegate(EvaluatorState state, object[] objects)
+            {
+                return objects[0];
             });
         }
         private static void addAll(Action<Type> function, params Type[] types)
@@ -143,6 +153,8 @@ namespace Robocup.Plays
         {
             addAll(addIf, typeof(int), typeof(double), typeof(Vector2), typeof(Line), typeof(Circle),
                    typeof(ActionDefinition), typeof(Robot));
+
+            addAll(addConstruct, typeof(int), typeof(double), typeof(bool));
 
             #region geometric functions
 
@@ -417,9 +429,7 @@ namespace Robocup.Plays
                         typeof(bool), new Type[] { typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
             {
                 Vector2 point = (Vector2)objects[0];
-                bool result = ((point.X <= BasicCoordinateConverter.FIELD_WIDTH / 2) && (point.X >= -BasicCoordinateConverter.FIELD_WIDTH / 2)
-                    && (point.Y <= BasicCoordinateConverter.FIELD_HEIGHT / 2) && (point.Y >= -BasicCoordinateConverter.FIELD_HEIGHT / 2));
-                return result;
+                return TacticsEval.InField(point);
             });
 
             /*addFunction("closest_now", "Team, point - closest robot", "return the nearest robot to the point", typeof(Robot), new Type[] { typeof(TeamCondition), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)

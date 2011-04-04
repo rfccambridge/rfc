@@ -137,12 +137,34 @@ namespace Robocup.Plays
 		double getOrientation();
         int getID();
     }
-    abstract public class PlayRobotDefinition : Robot
+    /// <summary>
+    /// Robot definition used by the play system. Must be default-creatable.
+    /// </summary>
+    public class PlayRobotDefinition : Robot, GetPointable
     {
-        public abstract bool Ours { get;}
-        public abstract Vector2 getPoint();
-		public abstract double getOrientation();
-        public abstract int getID();
+        public PlayRobotDefinition()
+        {
+        }
+        public virtual int getID()
+        {
+            throw new InvalidOperationException("Placeholder only, should never get called");
+        }
+        public virtual double getOrientation()
+        {
+            throw new InvalidOperationException("Placeholder only, should never get called");
+        }
+        public virtual Vector2 getPoint()
+        {
+            throw new InvalidOperationException("Placeholder only, should never get called");
+        }
+        public virtual Vector2 getVelocity()
+        {
+            throw new InvalidOperationException("Placeholder only, should never get called");
+        }
+        public virtual bool Ours
+        {
+            get { throw new InvalidOperationException("Placeholder only, should never get called"); }
+        }
     }
 
     abstract public class PlayBall : GetPointable
@@ -156,5 +178,4 @@ namespace Robocup.Plays
         Vector2 getPoint();
         Vector2 getVelocity();
     }
-
 }
