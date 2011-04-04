@@ -244,7 +244,8 @@ namespace Robocup.ControlForm
         protected virtual void doAction()
         {
             PlayType playType = _refbox.GetCurrentPlayType();
-            _interpreter.interpret(playType);
+            Score score = _refbox.GetScore();
+            _interpreter.interpret(playType, score);
         }
         
         void _interpretLoopTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
