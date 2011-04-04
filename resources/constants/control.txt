@@ -21,7 +21,7 @@ double GAIN_MATRIX_SCALE 15
 # by the full speed vector
 
 # one constant scales speeds for all robots
-double SPEED_SCALING_FACTOR_ALL 1.15
+double SPEED_SCALING_FACTOR_ALL 0.9
 
 double SPEED_SCALING_FACTOR_0 1
 double SPEED_SCALING_FACTOR_1 1

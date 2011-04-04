@@ -132,8 +132,8 @@ namespace Robocup.ControlForm {
             Player player2 = new Player("Player2", Team.Blue, FieldHalf.Left, _fieldDrawer2, _predictor);
             Player playerFollower = new PathFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
         	Player playerMeasuringFollower = new MeasuringFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player playerKick = new KickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
-            Player playerBeamKick = new BeamKickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
+            Player playerKick = new KickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player playerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
 
             lstPlayers.Items.Add(player1);
             lstPlayers.Items.Add(player2);
