@@ -3,6 +3,9 @@ type tactic
 name StandardAttack
 
 Parameters:
+attacker Robot
+supporter Robot
+closestenemy Robot
 
 Objects:
 
@@ -14,16 +17,16 @@ PI (double 3.1415)
 
 
 # Regions
-regionpoint1 (point 2.4 -1.2)
+regionpoint1 (point 2.4 -0.6)
 regionpoint2 (point 2.4 0)
-regionpoint3 (point 2.4 1.2)
+regionpoint3 (point 2.4 0.6)
 
 # Ball and robots
 ballpoint (pointof ball)
-attacker (closest friendly ballpoint loose)
 attackerpoint (pointof attacker)
-supporter (closest friendly regionpoint2 loose)
 supporterpoint (pointof supporter)
+#attackerpoint (point 1.2 1.3)
+#supporterpoint regionpoint2
 
 # BALL 
 ballinrange (< (pointpointdistance ballpoint (theirgoal)) RANGE)
@@ -112,7 +115,7 @@ attackercircle (circle attackerpoint VICINITY)
 
 dribbleuppoint (point (+ (getXcoord attackerpoint) VICINITY) (+ (getYcoord attackerpoint) 0))
 
-closestenemypoint (pointof (closest enemy attackerpoint loose))
+closestenemypoint (pointof closestenemy)
 
 enemyattackercircleintersect (linecircleintersection (line attackerpoint closestenemypoint) attackercircle 1)
 

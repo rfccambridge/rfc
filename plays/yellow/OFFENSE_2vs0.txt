@@ -3,55 +3,149 @@ playtype NormalPlay
 name OFFENSE_2vs0
 score 200
 
+
 Objects:
 
-topCenter (point 0 2.1)
-bottomCenter (point 0 -2.1)
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
+# Local Constants
+REGION_RADIUS (double 1)
+VICINITY (double 0.3)
+RANGE (double 2)
+PI (double 3.1415)
 
-BALL_KICK_DIST (const-double BALL_KICK_DIST)
-STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
-GOAL_MINIMUM (const-double GOAL_MINIMUM)
-BALL_IN_RANGE (const-double BALL_IN_RANGE)
-SUPPORT_AVOID (const-double SUPPORT_AVOID)
-CLEAR_DIST (const-double CLEAR_DIST)
-SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
 
-############################################################################################
+# Regions
+regionpoint1 (point 2.4 -1.2)
+regionpoint2 (point 2.4 0)
+regionpoint3 (point 2.4 1.2)
+
+# Ball and robots
 ballpoint (pointof ball)
-numbots (numourbots)
+attacker (closest friendly ballpoint loose)
+attackerpoint (pointof attacker)
+supporter (closest friendly regionpoint2 loose)
+supporterpoint (pointof supporter)
+
+# BALL 
+ballinrange (< (pointpointdistance ballpoint (theirgoal)) RANGE)
+ballvelocity (velocityof ball)
+balldirection (getAngle ballvelocity)
+ballprojline (linedirection ballpoint balldirection)
+ballprojpoint (linetopoint ballprojline 0.5)
+
+# SUPPORTER 
+
+# Geometry
+supportercircle (circle supporterpoint VICINITY)
+passdistance (pointpointdistance ballpoint supporterpoint)
+passangle (angleBetweenTwoLines ballprojline (line ballpoint supporterpoint)) 
+projpassdestpoint (linetopoint ballprojline passdistance)
+passdiffvector (pointsubtract projpassdestpoint supporterpoint)
+passdiffline (line projpassdestpoint supporterpoint)
+passdiffdistance (pointpointdistance projpassdestpoint supporterpoint)
+
+# Booleans
+supporterinregion1 (inRegion supporterpoint regionpoint1 REGION_RADIUS) 
+supporterinregion2 (inRegion supporterpoint regionpoint2 REGION_RADIUS) 
+supporterinregion3 (inRegion supporterpoint regionpoint3 REGION_RADIUS) 
+
+supporterinrange (< (pointpointdistance supporterpoint (theirGoalBestShot)) RANGE)
+
+supportershotclear (pathClear supporterpoint (theirGoalBestShot) 0.2)
+
+supporterhasshot (and supporterinrange supportershotclear)
+
+passclear (pathClear ballpoint supporterpoint 0.2)
+
+supporterwellpositioned (and supporterhasshot passclear) 
+
+supporterfree (= 0 (numberOfRobotsInACircle supportercircle enemy))
+
+ballpassed (< passdiffdistance 0.2) 
+
+shotongoal (bool false)
+
+# Movement
+gotoregion1 (robotpointpointmovenoavoid supporter regionpoint1 ballpoint)
+gotoregion2 (robotpointpointmovenoavoid supporter regionpoint2 ballpoint)
+gotoregion3 (robotpointpointmovenoavoid supporter regionpoint3 ballpoint)
+
+# Actions
+getinrange (if_Action (< (getYcoord ballpoint) 0) gotoregion1 gotoregion3)
+
+changeregion (if_Action (inRegion supporterpoint regionpoint1 REGION_RADIUS) gotoregion2 (if_Action (inRegion supporterpoint regionpoint2 REGION_RADIUS) gotoregion3 gotoregion1))
+
+waitforpass (donothing supporter)
+
+meetpass (robotpointpointmovenoavoid supporter ballpoint ballpoint) 
+
+# TODO getoutofway
+getoutofway (donothing supporter)
+
+# TODO improveshootangle
+improveshootangle (donothing supporter)
+
+# TODO improvepassangle 
+improvepassangle (donothing supporter)
+
+# Decision tree
+#support 
+#(if_Action supporterinrange 
+#	(if_Action ballpassed
+#		(if_Action shotongoal
+#			getoutofway
+#			meetpass)
+#		(if_Action supporterfree
+#			(if_Action clearpass
+#				(if_Action clearshot
+#					waitforpass
+#					improveshootangle)
+#				improvepassangle)
+#			changeregion))
+#	getinrange)
+
+support (if_Action supporterinrange (if_Action ballpassed (if_Action shotongoal meetpass meetpass) (if_Action supporterfree (if_Action passclear (if_Action supportershotclear waitforpass waitforpass) waitforpass) changeregion)) getinrange)
+
+# ATTACKER 
+# Geometry
+
+attackercircle (circle attackerpoint VICINITY)
+
+dribbleuppoint (point (+ (getXcoord attackerpoint) VICINITY) (+ (getYcoord attackerpoint) 0))
+
+closestenemypoint (pointof (closest enemy attackerpoint loose))
+
+enemyattackercircleintersect (linecircleintersection (line attackerpoint closestenemypoint) attackercircle 1)
+
+dribbleawaypoint (rotatePointAroundAnotherPoint attackerpoint enemyattackercircleintersect PI)
 
 
-ballinrange (and (and (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE) (> (getYcoord ballpoint) (- (* .732 (getXcoord ballpoint)) 3.13))) (> (getYcoord ballpoint) (- (* .732 (getXcoord ballpoint)) 3.13)) )
-ballpositive (< 0 (getYcoord ballpoint))
+# booleans
+attackerhasshot (and ballinrange (pathClear ballpoint (theirGoalBestShot) 0.2))
 
-goaltop (point 3.025 -0.33)
-goalbottom (point 3.025 0.33)
-recpoint (point -0.2 -1)
+attackerfree (= 0 (numberOfRobotsInACircle attackercircle enemy))
 
-deflection_point (if_point ballpositive (point 2.8 -0.35) (point 2.8 0.35))
-deflection_point_upper (if_point ballpositive (point 0 -0.5) (point 0 0.5))
-deflection_point_mid (if_point ballpositive (point 1.4 -0.5) (point 1.4 0.5))
-## Robot Initialization ##
-kickerrobot (closest friendly ballpoint loose)
-assistrobot (closest friendly (theirgoal) loose)
-kickerrobotpoint (pointof kickerrobot)
-assistrobotpoint (pointof assistrobot)
+# Actions
+shoot (robotpointkick attacker (theirGoalBestShot))
+pass (robotpointkick attacker supporterpoint)
+dribbleup (robotpointdribble attacker dribbleuppoint)
+dribbleaway (robotpointdribble attacker dribbleawaypoint)
 
-xsupport (getXcoord kickerrobotpoint)
-ysupport (getYcoord assistrobotpoint)
+# Decision tree
+#attack 
+#(if_Action attackerhasshot 
+#	shoot
+#	(if_Action (and passclear supporterhasshot)
+#		pass
+#		(if_Action attackerfree
+#			dribbleup
+#			(if_Action passclear
+#				pass
+#				dribbleaway))))
 
-
-kick (if_Action (and (= xsupport -0.2) (= ysupport -1)) (robotpointkick kickerrobot assistrobotpoint) (if_Action (and ballinrange (pathClear kickerrobotpoint (theirgoal) 0.15)) (robotpointkick kickerrobot (theirgoal))(if_Action (and ballinrange (pathClear kickerrobotpoint goaltop 0.15)) (robotpointkick kickerrobot goaltop) (if_Action (and ballinrange (pathClear kickerrobotpoint goalbottom 0.15)) (robotpointkick kickerrobot goalbottom) (if_Action (pathClear kickerrobotpoint assistrobotpoint 0.15) (robotpointkick kickerrobot assistrobotpoint) (robotpointkick kickerrobot (point 1.5 0)))))))
-
-assist (if_Action (< (getXcoord kickerrobotpoint) 0) (robotpointmove assistrobot deflection_point_upper) (if_Action (pathClear kickerrobotpoint deflection_point 0.25) (robotpointmove assistrobot deflection_point)(robotpointmove assistrobot deflection_point_mid)))
+attack (if_Action attackerhasshot shoot (if_Action (and passclear supporterhasshot) pass (if_Action attackerfree dribbleup (if_Action passclear pass dribbleaway))))
 
 Conditions:
-Actions:
-kick
-assist
 
-############################################################################################
+Actions:
+attack
+support

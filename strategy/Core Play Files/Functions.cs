@@ -927,7 +927,8 @@ namespace Robocup.Plays
             delegate(EvaluatorState state, object[] objects)
             {
                 Line line = (Line)objects[0];
-                Circle circle = new Circle((Vector2)objects[0], (double)objects[1]);
+                Vector2[] linepoints = line.getPoints();
+                Circle circle = new Circle((Vector2)linepoints[0], (double)objects[1]);
                 return Intersections.intersect(line, circle, 0);
             });
 
