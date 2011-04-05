@@ -7,6 +7,7 @@ using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 using Robocup.CoreRobotics;
 using Robocup.Utilities;
 using Robocup.MessageSystem;
+using Robocup.Geometry;
 
 namespace Robocup.Simulation
 {
@@ -24,6 +25,9 @@ namespace Robocup.Simulation
         const double BALL_RADIUS = 0.02;
 
         const double COLLISION_RADIUS = BALL_RADIUS + ROBOT_RADIUS;
+        const double DRIBBLE_RADIUS = ROBOT_RADIUS * 2 - BALL_RADIUS;
+        const double DRIBBLE_ANGLE = Math.PI / 180 * 8;
+        const double DRIBBLE_WHEEL_SPEED_THRESHOLD = 40;
 
 		private bool _marking = false;
 		private Vector2 _markedPosition;
@@ -68,6 +72,7 @@ namespace Robocup.Simulation
         private Dictionary<Team, Dictionary<int, WheelSpeeds>> speeds = new Dictionary<Team, Dictionary<int, WheelSpeeds>>();
         // TODO 189: Your job is to maintain state about the level of charge on the robots
         private Dictionary<Team, Dictionary<int, bool>> break_beams = new Dictionary<Team, Dictionary<int, bool>>();
+        private Dictionary<Team, Dictionary<int, bool>> dribbler_on = new Dictionary<Team, Dictionary<int, bool>>();
 
 		public PhysicsEngine()
 		{
@@ -75,6 +80,7 @@ namespace Robocup.Simulation
             {
                 robots[team] = new List<RobotInfo>();
                 break_beams[team] = new Dictionary<int, bool>();
+                dribbler_on[team] = new Dictionary<int, bool>();
                 movement_modelers[team] = new Dictionary<int, MovementModeler>();
                 speeds[team] = new Dictionary<int, WheelSpeeds>();
             }
@@ -92,6 +98,7 @@ namespace Robocup.Simulation
 			foreach (Team team in Enum.GetValues(typeof(Team)))
 			{
 				break_beams[team].Clear();
+                dribbler_on[team].Clear();
 				movement_modelers[team].Clear();
 				speeds[team].Clear();
 			}
@@ -103,6 +110,7 @@ namespace Robocup.Simulation
 				foreach (RobotInfo info in robots[team])
 				{
 					break_beams[team].Add(info.ID, false);
+                    dribbler_on[team].Add(info.ID, false);
 					movement_modelers[team].Add(info.ID, new MovementModeler());
 					speeds[team].Add(info.ID, new WheelSpeeds());
 				}
@@ -298,6 +306,35 @@ namespace Robocup.Simulation
                 foreach (RobotInfo r in allRobots)
                 {
                     Vector2 robotLoc = r.Position;
+
+                    if (newBallLocation.distanceSq(robotLoc) <= DRIBBLE_RADIUS * DRIBBLE_RADIUS)
+                    {
+                        if (dribbler_on[r.Team][r.ID]) //dribbler_on
+                        {
+                            double angdiff = Math.Abs(UsefulFunctions.angleDifference(r.Orientation, (ball.Position - r.Position).cartesianAngle()));
+                            
+                            //double robotX = Math.Cos(r.Orientation);
+                            //double robotY = Math.Sin(r.Orientation);
+
+                            //Vector2 RobOrient = new Vector2(robotX,robotY);
+                            
+                            //double dotP = RobOrient.normalize() * (ball.Position - r.Position).normalize();
+                            
+                            if (angdiff < DRIBBLE_ANGLE) //if robot orientation lines up with ball position (~8 degrees)
+                            {
+                                if (Math.Abs(speeds[r.Team][r.ID].lf) <= DRIBBLE_WHEEL_SPEED_THRESHOLD &&
+                                    Math.Abs(speeds[r.Team][r.ID].rf) <= DRIBBLE_WHEEL_SPEED_THRESHOLD &&
+                                    Math.Abs(speeds[r.Team][r.ID].lb) <= DRIBBLE_WHEEL_SPEED_THRESHOLD &&
+                                    Math.Abs(speeds[r.Team][r.ID].rb) <= DRIBBLE_WHEEL_SPEED_THRESHOLD)     //if wheelspeed is low enough
+                                {
+                                    //update ball velocity to match robot velocity
+                                    Vector2 linearRotVelocity = Vector2.GetUnitVector(r.Orientation).rotatePerpendicular() * r.AngularVelocity * ROBOT_RADIUS;
+                                    newBallVelocity = linearRotVelocity + r.Velocity;
+                                }
+                            }
+                        }
+                    }
+
 
                     bool collided = false;
                     //Possible collision
@@ -547,6 +584,16 @@ namespace Robocup.Simulation
 
                             breakBeamThread.Start();
 
+                            break;
+                        }
+                    case RobotCommand.Command.START_DRIBBLER:
+                        {
+                            dribbler_on[team][command.ID] = true;
+                            break;
+                        }
+                    case RobotCommand.Command.STOP_DRIBBLER:
+                        {
+                            dribbler_on[team][command.ID] = false;
                             break;
                         }
                 }
