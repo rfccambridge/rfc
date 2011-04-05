@@ -110,6 +110,11 @@ namespace Robocup.PlaySystem
             assignedIDs.Add(robotID);
             actioninterpreter.Dribble(robotID, target);
         }
+        public void Dribble(int robotID, Vector2 target, Vector2 facing)
+        {
+            assignedIDs.Add(robotID);
+            actioninterpreter.Dribble(robotID, target, facing);
+        }
 
         public void LoadConstants()
         {

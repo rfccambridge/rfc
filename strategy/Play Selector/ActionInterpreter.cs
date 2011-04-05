@@ -66,7 +66,10 @@ namespace Robocup.Plays
         {
             return predictor.GetRobot(team, robotID);
         }
-
+        public void Dribble(int robotID, Vector2 target)
+        {
+            Dribble(robotID, target, null);
+        }
         public void Dribble(int robotID, Vector2 target, Vector2 facing)
         {
             RobotInfo thisrobot;
@@ -98,7 +101,7 @@ namespace Robocup.Plays
                 commander.StartDribbling(robotID);
                 destination = target;
                 //destination = extend(target, ball, -.14); //change
-                tmp_facing = facing; 
+                tmp_facing = (facing == null) ? ball : facing; 
             }
             else
             {
