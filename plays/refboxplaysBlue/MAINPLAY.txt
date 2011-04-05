@@ -17,7 +17,7 @@ Conditions:
 
 Actions:
 
-(if_Action (= numRobots 1) (assignPlay OFFENSE_1vs0) nothing)
+(if_Action (= numRobots 1) (assignPlay OFFENSE_1vs0_dribble) nothing)
 
 (if_Action (= numRobots 2) (assignPlay DEFENSE_1vs0) nothing)
 (if_Action (= numRobots 2) (assignPlay OFFENSE_1vs0) nothing)

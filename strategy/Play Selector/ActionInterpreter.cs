@@ -71,6 +71,7 @@ namespace Robocup.Plays
         {
             RobotInfo thisrobot;
             Vector2 ball;
+            
             try
             {
                 thisrobot = getOurRobotFromID(robotID);
@@ -81,20 +82,29 @@ namespace Robocup.Plays
                 Console.WriteLine("Predictor failed to find Robot " + robotID.ToString() + " OR the ball.");
                 return;
             }
-            Vector2 robotposition = thisrobot.Position;
-            double dotP = (target - ball).normalize() * (ball - robotposition).normalize();
+            /*Vector2 robotposition = thisrobot.Position;                     //fix angles, see physicsengine
+            double dotP = (target - ball).normalize() * (ball - robotposition).normalize();*/
+            
+            Vector2 dribblePosition = extend(target, ball, KICK_POSITION_DIST);
+            double distToDribblePosition = Math.Sqrt(thisrobot.Position.distanceSq(dribblePosition));
+
+            double angdiff = Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation, (ball - thisrobot.Position).cartesianAngle()));
+            
             Vector2 destination = target;
             bool avoidBall = false;
-            if (dotP > .9)  //~8 degrees
+            if (angdiff < Math.PI / 180 * 8 && distToDribblePosition < MAX_DIST_TO_KICK_POSITION)  //~8 degrees
             {
-                destination = extend(target, ball, -.14);
+                commander.StartDribbling(robotID);
+                destination = target;
+                //destination = extend(target, ball, -.14); //change
             }
             else
             {
                 avoidBall = true;
-                destination = extend(target, ball, kickDistance);
+                destination = extend(target, ball, KICK_POSITION_DIST);
             }
 
+            //Move(robotID, avoidBall, destination, ball);
             Move(robotID, avoidBall, destination, ball);
             //commander.move(robotID, avoidBall, destination);
         }
@@ -371,10 +381,10 @@ namespace Robocup.Plays
                 angleToKickAxis < MAX_ANGLE_TO_KICK_AXIS &&
                 
                 // robot is outside of circle defined by target to ball vector                
-                robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq() &&
+                robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq() &&                 
 
                 // robot is collinear with ball and with target
-                lateralDistance < MAX_LATERAL_DIST 
+                lateralDistance < MAX_LATERAL_DIST                                          
 
                 ) 
             {
