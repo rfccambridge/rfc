@@ -5,6 +5,7 @@ score 500
 
 Tactics:
 Mark
+Mark
 SmartGoalie
 #BallGuard
 #ClearBot

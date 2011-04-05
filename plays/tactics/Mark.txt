@@ -12,11 +12,8 @@ attacker0 (closest enemy ballpoint loose)
 attacker1 (closest enemy ballpoint loose)
 
 point_defended (pointof attacker1)
-#should_kick (veritas 0.0)
-#tmppt (point 0.5 0.5)
-#distance (getXcoord tmppt)
-should_kick true
-distance 0.5
+should_kick (bool true)
+distance (double 0.5)
 
 perimeter (circle point_defended distance)
 
