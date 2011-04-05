@@ -6,6 +6,8 @@ score 500
 Tactics:
 Mark
 Mark
+#TwoManWall (ourgoal) 0.9 True 0
+#TwoManWall (ourgoal) 0.9 True 1
 SmartGoalie
 #BallGuard
 #ClearBot
