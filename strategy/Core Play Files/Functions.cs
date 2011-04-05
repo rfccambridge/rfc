@@ -1001,6 +1001,58 @@ namespace Robocup.Plays
                 return ((Vector2)line.projectionOntoLine(blockerpoint));
             });
 
+
+            addFunction("ballCloseToTeam", "Team - Bool", "Is the ball close to team ~?", typeof(bool), new Type[] { typeof(TeamCondition) }, delegate(EvaluatorState state, object[] objects)
+            {
+                TeamCondition condition = (TeamCondition)objects[1];
+                double closest = 1000;
+
+                List<RobotInfo> allinfos = new List<RobotInfo>();
+                if (condition.maybeOurs())
+                    allinfos.AddRange(state.OurTeamInfo);
+                if (condition.maybeTheirs())
+                    allinfos.AddRange(state.TheirTeamInfo);
+                foreach (RobotInfo r in allinfos)
+                {
+                    double teamdist = UsefulFunctions.distance(r.Position, state.ballInfo.Position);
+                    if (teamdist < closest)
+                        closest = teamdist;
+                }
+                return (closest < 0.1);
+            });
+
+            addFunction("ballMoving", "Is the ball in motion?", "Is the ball in motion?", typeof(bool), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                return (state.ballInfo.Velocity.magnitude() > 0.1);
+            });
+
+            addFunction("ballMovingTowardPointWithinAngle", "Point, Angle - Bool", "Is the ball moving toward the point ~ within an angle ~?", typeof(bool), new Type[] { typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Vector2 ballVelocity = state.ballInfo.Velocity;
+                double givenAngle = (double)objects[1];
+                Vector2 p1, p2;
+                p1 = state.ballInfo.Position;
+                p2 = (Vector2)objects[0];
+                Vector2 v1, v2;
+                v1 = new Vector2(p1.X - p2.X, p1.Y - p2.Y);
+                v2 = ballVelocity;
+                //p1, i.e. ballpoint is the vertex of the angle
+                double dotproduct = v1.X * v2.X + v1.Y * v2.Y;
+                double angle = Math.Acos(dotproduct / Math.Sqrt((v1.X * v1.X + v1.Y * v1.Y) * (v2.X * v2.X + v2.Y * v2.Y)));
+
+                bool ballMoving = (bool)(ballVelocity.magnitude() > 0.1);
+                bool withinAngle = (bool)(angle < givenAngle);
+                return (ballMoving && withinAngle);
+            });
+
+            addFunction("blockLinePoint", "Have robot block a given line", "Robot, Line - Point", typeof(Vector2), new Type[] { typeof(Robot), typeof(Line) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Robot blocker = (Robot)objects[0];
+                Vector2 blockerpoint = blocker.getPoint();
+                Line line = (Line)objects[1];
+                return ((Vector2)line.projectionOntoLine(blockerpoint));
+            });
+
             addFunction("closestRobotToLinePosition", "Line, Team - closest robot",
                         "Position of the closest robot to line ~ on team ~ (excluding the robots that are the endpoints of the line)",
                         typeof(Vector2), new Type[] { typeof(Line), typeof(TeamCondition) },

@@ -4,14 +4,26 @@ name main
 
 Objects:
 
+# Constants
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
 
+PI (double 3.1415)
+DANGER_ZONE (double 1)
+ourgoalregion (circle (point -2 0) 1)
+
 numRobots (numourbots)
 
+ballpoint (pointof ball)
+
 nothing (nullAction)
+
+# booleans
+ballcontended (and (ballCloseToTeam enemy) (ballCloseToTeam friendly))
+shouldclear (or (< (pointpointdistance ballpoint (ourgoal)) DANGER_ZONE) (> (numberOfRobotsInACircle ourgoalregion enemy) 1))
+
 
 Conditions:
 
@@ -39,5 +51,26 @@ Actions:
 #(if_Action (= numRobots 5) (assignPlay OFFENSE_3vs0) nothing)
 #(if_Action (= numRobots 5) (assignPlay DEFENSE_2vs0) nothing)
 #(if_Action (= numRobots 5) (assignPlay DEFENSE_3vs0) nothing)
-(if_Action (= numRobots 5) (if_Action (ballours) (assignPlay OFFENSE_5vs0) (if_Action (balltheirs) (assignPlay DEFENSE_5vs0) (if_Action (ballmoving) nothing (if_Action (ballclosertoourteam) (assignPlay GETBALL_5vs0) (assignPlay DEFENSE_5vs0))))) nothing)
+
+# ENSURE DECISION TREE MAKES SENSE
+
+# 5 robot decision tree
+#(if_Action (= numRobots 5) 
+#	(if_Action ballcontended
+#		(if_Action shouldclear 
+#			(assignPlay CLEARBALL_5vs0)
+#			(assignPlay GETBALL_5vs0))
+#		(if_Action (ballCloseToTeam friendly) 
+#			(assignPlay OFFENSE_5vs0) 
+#			(if_Action (ballCloseToTeam enemy) 
+#				(assignPlay DEFENSE_5vs0) 
+#				(if_Action (ballMovingTowardPointWithinAngle (theirgoal) (/ PI 2))
+#					(assignPlay OFFENSE_5vs0) 
+#					(if_Action (ballMovingTowardPointWithinAngle (ourgoal) (/ PI 2))
+#						(assignPlay DEFENSE_5vs0) 
+#						(assignPlay GETBALL_5vs0))))))
+#
+#	nothing)
+
+(if_Action (= numRobots 5) (if_Action ballcontended (if_Action shouldclear (assignPlay CLEARBALL_5vs0) (assignPlay GETBALL_5vs0)) (if_Action (ballCloseToTeam friendly) (assignPlay OFFENSE_5vs0) (if_Action (ballCloseToTeam enemy) (assignPlay DEFENSE_5vs0) (if_Action (ballMovingTowardPointWithinAngle (theirgoal) (/ PI 2)) (assignPlay OFFENSE_5vs0) (if_Action (ballMovingTowardPointWithinAngle (ourgoal) (/ PI 2)) (assignPlay DEFENSE_5vs0) (assignPlay DEFENSE_5vs0)))))) nothing)
 
