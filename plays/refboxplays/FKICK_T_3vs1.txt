@@ -1,5 +1,5 @@
 Metadata:
-playtype NormalPlay
+playtype SetPlay_Theirs
 name FKICK_T_3vs1
 score 300
 

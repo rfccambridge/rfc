@@ -7,9 +7,9 @@ bot robot
 support robot
 
 Objects:
-standbypoint (point -2.0 0.0)
+standbypoint (point -2 0.0)
 layup (point 1.8 .05)
-range (+ 3.0 0.0)
+range (+ 4.0 0.0)
 shooterpt (pointof bot)
 supportpt (pointof support)
 
@@ -33,14 +33,14 @@ near (and (and (< (getYcoord ballpoint) 0.35) (> (getYcoord ballpoint) -0.35)) (
 OOR (> (pointpointdistance ballpoint (theirgoal)) range)
 JOOR (< (- (pointpointdistance ballpoint (theirgoal)) range) 0.5)
 top (pointAboveLine ballpoint goalgoalline)
-clearToLayup (pathClear botpt layup 3.0)
-clearToLtarget (pathClear botpt ltarget 3.0)
-clearToRtarget (pathClear botpt rtarget 3.0)
-clearToLpost (pathClear botpt lpost 3.0)
+clearToPartner (pathClear shooterpt supportpt 3.0)
+clearToLtarget (pathClear shooterpt ltarget 3.0)
+clearToRtarget (pathClear shooterpt rtarget 3.0)
+clearToLpost (pathClear shooterpt lpost 3.0)
 
 Actions:
 
 # check if we shouldn't go after the ball- that is, if it is
 # in the goal and there is another robot there
 
-(if_Action standby (robotpointmove bot standbypoint) (if_Action wide (if_Action clearToLayup (robotpointkick bot layup) (robotpointkick bot supportpt)) (if_Action near (if_Action top (if_Action clearToLtarget(robotpointkick bot ltarget) (robotpointkick bot supportpt)) (if_Action clearToRtarget(robotpointkick bot rtarget) (robotpointkick bot supportpt))) (if_Action OOR (if_Action JOOR (if_Action clearToLayup (robotpointkick bot layup) (robotpointkick bot supportpt)) (if_Action clearToLpost (robotpointkick bot lpost) (robotpointkick bot supportpt))) (if_Action top (if_Action clearToRtarget(robotpointkick bot rtarget) (robotpointkick bot supportpt)) (if_Action clearToLtarget(robotpointkick bot ltarget) (robotpointkick bot supportpt)))))))
+(if_Action standby (robotpointmove bot standbypoint) (if_Action wide (if_Action clearToPartner (robotvariablepointkick bot supportpt 2) (robotvariablepointkick bot layup 2)) (if_Action near (if_Action top (if_Action clearToLtarget (robotpointkick bot ltarget) (robotpointkick bot supportpt)) (if_Action clearToRtarget (robotpointkick bot rtarget) (robotpointkick bot supportpt))) (if_Action OOR (if_Action JOOR (if_Action clearToPartner (robotvariablepointkick bot supportpt 2) (robotvariablepointkick bot layup 2)) (if_Action clearToLpost (robotpointkick bot lpost) (robotpointkick bot supportpt))) (if_Action top (if_Action clearToRtarget (robotpointkick bot rtarget) (robotpointkick bot supportpt)) (if_Action clearToLtarget (robotpointkick bot ltarget) (robotpointkick bot supportpt)))))))

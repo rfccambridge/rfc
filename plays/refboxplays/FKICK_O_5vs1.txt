@@ -1,22 +1,28 @@
 Metadata:
-playtype NormalPlay
-name OFFENSE_4vs1
-score 3.002615
+playtype SetPlay_Ours
+name FKICK_O_5vs1
+score 300
 
-Objects:
+Objects: 
 
 ballpoint (pointof ball)
 
 enemyshooter (closest enemy ballpoint loose)
 goalie (closest friendly (ourgoal) loose)
 shooter (closest friendly ballpoint loose)
+shooterpt (pointof shooter)
+pressure (closest enemy shooterpt loose)
+pressurept (pointof pressure)
+blocker (closest friendly pressurept loose)
 support (closest friendly (theirgoal) loose)
 safety (closest friendly (ourgoal) loose)
+
 
 Tactics:
 
 Goalie goalie enemyshooter
 ShooterWithPartner shooter support
+Blocker blocker (pointof pressure)
 Support support shooter
 Safety safety
 
