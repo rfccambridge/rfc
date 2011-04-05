@@ -1,6 +1,6 @@
 Metadata:
 playtype NormalPlay
-name OFFENSE_5vs1
+name OFFENSE_5vs2
 score 3.002615
 
 Objects:
@@ -21,7 +21,7 @@ safety (closest friendly (ourgoal) loose)
 Tactics:
 
 Goalie goalie enemyshooter
-Shooter shooter support
+ShooterWithPartner shooter support
 Blocker blocker (pointof pressure)
 Support support shooter
 Safety safety
