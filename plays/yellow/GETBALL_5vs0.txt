@@ -1,0 +1,28 @@
+Metadata:
+playtype NormalPlay
+name GETBALL_5vs0
+score 200
+
+Objects: 
+
+regionpoint1 (point 2.4 -0.6)
+regionpoint2 (point 2.4 0)
+regionpoint3 (point 2.4 0.6)
+ballpoint (pointof ball)
+
+# Assign roles to robots
+receiver (closest friendly regionpoint2 loose)
+receiverpoint (pointof receiver)
+stealer (closest friendly ballpoint loose)
+stealerpoint (pointof stealer)
+
+Tactics:
+SmartGoalie
+TwoManWall (ourgoal) 0.9 True 0
+TwoManWall (ourgoal) 0.9 True 1
+
+Conditions:
+
+Actions:
+(robotpointpointmovenoavoid receiver regionpoint2 ballpoint)
+(robotpointpointmovenoavoid stealer ballpoint receiverpoint)

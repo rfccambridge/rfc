@@ -1,0 +1,5 @@
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Geometry.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Geometry.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\Geometry.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\Geometry.pdb

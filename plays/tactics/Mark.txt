@@ -1,0 +1,23 @@
+Metadata:
+type tactic
+name Mark
+
+Parameters:
+marker Robot
+enemy Robot
+
+Objects:
+# constants
+MARK_DIST (double 0.2)
+
+markerpoint (pointof marker)
+enemypoint (pointof enemy)
+ballpoint (pointof ball)
+
+# enemy geometry
+enemycircle (circle enemypoint MARK_DIST)
+passline (line ballpoint enemypoint)
+markpoint (linecircleintersection passline enemycircle 1)
+
+Actions: 
+(robotpointpointmovenoavoid marker markpoint ballpoint)

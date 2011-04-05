@@ -1,0 +1,11 @@
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.exe.config
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\bin\Debug\CSML.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\bin\Debug\CSML.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.Properties.Resources.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\GenerateResource.write.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.pdb

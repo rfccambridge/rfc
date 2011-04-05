@@ -1,0 +1,5 @@
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\MessageSystem.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\MessageSystem.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\MessageSystem\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\MessageSystem\obj\Debug\MessageSystem.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\MessageSystem\obj\Debug\MessageSystem.pdb

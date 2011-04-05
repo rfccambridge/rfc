@@ -1,0 +1,15 @@
+Strategy for 2-Robot Offense
+
+Plays
+	
+
+Tactics
+	Two-Man Wall Attack
+	Deflection shots    
+	
+Skills
+	Pass
+	Receive pass
+	Shoot
+	Bump
+	

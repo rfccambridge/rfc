@@ -1,0 +1,5 @@
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\CoreRobotics.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\CoreRobotics.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\control\CoreRobotics\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\control\CoreRobotics\obj\Debug\CoreRobotics.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\control\CoreRobotics\obj\Debug\CoreRobotics.pdb

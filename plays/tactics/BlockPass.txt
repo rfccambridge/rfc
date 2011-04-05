@@ -1,0 +1,21 @@
+Metadata:
+type tactic
+name BlockPass
+
+Parameters:
+blocker Robot
+enemy Robot
+
+Objects:
+# constants
+MARK_DIST (double 0.2)
+
+blockerpoint (pointof blocker)
+enemypoint (pointof enemy)
+ballpoint (pointof ball)
+
+# enemy geometry
+passline (line ballpoint enemypoint)
+
+Actions: 
+(robotpointpointmovenoavoid blocker (blocklinepoint blocker passline) ballpoint)

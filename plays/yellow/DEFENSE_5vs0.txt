@@ -1,0 +1,31 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_5vs0
+score 200
+
+Objects: 
+
+ballpoint (pointof ball)
+
+# Assign target robots
+marktarget (closest enemy (ourgoal) loose)
+marktargetpoint (pointof marktarget)
+blocktarget (closest enemy ballpoint loose)
+blocktargetpoint (pointof blocktarget)
+
+linetoblock (line ballpoint blocktargetpoint)
+
+# Assign robots
+marker (closest friendly marktargetpoint loose)
+blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
+
+Tactics:
+SmartGoalie
+TwoManWall (ourgoal) 0.9 True 0
+TwoManWall (ourgoal) 0.9 True 1
+Mark marker marktarget
+BlockPass blocker blocktarget
+
+Conditions:
+
+Actions:

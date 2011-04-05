@@ -1,0 +1,11 @@
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\ControlForm.exe.config
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\ControlForm.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\ControlForm.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\ControlForm\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\ControlForm\obj\Debug\Robocup.ControlForm.ControlForm.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\ControlForm\obj\Debug\Robocup.ControlForm.PIDForm.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\ControlForm\obj\Debug\Robocup.ControlForm.Properties.Resources.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\ControlForm\obj\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\ControlForm\obj\Debug\GenerateResource.write.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\ControlForm\obj\Debug\ControlForm.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\ControlForm\obj\Debug\ControlForm.pdb

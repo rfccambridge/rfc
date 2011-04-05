@@ -1,0 +1,25 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_5vs0
+score 200
+
+Objects: 
+
+regionpoint1 (point 2.4 -0.6)
+regionpoint2 (point 2.4 0)
+regionpoint3 (point 2.4 0.6)
+ballpoint (pointof ball)
+
+attacker (closest friendly ballpoint loose)
+supporter (closest friendly regionpoint2 loose)
+closestenemy (closest enemy (pointof attacker) loose)
+
+Tactics:
+SmartGoalie
+TwoManWall (ourgoal) 0.9 True 0
+TwoManWall (ourgoal) 0.9 True 1
+StandardAttack attacker supporter closestenemy
+
+Conditions:
+
+Actions:

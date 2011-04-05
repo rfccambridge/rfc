@@ -268,7 +268,7 @@ namespace Robocup.Plays
             {
                 return .5 * (((Vector2)objects[0]) + ((Vector2)objects[1]));
             });
-            addFunction("closestRobotToLine", "Line, Team - closest robot",
+            addFunction("closestRobotToLine", "Line, Team - distance of closest robot",
                         "The distance from the line ~ to the closest robot on team ~ (excluding the robots that are the endpoints of the line)",
                         typeof(double), new Type[] { typeof(Line), typeof(TeamCondition) },
                         delegate(EvaluatorState state, object[] objects)
@@ -943,6 +943,96 @@ namespace Robocup.Plays
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
+
+            addFunction("ballours", "Are we in possession of the ball?", "Is the ball very close to our team?", typeof(bool), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                double closest = 1000;
+                foreach (RobotInfo r in state.OurTeamInfo)
+                {
+                    double ourdist = UsefulFunctions.distance(r.Position, state.ballInfo.Position);
+                    if(ourdist < closest)
+                        closest = ourdist;
+                }
+                return (closest < 0.1);
+            });
+
+            addFunction("balltheirs", "Are they in possession of the ball?", "Is the ball very close to their team?", typeof(bool), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                double closest = 1000;
+                foreach (RobotInfo r in state.TheirTeamInfo)
+                {
+                    double theirdist = UsefulFunctions.distance(r.Position, state.ballInfo.Position);
+                    if (theirdist < closest)
+                        closest = theirdist;
+                }
+                return (closest < 0.1);
+            });
+
+            addFunction("ballmoving", "Is the ball in motion?", "Is the ball in motion?", typeof(bool), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                return (state.ballInfo.Velocity.magnitude() > 0.1);
+            });
+
+            addFunction("ballclosertoourteam", "Is the ball closer to us?", "Should we go for the ball?", typeof(bool), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                double ourdist = 1000;
+                double theirdist = 900;
+                foreach (RobotInfo r in state.TheirTeamInfo)
+                {
+                    double enemydist = UsefulFunctions.distance(r.Position, state.ballInfo.Position);
+                    if (enemydist < theirdist)
+                        theirdist = enemydist;
+                }
+                foreach (RobotInfo r in state.OurTeamInfo)
+                {
+                    double friendlydist = UsefulFunctions.distance(r.Position, state.ballInfo.Position);
+                    if (friendlydist < ourdist)
+                        ourdist = friendlydist;
+                }
+                return (ourdist < theirdist);
+
+            });
+
+            addFunction("blocklinepoint", "Have robot block a given line", "Robot, Line - Point", typeof(Vector2), new Type[] {typeof(Robot), typeof(Line)}, delegate(EvaluatorState state, object[] objects)
+            {
+                Robot blocker = (Robot)objects[0];
+                Vector2 blockerpoint = blocker.getPoint();
+                Line line = (Line)objects[1];
+                return ((Vector2)line.projectionOntoLine(blockerpoint));
+            });
+
+            addFunction("closestRobotToLinePosition", "Line, Team - closest robot",
+                        "Position of the closest robot to line ~ on team ~ (excluding the robots that are the endpoints of the line)",
+                        typeof(Vector2), new Type[] { typeof(Line), typeof(TeamCondition) },
+                        delegate(EvaluatorState state, object[] objects)
+                        {
+                            double dist = 1000000;
+                            Vector2 rtn = state.OurTeamInfo[0].Position;
+
+#if DEBUG
+                            if (state == null)
+                                throw new ApplicationException(
+                                    "tried to call a function that needed an evaluatorState without one!");
+#endif
+                            Line line = (Line)objects[0];
+                            TeamCondition condition = (TeamCondition)objects[1];
+                            List<RobotInfo> allinfos = new List<RobotInfo>();
+                            if (condition.maybeOurs())
+                                allinfos.AddRange(state.OurTeamInfo);
+                            if (condition.maybeTheirs())
+                                allinfos.AddRange(state.TheirTeamInfo);
+                            Vector2[] endpoints = line.getPoints();
+                            foreach (RobotInfo r in allinfos)
+                            {
+                                Vector2 position = r.Position;
+                                if (position == endpoints[0] || position == endpoints[1])
+                                    continue;
+                                if (dist > Math.Min(dist, line.distFromSegment(position)))
+                                    rtn = r.Position;
+                            }
+                            return rtn;
+                        });
+
 
             #endregion
 

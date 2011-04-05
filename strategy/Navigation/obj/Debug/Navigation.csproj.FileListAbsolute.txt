@@ -1,0 +1,5 @@
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Navigation.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Navigation.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Navigation\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Navigation\obj\Debug\Navigation.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Navigation\obj\Debug\Navigation.pdb

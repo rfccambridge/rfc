@@ -1,0 +1,96 @@
+﻿Build started 4/5/2011 1:19:22 AM.
+Project "C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientWrapper\SSLClientWrapper.vcxproj" on node 2 (build target(s)).
+InitializeBuildStatus:
+  Creating "..\..\bin\Debug\SSLClientWrapper.unsuccessfulbuild" because "AlwaysCreate" was specified.
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../../vision/protobuf/src /I../../vision/SSLClientWrapper/proto/cpp /I../../vision/SSLClientLib /AI"C:\Program Files\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /Zi /clr:oldSyntax /nologo /W3 /WX- /Ox /Ob2 /Ot /Oy- /D WIN32 /D _DEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"..\..\bin\Debug\\" /Fd"..\..\bin\Debug\vc100.pdb" /TP /analyze- /errorReport:prompt AssemblyInfo.cpp SSLClientWrapper.cpp /clr:nostdlib 
+cl : Command line warning D9035: option 'clr:oldsyntax' has been deprecated and will be removed in a future release
+  AssemblyInfo.cpp
+  SSLClientWrapper.cpp
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\protobuf\src\google/protobuf/stubs/common.h(600): warning C4251: 'google::protobuf::internal::LogMessage::message_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'google::protobuf::internal::LogMessage'
+          with
+          [
+              _Elem=char,
+              _Traits=std::char_traits<char>,
+              _Ax=std::allocator<char>
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\protobuf\src\google/protobuf/unknown_field_set.h(229): warning C4251: 'google::protobuf::UnknownField::varint_' : class 'google::protobuf::RepeatedField<Element>' needs to have dll-interface to be used by clients of class 'google::protobuf::UnknownField'
+          with
+          [
+              Element=google::protobuf::uint64
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\protobuf\src\google/protobuf/unknown_field_set.h(230): warning C4251: 'google::protobuf::UnknownField::fixed32_' : class 'google::protobuf::RepeatedField<Element>' needs to have dll-interface to be used by clients of class 'google::protobuf::UnknownField'
+          with
+          [
+              Element=google::protobuf::uint32
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\protobuf\src\google/protobuf/unknown_field_set.h(231): warning C4251: 'google::protobuf::UnknownField::fixed64_' : class 'google::protobuf::RepeatedField<Element>' needs to have dll-interface to be used by clients of class 'google::protobuf::UnknownField'
+          with
+          [
+              Element=google::protobuf::uint64
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\protobuf\src\google/protobuf/unknown_field_set.h(232): warning C4251: 'google::protobuf::UnknownField::length_delimited_' : class 'google::protobuf::RepeatedPtrField<Element>' needs to have dll-interface to be used by clients of class 'google::protobuf::UnknownField'
+          with
+          [
+              Element=std::string
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\protobuf\src\google/protobuf/unknown_field_set.h(233): warning C4251: 'google::protobuf::UnknownField::group_' : class 'google::protobuf::RepeatedPtrField<Element>' needs to have dll-interface to be used by clients of class 'google::protobuf::UnknownField'
+          with
+          [
+              Element=google::protobuf::UnknownFieldSet
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\protobuf\src\google/protobuf/extension_set.h(303): warning C4251: 'google::protobuf::internal::ExtensionSet::extensions_' : class 'std::map<_Kty,_Ty>' needs to have dll-interface to be used by clients of class 'google::protobuf::internal::ExtensionSet'
+          with
+          [
+              _Kty=int,
+              _Ty=google::protobuf::internal::ExtensionSet::Extension
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientLib\robocup_ssl_client.h(44): warning C4251: 'RoboCupSSLClient::_net_address' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'RoboCupSSLClient'
+          with
+          [
+              _Elem=char,
+              _Traits=std::char_traits<char>,
+              _Ax=std::allocator<char>
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientLib\robocup_ssl_client.h(45): warning C4251: 'RoboCupSSLClient::_net_interface' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'RoboCupSSLClient'
+          with
+          [
+              _Elem=char,
+              _Traits=std::char_traits<char>,
+              _Ax=std::allocator<char>
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientLib\robocup_ssl_server.h(40): warning C4251: 'RoboCupSSLServer::_net_address' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'RoboCupSSLServer'
+          with
+          [
+              _Elem=char,
+              _Traits=std::char_traits<char>,
+              _Ax=std::allocator<char>
+          ]
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientLib\robocup_ssl_server.h(41): warning C4251: 'RoboCupSSLServer::_net_interface' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'RoboCupSSLServer'
+          with
+          [
+              _Elem=char,
+              _Traits=std::char_traits<char>,
+              _Ax=std::allocator<char>
+          ]
+  Generating Code...
+ResourceCompile:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"..\..\bin\Debug\app.res" app.rc 
+Link:
+  C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\..\bin\Debug\SSLClientWrapper.dll" /INCREMENTAL /NOLOGO /LIBPATH:../../bin/Debug kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"..\..\bin\Debug\SSLClientWrapper.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\SSLClientWrapper.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /KEYFILE:"..\..\bin\Debug\..\..\resources\rfc.snk" /DLL ..\..\bin\Debug\app.res
+  ..\..\bin\Debug\AssemblyInfo.obj
+  ..\..\bin\Debug\SSLClientWrapper.obj
+  "C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\libprotobuf.lib"
+  "C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\SSLClientLib.lib"
+     Creating library ..\..\bin\Debug\SSLClientWrapper.lib and object ..\..\bin\Debug\SSLClientWrapper.exp
+  SSLClientWrapper.vcxproj -> C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientWrapper\..\..\bin\Debug\SSLClientWrapper.dll
+Manifest:
+  C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientWrapper\..\..\bin\Debug\SSLClientWrapper.dll.manifest" /manifest ..\..\bin\Debug\SSLClientWrapper.dll.intermediate.manifest
+FinalizeBuildStatus:
+  Deleting file "..\..\bin\Debug\SSLClientWrapper.unsuccessfulbuild".
+  Touching "..\..\bin\Debug\SSLClientWrapper.lastbuildstate".
+Done Building Project "C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientWrapper\SSLClientWrapper.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:08.96
