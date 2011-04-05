@@ -67,7 +67,7 @@ namespace Robocup.Plays
             return predictor.GetRobot(team, robotID);
         }
 
-        public void Dribble(int robotID, Vector2 target)
+        public void Dribble(int robotID, Vector2 target, Vector2 facing)
         {
             RobotInfo thisrobot;
             Vector2 ball;
@@ -83,19 +83,22 @@ namespace Robocup.Plays
             }
             Vector2 robotposition = thisrobot.Position;
             double dotP = (target - ball).normalize() * (ball - robotposition).normalize();
+            Vector2 tmp_facing = target;
             Vector2 destination = target;
             bool avoidBall = false;
             if (dotP > .9)  //~8 degrees
             {
                 destination = extend(target, ball, -.14);
+                tmp_facing = facing; 
             }
             else
             {
                 avoidBall = true;
                 destination = extend(target, ball, kickDistance);
+                tmp_facing = ball; 
             }
 
-            Move(robotID, avoidBall, destination, ball);
+            Move(robotID, avoidBall, destination, tmp_facing);
             //commander.move(robotID, avoidBall, destination);
         }
 
