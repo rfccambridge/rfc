@@ -1,4 +1,4 @@
-﻿Build started 4/5/2011 1:19:22 AM.
+﻿Build started 4/5/2011 3:09:40 PM.
 Project "C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientWrapper\SSLClientWrapper.vcxproj" on node 2 (build target(s)).
 InitializeBuildStatus:
   Creating "..\..\bin\Debug\SSLClientWrapper.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -93,4 +93,4 @@ Done Building Project "C:\Documents and Settings\Administrator\Desktop\gitrobocu
 
 Build succeeded.
 
-Time Elapsed 00:00:08.96
+Time Elapsed 00:00:09.76

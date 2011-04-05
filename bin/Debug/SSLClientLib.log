@@ -1,4 +1,4 @@
-﻿Build started 4/5/2011 1:19:00 AM.
+﻿Build started 4/5/2011 3:09:16 PM.
 Project "C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\SSLClientLib\SSLClientLib.vcxproj" on node 2 (build target(s)).
 InitializeBuildStatus:
   Creating "..\..\bin\Debug\SSLClientLib.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -351,4 +351,4 @@ Done Building Project "C:\Documents and Settings\Administrator\Desktop\gitrobocu
 
 Build succeeded.
 
-Time Elapsed 00:00:18.87
+Time Elapsed 00:00:19.78
