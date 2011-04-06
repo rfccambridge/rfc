@@ -9,6 +9,7 @@ using Robocup.Utilities;
 using Robocup.MotionControl;
 using Robocup.CoreRobotics;
 using Robocup.MessageSystem;
+using System.IO;
 
 namespace Robocup.ControlForm
 {
@@ -58,6 +59,8 @@ namespace Robocup.ControlForm
         private object _dribblingLock = new Object();
         private System.Timers.Timer _dribblingTimer = new System.Timers.Timer(DRIBBLER_TIMER_PERIOD);
 
+        private TextWriter outStream;
+        private static int outCount = 0;
 		public Controller(
 			Team team,
 			IMotionPlanner planner,
@@ -86,12 +89,14 @@ namespace Robocup.ControlForm
             for (int i = 0; i < NUM_ROBOTS; i++)
                 _pathLocks[i] = new Object();
 
+            if(team == Team.Blue)
+                outStream = new StreamWriter("poswheeldata" + (outCount++) + ".txt");
+
             LoadConstants();
 		}
 
         public void LoadConstants()
         {
-            
             CONTROL_LOOP_FREQUENCY = Constants.get<double>("default", "CONTROL_LOOP_FREQUENCY");
             _controlPeriod = 1 / CONTROL_LOOP_FREQUENCY * 1000; //in ms
 
@@ -350,8 +355,6 @@ namespace Robocup.ControlForm
         
         private void followPaths()
         {
-            RobotCommand command;
-
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
                 //Keep a local copy of the path in order not to lock the whole procedure
@@ -376,35 +379,40 @@ namespace Robocup.ControlForm
                 }
 
                 //If we've been sent an empty path, this is a clear sign to stop
+                RobotCommand command;
                 if (currPath.Waypoints == null)
                 {
                     command = new RobotCommand(currPath.ID, new WheelSpeeds());
-                    _cmdSender.Post(command);
-                    continue;
+                }
+                else
+                {
+                    MotionPlanningResults mpResults = _planner.FollowPath(currPath, _predictor);
+                    command = new RobotCommand(currPath.ID, mpResults.wheel_speeds);
                 }
 
-                MotionPlanningResults mpResults = _planner.FollowPath(currPath, _predictor);
-
-                #region Drawing code
-#if false
-				//This doesn't make any sense (we should be thread-safe), but without it, 
-				//drawing fails after we stop.
-				if (paths[i] == null)
-					continue;
-
-				if (_fieldDrawer != null)
-				{
-					//Arrow showing nearest waypoint in path
-					// TODO: Need to make NearestWaypoint populated inside each implementation of IMotionPlanner
-					if (mpResults.NearestWaypoint != null)
-						_fieldDrawer.DrawArrow(_team, currPath.ID, ArrowType.Waypoint, mpResults.NearestWaypoint.Position);
-				}
-#endif
-                #endregion
-
-                command = new RobotCommand(currPath.ID, mpResults.wheel_speeds);
+                if (_team == Team.Blue)
+                {
+                    RobotInfo info = _predictor.GetRobot(_team, currPath.ID);
+                    Vector2 pos = info.Position; 
+                    outStream.Write(command.ID + " " 
+                        + pos.X + " "
+                        + pos.Y + " " 
+                        + info.Orientation + " "
+                        + info.Velocity.X + " "
+                        + info.Velocity.Y + " "
+                        + command.Speeds.rf + " "
+                        + command.Speeds.lf + " "
+                        + command.Speeds.lb + " "
+                        + command.Speeds.rb + " ");
+                }
                 _cmdSender.Post(command);
             }
+            if (_team == Team.Blue)
+            {
+                outStream.WriteLine();
+                outStream.Flush();
+            }
+
         }
 
         private void _followPathsTimer_Elapsed(object sender, ElapsedEventArgs e)
