@@ -1,0 +1,32 @@
+Metadata:
+type tactic
+name ClearBot
+
+Parameters:
+
+Objects:
+
+standbypoint (point -2.0 0.0)
+
+ballpoint (pointof ball)
+robot0 (closest friendly ballpoint loose)
+robotpt (pointof robot0)
+
+#Decision to clear the ball or not
+distance (pointpointdistance robotpt ballpoint)
+ballzone (circle ballpoint distance)
+robotshouldclear (= (numberOfRobotsInACircle ballzone enemy) 0.0)
+
+#Places to clear the ball to
+toptarget (point (/ (const-double FIELD_WIDTH) 2.0) (/ (const-double FIELD_HEIGHT) 2.0))
+bottarget (point (/ (const-double FIELD_WIDTH) 2.0) (/ (const-double FIELD_HEIGHT) -2.0))
+
+kicktoclear (if_Action (pathClear ballpoint (theirgoal) 2.0) (robotpointkick robot0 goal) (if_Action (pathClear ballpoint bottarget 2.0) (robotpointkick robot0 bottarget 2.0) (robotpointkick robot0 toptarget)))
+movetoblock (robotpointpointmove robot0 (pointdirectiondistance (ourgoal) ballpoint (* 0.9 (pointpointdistance (ourgoal) ballpoint))) ballpoint)
+robotaction (if_Action robotshouldclear kicktoclear movetoblock)
+standby (and (pointInGoal ballpoint) (robotInGoal))
+
+Actions:
+
+# if the ball is in the goal and there is another robot there, don't go after the ball
+(if_Action standby (robotpointmove robot0 standbypoint) robotaction)

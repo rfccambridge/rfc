@@ -4,13 +4,13 @@ name DEFENSE_5vs0
 score 500
 
 Tactics:
-Mark
-Mark
+#Mark
+#Mark
 #TwoManWall (ourgoal) 0.9 True 0
 #TwoManWall (ourgoal) 0.9 True 1
 SmartGoalie
 #BallGuard
-#ClearBot
+ClearBot
 #BallGuard
 
 Objects:
