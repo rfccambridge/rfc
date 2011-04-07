@@ -4,8 +4,8 @@ name DEFLECTION
 score 200
 
 Tactics:
-Shooter
-Deflector
+Deflect2
+
 
 Objects:
 

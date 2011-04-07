@@ -1,0 +1,39 @@
+Metadata:
+type tactic
+name Deflect2
+
+Parameters:
+
+Objects:
+ballpoint (pointof ball)
+topPost (point (getXcoord (theirgoal)) 0.35)
+topPostLine (line (toppost) topPost)
+
+pointKickTop (point (- (getXcoord topPost) 0.5) (getYcoord topPost))
+pointkickBottom (point (getXcoord pointKickTop) (getYcoord (bottompost)))
+
+pointRobotTop (point (- (getXcoord pointKickTop) 0.02) (+ (getYcoord pointKickTop) 0.07))
+pointRobotBottom (point (- (getXcoord pointkickBottom) 0.02) (- (getYcoord pointkickBottom) 0.07))
+
+faceBottom (point 0 (- 0 2.02))
+faceTop (point 0 2.02)
+
+pointKick (if_point (pointAboveLine ballpoint topPostLine) pointRobotBottom pointRobotTop)
+faceKick (if_point (pointAboveLine ballpoint topPostLine) faceBottom faceTop)
+
+helpRobot (closest friendly pointKick loose)
+helpRobotPt (pointof helpRobot)
+
+ballRobot (closest friendly ballpoint loose)
+
+angle (doubleArcSin (/ 0.07 (pointpointdistance ballpoint helpRobotPt)))
+
+actualKick (if_point (pointAboveLine ballpoint topPostLine) (rotatePointAroundAnotherPoint ballpoint helpRobotPt angle) (rotatePointAroundAnotherPoint ballpoint helpRobotPt (- 0 angle)))
+
+Actions:
+
+# check if we shouldn't go after the ball- that is, if it is
+# in the goal and there is another robot there
+
+(robotpointpointmovenoavoid helpRobot pointKick faceKick)
+(robotpointkick ballRobot actualKick)
