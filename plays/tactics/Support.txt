@@ -18,6 +18,7 @@ topassiveL (line shooterpt passiveLpt)
 topassiveR (line shooterpt passiveRpt)
 shootertogoal (line shooterpt (theirgoal))
 passiveLbad (or (< (angleBetweenTwoLines shootertogoal topassiveL) 0.3) (< (linelength topassiveL) 0.2))
+shootertoowide (> (getXcoord shooterpt) 2.0)
 
 possession (< (pointpointdistance ballpoint shooterpt) 0.4) 
 cleargoal (pathClear shooterpt (theirgoal) 3.0)
@@ -34,4 +35,4 @@ Actions:
 #if shooter can kick, stand by the goal in case he misses
 
 
-(if_Action canscore (if_Action passiveLbad (robotpointmove bot passiveRpt) (robotpointmove bot passiveLpt)) (if_Action clearreceiveL (robotpointmove bot receiveLpt) (robotpointmove bot receiveRpt)))
+(if_Action (or (canscore shootertoowide)) (if_Action passiveLbad (robotpointmove bot passiveRpt) (robotpointmove bot passiveLpt)) (if_Action clearreceiveL (robotpointmove bot receiveLpt) (robotpointmove bot receiveRpt)))
