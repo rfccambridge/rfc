@@ -1,0 +1,27 @@
+Metadata:
+type tactic
+name OurTwoManWall
+
+Parameters:
+twomanbot robot
+twomanpt point
+should_kick bool
+
+Objects:
+ballpoint (pointof ball)
+twomanbotpt (pointof twomanbot)
+
+# is defender going in to kick
+defensedisttoball (pointpointdistance twomanbotpt ballpoint)
+
+#Places to clear the ball to
+toptarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) 2))
+bottarget (point (/ (const-double FIELD_WIDTH) 2) (/ (const-double FIELD_HEIGHT) -2))
+
+# should robot kick
+do_kick (and should_kick (< defensedisttoball 0.8))
+
+kicktoclear (if_Action (pathClear ballpoint (theirgoal) 2.0) (robotpointkick twomanbot (theirgoal)) (if_Action (pathClear ballpoint bottarget 2.0) (robotpointkick twomanbot bottarget) (robotpointkick twomanbot toptarget)))
+
+Actions:
+(if_Action do_kick kicktoclear (robotpointpointmove twomanbot twomanpt ballpoint))

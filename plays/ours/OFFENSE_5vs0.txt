@@ -8,16 +8,14 @@ SmartGoalie
 #TwoManWall (ourgoal) 0.9 True 0
 #TwoManWall (ourgoal) 0.9 True 1
 
-# Current problem is oscillation of who gets which position
+# Side2Assist creates oscillation too
+# What do with last 2 robots?
 
 Objects:
 center (point 0.0 0.0)
 ballpoint (pointof ball)
 striker (closest friendly ballpoint loose)
-sideassist (closest friendly (theirgoal) loose)
-#backassist (closest friendly center loose)
-backleftassist (closest friendly center loose)
-#backrightassist (closest friendly (ourgoal) loose)
+sideassist (closest friendly ballpoint loose)
 CLEAR_DIST (const-double CLEAR_DIST)
 strikerYpt (getYcoord (pointof striker))
 strikerXpt (getXcoord (pointof striker))
@@ -30,25 +28,23 @@ possidept (point halfwayX (const-double GOALIE_MAX_MIN_Y))
 negsidept (point halfwayX (- 0 (const-double GOALIE_MAX_MIN_Y)))
 sideassistaction (if_Action (< strikerYpt 0) (robotpointpointmovenoavoid sideassist possidept ballpoint) (robotpointpointmovenoavoid sideassist negsidept ballpoint))
 
-# Back Assist will be at center of field
-halflen (/ (const-double FIELD_WIDTH) 2)
-quartlen (/ halflen 2)
-backleftaction (robotpointpointmovenoavoid backleftassist (point (getXcoord center) quartlen) (theirgoal))
-#backrightaction (robotpointpointmovenoavoid backrightassist (point (getXcoord center) (- 0 quartlen)) (theirgoal))
-#backassistaction (robotpointpointmovenoavoid backassist center (theirgoal))
+
+# Shooting between Two Man Wall
+enemy1 (closest enemy ballpoint loose)
+enemy2 (closest enemy ballpoint loose)
+
+midpoint (midpoint (pointof enemy1) (pointof enemy2))
 
 Conditions:
 
 Actions:
 sideassistaction
-#backassistaction
-backleftaction
-#backrightaction
-(if_Action (and (not (and (pointInGoal ballpoint) (robotInGoal))) (pathClear (pointof striker) (theirgoal) CLEAR_DIST)) (robotpointkick striker (theirgoal)) (if_Action (pathClear (pointof striker) (theirGoalBestShot) CLEAR_DIST) (robotpointkick striker (theirGoalBestShot)) (if_Action (pathClear (pointof striker) (pointof sideassist) CLEAR_DIST) (robotpointkick striker (pointof sideassist)) (robotpointkick striker (pointof backleftassist)))))
+(if_Action (and (not (and (pointInGoal ballpoint) (robotInGoal))) (pathClear (pointof striker) (theirgoal) CLEAR_DIST)) (robotpointkick striker (theirgoal)) (if_Action (and (< (pointpointdistance ballpoint (pointof enemy1)) 0.5) (< (pointpointdistance ballpoint (pointof enemy2)) 0.5)) (robotpointkick striker midpoint) (if_Action (pathClear (pointof striker) (theirGoalBestShot) CLEAR_DIST) (robotpointkick striker (theirGoalBestShot)) (if_Action (pathClear (pointof striker) (pointof sideassist) CLEAR_DIST) (robotpointkick striker (pointof sideassist)) (robotpointkick striker (theirgoal))))))
 
 
 # If the ball is not in goal and robot is not in goal and if path is clear to their goal
 # then shoot to their goal
+# # else if there is a two man wall then shoot between them
 # else if path is clear to best target
        # then shoot to best target
        # else if path is clear to side assist

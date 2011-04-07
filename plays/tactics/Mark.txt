@@ -3,27 +3,14 @@ type tactic
 name Mark
 
 Parameters:
-#point_defended point
-#distance double
-#should_kick bool
+defensebot robot
+defensept point
 
 Objects:
-attacker0 (closest enemy ballpoint loose)
-attacker1 (closest enemy ballpoint loose)
 
-point_defended (pointof attacker1)
 should_kick (bool true)
 distance (double 0.5)
-
-perimeter (circle point_defended distance)
-
 ballpoint (pointof ball)
-
-ballline (line ballpoint point_defended)
-
-defensept (linecircleintersection ballline perimeter -1)
-
-defensebot (closest friendly defensept loose)
 defensebotpt (pointof defensebot)
 
 # is defender going in to kick

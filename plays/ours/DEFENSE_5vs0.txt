@@ -3,17 +3,52 @@ playtype NormalPlay
 name DEFENSE_5vs0
 score 500
 
-Tactics:
-#Mark
-#Mark
-#TwoManWall (ourgoal) 0.9 True 0
-#TwoManWall (ourgoal) 0.9 True 1
-SmartGoalie
-#BallGuard
-ClearBot
-#BallGuard
-
 Objects:
+# FRIENDLY CALL
+goaliebot (closest friendly (ourgoal) loose)
+
+attacker0 (closest enemy ballpoint loose)
+attacker1 (closest enemy ballpoint loose)
+attacker2 (closest enemy ballpoint loose)
+ballpoint (pointof ball)
+distance (double 0.5)
+
+point_defended1 (pointof attacker1)
+perimeter1 (circle point_defended1 distance)
+ballline1 (line ballpoint point_defended1)
+defensept1 (linecircleintersection ballline1 perimeter1 -1)
+# FRIENDLY CALL
+defensebot1 (closest friendly defensept1 loose)
+
+point_defended2 (pointof attacker2)
+perimeter2 (circle point_defended2 distance)
+ballline2 (line ballpoint point_defended2)
+defensept2 (linecircleintersection ballline2 perimeter2 -1)
+# FRIENDLY CALL
+defensebot2 (closest friendly defensept2 loose)
+
+twomandistance (double 1.5)
+twomanptdef (ourgoal)
+twomanperimeter (circle twomanptdef twomandistance)
+twomanballline (line ballpoint twomanptdef)
+wallmainpt (linecircleintersection twomanballline twomanperimeter -1)
+wallcircle (circle wallmainpt 0.1)
+
+twomanpt1 (circlecircleintersection wallcircle twomanperimeter -1)
+# FRIENDLY CALL
+twomanbot1 (closest friendly twomanpt1 loose)
+
+twomanpt2 (circlecircleintersection wallcircle twomanperimeter 1)
+# FRIENDLY CALL
+twomanbot2 (closest friendly twomanpt2 loose)
+
+Tactics:
+Mark defensebot1 defensept1
+Mark defensebot2 defensept2
+#OneManWall (ourgoal) 1.5 True 0
+OurTwoManWall twomanbot1 twomanpt1 True 
+OurTwoManWall twomanbot2 twomanpt2 False 
+OurSmartGoalie goaliebot
 
 Conditions:
 
