@@ -4,7 +4,6 @@ name OFFENSE_1vs0
 score 10001.002615
 
 Tactics:
-
 Striker
 
 Objects:
