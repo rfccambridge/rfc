@@ -9,12 +9,12 @@ nothing (nullAction)
 
 ballpoint (pointof ball)
 possessionRange (circle ballpoint 0.1)
-offense (or (and (= (numberOfRobotsInACircle possessionRange enemy) 0) (< (closestRobotToPoint ballpoint friendly) (closestRobotToPoint ballpoint enemy))) (= numTheir 1))
+offense (or (and (= (numberOfRobotsInACircle possessionRange enemy) 0) (< (closestRobotToPoint ballpoint friendly) (closestRobotToPoint ballpoint enemy))) (< numTheir 3))
 #offense (< 1.0 0.0)
 
 Conditions:
 Actions:
-(if_Action (= numRobots 5) (if_Action offense (assignPlay OFFENSE_5vs1) (if_Action (= numTheir 2) (assignPlay DEFENSE_5vs2) (if_Action (= numTheir 3) (assignPlay DEFENSE_5vs3) (assignPlay DEFENSE_5vs4)))) nothing)
+(if_Action (= numRobots 5) (if_Action offense (assignPlay OFFENSE_5vs2) (if_Action (= numTheir 2) (assignPlay DEFENSE_5vs2) (if_Action (= numTheir 3) (assignPlay DEFENSE_5vs3) (assignPlay DEFENSE_5vs4)))) nothing)
 (if_Action (= numRobots 4) (if_Action offense (assignPlay OFFENSE_4vs1) (if_Action (= numTheir 2) (assignPlay DEFENSE_4vs2) (if_Action (= numTheir 3) (assignPlay DEFENSE_4vs3) (assignPlay DEFENSE_4vs4)))) nothing)
 (if_Action (= numRobots 3) (if_Action offense (assignPlay OFFENSE_3vs1) (if_Action (= numTheir 2) (assignPlay DEFENSE_3vs2) (if_Action (= numTheir 3) (assignPlay DEFENSE_3vs3) (assignPlay DEFENSE_3vs4)))) nothing)
 (if_Action (= numRobots 2) (if_Action offense (assignPlay OFFENSE_2vs1) (assignPlay DEFENSE_2vs1)) nothing)
