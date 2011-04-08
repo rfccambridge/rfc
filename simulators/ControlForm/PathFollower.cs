@@ -260,22 +260,33 @@ namespace Robocup.ControlForm
 
     public class BeamKickPlayer : KickPlayer
     {
+        HighResTimer timer;
         public BeamKickPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor)
             : base(team, fieldHalf, fieldDrawer, predictor)
         {
-            
+            timer = new HighResTimer();
+
+        }
+
+        public override void Start()
+        {
+            base.Start();
+
+            timer.Start();
         }
 
         protected override void doAction()
         {
             if (_predictor.GetBall() != null)
             {
-                StreamWriter sw = new StreamWriter("speeds.txt", true);
-                sw.WriteLine(_predictor.GetBall().Velocity.magnitude());
+                StreamWriter sw = new StreamWriter("speeds2.txt", true);
+                timer.Stop();
+                sw.WriteLine(timer.Duration + " " + _predictor.GetBall().Velocity.magnitude() + " " + _predictor.GetBall());
+                timer.Start();
                 sw.Close();
             }
                 if (_waypoints.Count > 0)
-                _actionInterpreter.BeamKick(_robotID, _waypoints[0].Position, 1);
+                _actionInterpreter.BeamKick(_robotID, _waypoints[0].Position, 2);
             else
                 Console.WriteLine("BeamKickPlayer: no target waypoint to kick to.");
         }
