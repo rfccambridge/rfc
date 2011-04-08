@@ -98,7 +98,46 @@ namespace Robocup.Plays
             Vector2 tmp_facing = target;
             Vector2 destination = target;
             bool avoidBall = false;
-            if (angdiff < Math.PI / 180 * 8 && distToDribblePosition < MAX_DIST_TO_KICK_POSITION)  //~8 degrees
+            Vector2 kickPosition = extend(target, ball, KICK_POSITION_DIST); // kicking position
+            double kickOrientation = targetAngle(ball, target); // orientation in kicking position
+
+            // a waypoint between ball and target direction -- you move here once break beam is on 
+            // to actually kick the ball
+            Vector2 waypoint = ball + (target - ball).normalizeToLength(KICK_POSITION_DIST); // distance here doesn't matter much
+
+            Vector2 ballToTarget = (target - ball);
+            Vector2 robotToBall = (ball - thisrobot.Position);
+            Vector2 robotToTarget = (target - thisrobot.Position);
+            double distRobotToBall = Math.Sqrt(thisrobot.Position.distanceSq(ball));
+
+            double distToKickPosition = Math.Sqrt(thisrobot.Position.distanceSq(kickPosition));
+
+            double theta = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), ballToTarget.cartesianAngle()));
+            double lateralDistance = distRobotToBall * Math.Sin(theta);
+
+            double angleToKickAxis = Math.Abs(UsefulFunctions.angleDifference(robotToTarget.cartesianAngle(),
+                                                                              ballToTarget.cartesianAngle()));
+
+            //if (angdiff < Math.PI / 180 * 8 && distToDribblePosition < MAX_DIST_TO_KICK_POSITION)  //~8 degrees
+            if ( // is the robot in the position to kick
+
+                // close enough to kicking position
+                distToKickPosition < MAX_DIST_TO_KICK_POSITION &&
+
+                // robot oriented towards the target
+                Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation,
+                                                         kickOrientation)) < KICK_ORIENTATION_ERROR &&
+
+                // robot is on the opposite side of the ball from the target
+                angleToKickAxis < MAX_ANGLE_TO_KICK_AXIS &&
+
+                // robot is outside of circle defined by target to ball vector                
+                robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq() &&
+
+                // robot is collinear with ball and with target
+                lateralDistance < MAX_LATERAL_DIST
+
+                )
             {
                 commander.StartDribbling(robotID);
                 destination = target;

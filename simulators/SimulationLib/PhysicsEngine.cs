@@ -25,7 +25,7 @@ namespace Robocup.Simulation
         const double BALL_RADIUS = 0.02;
 
         const double COLLISION_RADIUS = BALL_RADIUS + ROBOT_RADIUS;
-        const double DRIBBLE_RADIUS = ROBOT_RADIUS * 2 - BALL_RADIUS;
+        const double DRIBBLE_RADIUS = ROBOT_RADIUS * 2;
         const double DRIBBLE_ANGLE = Math.PI / 180 * 1;
         const double DRIBBLE_WHEEL_SPEED_THRESHOLD = 40;
 
