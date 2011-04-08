@@ -28,14 +28,12 @@ addtobitch (point 0 SUPPORT_AVOID)
 addtobitchpass (point 0 SUPPORT_SETUP_PASS)
 cleartogoal (pathClear ballpoint (theirgoal) CLEAR_DIST)
 clearcloserange (pathClear ballpoint balldestination CLEAR_DIST)
-ballinrange (< (pointpointdistance ballpoint (theirgoal)) (- BALL_IN_RANGE 1))
+ballinrange (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE)
 ballpositive (< 0 (getYcoord ballpoint))
 
 theirgoalcircle (circle (theirgoal) STANDBY_DISTANCE)
 theirgoalpositivequad (linecircleintersection (line (theirgoal) topCenter) theirgoalcircle 1)
 theirgoalnegativequad (linecircleintersection (line (theirgoal) bottomCenter) theirgoalcircle 1)
-
-standby_point (if_point ballpositive theirgoalnegativequad theirgoalpositivequad)
 
 robot0 (closest friendly ballpoint loose)
 robot1 (closest friendly balldestination loose)
@@ -50,69 +48,31 @@ bitchbot (if_robot robot0closesttoball robot1 robot0)
 kickbotpoint (if_point robot0closesttoball robot0point robot1point)
 bitchbotpoint (if_point robot0closesttoball robot1point robot0point)
 
-#nearbitchbotpoint (point (+ (getXcoord bitchbotpoint) 0.15) (+ (getYcoord bitchbotpoint) 0.15))
-
 bitchgotounblocked (if_point (pointAboveLine bitchbotpoint balltogoal) (pointadd balldestination addtobitch) (pointsubtract balldestination addtobitch))
 
 bitchgotoblocked (if_point (pointAboveLine bitchbotpoint balltogoal) (pointadd balldestination addtobitchpass) (pointsubtract balldestination addtobitchpass))
 
 bitchgoto (if_point clearcloserange bitchgotounblocked bitchgotoblocked)
 
-passbitchopen (pathClear ballpoint bitchbotpoint CLEAR_DIST)
+kickerhasshot (pathClear kickbotpoint (theirGoalBestShot) CLEAR_DIST)
+bitchhasshot (pathClear bitchbotpoint (theirGoalBestShot) CLEAR_DIST)
 
-kickerhasshot (pathClear kickbotpoint (theirgoal) CLEAR_DIST)
-bitchhasshot (pathClear bitchbotpoint (theirgoal) CLEAR_DIST)
+deflectpoint (if_point ballpositive theirgoalnegativequad theirgoalpositivequad)
 
-passbitch (robotpointkick kickbot bitchbotpoint)
 kicktogoal (robotpointkick kickbot (theirGoalBestShot))
-#neargoal (point (getXcoord (theirGoalBestShot)) (+ (getYcoord (theirGoalBestShot)) 1))
-setupdeflect (robotpointkick kickbot (theirGoalBestShot))
+deflect (robotpointkick kickbot bitchbotpoint)
+slap (if_Action kickerhasshot kicktogoal deflect)
 
-bam (if_Action (and passbitchopen bitchhasshot) passbitch setupdeflect)
-#bam (if_Action passbitchopen passbitch kicktogoal)
+# to use deflection plate, bitchbot looks directly away from ball
+lookaway (point (+ (- (getXcoord bitchbotpoint) (getXcoord ballpoint)) (getXcoord bitchbotpoint)) (+ (- (getYcoord bitchbotpoint) (getYcoord ballpoint)) (getYcoord bitchbotpoint)))
+bitchdeflect (robotpointpointmove bitchbot deflectpoint lookaway)
+bitchpass (robotpointmove bitchbot bitchgoto)
 
-# to use deflection plate, bitchbot looks directly away from kickbot
-lookaway (point (* -1 (getXcoord kickbotpoint)) (* -1 (getYcoord kickbotpoint)))
-bitchrelay (robotpointpointmove bitchbot bitchgoto lookaway)
-bitchstandby (robotpointpointmove bitchbot standby_point lookaway)
-
-kickinrange setupdeflect
-kickoutrange bam
-
-kick (if_Action ballinrange kickinrange kickoutrange)
-bitch (if_Action ballinrange bitchstandby bitchrelay)
-
-
-
-#midpoint (point 0 0)
-#midline (line midpoint (theirgoal))
-##ballpoint (pointof ball)
-#upperGoal (point 3 .3)
-#lowerGoal (point 3 -.3)
-
-#upperHitPoint (point 2.8 .2)
-#lowerHitPoint (point 2.8 -.2)
-#upperLookPoint (point 0 1)
-#lowerLookPoint (point 0 -1)
-
-#deflectPoint (if_point (pointAboveLine ballpoint midline) lowerHitPoint upperHitPoint)
-#deflectLookAtPoint (if_point (pointAboveLine ballpoint midline) upperLookPoint lowerLookPoint)
-
-#kicker (closest friendly ballpoint loose)
-#bitchbot (closest friendly deflectPoint loose)
-
-#defLoc (pointof bitchbot)
-#defReady (< (pointpointdistance defLoc deflectPoint) .3)
-#ballNear (< (pointpointdistance ballpoint deflectPoint) .9)
-
-#kick (if_Action defReady (robotpointkick kicker deflectPoint) (robotpointkick kicker upperGoal)) 
-#bitch (robotpointpointmovenoavoid bitchbot deflectPoint deflectLookAtPoint)
+bitch (if_Action ballinrange bitchdeflect bitchpass)
 
 
 Conditions:
 
 Actions:
-#kick
-#bitch
-bam
 bitch
+slap
