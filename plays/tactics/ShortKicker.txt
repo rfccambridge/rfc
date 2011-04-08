@@ -1,0 +1,19 @@
+Metadata:
+type tactic
+name ShortKicker
+
+Parameters:
+
+Objects:
+ballpoint (pointof ball)
+robot0 (closest friendly ballpoint loose)
+
+
+
+Actions:
+
+# check if we shouldn't go after the ball- that is, if it is
+# in the goal and there is another robot there
+
+(robotpointstrengthkick robot0 (theirgoal) 2)
+

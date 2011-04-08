@@ -270,9 +270,9 @@ namespace Robocup.ControlForm
         {
             if (_predictor.GetBall() != null)
             {
-                StreamWriter sw = new StreamWriter("speeds.txt", true);
-                sw.WriteLine(_predictor.GetBall().Velocity.magnitude());
-                sw.Close();
+                //StreamWriter sw = new StreamWriter("speeds.txt", true);
+               // sw.WriteLine(_predictor.GetBall().Velocity.magnitude());
+                //sw.Close();
             }
                 if (_waypoints.Count > 0)
                 _actionInterpreter.BeamKick(_robotID, _waypoints[0].Position, 1);

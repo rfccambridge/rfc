@@ -804,6 +804,17 @@ namespace Robocup.Plays
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
+            //mnock TODO
+            addFunction("robotpointstrengthkick", "Robot, strength - Kick", "Have robot ~ kick the ball towards ~ with strength", typeof(ActionDefinition), new Type[] { typeof(Robot),  typeof(Vector2), typeof(int) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Robot robot = (Robot)objects[0];
+                Vector2 p = (Vector2)objects[1];
+                int s = (int)objects[2];
+                return new ActionDefinition(delegate(IActionInterpreter a)
+                {
+                    a.Kick(robot.getID(), p, s);
+                }, robot.getID());
+            });
             addFunction("robotpointbump", "Robot, Point - bump", "Have robot ~ bump the ball to ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];
