@@ -22,7 +22,7 @@ Tactics:
 
 Goalie goalie enemyshooter
 ShooterWithPartner shooter support
-Blocker blocker (pointof pressure)
+Blocker blocker shooter pressure
 Support support shooter
 Safety safety
 

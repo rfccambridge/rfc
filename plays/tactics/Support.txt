@@ -8,21 +8,21 @@ shooter robot
 
 Objects:
 ballpoint (pointof ball)
-passiveLpt (point 1.8 0.5)
-passiveRpt (point 1.8 -0.5)
+passiveLpt (point 1.8 1.0)
+passiveRpt (point 1.8 -1.0)
 shooterpt (pointof shooter)
 fixedLpt (point (+ (getXcoord shooterpt) 1.0) 1.0)
 fixedRpt (point (+ (getXcoord shooterpt) 1.0) -1.0)
 receiveLpt (point (+ (getXcoord shooterpt) 1.0) (getYcoord shooterpt))
-receiveRpt (point (+ (getXcoord shooterpt) 1.0) (/ (getYcoord shooterpt) -1.0)
+receiveRpt (point (+ (getXcoord shooterpt) 1.0) (/ (getYcoord shooterpt) -1.0))
 
 topassiveL (line shooterpt passiveLpt) 
 topassiveR (line shooterpt passiveRpt)
 shootertogoal (line shooterpt (theirgoal))
 passiveLbad (or (< (angleBetweenTwoLines shootertogoal topassiveL) 0.3) (< (linelength topassiveL) 0.2))
 shootertoowide (> (getXcoord shooterpt) 2.0)
-shooterRight (< (getYcoord shooterpt) 0)
-shooterLeft(> (getYcoord shooterpt) 0)
+shooterRight (< (getYcoord shooterpt) 0.0)
+shooterLeft (> (getYcoord shooterpt) 0.0)
 
 possession (< (pointpointdistance ballpoint shooterpt) 0.4) 
 cleargoal (pathClear shooterpt (theirgoal) 3.0)
@@ -39,4 +39,4 @@ Actions:
 #if shooter can kick, stand by the goal in case he misses
 
 
-(if_Action (or (canscore shootertoowide)) (if_Action passiveLbad (robotpointmove bot passiveRpt) (robotpointmove bot passiveLpt)) (if_Action shooterRight (if_Action clearreceiveL (robotpointmove bot fixedLpt) (robotpointmove bot receiveLpt)) (if_Action clearreceiveR (robotpointmove bot fixedRpt) (robotpointmove bot fixedLpt))) 
+(if_Action (or canscore shootertoowide) (if_Action passiveLbad (robotpointmove bot passiveRpt) (robotpointmove bot passiveLpt)) (if_Action shooterRight (if_Action clearreceiveL (robotpointmove bot fixedLpt) (robotpointmove bot receiveLpt)) (if_Action clearreceiveR (robotpointmove bot fixedRpt) (robotpointmove bot receiveRpt)))) 

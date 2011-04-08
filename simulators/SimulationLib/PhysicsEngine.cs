@@ -523,8 +523,8 @@ namespace Robocup.Simulation
                                     //                  " Distsq: " + kickerPosition.distanceSq(ballInfo.Position));
                                     if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS_SQ)
                                     {
-                                        double ballVx = (double)(KICKED_BALL_SPEED) * Math.Cos(robot.Orientation);
-                                        double ballVy = (double)(KICKED_BALL_SPEED) * Math.Sin(robot.Orientation);
+                                        double ballVx = (double)(KICKED_BALL_SPEED*command.kickerStrength/RobotCommand.MAX_KICKER_STRENGTH) * Math.Cos(robot.Orientation);
+                                        double ballVy = (double)(KICKED_BALL_SPEED*command.kickerStrength/RobotCommand.MAX_KICKER_STRENGTH) * Math.Sin(robot.Orientation);
                                         Vector2 newVelocity = new Vector2(ballVx, ballVy);
                                         Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
                                         //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;

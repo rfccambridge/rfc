@@ -9,7 +9,7 @@ pressurebot robot
 
 Objects:
 botpt (pointof bot)
-pressurept (pointof pressurebot)
+standbypoint (point 1.0 1.0)
 
 #ball geometry
 ballpoint (pointof ball)
@@ -18,21 +18,23 @@ ballgoalline (line ballpoint (theirgoal))
 #shooter geometry
 shooterpt (pointof shooter)
 shooterorient (orientationof shooter)
-shooterballline (line shooterpt ballpt)
+shooterballline (line shooterpt ballpoint)
 shootergoalline (line shooterpt (theirgoal))
 
 #pressurebot geometry
-pressurept (pointof pressure)
-pressurevelocity (velocityof pressure)
+pressurept (pointof pressurebot)
+pressurevelocity (velocityof pressurebot)
 pressuredirection (getAngle pressurevelocity)
 pressureline (linedirection pressurept pressuredirection)
-pressurecircle(circle pressurept 0.3)
-targetpt (linecircleintersection pressureline pressurecircle)
+pressurecircle (circle pressurept 0.3)
+targetpt (linecircleintersection pressureline pressurecircle 1)
+alternatept (linecircleintersection pressureline pressurecircle 0)
 
 #pressurept on shooterline
-pressureshooterballlinedistance (closestRobotToLine shooterballline theirs)
-pressureonshooterballline (if (< (0.1 pressureshooterballlinedistance)))
+pressureshooterballlinedistance (closestRobotToLine shooterballline enemy)
+blockshooter (< pressureshooterballlinedistance 0.4)
+standby (and (pointInGoal ballpoint) (robotInGoal))
 
 Actions:
 
-(if_Action (not (pressureonshooterballline) (robotpointpointmove bot targetpt pressurept) standby)
+(if_Action standby (if_Action (not blockshooter) (robotpointpointmove bot targetpt pressurept) (robotpointpointmove bot alternatept pressurept)) (robotpointmove bot standbypoint))
