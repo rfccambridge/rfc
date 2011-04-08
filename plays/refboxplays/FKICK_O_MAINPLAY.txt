@@ -5,11 +5,6 @@ score 1
 
 Objects:
 
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
-
 numRobots (numourbots)
 
 nothing (nullAction)
@@ -17,3 +12,4 @@ nothing (nullAction)
 Conditions:
 
 Actions:
+(if_Action (= numRobots 5) (assignPlay FKICK_O_5vs1) nothing)
