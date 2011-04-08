@@ -1,0 +1,14 @@
+Metadata:
+type tactic
+name BotBot
+
+Parameters:
+bot robot
+
+Objects:
+ballpoint (pointof ball)
+standbypt (point 0.0 -1.0)
+cir (circle ballpoint 0.3)
+
+Actions:
+(if_Action (and (< (getYcoord ballpoint) 0) (= 0 (numberOfRobotsInACircle cir friendly))) (robotpointkick bot (theirgoal)) (robotpointpointmove bot standbypt ballpoint))

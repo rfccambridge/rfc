@@ -27,28 +27,16 @@ defensept2 (linecircleintersection ballline2 perimeter2 -1)
 # FRIENDLY CALL
 defensebot2 (closest friendly defensept2 loose)
 
-twomandistance (double 1.5)
-twomanptdef (ourgoal)
-twomanperimeter (circle twomanptdef twomandistance)
-twomanballline (line ballpoint twomanptdef)
-wallmainpt (linecircleintersection twomanballline twomanperimeter -1)
-wallcircle (circle wallmainpt 0.1)
-
-twomanpt1 (circlecircleintersection wallcircle twomanperimeter -1)
-# FRIENDLY CALL
-twomanbot1 (closest friendly twomanpt1 loose)
-
-twomanpt2 (circlecircleintersection wallcircle twomanperimeter 1)
-# FRIENDLY CALL
-twomanbot2 (closest friendly twomanpt2 loose)
+botbot (closest friendly (theirgoal) loose)
 
 Tactics:
 Mark defensebot1 defensept1
 Mark defensebot2 defensept2
-#OneManWall (ourgoal) 1.5 True 0
-OurTwoManWall twomanbot1 twomanpt1 True 
-OurTwoManWall twomanbot2 twomanpt2 False 
+OneManWall (ourgoal) 1.5 True 0
+#OurTwoManWall twomanbot1 twomanpt1 True 
+#OurTwoManWall twomanbot2 twomanpt2 False 
 OurSmartGoalie goaliebot
+BotBot botbot
 
 Conditions:
 

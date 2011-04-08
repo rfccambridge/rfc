@@ -3,15 +3,18 @@ playtype NormalPlay
 name OFFENSE_5vs0
 score 500
 
-Tactics:
-SmartGoalie
-#TwoManWall (ourgoal) 0.9 True 0
-#TwoManWall (ourgoal) 0.9 True 1
-
 # Side2Assist creates oscillation too
 # What do with last 2 robots?
+	# Have them chill at a certain point
+	# If ball is bot (top) part of field and there is no robot near it, kick it to their goal
+	# else go to standbypoint
 
 Objects:
+goaliebot (closest friendly (ourgoal) loose)
+botbot (closest friendly (ourgoal) loose)
+topbot (closest friendly (ourgoal) loose)
+
+
 center (point 0.0 0.0)
 ballpoint (pointof ball)
 striker (closest friendly ballpoint loose)
@@ -35,11 +38,18 @@ enemy2 (closest enemy ballpoint loose)
 
 midpoint (midpoint (pointof enemy1) (pointof enemy2))
 
+Tactics:
+OurSmartGoalie goaliebot
+BotBot botbot 
+TopBot topbot 
+#TwoManWall (ourgoal) 0.9 True 0
+#TwoManWall (ourgoal) 0.9 True 1
+
 Conditions:
 
 Actions:
 sideassistaction
-(if_Action (and (not (and (pointInGoal ballpoint) (robotInGoal))) (pathClear (pointof striker) (theirgoal) CLEAR_DIST)) (robotpointkick striker (theirgoal)) (if_Action (and (< (pointpointdistance ballpoint (pointof enemy1)) 0.5) (< (pointpointdistance ballpoint (pointof enemy2)) 0.5)) (robotpointkick striker midpoint) (if_Action (pathClear (pointof striker) (theirGoalBestShot) CLEAR_DIST) (robotpointkick striker (theirGoalBestShot)) (if_Action (pathClear (pointof striker) (pointof sideassist) CLEAR_DIST) (robotpointkick striker (pointof sideassist)) (robotpointkick striker (theirgoal))))))
+(if_Action (and (not (and (pointInGoal ballpoint) (robotInGoal))) (pathClear (pointof striker) (theirgoal) CLEAR_DIST)) (robotpointkick striker (theirgoal)) (if_Action (and (< (pointpointdistance ballpoint (pointof enemy1)) 0.5) (< (pointpointdistance ballpoint (pointof enemy2)) 0.5)) (robotpointkick striker midpoint) (if_Action (pathClear (pointof striker) (theirGoalBestShot) CLEAR_DIST) (robotpointkick striker (theirGoalBestShot)) (if_Action (pathClear (pointof striker) (pointof sideassist) CLEAR_DIST) (robotpointkick striker (pointof sideassist)) (robotpointkick striker (pointof botbot))))))
 
 
 # If the ball is not in goal and robot is not in goal and if path is clear to their goal

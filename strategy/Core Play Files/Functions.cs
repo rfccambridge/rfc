@@ -485,11 +485,11 @@ namespace Robocup.Plays
                             return new Vector2(p1.X + v.X, p1.Y + v.Y);
                         });
             addFunction("numberOfRobotsInACircle", "Circle, Team - Number of Robots",
-                        "In a circle ~, the number of Robots of the Team ~ in it", typeof(int),
+                        "In a circle ~, the number of Robots of the Team ~ in it", typeof(double),
                         new Type[] { typeof(Circle), typeof(TeamCondition) },
                         delegate(EvaluatorState state, object[] objects)
                         {
-                            int count = 0;
+                            double count = 0;
                             TeamCondition condition = (TeamCondition)objects[1];
                             List<RobotInfo> allinfos = new List<RobotInfo>();
                             if (condition.maybeOurs())
