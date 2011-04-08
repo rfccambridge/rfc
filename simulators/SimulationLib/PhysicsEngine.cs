@@ -26,7 +26,7 @@ namespace Robocup.Simulation
 
         const double COLLISION_RADIUS = BALL_RADIUS + ROBOT_RADIUS;
         const double DRIBBLE_RADIUS = ROBOT_RADIUS * 2 - BALL_RADIUS;
-        const double DRIBBLE_ANGLE = Math.PI / 180 * 8;
+        const double DRIBBLE_ANGLE = Math.PI / 180 * 1;
         const double DRIBBLE_WHEEL_SPEED_THRESHOLD = 40;
 
 		private bool _marking = false;
@@ -307,29 +307,27 @@ namespace Robocup.Simulation
                 {
                     Vector2 robotLoc = r.Position;
 
-                    if (newBallLocation.distanceSq(robotLoc) <= DRIBBLE_RADIUS * DRIBBLE_RADIUS)
+                    if (newBallLocation.distanceSq(robotLoc) <= DRIBBLE_RADIUS * DRIBBLE_RADIUS) //if inside dribble radius
                     {
-                        if (dribbler_on[r.Team][r.ID]) //dribbler_on
-                        {
+                        if (dribbler_on[r.Team][r.ID]) //if dribbler is on
+                        { 
+                            //angle between ball and front of robot
                             double angdiff = Math.Abs(UsefulFunctions.angleDifference(r.Orientation, (ball.Position - r.Position).cartesianAngle()));
                             
-                            //double robotX = Math.Cos(r.Orientation);
-                            //double robotY = Math.Sin(r.Orientation);
-
-                            //Vector2 RobOrient = new Vector2(robotX,robotY);
-                            
-                            //double dotP = RobOrient.normalize() * (ball.Position - r.Position).normalize();
-                            
-                            if (angdiff < DRIBBLE_ANGLE) //if robot orientation lines up with ball position (~8 degrees)
-                            {
+                            if (angdiff < DRIBBLE_ANGLE) //if robot orientation lines up with ball position (~1 degrees) NOT WORKING, but SHOULD based on other code
+                            {                            //need to find a way to line robot orientation up w target instead of ball. 
                                 if (Math.Abs(speeds[r.Team][r.ID].lf) <= DRIBBLE_WHEEL_SPEED_THRESHOLD &&
                                     Math.Abs(speeds[r.Team][r.ID].rf) <= DRIBBLE_WHEEL_SPEED_THRESHOLD &&
                                     Math.Abs(speeds[r.Team][r.ID].lb) <= DRIBBLE_WHEEL_SPEED_THRESHOLD &&
                                     Math.Abs(speeds[r.Team][r.ID].rb) <= DRIBBLE_WHEEL_SPEED_THRESHOLD)     //if wheelspeed is low enough
                                 {
-                                    //update ball velocity to match robot velocity
-                                    Vector2 linearRotVelocity = Vector2.GetUnitVector(r.Orientation).rotatePerpendicular() * r.AngularVelocity * ROBOT_RADIUS;
-                                    newBallVelocity = linearRotVelocity + r.Velocity;
+                                    if (true) //robot is collinear with ball and target
+                                    {
+                                        //update ball velocity to match robot velocity
+                                        Vector2 linearRotVelocity = Vector2.GetUnitVector(r.Orientation).rotatePerpendicular() * r.AngularVelocity * ROBOT_RADIUS;
+                                        newBallVelocity = linearRotVelocity + r.Velocity;
+                                        //newBallVelocity = r.Velocity;
+                                    }
                                 }
                             }
                         }

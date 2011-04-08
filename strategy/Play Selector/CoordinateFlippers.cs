@@ -149,6 +149,10 @@ namespace Robocup.Plays
         {
             actionInterpreter.Dribble(robotID, -target);
         }
+        public void Dribble(int robotID, Vector2 target, Vector2 facing)
+        {
+            actionInterpreter.Dribble(robotID, -target, -facing);
+        }
 
         public void LoadConstants()
         {

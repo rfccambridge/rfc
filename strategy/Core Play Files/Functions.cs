@@ -822,6 +822,18 @@ namespace Robocup.Plays
                     a.Dribble(robot.getID(), p);
                 }, robot.getID());
             });
+            addFunction("robotpointpointdribble", "Robot, Point, Point - Dribble", "Have robot ~ dribble to ~, and face ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+            {
+                Robot robot = (Robot)objects[0];
+                return new ActionDefinition(delegate(IActionInterpreter a)
+                {
+                    Vector2 target = (Vector2)objects[1]; 
+                    Vector2 facing = (Vector2)objects[2];
+                    int id = robot.getID();
+                    a.Dribble(id, target, facing);
+                    //Console.WriteLine("robotpointpointmove: r=" + id.ToString() + "target=" + target.ToString() + " facing=" + facing.ToString());
+                }, robot.getID());
+            });
             addFunction("robotpointpointmove", "Robot, Point, Point - Move", "Have robot ~ move to ~, and face ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];

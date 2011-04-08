@@ -69,6 +69,11 @@ namespace Robocup.Plays
 
         public void Dribble(int robotID, Vector2 target)
         {
+            Dribble(robotID, target, null);
+        }
+
+        public void Dribble(int robotID, Vector2 target, Vector2 facing)
+        {
             RobotInfo thisrobot;
             Vector2 ball;
             
@@ -90,6 +95,7 @@ namespace Robocup.Plays
 
             double angdiff = Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation, (ball - thisrobot.Position).cartesianAngle()));
             
+            Vector2 tmp_facing = target;
             Vector2 destination = target;
             bool avoidBall = false;
             if (angdiff < Math.PI / 180 * 8 && distToDribblePosition < MAX_DIST_TO_KICK_POSITION)  //~8 degrees
@@ -97,15 +103,16 @@ namespace Robocup.Plays
                 commander.StartDribbling(robotID);
                 destination = target;
                 //destination = extend(target, ball, -.14); //change
+                tmp_facing = (facing == null) ? ball : facing; 
             }
             else
             {
                 avoidBall = true;
                 destination = extend(target, ball, kickDistance);
+                tmp_facing = ball;
             }
 
-            //Move(robotID, avoidBall, destination, ball);
-            Move(robotID, avoidBall, destination, ball);
+            Move(robotID, avoidBall, destination, tmp_facing);
             //commander.move(robotID, avoidBall, destination);
         }
 
