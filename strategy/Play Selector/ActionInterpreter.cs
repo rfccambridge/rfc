@@ -101,7 +101,7 @@ namespace Robocup.Plays
             else
             {
                 avoidBall = true;
-                destination = extend(target, ball, KICK_POSITION_DIST);
+                destination = extend(target, ball, kickDistance);
             }
 
             //Move(robotID, avoidBall, destination, ball);
