@@ -655,6 +655,41 @@ namespace Robocup.Plays
             });
             #endregion
 
+
+
+
+            addFunction("farthest", " our farthest robot", "our farthest robot from ~", typeof(Vector2), new Type[] { typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
+            {
+                List<RobotInfo> allinfos = new List<RobotInfo>();
+                if (state != null){
+                    allinfos.AddRange(state.OurTeamInfo);
+                }
+
+                Vector2 position = new Vector2(0,0);
+                double maxDist = 0;
+                foreach (RobotInfo r in allinfos)
+                {
+                    
+
+                    double dist = UsefulFunctions.distance((Vector2)objects[0], position);
+                    if (dist > maxDist)
+                    {
+                        maxDist = dist;
+                        position = r.Position;
+
+                    }
+
+
+                }
+
+                return position;
+            });
+
+
+
+
+
+
             #region misc
             addFunction("numourbots", " - # our robots", "The number of robots currently on our team", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
@@ -805,7 +840,7 @@ namespace Robocup.Plays
                 }, robot.getID());
             });
             //mnock TODO
-            addFunction("robotpointstrengthkick", "Robot, strength - Kick", "Have robot ~ kick the ball towards ~ with strength", typeof(ActionDefinition), new Type[] { typeof(Robot),  typeof(Vector2), typeof(int) }, delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointstrengthkick", "Robot, strength - Kick", "Have robot ~ kick the ball towards ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot),  typeof(Vector2), typeof(int) }, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];
                 Vector2 p = (Vector2)objects[1];
