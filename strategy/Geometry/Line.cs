@@ -90,7 +90,7 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
-        /// Computes the distance between a point and this line
+        /// Computes the minimum distance between this line and a point
         /// </summary>
         public double distance(Vector2 p)
         {
@@ -112,6 +112,16 @@ namespace Robocup.Geometry
             double dotp = tangent * (p - p0);
             return p0 + dotp * tangent;
         }
+
+        /// <summary>
+        /// Returns a line that is this line rotated a given number of radians in the
+        /// counterclockwise direction around p.
+        /// </summary>
+        public Line rotateAroundPoint(Vector2 p, double angle)
+        {
+            return new Line(p0.rotateAroundPoint(p, angle), p1.rotateAroundPoint(p, angle));
+        }
+
 
         public override string ToString()
         {
@@ -220,7 +230,7 @@ namespace Robocup.Geometry
         { return l.P1.distanceSq(l.P0); }
 
         /// <summary>
-        /// Computes the distance between a point and a line segment
+        /// Computes the minimum distance between this line segment and a point
         /// </summary>
         public double distance(Vector2 p)
         {
@@ -232,6 +242,16 @@ namespace Robocup.Geometry
 
             return l.distance(p);
         }
+
+        /// <summary>
+        /// Returns a line segment that is this line rotated a given number of radians in the
+        /// counterclockwise direction around p.
+        /// </summary>
+        public LineSegment rotateAroundPoint(Vector2 p, double angle)
+        {
+            return new LineSegment(l.rotateAroundPoint(p, angle));
+        }
+
 
         public override string ToString()
         {
