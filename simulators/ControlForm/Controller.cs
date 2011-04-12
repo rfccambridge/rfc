@@ -19,7 +19,6 @@ namespace Robocup.ControlForm
         //Constants
         private const int CONTROL_TIMEOUT = 10;
         static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
-        private const int CHARGE_TIME = 1000;  // milliseconds
         private const double DRIBBLER_TIMER_PERIOD = 0.5; //seconds
         private const double DRIBBLER_TIMEOUT = 6.0; // seconds
         private double CONTROL_LOOP_FREQUENCY;
