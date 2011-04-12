@@ -1,9 +1,9 @@
 Metadata:
-playtype SetPlay_Ours
-name FKICK_O_5vs1
-score 300
+playtype Kickoff_Ours
+name KOFF_O_5vs2
+score 3.002615
 
-Objects: 
+Objects:
 
 ballpoint (pointof ball)
 
