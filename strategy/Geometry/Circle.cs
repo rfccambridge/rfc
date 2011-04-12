@@ -10,18 +10,15 @@ namespace Robocup.Geometry
         private double radius;
         private Vector2 center;
 
-        public Vector2 getCenter()
-        {
-            return center;
-        }
+        public Vector2 Center
+        {get { return center; }}
 
         public double Radius
-        {
-            get { return radius; }
-        }
+        {get { return radius; }}
+
         public double distanceFromCenter(Vector2 p)
         {
-            return UsefulFunctions.distance(p, getCenter());
+            return UsefulFunctions.distance(p, Center);
         }
         public Circle(Vector2 center, double radius)
         {

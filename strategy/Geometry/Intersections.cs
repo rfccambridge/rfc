@@ -60,8 +60,8 @@ namespace Robocup.Geometry
         {
             Vector2[] bothpoints = GetPoints(c0, c1);
 
-            Vector2 p0 = c0.getCenter();
-            Vector2 p1 = c1.getCenter();
+            Vector2 p0 = c0.Center;
+            Vector2 p1 = c1.Center;
 
             if (whichintersection == 0)
                 throw new ApplicationException("CircleCircleIntersection.getPoint() called, but the direction to find the point is not defined");
@@ -78,12 +78,12 @@ namespace Robocup.Geometry
         /// </summary>
         static public int WhichIntersection(Circle c0, Circle c1, Vector2 p)
         {
-            return anglesign(c1.getCenter(), c0.getCenter(), p);
+            return anglesign(c1.Center, c0.Center, p);
         }
         static private Vector2[] GetPoints(Circle c0, Circle c1)
         {
-            Vector2 p0 = c0.getCenter();
-            Vector2 p1 = c1.getCenter();
+            Vector2 p0 = c0.Center;
+            Vector2 p1 = c1.Center;
             double d = Math.Sqrt(p0.distanceSq(p1));
             double r0 = c0.Radius;
             double r1 = c1.Radius;
@@ -166,7 +166,7 @@ namespace Robocup.Geometry
         static private Vector2[] getPoints(Line line, Circle circle)
         {
             Vector2[] points = (Vector2[])line.getPoints().Clone();
-            Vector2 center = circle.getCenter();
+            Vector2 center = circle.Center;
             points[0] -= center;
             points[1] -= center;
 
