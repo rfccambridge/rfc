@@ -34,5 +34,34 @@ namespace Robocup.Geometry
             this.radius = 1.0;
         }
 
+        /// <summary>
+        /// Returns a circle translated by the added vector
+        /// </summary>
+        public static Circle operator +(Circle c, Vector2 v)
+        {
+            return new Circle(c.center + v, c.radius);
+        }
+
+        /// <summary>
+        /// Returns a circle translated by the added vector
+        /// </summary>
+        public static Circle operator +(Vector2 v, Circle c)
+        {
+            return new Circle(v + c.center, c.radius);
+        }
+
+        /// <summary>
+        /// Returns a circle translated by the negative of the vector
+        /// </summary>
+        public static Circle operator -(Circle c, Vector2 v)
+        {
+            return new Circle(c.center - v, c.radius);
+        }
+
+        public override string ToString()
+        {
+            return "Circle(" + center + ", " + radius + ")";
+        }
+
     }
 }
