@@ -37,10 +37,11 @@ namespace Robocup.ControlForm
         private IMotionPlanner _planner;
 		private IKickPlanner _kickPlanner;
 
-        //Motion-planner paths
-		private RobotPath[] _paths;
-        private Object[] _pathLocks;
-        private int[] _followsSincePlan;
+        //Move commands
+		private RobotInfo[] _move_infos;
+        private bool[] _move_avoid_balls;
+        private RobotPath[] _last_successful_path;
+        private Object[] _move_locks;
 
         //Loop for running path driver
         private FunctionLoop _controlLoop;
@@ -75,12 +76,12 @@ namespace Robocup.ControlForm
             _planner = planner;
 			_kickPlanner = new FeedbackVeerKickPlanner(new TangentBugFeedbackMotionPlanner());
 
-			_paths = new RobotPath[NUM_ROBOTS];
-
-            _pathLocks = new Object[NUM_ROBOTS];
+            _move_infos = new RobotInfo[NUM_ROBOTS];
+            _move_avoid_balls = new bool[NUM_ROBOTS];
+            _last_successful_path = new RobotPath[NUM_ROBOTS];
+            _move_locks = new Object[NUM_ROBOTS];
             for (int i = 0; i < NUM_ROBOTS; i++)
-                _pathLocks[i] = new Object();
-            _followsSincePlan = new int[NUM_ROBOTS];
+                _move_locks[i] = new Object();
 
             //Initialize loops with the functions that they should call
             _controlLoop = new FunctionLoop(ControlLoop);
@@ -126,6 +127,7 @@ namespace Robocup.ControlForm
 
         public void StartControlling()
         {
+            Console.WriteLine("Started");
             _controlLoop.SetPeriod(1.0 / CONTROL_LOOP_FREQUENCY);
             _controlLoop.Start();
             _dribbleLoop.SetPeriod(DRIBBLER_TIMER_PERIOD);
@@ -134,16 +136,26 @@ namespace Robocup.ControlForm
 
         public void StopControlling()
         {
+            Console.WriteLine("Stopped");
             _controlLoop.Stop();
             _dribbleLoop.Stop();
 
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
-                lock (_pathLocks[i])
+                lock (_move_locks[i])
                 {
-                    _paths[i] = null;
+                    _move_infos[i] = null;
+                    _move_avoid_balls[i] = false;
+                    _last_successful_path[i] = null;
                 }
-                StopDribbling(i);
+
+                //Stop all robots from moving and dribbling
+                RobotCommand command = new RobotCommand(i, new WheelSpeeds());
+                _cmdSender.Post(command);
+                RobotCommand command2 = new RobotCommand(i, RobotCommand.Command.STOP_DRIBBLER);
+                _cmdSender.Post(command2);
+
+                //TODO (davidwu) also stop charging and discharge?
             }
         }
 
@@ -200,40 +212,12 @@ namespace Robocup.ControlForm
                 return;
             }
 
-            double avoidBallDist = (avoidBall ? BALL_AVOID_DIST : 0f);
-            RobotPath currPath;
-
-            try
+            int id = destination.ID;
+            lock (_move_locks[id])
             {
-                currPath = _planner.PlanMotion(_team, destination.ID, destination, _predictor, avoidBallDist);
+                _move_infos[id] = new RobotInfo(destination);
+                _move_avoid_balls[id] = avoidBall;
             }
-            catch (ApplicationException e)
-            {
-                Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
-                return;
-            }
-
-            lock (_pathLocks[currPath.ID])
-            {
-                // Commit path for following
-                _paths[currPath.ID] = currPath;
-            }
-
-            // Clear timeout counter
-            _followsSincePlan[destination.ID] = 0;
-
-            #region Drawing
-            //Arrow showing final destination
-            if (_fieldDrawer != null)
-            {
-                //Path commited for following
-                if (DRAW_PATH)
-                    _fieldDrawer.DrawPath(currPath);
-                //Arrow showing final destination
-                _fieldDrawer.DrawArrow(_team, currPath.ID, ArrowType.Destination, destination.Position);
-            }
-
-            #endregion
         }
         
         public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation)
@@ -291,9 +275,9 @@ namespace Robocup.ControlForm
 
 		public void Stop(int robotID)
 		{
-            lock (_pathLocks[robotID])
+            lock (_move_locks[robotID])
             {
-                _paths[robotID] = null;
+                _move_infos[robotID] = null;
             }
             RobotCommand command = new RobotCommand(robotID, new WheelSpeeds());
             _cmdSender.Post(command);
@@ -347,70 +331,105 @@ namespace Robocup.ControlForm
         //CONTROL LOOP---------------------------------------------------------------------
         private void ControlLoop()
         {
-            followPaths();
+            PerformMotion();
             _fieldDrawer.UpdateControllerDuration(_controlLoop.GetLoopDuration());
         }
 
 
-        private void followPaths()
+        private void PerformMotion()
         {
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
-                //Keep a local copy of the path in order not to lock the whole procedure
-                RobotPath currPath;
 
-                lock (_pathLocks[i])
+
+                //Retrieve commands given to the controller for the robot
+                RobotInfo desired;
+                double avoidBallDist;
+                RobotPath oldPath;
+                lock (_move_locks[i])
                 {
-                    // Ensures we clear any stale paths if no planning calls have been made
-                    if (_followsSincePlan[i] >= CONTROL_TIMEOUT)
-                    {
-                        _paths[i] = null;
-                        continue;
-                    }
-
-                    _followsSincePlan[i]++;
-
-                    // Important because we may not be planning for the whole team
-                    if (_paths[i] == null)
-                        continue;
-
-                    currPath = _paths[i];
+                    desired = _move_infos[i];
+                    avoidBallDist = (_move_avoid_balls[i] ? BALL_AVOID_DIST : 0f);
+                    oldPath = _last_successful_path[i];
                 }
 
-                //If we've been sent an empty path, this is a clear sign to stop
                 RobotCommand command;
-                if (currPath.Waypoints == null)
+
+                //No RobotInfo - do nothing
+                if (desired == null)
+                    continue;
+
+                //Plan a path
+                RobotPath newPath;
+                try
                 {
-                    command = new RobotCommand(currPath.ID, new WheelSpeeds());
+                    newPath = _planner.PlanMotion(_team, i, desired, _predictor, avoidBallDist);
                 }
-                else
+                catch (Exception e)
                 {
-                    MotionPlanningResults mpResults = _planner.FollowPath(currPath, _predictor);
-                    command = new RobotCommand(currPath.ID, mpResults.wheel_speeds);
+                    Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
+                    continue;
                 }
 
+                if (newPath == null)
+                    continue;
+
+                //Follow the path
+                MotionPlanningResults mpResults;
+                try
+                {
+                    mpResults = _planner.FollowPath(newPath, _predictor);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("FollowPath failed. Dumping exception:\n" + e.ToString());
+                    continue;
+                }
+
+                //Send the wheel speeds
+                command = new RobotCommand(i, mpResults.wheel_speeds);
+                _cmdSender.Post(command);
+                
+                /*
                 if (_team == Team.Blue)
                 {
-                    RobotInfo info = _predictor.GetRobot(_team, currPath.ID);
-                    Vector2 pos = info.Position;
-                    outStream.Write(command.ID + " "
-                        + pos.X + " "
-                        + pos.Y + " "
-                        + info.Orientation + " "
-                        + info.Velocity.X + " "
-                        + info.Velocity.Y + " "
-                        + command.Speeds.rf + " "
-                        + command.Speeds.lf + " "
-                        + command.Speeds.lb + " "
-                        + command.Speeds.rb + " ");
+                    RobotInfo info = _predictor.GetRobot(_team, i);
+                    if (info != null)
+                    {
+                        Vector2 pos = info.Position;
+                        outStream.Write(command.ID + " "
+                            + pos.X + " "
+                            + pos.Y + " "
+                            + info.Orientation + " "
+                            + info.Velocity.X + " "
+                            + info.Velocity.Y + " "
+                            + command.Speeds.rf + " "
+                            + command.Speeds.lf + " "
+                            + command.Speeds.lb + " "
+                            + command.Speeds.rb + " ");
+                    }
+                }*/
+
+                #region Drawing
+                //Arrow showing final destination
+                if (_fieldDrawer != null)
+                {
+                    //Path commited for following
+                    if (DRAW_PATH)
+                        _fieldDrawer.DrawPath(newPath);
+                    //Arrow showing final destination
+                    _fieldDrawer.DrawArrow(_team, i, ArrowType.Destination, desired.Position);
                 }
-                _cmdSender.Post(command);
+
+                #endregion
             }
+
+            /*
             if (_team == Team.Blue)
             {
                 outStream.WriteLine();
                 outStream.Flush();
-            }
+            }*/
 
         }
 	}

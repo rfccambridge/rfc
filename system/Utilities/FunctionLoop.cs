@@ -114,8 +114,19 @@ namespace Robocup.Utilities
                 periodTimer.Start();
 
                 loopTimer.Start();
-                loopFn();
-                sync = 0;
+
+                try
+                {
+                    loopFn();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                finally
+                {
+                    sync = 0;
+                }
             }
         }
     }
