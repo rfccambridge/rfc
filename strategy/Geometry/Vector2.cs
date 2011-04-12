@@ -275,6 +275,16 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Returns a point that is this point rotated a given number of radians in the
+        /// counterclockwise direction around p.
+        /// </summary>
+        public Vector2 rotateAroundPoint(Vector2 p, double angle)
+        {
+            return (this - p).rotate(angle) + p;
+        }
+
+
+        /// <summary>
         /// Returns a vector that is this vector rotated 1/4 of a turn in the
         /// counterclockwise direction.
         /// </summary>
