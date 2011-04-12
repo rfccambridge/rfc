@@ -47,7 +47,7 @@ namespace Robocup.Utilities
         {
             lock (isRunningLock)
             {
-                if(isRunning)
+                if (isRunning)
                     throw new Exception("Loop for " + loopFn.Method.Name + " already started!");
 
                 isRunning = true;
