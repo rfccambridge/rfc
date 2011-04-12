@@ -47,7 +47,7 @@ namespace Robocup.Utilities
         {
             lock (isRunningLock)
             {
-                if(isRunning)
+                if (isRunning)
                     throw new Exception("Loop for " + loopFn.Method.Name + " already started!");
 
                 isRunning = true;
@@ -114,8 +114,19 @@ namespace Robocup.Utilities
                 periodTimer.Start();
 
                 loopTimer.Start();
-                loopFn();
-                sync = 0;
+
+                try
+                {
+                    loopFn();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                finally
+                {
+                    sync = 0;
+                }
             }
         }
     }
