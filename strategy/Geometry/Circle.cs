@@ -57,6 +57,16 @@ namespace Robocup.Geometry
             return new Circle(c.center - v, c.radius);
         }
 
+        /// <summary>
+        /// Returns a circle that is this circle rotated a given number of radians in the
+        /// counterclockwise direction around p.
+        /// </summary>
+        public Circle rotateAroundPoint(Vector2 p, double angle)
+        {
+            return new Circle(center.rotateAroundPoint(p, angle), radius);
+        }
+
+
         public override string ToString()
         {
             return "Circle(" + center + ", " + radius + ")";
