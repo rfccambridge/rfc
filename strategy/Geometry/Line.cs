@@ -77,7 +77,7 @@ namespace Robocup.Geometry
         /// </summary>
         public static Line operator +(Vector2 v, Line l)
         {
-            return new Line(l.p0 + v, l.p1 + v);
+            return new Line(v + l.p0, v + l.p1);
         }
 
         /// <summary>
@@ -180,6 +180,30 @@ namespace Robocup.Geometry
         public static LineSegment operator -(LineSegment seg)
         {
             return new LineSegment(-(seg.l));
+        }
+
+        /// <summary>
+        /// Returns a line segment translated by the added vector
+        /// </summary>
+        public static LineSegment operator +(LineSegment l, Vector2 v)
+        {
+            return new LineSegment(l.l + v);
+        }
+
+        /// <summary>
+        /// Returns a line segment translated by the added vector
+        /// </summary>
+        public static LineSegment operator +(Vector2 v, LineSegment l)
+        {
+            return new LineSegment(v + l.l);
+        }
+
+        /// <summary>
+        /// Returns a line segment translated by the negative of the vector
+        /// </summary>
+        public static LineSegment operator -(LineSegment l, Vector2 v)
+        {
+            return new LineSegment(l.l - v);
         }
 
         /// <summary>
