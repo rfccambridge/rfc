@@ -938,7 +938,7 @@ namespace Robocup.Plays
 
                 double Radius = ((Circle)o).Radius;
                 Radius = fieldtopixelDistance(Radius);
-                Vector2 p = ((Circle)o).getCenter();
+                Vector2 p = ((Circle)o).Center;
                 p = fieldtopixelPoint(p);
 
                 g.DrawEllipse(myPen, (float)(p.X - Radius), (float)(p.Y - Radius), (float)(2 * Radius), (float)(2 * Radius));
