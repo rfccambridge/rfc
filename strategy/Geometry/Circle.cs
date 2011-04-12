@@ -15,15 +15,15 @@ namespace Robocup.Geometry
         public double Radius
         {get { return radius; }}
 
-        public double distanceFromCenter(Vector2 p)
-        {
-            return UsefulFunctions.distance(p, Center);
-        }
+        /// <summary>
+        /// Creates a circle with the given center and radius
+        /// </summary>
         public Circle(Vector2 center, double radius)
         {
             this.center = center;
             this.radius = radius;
         }
+
         /// <summary>
         /// Creates a unit circle at the origin
         /// </summary>
@@ -32,5 +32,6 @@ namespace Robocup.Geometry
             this.center = new Vector2();
             this.radius = 1.0;
         }
+
     }
 }

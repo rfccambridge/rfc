@@ -84,21 +84,18 @@ namespace Robocup.PlaySystem
         /// </summary>
         public bool pathClear(Vector2 p1, Vector2 p2, double mindist)
         {
-            Line line = new Line(p1, p2);
-
             // get distance of closest robot to line
             List<RobotInfo> allinfos = state.Predictor.GetRobots();
-            Vector2[] endpoints = line.getPoints();
-
+ 
             double rtn = double.MaxValue;
 
             foreach (RobotInfo r in allinfos)
             {
                 Vector2 position = r.Position;
-                if (Math.Sqrt(position.distanceSq(endpoints[0])) < mindist ||
-                    Math.Sqrt(position.distanceSq(endpoints[1])) < mindist)
+                if (Math.Sqrt(position.distanceSq(p1)) < mindist ||
+                    Math.Sqrt(position.distanceSq(p2)) < mindist)
                     continue;
-                rtn = Math.Min(rtn, line.distFromSegment(position));
+                rtn = Math.Min(rtn, (new Line(p1, p2)).Segment.distance(position));
             }
 
             return (rtn >= mindist);
