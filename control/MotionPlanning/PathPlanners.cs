@@ -261,7 +261,7 @@ namespace Robocup.MotionControl
                 start.Y > MIN_Y_ROBOT_BOUNDARY && start.Y < MAX_Y_ROBOT_BOUNDARY) {
                 foreach (Line l in boundary_lines) {
                     // get distance from line
-                    dist_to_line = l.distFromLine(start);
+                    dist_to_line = l.distance(start);
                     // ignore lines more than a certain distance
                     if (dist_to_line > BOUNDARY_AVOID) {
                         continue;

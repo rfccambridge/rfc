@@ -240,13 +240,12 @@ namespace Robocup.Plays
                         typeof(double), new Type[] { typeof(Vector2), typeof(Vector2) },
                         delegate(EvaluatorState state, object[] objects)
                         {
-                            return UsefulFunctions.distance((Vector2)objects[0], (Vector2)objects[1]);
+                            return ((Vector2)objects[0]).distance((Vector2)objects[1]);
                         });
             addFunction("linelength", "Line - Length", "The length of line ~", typeof(double), new Type[] { typeof(Line) },
                         delegate(EvaluatorState state, object[] objects)
                         {
-                            Vector2[] points = ((Line)objects[0]).getPoints();
-                            return UsefulFunctions.distance(points[0], points[1]);
+                            return ((Line)objects[0]).Segment.length();
                         });
             addFunction("scalepoint", "Point, double - Scale", "The point ~ scaled by ~", typeof(Vector2),
                         new Type[] { typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
@@ -268,6 +267,9 @@ namespace Robocup.Plays
             {
                 return .5 * (((Vector2)objects[0]) + ((Vector2)objects[1]));
             });
+
+            //TODO (davidwu) parts of this function are almost identical to the two separate implementations of pathClear
+            //One implementation is in this file, the other is in PlayFunctions.cs
             addFunction("closestRobotToLine", "Line, Team - closest robot",
                         "The distance from the line ~ to the closest robot on team ~ (excluding the robots that are the endpoints of the line)",
                         typeof(double), new Type[] { typeof(Line), typeof(TeamCondition) },
@@ -286,13 +288,13 @@ namespace Robocup.Plays
                                 allinfos.AddRange(state.OurTeamInfo);
                             if (condition.maybeTheirs())
                                 allinfos.AddRange(state.TheirTeamInfo);
-                            Vector2[] endpoints = line.getPoints();
+
                             foreach (RobotInfo r in allinfos)
                             {
                                 Vector2 position = r.Position;
-                                if (position == endpoints[0] || position == endpoints[1])
+                                if (position == line.P0 || position == line.P1)
                                     continue;
-                                rtn = Math.Min(rtn, line.distFromSegment(position));
+                                rtn = Math.Min(rtn, line.Segment.distance(position));
                             }
                             return rtn;
                         });
@@ -306,16 +308,15 @@ namespace Robocup.Plays
                 return pointAboveLine(point, line);
             });
 
+            //TODO (davidwu): There is also a slightly different implementation of the same thing in PlayFunctions.cs!
             addFunction("pathClear", "Point, Point, double - Path clear",
                         "Whether the path from point ~ to point ~ has no obstacles within distance ~", typeof(bool),
                         new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) },
                         delegate(EvaluatorState state, object[] objects)
                         {
-                            Vector2 p1 = (Vector2)objects[0];
-                            Vector2 p2 = (Vector2)objects[1];
+                            Vector2 p0 = (Vector2)objects[0];
+                            Vector2 p1 = (Vector2)objects[1];
                             double mindist = (double)objects[2];
-
-                            Line line = new Line(p1, p2);
 
                             // get distance of closest robot to line
                             List<RobotInfo> allinfos = new List<RobotInfo>();
@@ -324,17 +325,16 @@ namespace Robocup.Plays
                                 allinfos.AddRange(state.OurTeamInfo);
                                 allinfos.AddRange(state.TheirTeamInfo);
                             }
-                            Vector2[] endpoints = line.getPoints();
 
                             double rtn = 10000;
 
                             foreach (RobotInfo r in allinfos)
                             {
                                 Vector2 position = r.Position;
-                                if (Math.Sqrt(position.distanceSq(endpoints[0])) < mindist ||
-                                    Math.Sqrt(position.distanceSq(endpoints[1])) < mindist)
+                                if (Math.Sqrt(position.distanceSq(p0)) < mindist ||
+                                    Math.Sqrt(position.distanceSq(p1)) < mindist)
                                     continue;
-                                rtn = Math.Min(rtn, line.distFromSegment(position));
+                                rtn = Math.Min(rtn, (new LineSegment(p0, p1)).distance(position));
                             }
 
                             return (rtn >= mindist);
@@ -487,31 +487,32 @@ namespace Robocup.Plays
                                 allinfos.AddRange(state.TheirTeamInfo);
                             foreach (RobotInfo r in allinfos)
                             {
-                                if (((Circle)objects[0]).distanceFromCenter(r.Position) <= ((Circle)objects[0]).Radius)
+                                if (((Circle)objects[0]).Center.distance(r.Position) <= ((Circle)objects[0]).Radius)
                                     count++;
                             }
                             return count;
                         });
-            addFunction("angleBetweenTwoLines", "Line,Line - Angle", "The angle between line ~ and line ~", typeof(double),
+            addFunction("angleBetweenTwoLines", "Line,Line - Angle", "The smallest angle between line ~ and line ~", typeof(double),
                         new Type[] { typeof(Line), typeof(Line) },
                         delegate(EvaluatorState state, object[] objects)
                         {
                             Line L1 = (Line)objects[0];
                             Line L2 = (Line)objects[1];
+                            return Math.Acos(Math.Abs(L1.Direction.cosineAngleWith(L2.Direction)));
+
+                            /* TODO (davidwu): If everything is working, remove this
                             Vector2 p1 = Intersections.intersect(L1, L2);
                             if (p1 == null)
                                 throw new NoIntersectionException("Lines do not intersect, No angle");
-                            Vector2[] points1 = L1.getPoints();
-                            Vector2[] points2 = L2.getPoints();
-                            Vector2 p2 = points1[0];
-                            Vector2 p3 = points2[0];
+
+                            Vector2 p2 = L1.P0;
+                            Vector2 p3 = L2.P0;
                             Vector2 v1, v2;
                             v1 = new Vector2(p1.X - p2.X, p1.Y - p2.Y);
                             v2 = new Vector2(p1.X - p3.X, p1.Y - p3.Y);
                             //p1 is the vertex of the angle
-                            double dotproduct = v1.X * v2.X + v1.Y * v2.Y;
-                            double angle = Math.Acos(dotproduct / Math.Sqrt((v1.X * v1.X + v1.Y * v1.Y) * (v2.X * v2.X + v2.Y * v2.Y)));
-                            return angle;
+                            return Math.Acos(v1.cosineAngleWith(v2));
+                             */
                         });
             addFunction("angleBetweenThreePoints", "Point,Point,Point - Angle",
                         "The angle between the rays connecting Point ~ with Point ~ and Point ~", typeof(double),
@@ -522,6 +523,9 @@ namespace Robocup.Plays
                             p1 = (Vector2)objects[0];
                             p2 = (Vector2)objects[1];
                             p3 = (Vector2)objects[2];
+                            return Math.Acos(Math.Abs((p3 - p1).cosineAngleWith(p2 - p1)));
+
+                            /* TODO (davidwu): If everything is working, remove this
                             Vector2 v1, v2;
                             v1 = new Vector2(p1.X - p2.X, p1.Y - p2.Y);
                             v2 = new Vector2(p1.X - p3.X, p1.Y - p3.Y);
@@ -529,6 +533,7 @@ namespace Robocup.Plays
                             double dotproduct = v1.X * v2.X + v1.Y * v2.Y;
                             double angle = Math.Acos(dotproduct / Math.Sqrt((v1.X * v1.X + v1.Y * v1.Y) * (v2.X * v2.X + v2.Y * v2.Y)));
                             return angle;
+                             */
                         });
             addFunction("rotatePointAroundAnotherPoint", "Point, Point, Angle - Point",
                         "Around a center point ~, Rotate a Point ~ for an angle ~", typeof(Vector2),
