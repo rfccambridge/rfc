@@ -20,6 +20,7 @@ namespace Robocup.Geometry
         {
             get { return x; }
         }
+
         private readonly double y;
 
         /// <summary>
@@ -29,10 +30,12 @@ namespace Robocup.Geometry
         {
             get { return y; }
         }
+
         /// <summary>
         /// Creates a zero Vector2
         /// </summary>
         public Vector2() : this(0, 0) { }
+        
         /// <summary>
         /// Creates a new Vector2
         /// </summary>
@@ -43,15 +46,13 @@ namespace Robocup.Geometry
             this.x = x;
             this.y = y;
         }
+
         /// <summary>
         /// Constructs a vector that is a copy of another one
         /// </summary>
         /// <param name="copy">Original object</param>
         public Vector2(Vector2 orig) : this(orig.X, orig.Y) { }        
-        /*static public implicit operator PointF(Vector2 p)
-        {
-            return new PointF((float)p.X, (float)p.Y);
-        }*/
+
         public PointF ToPointF()
         {
             return new PointF((float)X, (float)Y);
@@ -70,11 +71,13 @@ namespace Robocup.Geometry
             get { return zero; }
         }
 
+        /// <summary>
+        /// Gets a unit vector in the desired orientation, in radians
+        /// </summary>
         static public Vector2 GetUnitVector(double orientation)
         {
             return new Vector2(Math.Cos(orientation), Math.Sin(orientation));
         }
-
 
         /// <summary>
         /// Checks for equality between two Vector2's.  Since the class is
@@ -88,6 +91,7 @@ namespace Robocup.Geometry
                 return (object.ReferenceEquals(p1, null));
             return (p1.X == p2.X && p1.Y == p2.Y);
         }
+
         /// <summary>
         /// Checks for inequality between two Vector2's.  Since the class is
         /// immutable, does value-equality.
@@ -96,6 +100,7 @@ namespace Robocup.Geometry
         {
             return !(p1 == p2);
         }
+
         /// <summary>
         /// Checks for value equality between this and another object.  Returns
         /// false if the other object is null or not a Vector2.
@@ -107,6 +112,7 @@ namespace Robocup.Geometry
                 return false;
             return (X == v.X && Y == v.Y);
         }
+        
         /// <summary>
         /// Checks for value equality between this and another object.  Returns
         /// false if the other object is null.
@@ -115,6 +121,7 @@ namespace Robocup.Geometry
         {
             return this == obj;
         }
+        
         /// <summary>
         /// Returns a hash code of this Vector2.
         /// </summary>
@@ -122,6 +129,7 @@ namespace Robocup.Geometry
         {
             return 43 * X.GetHashCode() + 37 * Y.GetHashCode();
         }
+        
         /// <summary>
         /// Returns the square of the length of this vector.
         /// </summary>
@@ -147,6 +155,7 @@ namespace Robocup.Geometry
         {
             return Math.Atan2(Y, X);
         }
+
         /// <summary>
         /// Adds two Vector2's and returns the result.  Addition is done
         /// component by component.
@@ -155,6 +164,7 @@ namespace Robocup.Geometry
         {
             return new Vector2(p1.X + p2.X, p1.Y + p2.Y);
         }
+        
         /// <summary>
         /// Subtracts two Vector2's and returns the result.  Subtraction is done
         /// component by component.
@@ -163,6 +173,7 @@ namespace Robocup.Geometry
         {
             return new Vector2(p1.X - p2.X, p1.Y - p2.Y);
         }
+        
         /// <summary>
         /// Returns the negation of this vector.
         /// </summary>
@@ -170,6 +181,7 @@ namespace Robocup.Geometry
         {
             return new Vector2(-p.X, -p.Y);
         }
+        
         /// <summary>
         /// Returns the squared distance between this point and another point.
         /// Returns the same value (within tolerance) as (p1-p2).magnitudeSq()
@@ -184,6 +196,7 @@ namespace Robocup.Geometry
             return (X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y);
             //depends on whether or not the compiler is inlining them
         }
+        
         /// <summary>
         /// Returns the distance between this point and another point.
         /// Returns the same value (within tolerance) as (p1-p2).magnitudeSq()
@@ -206,6 +219,7 @@ namespace Robocup.Geometry
         {
             return p1.X * p2.X + p1.Y * p2.Y;
         }
+        
         /// <summary>
         /// Returns this vector scaled by a constant.
         /// </summary>
@@ -254,6 +268,7 @@ namespace Robocup.Geometry
             
             return (1 / Math.Sqrt(magnitudeSq())) * this;
         }
+        
         /// <summary>
         /// Returns a vector in the same direction as this one, with the desired length.
         /// For the zero vector (and possibly vectors extremely close to zero), returns the
@@ -263,6 +278,7 @@ namespace Robocup.Geometry
         {
             return newLength * (this.normalize());
         }
+        
         /// <summary>
         /// Returns a vector that is this vector rotated a given number of radians in the
         /// counterclockwise direction.
@@ -346,7 +362,6 @@ namespace Robocup.Geometry
         {
             return (this * v) / Math.Sqrt(this.magnitudeSq() * v.magnitudeSq());
         }
-
 
         /// <summary>
         /// Provides a string representation of this Vector2.
