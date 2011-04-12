@@ -105,7 +105,7 @@ namespace Robocup.Geometry
         }
         private static int anglesign(Vector2 p1, Vector2 p2, Vector2 p3)
         {
-            double crossp = UsefulFunctions.crossproduct(p1, p2, p3);//(p1.X - p2.X) * (p3.Y - p2.Y) - (p3.X - p2.X) * (p1.Y - p2.Y);
+            double crossp = UsefulFunctions.crossproduct(p1, p2, p3);
             return Math.Sign(crossp);
         }
     }
@@ -120,18 +120,13 @@ namespace Robocup.Geometry
     {
         static public Vector2 Intersect(Line line, Circle circle, int whichintersection)
         {
-            Vector2[] linepoints = line.getPoints();
             if (whichintersection == 1)
-            {
-                Vector2 temp = linepoints[0];
-                linepoints[0] = linepoints[1];
-                linepoints[1] = temp;
-            }
+                line = -line;
 
             double[] dists = new double[2];
             Vector2[] points = getPoints(line, circle);
-            dists[0] = distalongline(points[0], linepoints);
-            dists[1] = distalongline(points[1], linepoints);
+            dists[0] = distAlongLine(points[0], line);
+            dists[1] = distAlongLine(points[1], line);
 
             if (dists[0] > dists[1])
                 return points[0];
@@ -141,47 +136,50 @@ namespace Robocup.Geometry
         static public int WhichIntersection(Line line, Circle circle, Vector2 p)
         {
             Vector2[] points = getPoints(line, circle);
-            double dist = distalongline(p, line.getPoints());
-            double d0 = UsefulFunctions.distancesq(points[0], p);
-            double d1 = UsefulFunctions.distancesq(points[1], p);
+            double dist = distAlongLine(p, line);
+            double d0sq = points[0].distanceSq(p);
+            double d1sq = points[1].distanceSq(p);
             Vector2 otherpoint = points[0];
-            if (d1 > d0)
+            if (d1sq > d0sq)
                 otherpoint = points[1];
-            double dist2 = LineCircleIntersection.distalongline(otherpoint, line.getPoints());
+            double dist2 = LineCircleIntersection.distAlongLine(otherpoint, line);
             if (dist > dist2)
                 return 0;
             else
                 return 1;
         }
-        private static double distalongline(Vector2 p, Vector2[] linepoints)
+        private static double distAlongLine(Vector2 p, Line line)
         {
-            double d0 = Math.Sqrt(UsefulFunctions.distancesq(p, linepoints[0]));
-            double d1 = Math.Sqrt(UsefulFunctions.distancesq(p, linepoints[1]));
-            double d = Math.Sqrt(UsefulFunctions.distancesq(linepoints[0], linepoints[1]));
+            Vector2 dir = line.Direction;
+            if (dir == Vector2.ZERO)
+                throw new ImplicitAssumptionFailedException("Line has zero length!");
+            return (p - line.P0).projectionLength(dir);
+
+            /* TODO (davidwu) if everything appears to be working, remove this old code.
+            double d0 = Math.Sqrt(UsefulFunctions.distancesq(p, line.P0));
+            double d1 = Math.Sqrt(UsefulFunctions.distancesq(p, line.P1));
+            double d = Math.Sqrt(UsefulFunctions.distancesq(line.P0, line.P1));
             if (d1 - d0 >= d * .99)
                 return d0;
             else
                 return -d0;
+            */
         }
+
         static private Vector2[] getPoints(Line line, Circle circle)
         {
-            Vector2[] points = (Vector2[])line.getPoints().Clone();
             Vector2 center = circle.Center;
-            points[0] -= center;
-            points[1] -= center;
+            line = line - center;
 
-            double dx = points[1].X - points[0].X;
-            double dy = points[1].Y - points[0].Y;
+            double dx = line.P1.X - line.P0.X;
+            double dy = line.P1.Y - line.P0.Y;
             double drs = dx * dx + dy * dy;
             double dr = Math.Sqrt(drs);
-            double D = points[0].X * points[1].Y - points[1].X * points[0].Y;
+            double D = line.P0.X * line.P1.Y - line.P1.X * line.P0.Y;
             double r = circle.Radius;
             double det = r * r * dr * dr - D * D;
             if (det < 0)
-            {
                 throw new NoIntersectionException("no intersection!");
-                //throw new Exception("There is no intersection of line " + line.getName() + " and circle " + circle.getName() + ".");
-            }
 
             Vector2[] rtnpoints = new Vector2[2];
 
@@ -209,16 +207,16 @@ namespace Robocup.Geometry
     {
         static public Vector2 Intersect(Line line0, Line line1)
         {
-            Vector2[] l1 = line0.getPoints();
-            Vector2[] l2 = line1.getPoints();
-            double denom = (l2[1].Y - l2[0].Y) * (l1[1].X - l1[0].X) - (l2[1].X - l2[0].X) * (l1[1].Y - l1[0].Y);
+            Vector2[] l0 = { line0.P0, line0.P1 };
+            Vector2[] l1 = { line1.P0, line1.P1 };
+            double denom = (l1[1].Y - l1[0].Y) * (l0[1].X - l0[0].X) - (l1[1].X - l1[0].X) * (l0[1].Y - l0[0].Y);
             if (denom == 0) //the lines are parallel
             {
                 throw new NoIntersectionException("no intersection!");
             }
-            double numerator = (l2[1].X - l2[0].X) * (l1[0].Y - l2[0].Y) - (l2[1].Y - l2[0].Y) * (l1[0].X - l2[0].X);
-            double x = l1[0].X + numerator * (l1[1].X - l1[0].X) / denom;
-            double y = l1[0].Y + numerator * (l1[1].Y - l1[0].Y) / denom;
+            double numerator = (l1[1].X - l1[0].X) * (l0[0].Y - l1[0].Y) - (l1[1].Y - l1[0].Y) * (l0[0].X - l1[0].X);
+            double x = l0[0].X + numerator * (l0[1].X - l0[0].X) / denom;
+            double y = l0[0].Y + numerator * (l0[1].Y - l0[0].Y) / denom;
             return new Vector2(x, y);
         }
     }

@@ -300,40 +300,49 @@ namespace Robocup.Core
         }
 
         /// <summary>
-        /// Returns the length of this vector when projected on to p
-        /// Returns an unspecified result if p is the zero vector.
+        /// Returns the length of this vector when projected on to v
+        /// Returns an unspecified result if v is the zero vector.
         /// </summary>
-        public double projectionLength(Vector2 p)
+        public double projectionLength(Vector2 v)
         {
-            return this * p / p.magnitude();
+            return this * v / v.magnitude();
         }
 
         /// <summary>
-        /// Returns the component of this vector parallel to p
-        /// Returns an unspecified result if p is the zero vector.
+        /// Returns the component of this vector parallel to v
+        /// Returns an unspecified result if v is the zero vector.
         /// </summary>
-        public Vector2 parallelComponent(Vector2 p)
+        public Vector2 parallelComponent(Vector2 v)
         {
-            return (this * p / p.magnitudeSq()) * p;
+            return (this * v / v.magnitudeSq()) * v;
         }
 
         /// <summary>
-        /// Returns the component of this vector perpendicular to p
-        /// Returns an unspecified result if p is the zero vector.
+        /// Returns the component of this vector perpendicular to v
+        /// Returns an unspecified result if v is the zero vector.
         /// </summary>
-        public Vector2 perpendicularComponent(Vector2 p)
+        public Vector2 perpendicularComponent(Vector2 v)
         {
-            p = p.rotatePerpendicular();
-            return (this * p / p.magnitudeSq()) * p;
+            v = v.rotatePerpendicular();
+            return (this * v / v.magnitudeSq()) * v;
         }
 
         /// <summary>
-        /// Returns this vector mirror-reflected over p.
-        /// If p is the zero vector, returns an unspecified result.
+        /// Returns this vector mirror-reflected over v.
+        /// If v is the zero vector, returns an unspecified result.
         /// </summary>
-        public Vector2 reflectOver(Vector2 p)
+        public Vector2 reflectOver(Vector2 v)
         {
-            return this - 2.0 * perpendicularComponent(p);
+            return this - 2.0 * perpendicularComponent(v);
+        }
+
+        /// <summary>
+        /// Returns the cosine of the angle between this vector and v,
+        /// using the relationship cos(angle(v1,v2)) = (v1*v2) / (|v1||v2|)
+        /// </summary>
+        public double cosineAngleWith(Vector2 v)
+        {
+            return (this * v) / Math.Sqrt(this.magnitudeSq() * v.magnitudeSq());
         }
 
         /// <summary>

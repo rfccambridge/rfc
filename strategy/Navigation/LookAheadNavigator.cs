@@ -52,7 +52,7 @@ namespace Navigation
             {
                 foreach (Obstacle o in obstacles)
                 {
-                    double d = line.distFromSegment(o.position);
+                    double d = line.Segment.distance(o.position);
                     if (d < o.size)
                         return true;
                 }

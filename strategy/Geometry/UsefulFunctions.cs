@@ -7,15 +7,6 @@ namespace Robocup.Geometry
 {
     public static class UsefulFunctions
     {
-
-        static public double distance(Vector2 p1, Vector2 p2)
-        {
-            return Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
-        }
-        static public double distancesq(Vector2 p1, Vector2 p2)
-        {
-            return (p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y);
-        }
         /// <summary>
         /// Returns the z-component of the crossproduct P2P1 x P2P3
         /// </summary>

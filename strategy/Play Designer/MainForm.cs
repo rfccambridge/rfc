@@ -118,20 +118,20 @@ namespace Robocup.Plays
             {
                 //DesignerPoint dp = new DesignerPoint((Vector2)o);
                 //return dp.willClick(p);
-                return UsefulFunctions.distance((Vector2)o, p) <= pixeltofieldDistance(6);
+                return p.distance((Vector2)o) <= pixeltofieldDistance(6);
             }
             else if (o is DesignerRobot)
             {
-                return UsefulFunctions.distance(((DesignerRobot)o).getPoint(), p) <= pixeltofieldDistance(10);
+                return p.distance(((DesignerRobot)o).getPoint()) <= pixeltofieldDistance(10);
             }
             else if (o is Line)
             {
                 //change these two lines to make it so that you have to click on the segment itself, and not on its extension
                 //return ((Line)o).distFromSegment(p) <= PixelDistanceToFieldDistance(3);
-                return ((Line)o).distFromLine(p) <= pixeltofieldDistance(3);
+                return ((Line)o).distance(p) <= pixeltofieldDistance(3);
             }
             else if (o is Circle)
-                return Math.Abs(((Circle)o).distanceFromCenter(p) - ((Circle)o).Radius) <= pixeltofieldDistance(3);
+                return Math.Abs(((Circle)o).Center.distance(p) - ((Circle)o).Radius) <= pixeltofieldDistance(3);
             throw new ApplicationException("Tried to see if you could click on something that's not supported yet");
             //return false;
         }
@@ -615,7 +615,7 @@ namespace Robocup.Plays
                 }
                 else
                 {
-                    s.circle.setArgument(1, UsefulFunctions.distance((Vector2)s.firstpoint.getValue(tick, null), clickPoint));
+                    s.circle.setArgument(1, clickPoint.distance((Vector2)s.firstpoint.getValue(tick, null)));
                 }
                 repaint();
             }
@@ -921,10 +921,9 @@ namespace Robocup.Plays
 
                 Line l = (Line)o;
                 //Vector2[] points = (Vector2[])(l.getPoints()).Clone();
-                Vector2[] points = l.getPoints();
                 Vector2[] drawpoints = new Vector2[2];
-                drawpoints[0] = fieldtopixelPoint(points[0]);
-                drawpoints[1] = fieldtopixelPoint(points[1]);
+                drawpoints[0] = fieldtopixelPoint(l.P0);
+                drawpoints[1] = fieldtopixelPoint(l.P1);
                 Pen myPen = new Pen(c, 2);
                 g.DrawLine(myPen, drawpoints[0].ToPointF(), drawpoints[1].ToPointF());
                 myPen.Dispose();
