@@ -1,6 +1,6 @@
 Metadata:
 playtype NormalPlay
-name OFFENSE_5vs2
+name OFFENSE_5vs1
 score 3.002615
 
 Objects:
