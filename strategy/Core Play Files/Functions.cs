@@ -1004,7 +1004,7 @@ namespace Robocup.Plays
 
             addFunction("ballCloseToTeam", "Team - Bool", "Is the ball close to team ~?", typeof(bool), new Type[] { typeof(TeamCondition) }, delegate(EvaluatorState state, object[] objects)
             {
-                TeamCondition condition = (TeamCondition)objects[1];
+                TeamCondition condition = (TeamCondition)objects[0];
                 double closest = 1000;
 
                 List<RobotInfo> allinfos = new List<RobotInfo>();
@@ -1023,7 +1023,7 @@ namespace Robocup.Plays
 
             addFunction("ballMoving", "Is the ball in motion?", "Is the ball in motion?", typeof(bool), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                return (state.ballInfo.Velocity.magnitude() > 0.1);
+                return (state.ballInfo.Velocity.magnitude() > 1);
             });
 
             addFunction("ballMovingTowardPointWithinAngle", "Point, Angle - Bool", "Is the ball moving toward the point ~ within an angle ~?", typeof(bool), new Type[] { typeof(Vector2), typeof(double) }, delegate(EvaluatorState state, object[] objects)
@@ -1034,13 +1034,13 @@ namespace Robocup.Plays
                 p1 = state.ballInfo.Position;
                 p2 = (Vector2)objects[0];
                 Vector2 v1, v2;
-                v1 = new Vector2(p1.X - p2.X, p1.Y - p2.Y);
+                v1 = new Vector2(p2.X - p1.X, p2.Y - p1.Y);
                 v2 = ballVelocity;
                 //p1, i.e. ballpoint is the vertex of the angle
                 double dotproduct = v1.X * v2.X + v1.Y * v2.Y;
                 double angle = Math.Acos(dotproduct / Math.Sqrt((v1.X * v1.X + v1.Y * v1.Y) * (v2.X * v2.X + v2.Y * v2.Y)));
 
-                bool ballMoving = (bool)(ballVelocity.magnitude() > 0.1);
+                bool ballMoving = (bool)(ballVelocity.magnitude() > 1);
                 bool withinAngle = (bool)(angle < givenAngle);
                 return (ballMoving && withinAngle);
             });

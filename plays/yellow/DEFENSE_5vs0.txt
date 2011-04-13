@@ -21,8 +21,8 @@ blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loos
 
 Tactics:
 SmartGoalie
-TwoManWall (ourgoal) 0.9 True 0
-TwoManWall (ourgoal) 0.9 True 1
+Sweep (ourgoal) 0.8 True 
+Sweep (ourgoal) 1.5 True
 Mark marker marktarget
 BlockPass blocker blocktarget
 
