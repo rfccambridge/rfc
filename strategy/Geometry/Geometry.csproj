@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Circle.cs" />
     <Compile Include="Arc.cs" />
+    <Compile Include="RobotShape.cs" />
     <Compile Include="Intersections.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
