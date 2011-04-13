@@ -67,6 +67,14 @@ namespace Robocup.Geometry
             return new Circle(center.rotateAroundPoint(p, angle), radius);
         }
 
+        /// <summary>
+        /// Checks if this circle contains the given point. Points on the boundary are considered contained.
+        /// </summary>
+        public bool contains(Vector2 p)
+        {
+            return p.distanceSq(center) <= radius * radius;
+        }
+
 
         public override string ToString()
         {
