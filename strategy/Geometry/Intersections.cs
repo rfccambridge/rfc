@@ -67,11 +67,11 @@ namespace Robocup.Geometry
     {
         public NoIntersectionException(string s) : base(s) { }
     }
-    /* the way that the circle-circle intersection labeling is resolved, is you label one of the circles circle1
-     * (which automaticall happens because you have to place one circle first), and then look at the angle O1O2P,
-     * where O1 is the center of circle 1, and P is one of the points of intersection.  One of the points will have
-     * an angle that is greater than 180º, the other will have one that is less.  You can distinguish between the two
-     * by using the cross product, and keep track of which one the user clicked on.
+
+    /* Since there are potentially two points of intersection, whichintersection is used to specify which one.
+     * Let p0 and p1 be the centers of the circles.
+     * whichintersection = 1 : Return the intersection on the left side of the line p0 -> p1
+     * whichintersection = -1 : Return the intersection on the right side of the line p0 -> p1
      */
     static public class PlayCircleCircleIntersection
     {
@@ -85,19 +85,21 @@ namespace Robocup.Geometry
             if (whichintersection == 0)
                 throw new ApplicationException("CircleCircleIntersection.getPoint() called, but the direction to find the point is not defined");
 
-            int angle = anglesign(p1, p0, bothpoints[0]);
-            if (angle == whichintersection)
+            int sign = anglesign(p1, p0, bothpoints[0]);
+            if (sign == whichintersection)
                 return bothpoints[0];
-            else if (angle == -whichintersection)
+            else
                 return bothpoints[1];
-            throw new ApplicationException("Unhandled case in CircleCircleIntersection.getPoint()");
         }
         /// <summary>
         /// Given two circles and a point of intersection, returns which intersection number it is closer to.
         /// </summary>
         static public int WhichIntersection(Circle c0, Circle c1, Vector2 p)
         {
-            return anglesign(c1.Center, c0.Center, p);
+            int sign = anglesign(c1.Center, c0.Center, p);
+            if (sign == 0)
+                sign = -1;
+            return sign;
         }
         static private Vector2[] GetPoints(Circle c0, Circle c1)
         {
@@ -122,32 +124,30 @@ namespace Robocup.Geometry
             bothpoints[1] = new Vector2(newx - dx, newy - dy);
             return bothpoints;
         }
-        private static int anglesign(Vector2 p1, Vector2 p2, Vector2 p3)
+        static private int anglesign(Vector2 p1, Vector2 p2, Vector2 p3)
         {
             double crossp = UsefulFunctions.crossproduct(p1, p2, p3);
             return Math.Sign(crossp);
         }
     }
 
-    /* the way the line-circle intersection labeling is resolved, is again, you have to arbitrarily label the line
-     * to have a direction (which automatically happens too, because the two points have to be arranged somehow).
-     * You can arbitrarily call that direction positive, and the other negative.  So the two points have "values" on
-     * this psuedo number-line, with one bigger than the other.  You keep track of whether the user clicked on the 
-     * more positive one or more negative one.
+    /* 
+     * Since there are potentially two points of intersection, whichintersection is used to specify which one.
+     * This is possible because Lines are directional (although they extend infinitely, they are defined by two
+     * points p0 and p1 in some order). Letting the direction p0 -> p1 be positive:
+     * whichintersection = 0 : Returns the most negative intersection
+     * whichintersection = 1 : Returns the most positive intersection
      */
     static public class LineCircleIntersection
     {
         static public Vector2 Intersection(Line line, Circle circle, int whichintersection)
         {
-            if (whichintersection == 1)
-                line = -line;
-
             double[] dists = new double[2];
             Vector2[] points = getPoints(line, circle);
             dists[0] = distAlongLine(points[0], line);
             dists[1] = distAlongLine(points[1], line);
 
-            if (dists[0] > dists[1])
+            if ((dists[0] < dists[1]) == (whichintersection == 0))
                 return points[0];
             else
                 return points[1];
@@ -161,13 +161,13 @@ namespace Robocup.Geometry
             Vector2 otherpoint = points[0];
             if (d1sq > d0sq)
                 otherpoint = points[1];
-            double dist2 = LineCircleIntersection.distAlongLine(otherpoint, line);
-            if (dist > dist2)
+            double dist2 = distAlongLine(otherpoint, line);
+            if (dist < dist2)
                 return 0;
             else
                 return 1;
         }
-        private static double distAlongLine(Vector2 p, Line line)
+        static private double distAlongLine(Vector2 p, Line line)
         {
             Vector2 dir = line.Direction;
             if (dir == Vector2.ZERO)
