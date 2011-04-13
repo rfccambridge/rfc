@@ -127,7 +127,7 @@ namespace Navigation
                     if (o.position.distanceSq(destination) < o.size * o.size)
                     {
                         Circle obstacleCircle = new Circle(o.position, o.size);
-                        Vector2 newDestination = Intersections.intersect(l, obstacleCircle, 0);
+                        Vector2 newDestination = Intersections.intersection(l, obstacleCircle, 0);
                         newDestination = newDestination + .15 * (newDestination - o.position);
                         return this.navigate(id, position, newDestination, teamPositions, enemyPositions, ballPosition, avoidBallDist);
                         //System.Windows.Forms.MessageBox.Show("moving destination from\n"+destination+"\nto\n"+newDestination);

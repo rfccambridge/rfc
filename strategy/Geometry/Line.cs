@@ -10,7 +10,7 @@ namespace Robocup.Geometry
     /// for intersections and distances, the line is treated as infinitely extended in both directions.
     /// For a line segment, see LineSegment.
     /// </summary>
-    public class Line
+    public class Line : Geom
     {
         private Vector2 p0;
         private Vector2 p1;
@@ -114,6 +114,16 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Returns the translation of this line by the given vector.
+        /// </summary>
+        public Line translate(Vector2 v)
+        {
+            return this + v;
+        }
+        Geom Geom.translate(Vector2 v)
+        {return translate(v);}
+
+        /// <summary>
         /// Returns a line that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
@@ -121,6 +131,8 @@ namespace Robocup.Geometry
         {
             return new Line(p0.rotateAroundPoint(p, angle), p1.rotateAroundPoint(p, angle));
         }
+        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
+        { return rotateAroundPoint(p, angle); }
 
 
         public override string ToString()
@@ -132,7 +144,7 @@ namespace Robocup.Geometry
     /// <summary>
     /// A line segment.
     /// </summary>
-    public class LineSegment
+    public class LineSegment : Geom
     {
         private Line l;
 
@@ -244,6 +256,16 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Returns the translation of this line segment by the given vector.
+        /// </summary>
+        public LineSegment translate(Vector2 v)
+        {
+            return this + v;
+        }
+        Geom Geom.translate(Vector2 v)
+        { return translate(v); }
+
+        /// <summary>
         /// Returns a line segment that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
@@ -251,6 +273,8 @@ namespace Robocup.Geometry
         {
             return new LineSegment(l.rotateAroundPoint(p, angle));
         }
+        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
+        { return rotateAroundPoint(p, angle); }
 
 
         public override string ToString()

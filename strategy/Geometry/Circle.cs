@@ -5,7 +5,7 @@ using Robocup.Core;
 
 namespace Robocup.Geometry
 {
-    public class Circle
+    public class Circle : Geom
     {
         private double radius;
         private Vector2 center;
@@ -59,6 +59,16 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Returns the translation of this circle by the given vector.
+        /// </summary>
+        public Circle translate(Vector2 v)
+        {
+            return this + v;
+        }
+        Geom Geom.translate(Vector2 v)
+        { return translate(v); }
+
+        /// <summary>
         /// Returns a circle that is this circle rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
@@ -66,6 +76,8 @@ namespace Robocup.Geometry
         {
             return new Circle(center.rotateAroundPoint(p, angle), radius);
         }
+        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
+        { return rotateAroundPoint(p, angle); }
 
         /// <summary>
         /// Checks if this circle contains the given point. Points on the boundary are considered contained.

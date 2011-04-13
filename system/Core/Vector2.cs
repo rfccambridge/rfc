@@ -291,6 +291,14 @@ namespace Robocup.Core
         }
 
         /// <summary>
+        /// Returns the translation of this point by the given vector.
+        /// </summary>
+        public Vector2 translate(Vector2 v)
+        {
+            return this + v;
+        }
+
+        /// <summary>
         /// Returns a point that is this point rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
