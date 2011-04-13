@@ -102,6 +102,21 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Computes the minimum signed distance between this line and a point, where
+        /// (facing from p0 -> p1) positive indicates a point to the left of the line 
+        /// and negative indicates a point to the right of the line.
+        /// </summary>
+        public double signedDistance(Vector2 p)
+        {
+            double dx = p1.X - p0.X;
+            double dy = p1.Y - p0.Y;
+            double mag = Math.Sqrt(dx * dx + dy * dy);
+            double crossp = UsefulFunctions.crossproduct(p1, p0, p);
+            double dist = crossp / mag;
+            return dist;
+        }
+
+        /// <summary>
         /// Computes the point on the line that would result from projecting
         /// p perpendicularly towards the line.
         /// </summary>
@@ -133,6 +148,26 @@ namespace Robocup.Geometry
         Geom Geom.rotateAroundPoint(Vector2 p, double angle)
         { return rotateAroundPoint(p, angle); }
 
+        /// <summary>
+        /// Checks if this line is parallel OR antiparallel to l.
+        /// </summary>
+        public bool isParallelTo(Line l)
+        {
+            Vector2 dir = Direction;
+            Vector2 dir2 = l.Direction;
+            double dot = dir * dir2;
+            return Math.Abs(dot * dot) >= dir.magnitudeSq() * dir2.magnitudeSq();
+        }
+
+        /// <summary>
+        /// Checks if a point lies on the given line.
+        /// Note: floating point imprecision may be a problem here!
+        /// </summary>
+        ///         
+        public bool contains(Vector2 p)
+        {
+            return signedDistance(p) == 0;
+        }
 
         public override string ToString()
         {

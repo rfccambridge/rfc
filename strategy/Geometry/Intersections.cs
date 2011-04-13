@@ -31,9 +31,73 @@ namespace Robocup.Geometry
         /// Returns the rotation of this object around the given point by the given angle
         /// </summary>
         Geom rotateAroundPoint(Vector2 p, double angle);
-
     }
 
+    public static class GeomFuncs
+    {
+        /// <summary>
+        /// Tests if two Geom objects intersect.
+        /// If one entirely contains another, this also counts as intersection.
+        /// </summary>
+        static public bool intersects(Geom g0, Geom g1)
+        {
+            if (g0 is Line)
+            {
+                Line a0 = (Line)g0;
+                if (g1 is Line)
+                {
+                    Line a1 = (Line)g1;
+                    return !a0.isParallelTo(a1) || (a0.contains(a1.P0) && a1.contains(a0.P0));
+                }
+                else if (g1 is LineSegment)
+                {
+                    LineSegment a1 = (LineSegment)g1;
+                    return a0.signedDistance(a1.P0) * a0.signedDistance(a1.P1) <= 0;
+                }
+                else if (g1 is Circle)
+                {
+                    Circle a1 = (Circle)g1;
+                    return a0.distance(a1.Center) <= a1.Radius;
+                }
+            }
+            else if (g0 is LineSegment)
+            {
+                if (g1 is Line)
+                    return intersects(g1, g0);
+
+                LineSegment a0 = (LineSegment)g0;
+
+                if (g1 is LineSegment)
+                {
+                    LineSegment a1 = (LineSegment)g1;
+                    return a0.Line.signedDistance(a1.P0) * a0.Line.signedDistance(a1.P1) <= 0 &&
+                           a1.Line.signedDistance(a0.P0) * a1.Line.signedDistance(a0.P1) <= 0;
+                }
+                else if (g1 is Circle)
+                {
+                    Circle a1 = (Circle)g1;
+                    return a0.distance(a1.Center) <= a1.Radius;
+                }
+            }
+            else if (g0 is Circle)
+            {
+                if (g1 is Line || g1 is LineSegment)
+                    return intersects(g1, g0);
+
+                Circle a0 = (Circle)g0;
+
+                if (g1 is Circle)
+                {
+                    Circle a1 = (Circle)g1;
+                    double radSum = a0.Radius + a1.Radius;
+                    return a0.Center.distanceSq(a1.Center) <= radSum * radSum;
+                }
+            }
+
+
+            throw new NotImplementedException();
+        }
+    }
 
 
 
