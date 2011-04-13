@@ -1,0 +1,24 @@
+Metadata:
+type tactic
+name SideAssistTac
+
+Parameters:
+striker robot
+sideassist robot
+
+Objects:
+
+ballpoint (pointof ball)
+strikerYpt (getYcoord (pointof striker))
+strikerXpt (getXcoord (pointof striker))
+
+# Side Assist will be on opposite side of field as Striker
+# Y coord of Side Assist Point is aligned with goalpost
+# X coord of Side Assist Point is halfway between Striker's X and goal
+halfwayX (+ strikerXpt (/ (- (/ (const-double FIELD_WIDTH) 2) strikerXpt) 2))
+possidept (point halfwayX (const-double GOALIE_MAX_MIN_Y))
+negsidept (point halfwayX (- 0 (const-double GOALIE_MAX_MIN_Y)))
+
+
+Actions:
+(if_Action (< strikerYpt 0) (robotpointpointmovenoavoid sideassist possidept ballpoint) (robotpointpointmovenoavoid sideassist negsidept ballpoint))
