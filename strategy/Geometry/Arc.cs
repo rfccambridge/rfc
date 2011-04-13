@@ -11,7 +11,7 @@ namespace Robocup.Geometry
     /// they will essentially behave like circles, or negative angles, in which case the arc will go clockwise 
     /// instead of counterclockwise.
     /// </summary>
-    public class Arc
+    public class Arc : Geom
     {
         private const double TWOPI = Math.PI * 2;
 
@@ -113,6 +113,16 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Returns the translation of this arc by the given vector.
+        /// </summary>
+        public Arc translate(Vector2 v)
+        {
+            return this + v;
+        }
+        Geom Geom.translate(Vector2 v)
+        { return translate(v); }
+
+        /// <summary>
         /// Returns an arc that is this arc rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
@@ -122,6 +132,8 @@ namespace Robocup.Geometry
                 angleStart + angle, angleStop + angle, 
                 startPt.rotateAroundPoint(p,angle), stopPt.rotateAroundPoint(p,angle));
         }
+        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
+        { return rotateAroundPoint(p, angle); }
 
         public override string ToString()
         {

@@ -213,7 +213,7 @@ namespace Robocup.Plays
                         {
                             Line l1 = (Line)objects[0];
                             Line l2 = (Line)objects[1];
-                            return Intersections.intersect(l1, l2);
+                            return Intersections.intersection(l1, l2);
                             //return new Vector2(new LineLineIntersection(l1, l2));
                         });
             addFunction("linecircleintersection", "Line, Circle - Intersection",
@@ -223,7 +223,7 @@ namespace Robocup.Plays
                         {
                             Line line = (Line)objects[0];
                             Circle circle = (Circle)objects[1];
-                            return Intersections.intersect(line, circle, (int)objects[2]);
+                            return Intersections.intersection(line, circle, (int)objects[2]);
                             //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
                         });
             addFunction("circlecircleintersection", "Circle, Circle - Intersection",
@@ -233,7 +233,7 @@ namespace Robocup.Plays
                         {
                             Circle c1 = (Circle)objects[0];
                             Circle c2 = (Circle)objects[1];
-                            return Intersections.intersect(c1, c2, (int)objects[2]);
+                            return Intersections.intersection(c1, c2, (int)objects[2]);
                             //return new Vector2(new PlayCircleCircleIntersection(c1, c2, (int)objects[2]));
                         });
             addFunction("pointpointdistance", "Point, Point - Distance", "The distance between ~ and ~ (in meters)",

@@ -17,20 +17,39 @@ using System.Text;
  */
 namespace Robocup.Geometry
 {
+    /// <summary>
+    /// Standard interface for geometric objects
+    /// </summary>
+    public interface Geom
+    {
+        /// <summary>
+        /// Returns the translation of this object by the given vector
+        /// </summary>
+        Geom translate(Vector2 v);
+
+        /// <summary>
+        /// Returns the rotation of this object around the given point by the given angle
+        /// </summary>
+        Geom rotateAroundPoint(Vector2 p, double angle);
+
+    }
+
+
+
 
     public static class Intersections
     {
-        static public Vector2 intersect(Line l1, Line l2)
+        static public Vector2 intersection(Line l1, Line l2)
         {
-            return LineLineIntersection.Intersect(l1, l2);
+            return LineLineIntersection.Intersection(l1, l2);
         }
-        static public Vector2 intersect(Line l, Circle c, int whichintersection)
+        static public Vector2 intersection(Line l, Circle c, int whichintersection)
         {
-            return LineCircleIntersection.Intersect(l, c, whichintersection);
+            return LineCircleIntersection.Intersection(l, c, whichintersection);
         }
-        static public Vector2 intersect(Circle c1, Circle c2, int whichintersection)
+        static public Vector2 intersection(Circle c1, Circle c2, int whichintersection)
         {
-            return PlayCircleCircleIntersection.Intersect(c1, c2, whichintersection);
+            return PlayCircleCircleIntersection.Intersection(c1, c2, whichintersection);
         }
     }
 
@@ -54,7 +73,7 @@ namespace Robocup.Geometry
      */
     static public class PlayCircleCircleIntersection
     {
-        static public Vector2 Intersect(Circle c0, Circle c1, int whichintersection)
+        static public Vector2 Intersection(Circle c0, Circle c1, int whichintersection)
         {
             Vector2[] bothpoints = GetPoints(c0, c1);
 
@@ -116,7 +135,7 @@ namespace Robocup.Geometry
      */
     static public class LineCircleIntersection
     {
-        static public Vector2 Intersect(Line line, Circle circle, int whichintersection)
+        static public Vector2 Intersection(Line line, Circle circle, int whichintersection)
         {
             if (whichintersection == 1)
                 line = -line;
@@ -203,7 +222,7 @@ namespace Robocup.Geometry
     }
     static public class LineLineIntersection
     {
-        static public Vector2 Intersect(Line line0, Line line1)
+        static public Vector2 Intersection(Line line0, Line line1)
         {
             Vector2[] l0 = { line0.P0, line0.P1 };
             Vector2[] l1 = { line1.P0, line1.P1 };
