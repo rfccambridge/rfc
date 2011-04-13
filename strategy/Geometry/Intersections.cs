@@ -46,18 +46,42 @@ namespace Robocup.Geometry
                 Line a0 = (Line)g0;
                 if (g1 is Line)
                 {
+                    //Intersect if not parallel, or if parallel and each line contains the other's starting point.
+                    //Containment is tested both ways so in case of float imprecision, the function will at least
+                    //be symmetric.
                     Line a1 = (Line)g1;
                     return !a0.isParallelTo(a1) || (a0.contains(a1.P0) && a1.contains(a0.P0));
                 }
                 else if (g1 is LineSegment)
                 {
+                    //Test if the line segment's points are on different sides of the line, or are on the line.
                     LineSegment a1 = (LineSegment)g1;
                     return a0.signedDistance(a1.P0) * a0.signedDistance(a1.P1) <= 0;
                 }
                 else if (g1 is Circle)
                 {
+                    //Test if the minimum distance of the center of the circle is closer than the radius
                     Circle a1 = (Circle)g1;
                     return a0.distance(a1.Center) <= a1.Radius;
+                }
+                else if (g1 is Arc)
+                {
+                    //Test if the minimum distance of the center of the arc is closer than the radius
+                    //and the closest point is on the correct side of the line between the arc endpoints.
+                    //Taking the line from start->stop, the point should be on the RIGHT side (signed dist <= 0)
+                    //of the arc, except if the arc goes the otherway, in which case we flip it.
+                    Arc a1 = (Arc)g1;
+                    if (a0.distance(a1.Center) > a1.Radius) 
+                        return false;
+                    if (a1.isFullCircle())
+                        return true;
+                    if (a1.Angle == 0)
+                        return false;
+                    Line endpointLine = new Line(a1.StartPt, a1.StopPt);
+                    if (endpointLine.Direction == Vector2.ZERO)
+                        return false;
+                    Vector2 closestPoint = a0.closestPointTo(a1.Center);
+                    return endpointLine.signedDistance(closestPoint) * a1.Angle <= 0;
                 }
             }
             else if (g0 is LineSegment)
@@ -69,12 +93,14 @@ namespace Robocup.Geometry
 
                 if (g1 is LineSegment)
                 {
+                    //Test if both line segments' points are on opposite sides of the other's line.
                     LineSegment a1 = (LineSegment)g1;
                     return a0.Line.signedDistance(a1.P0) * a0.Line.signedDistance(a1.P1) <= 0 &&
                            a1.Line.signedDistance(a0.P0) * a1.Line.signedDistance(a0.P1) <= 0;
                 }
                 else if (g1 is Circle)
                 {
+                    //Test if the minimum distance of the center of the circle is closer than the radius
                     Circle a1 = (Circle)g1;
                     return a0.distance(a1.Center) <= a1.Radius;
                 }
@@ -88,6 +114,7 @@ namespace Robocup.Geometry
 
                 if (g1 is Circle)
                 {
+                    //Test if the circles' centers are closer than the sum of their radius.
                     Circle a1 = (Circle)g1;
                     double radSum = a0.Radius + a1.Radius;
                     return a0.Center.distanceSq(a1.Center) <= radSum * radSum;
