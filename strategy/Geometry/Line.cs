@@ -94,9 +94,7 @@ namespace Robocup.Geometry
         /// </summary>
         public double distance(Vector2 p)
         {
-            double dx = p1.X - p0.X;
-            double dy = p1.Y - p0.Y;
-            double mag = Math.Sqrt(dx * dx + dy * dy);
+            double mag = p1.distance(p0);
             double crossp = UsefulFunctions.crossproduct(p0, p1, p);
             double dist = crossp / mag;
             return Math.Abs(dist);
@@ -109,12 +107,18 @@ namespace Robocup.Geometry
         /// </summary>
         public double signedDistance(Vector2 p)
         {
-            double dx = p1.X - p0.X;
-            double dy = p1.Y - p0.Y;
-            double mag = Math.Sqrt(dx * dx + dy * dy);
+            double mag = p1.distance(p0);
             double crossp = UsefulFunctions.crossproduct(p1, p0, p);
             double dist = crossp / mag;
             return dist;
+        }
+
+        /// <summary>
+        /// Computes the point on the line that that is the closest to the given point
+        /// </summary>
+        public Vector2 closestPointTo(Vector2 p)
+        {
+            return projectionOntoLine(p);
         }
 
         /// <summary>
