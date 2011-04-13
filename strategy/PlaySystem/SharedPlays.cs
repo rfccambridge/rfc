@@ -82,7 +82,7 @@ namespace Robocup.PlaySystem
             double goalieXpos = goaliedist - (Field.FIELD_WIDTH / 2);
             Line vertgoalline = new Line(new Vector2(goalieXpos, Field.FIELD_HEIGHT),
                                          new Vector2(goalieXpos, -Field.FIELD_HEIGHT));
-            Vector2 goaliept = Intersections.intersect(ballgoalline, vertgoalline);
+            Vector2 goaliept = Intersections.intersection(ballgoalline, vertgoalline);
 
             // prevent the Y coordinate of the goalie point from being too high or too low
             Vector2 newgoaliept = new Vector2(goaliept.X, Math.Max(Math.Min(goaliept.Y, GOALIE_MAX_MIN_Y), -GOALIE_MAX_MIN_Y));
@@ -109,11 +109,11 @@ namespace Robocup.PlaySystem
             Line ballgoalline = new Line(ballpoint, Field.ourgoal);
             Circle goalperim = new Circle(Field.ourgoal, perimeter);
 
-            Vector2 point1 = Intersections.intersect(ballgoalline, goalperim, -1);
+            Vector2 point1 = Intersections.intersection(ballgoalline, goalperim, -1);
             Circle circle1 = new Circle(point1, TWO_MAN_WALL_DISTANCE_APART);
 
-            Vector2 twomanpt1 = Intersections.intersect(circle1, goalperim, -1);
-            Vector2 twomanpt2 = Intersections.intersect(circle1, goalperim, 1);
+            Vector2 twomanpt1 = Intersections.intersection(circle1, goalperim, -1);
+            Vector2 twomanpt2 = Intersections.intersection(circle1, goalperim, 1);
 
             // split the functionality of checking for kicking
             twomanwallOneRobot(state, twomanpt1);
@@ -157,7 +157,7 @@ namespace Robocup.PlaySystem
             Vector2 ballpoint = state.Predictor.GetBall().Position;
             Line ballgoalline = new Line(ballpoint, Field.ourgoal);
             Circle goalperim = new Circle(Field.ourgoal, distance);
-            Vector2 defenderpoint = Intersections.intersect(ballgoalline, goalperim, -1);
+            Vector2 defenderpoint = Intersections.intersection(ballgoalline, goalperim, -1);
 
             MoveClosest_1(state, defenderpoint, ballpoint);
         }
@@ -209,14 +209,14 @@ namespace Robocup.PlaySystem
             {
                 // the ball is close to the goal, find a good standby point
                 Circle theirgoalcircle = new Circle(Field.theirgoal, OFFENSE_STANDBY_DISTANCE);
-                Vector2 theirgoalpositivequad = Intersections.intersect(new Line(Field.theirgoal, Field.topCenter), theirgoalcircle, 1);
-                Vector2 theirgoalnegativequad = Intersections.intersect(new Line(Field.theirgoal, Field.bottomCenter), theirgoalcircle, 1);
+                Vector2 theirgoalpositivequad = Intersections.intersection(new Line(Field.theirgoal, Field.topCenter), theirgoalcircle, 1);
+                Vector2 theirgoalnegativequad = Intersections.intersection(new Line(Field.theirgoal, Field.bottomCenter), theirgoalcircle, 1);
                 support_point = (ballpoint.Y > 0) ? theirgoalnegativequad : theirgoalpositivequad;
             }
             else
             {
                 // the ball is far from the goal, find a support point to retrieve the ball after it is kicked
-                Vector2 balldestination = Intersections.intersect(new Line(ballpoint, Field.theirgoal), new Circle(ballpoint, 1), 1);
+                Vector2 balldestination = Intersections.intersection(new Line(ballpoint, Field.theirgoal), new Circle(ballpoint, 1), 1);
 
                 // support point is either above or below the point
                 if (state.Functions.pointAboveLine(supportRobot.Position, new Line(ballpoint, Field.theirgoal)))
@@ -250,7 +250,7 @@ namespace Robocup.PlaySystem
             Vector2 ballpoint = state.Predictor.GetBall().Position;
             Circle ballcircle = new Circle(ballpoint, .63);
             Line ballgoalline = new Line(ballpoint, Field.ourgoal);
-            Vector2 wall1pt = Intersections.intersect(ballgoalline, ballcircle, 1);
+            Vector2 wall1pt = Intersections.intersection(ballgoalline, ballcircle, 1);
 
             // First robot- guards the ball from GUARD_BALL_DISTANCE away
             if (numRobots > 0)
