@@ -24,26 +24,53 @@ namespace Robocup.Geometry
         private Vector2 startPt;
         private Vector2 stopPt;
 
+        /// <summary>
+        /// The center around which this arc revolves
+        /// </summary>
         public Vector2 Center
         {get { return center; }}
 
+        /// <summary>
+        /// The radius around of this arc around the center
+        /// </summary>
         public double Radius
         {get { return radius; }}
 
+        /// <summary>
+        /// The cartesian angle at which this arc starts
+        /// </summary>
         public double AngleStart
         {get { return angleStart; }}
 
+        /// <summary>
+        /// The cartesian angle at which this arc stops
+        /// </summary>
         public double AngleStop
         {get { return angleStop; }}
 
+        /// <summary>
+        /// The SIGNED angle of this arc, positive if counterclockwise, negative if clockwise 
+        /// </summary>
         public double Angle
         {get { return angleStop - angleStart; }}
 
+        /// <summary>
+        /// The point where this arc starts
+        /// </summary>
         public Vector2 StartPt
         {get { return startPt; }}
 
+        /// <summary>
+        /// The point where this arc stops
+        /// </summary>
         public Vector2 StopPt
         {get { return stopPt; }}
+
+        /// <summary>
+        /// The circle that this arc is a segment of
+        /// </summary>
+        public Circle Circle
+        { get { return new Circle(center, radius); } }
 
         private Arc(Vector2 center, double radius, double angleStart, double angleStop, Vector2 startPt, Vector2 stopPt)
         {
@@ -134,6 +161,15 @@ namespace Robocup.Geometry
         }
         Geom Geom.rotateAroundPoint(Vector2 p, double angle)
         { return rotateAroundPoint(p, angle); }
+
+        /// <summary>
+        /// Checks if this arc is essentially a circle (because its angle is >= 2Pi).
+        /// </summary>
+        public bool isFullCircle()
+        {
+            //Allow tiny difference to handle imprecision
+            return Math.Abs(Angle) >= TWOPI - 0.00001;
+        }
 
         public override string ToString()
         {
