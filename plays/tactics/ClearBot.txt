@@ -9,7 +9,7 @@ Objects:
 
 # constants
 CLEAR_DIST (const-double CLEAR_DIST)
-FIELD_WIDTH (const-double FIELD_WIDHT)
+FIELD_WIDTH (const-double FIELD_WIDTH)
 FIELD_HEIGHT (const-double FIELD_HEIGHT)
 
 ballpoint (pointof ball)
