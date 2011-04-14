@@ -13,11 +13,11 @@ namespace Robocup.Simulation
     public class PhysicsEngine : IPredictor
     {
         // TODO 189: Your job is to characterize this for different kick strengths
-        const double KICKED_BALL_SPEED = 4.2;  //In m/s
+        const double KICKED_BALL_SPEED = 4.3;  //In m/s
 
         const double BALL_ROBOT_ELASTICITY = 0.5; //The fraction of the speed kept when bouncing off a robot
         const double BALL_WALL_ELASTICITY = 0.9; //The fraction of the speed kept when bouncing off a wall
-        const double BALL_FRICTION = 1.0; //The amount of speed lost per second by the ball
+        const double BALL_FRICTION = .76; //The amount of speed lost per second by the ball
 
         const double ROBOT_RADIUS = 0.08;
         const double ROBOT_FRONT_RADIUS = 0.055;
@@ -491,7 +491,7 @@ namespace Robocup.Simulation
                             const int BREAKBEAM_CHECK_PERIOD = 100; // ms
                             const double BREAKBEAM_TIMEOUT = 10; // s
 
-                            double varspeed = 0;
+                            double varspeed = 4.3;
 
 
                             if (!break_beams[team].ContainsKey(command.ID))
@@ -526,31 +526,32 @@ namespace Robocup.Simulation
                                     //                  " Distsq: " + kickerPosition.distanceSq(ballInfo.Position));
                                     if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS_SQ)
                                     {
-
-
-                                        switch (command.kickerStrength)
+                                        
+                                        
+                                        switch (command.KickerStrength)
                                         {
 
                                             case 1:
+                                                varspeed = 0;
                                                 break;
                                             case 2:
-                                                varspeed = 1.5;
+                                                varspeed = 1.81;
                                                 break;
                                             case 3:
-                                                varspeed = 2.9;
+                                                varspeed = 2.88;
                                                 break;
                                             case 4:
-                                                varspeed = 3.5;
+                                                varspeed = 3.33;
                                                 break;
                                             case 5:
-                                                varspeed = 4.2;
+                                                varspeed = 4.25;
                                                 break;
                                             default:
-                                                varspeed = 4.2;
+                                                varspeed = 4.3;
                                                 break;
 
                                         }
-
+                                        
                                         double ballVx = (double)(varspeed) * Math.Cos(robot.Orientation);
                                         double ballVy = (double)(varspeed) * Math.Sin(robot.Orientation);
                                         Vector2 newVelocity = new Vector2(ballVx, ballVy);
