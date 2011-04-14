@@ -9,14 +9,14 @@ Objects:
 
 # constants
 CLEAR_DIST (const-double CLEAR_DIST)
-FIELD_WIDTH (const-dobule FIELD_WIDHT)
+FIELD_WIDTH (const-double FIELD_WIDHT)
 FIELD_HEIGHT (const-double FIELD_HEIGHT)
 
 ballpoint (pointof ball)
 standbypt (point -1.0 0.0)
 cir (circle ballpoint 0.3)
 
-leftcorner (point FIELD_WIDTH -FIELD_HEIGHT)
+leftcorner (point FIELD_WIDTH (- 0 FIELD_HEIGHT))
 rightcorner (point FIELD_WIDTH FIELD_HEIGHT)
 shotongoal (theirGoalBestShot)
 target (if_point (pathClear ballpoint shotongoal CLEAR_DIST) shotongoal (if_point (pathClear ballpoint leftcorner CLEAR_DIST) leftcorner rightcorner))
