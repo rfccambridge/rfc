@@ -670,7 +670,7 @@ namespace Robocup.Plays
                     Circle c2 = (Circle)clickedCircles[1].getValue(tick, null);
                     play.AddPlayObject(new DesignerExpression(Function.getFunction("circlecircleintersection"),
                         clickedCircles[0], clickedCircles[1],
-                        PlayCircleCircleIntersection.WhichIntersection(c1, c2, clickPoint)));
+                        CircleCircleIntersection.WhichIntersection(c1, c2, clickPoint)));
                 }
                 else if (numcirclesclicked == 1 && numlinesclicked == 1)
                 {
