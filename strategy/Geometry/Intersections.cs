@@ -45,30 +45,44 @@ namespace Robocup.Geometry
         /// </summary>
         static public bool intersects(Geom g0, Geom g1)
         {
+            //This function is a bit ugly, but it works...
+            //All it does is dispatch to the appropriate shape-specific intersection testing
+            if (g0 is Vector2)
+            {
+                if (g1 is Vector2)          return intersects((Vector2)g0, (Vector2)g1);
+                else if (g1 is Line)        return intersects((Vector2)g0, (Line)g1);
+                else if (g1 is LineSegment) return intersects((Vector2)g0, (LineSegment)g1);
+                else if (g1 is Circle)      return intersects((Vector2)g0, (Circle)g1);
+                else if (g1 is Arc)         return intersects((Vector2)g0, (Arc)g1);
+            }
             if (g0 is Line)
             {
-                if (g1 is Line)             return intersects((Line)g0, (Line)g1);
+                if (g1 is Vector2)          return intersects((Line)g0, (Vector2)g1);
+                else if (g1 is Line)        return intersects((Line)g0, (Line)g1);
                 else if (g1 is LineSegment) return intersects((Line)g0, (LineSegment)g1);
                 else if (g1 is Circle)      return intersects((Line)g0, (Circle)g1);
                 else if (g1 is Arc)         return intersects((Line)g0, (Arc)g1);
             }
             else if (g0 is LineSegment)
             {
-                if (g1 is Line)             return intersects((LineSegment)g0, (Line)g1);
+                if (g1 is Vector2)          return intersects((LineSegment)g0, (Vector2)g1);
+                else if (g1 is Line)        return intersects((LineSegment)g0, (Line)g1);
                 else if (g1 is LineSegment) return intersects((LineSegment)g0, (LineSegment)g1);
                 else if (g1 is Circle)      return intersects((LineSegment)g0, (Circle)g1);
                 else if (g1 is Arc)         return intersects((LineSegment)g0, (Arc)g1);
             }
             else if (g0 is Circle)
             {
-                if (g1 is Line)             return intersects((Circle)g0, (Line)g1);
+                if (g1 is Vector2)          return intersects((Circle)g0, (Vector2)g1);
+                else if (g1 is Line)        return intersects((Circle)g0, (Line)g1);
                 else if (g1 is LineSegment) return intersects((Circle)g0, (LineSegment)g1);
                 else if (g1 is Circle)      return intersects((Circle)g0, (Circle)g1);
                 else if (g1 is Arc)         return intersects((Circle)g0, (Arc)g1);
             }
             else if (g0 is Arc)
             {
-                if (g1 is Line)             return intersects((Arc)g0, (Line)g1);
+                if (g1 is Vector2)          return intersects((Arc)g0, (Vector2)g1);
+                else if (g1 is Line)        return intersects((Arc)g0, (Line)g1);
                 else if (g1 is LineSegment) return intersects((Arc)g0, (LineSegment)g1);
                 else if (g1 is Circle)      return intersects((Arc)g0, (Circle)g1);
                 else if (g1 is Arc)         return intersects((Arc)g0, (Arc)g1);
@@ -76,6 +90,39 @@ namespace Robocup.Geometry
 
             throw new NotImplementedException();
         }
+
+        //VECTOR2 VS EVERYTHING ELSE------------------------------------------------------------------------
+
+        static public bool intersects(Vector2 a0, Vector2 a1)
+        { return a0 == a1; }
+        static public bool intersects(Vector2 a0, Line a1)
+        { return a1.signedDistance(a0) == 0; }
+        static public bool intersects(Vector2 a0, LineSegment a1)
+        { return a1.distance(a0) == 0; }
+        static public bool intersects(Vector2 a0, Circle a1)
+        { return a1.contains(a0); }
+        static public bool intersects(Vector2 a0, Arc a1)
+        {
+            if (a1.Center.distanceSq(a0) != a1.Radius * a1.Radius)
+                return false;
+            Vector2 dir = a0 - a1.Center;
+            if (dir == Vector2.ZERO)
+                return true;
+            double angle = dir.cartesianAngle();
+            if (a1.angleIsInArc(angle))
+                return true;
+            return false;
+        }
+        static public bool intersects(Line a0, Vector2 a1)
+        { return intersects(a1, a0); }
+        static public bool intersects(LineSegment a0, Vector2 a1)
+        { return intersects(a1, a0); }
+        static public bool intersects(Circle a0, Vector2 a1)
+        { return intersects(a1, a0); }
+        static public bool intersects(Arc a0, Vector2 a1)
+        { return intersects(a1, a0); }
+
+        //LINE VS EVERYTHING ELSE------------------------------------------------------------------------
 
         static public bool intersects(Line a0, Line a1)
         {
@@ -122,6 +169,8 @@ namespace Robocup.Geometry
         static public bool intersects(Arc a0, Line a1)
         { return intersects(a1, a0); }
 
+        //LINESEGMENT VS EVERYTHING ELSE------------------------------------------------------------------------
+
         static public bool intersects(LineSegment a0, LineSegment a1)
         {
             //Test if both line segments' points are on opposite sides of the other's line.
@@ -161,6 +210,8 @@ namespace Robocup.Geometry
         static public bool intersects(Arc a0, LineSegment a1)
         { return intersects(a1, a0); }
 
+        //CIRCLE VS EVERYTHING ELSE------------------------------------------------------------------------
+
         static public bool intersects(Circle a0, Circle a1)
         {
             //Test if the circles' centers are closer than the sum of their radius.
@@ -190,6 +241,8 @@ namespace Robocup.Geometry
         }
         static public bool intersects(Arc a0, Circle a1)
         { return intersects(a1, a0); }
+
+        //ARC VS EVERYTHING ELSE------------------------------------------------------------------------
 
         static public bool intersects(Arc a0, Arc a1)
         {

@@ -10,7 +10,7 @@ namespace Robocup.Geometry
     /// An immutable class that represents a point in 2D space, or a vector in 2D space.
     /// </summary>
     [Serializable]
-    public class Vector2
+    public class Vector2 : Geom
     {
         private readonly double x;
 
@@ -298,6 +298,8 @@ namespace Robocup.Geometry
         {
             return this + v;
         }
+        Geom Geom.translate(Vector2 v)
+        { return translate(v); }
 
         /// <summary>
         /// Returns a point that is this point rotated a given number of radians in the
@@ -307,7 +309,8 @@ namespace Robocup.Geometry
         {
             return (this - p).rotate(angle) + p;
         }
-
+        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
+        { return rotateAroundPoint(p, angle); }
 
         /// <summary>
         /// Returns a vector that is this vector rotated 1/4 of a turn in the
