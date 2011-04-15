@@ -17,11 +17,12 @@ namespace Robocup.MotionControl
 
         const double MAX_TREE_SIZE = 600;       //Max nodes in tree before we give up
         const double MAX_PATH_TRIES = 200;       //Max number of attempts to extend paths before we give up
-        const double CLOSE_ENOUGH_TO_GOAL = 0.001; //We're done when we get this close to the goal.
+        const double CLOSE_ENOUGH_TO_GOAL = 0.001; //We're completely done when we get this close to the goal.
+        const double DIST_FOR_SUCCESS = 1.3; //We're done for now when we get this much closer to the goal than we are
 
         const double ROBOT_MAX_TIME_EXTRAPOLATED = 0.7; //Extrapolate other robots' movements up to this amount of seconds.
 
-        const double RRT_ROBOT_AVOID_DIST = 0.18;  //Avoid robot distance
+        const double RRT_ROBOT_AVOID_DIST = 0.185;  //Avoid robot distance
 
         //Field boundaries
         static double FIELD_XMIN;
@@ -260,7 +261,7 @@ namespace Robocup.MotionControl
             int stepsLeft = 1000;
             double closestSoFar = 1000;
             //double closeEnoughToGoal = CLOSE_ENOUGH_TO_GOAL; //TODO
-            double closeEnoughToGoal = (desiredPosition - currentState.Position).magnitude() - 1.0;
+            double closeEnoughToGoal = (desiredPosition - currentState.Position).magnitude() - DIST_FOR_SUCCESS;
             if (closeEnoughToGoal < CLOSE_ENOUGH_TO_GOAL)
                 closeEnoughToGoal = CLOSE_ENOUGH_TO_GOAL;
 
