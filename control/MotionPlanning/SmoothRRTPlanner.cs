@@ -378,11 +378,13 @@ namespace Robocup.MotionControl
             catch (ApplicationException e)
             { return new List<Vector2>(); }
 
-            BallInfo ball = new BallInfo(predictor.GetBall());
+            BallInfo ball = predictor.GetBall();
             List<RobotInfo> robots = predictor.GetRobots();
 
             if (ball != null)
             {
+                ball = new BallInfo(ball);
+
                 // Console.WriteLine("Warning: told to move to a point closer to the ball than " + avoidBallRadius +
                 //     " at the same time as staying away from the ball!");
 
