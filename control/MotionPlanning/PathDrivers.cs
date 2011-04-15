@@ -1494,7 +1494,14 @@ namespace Robocup.MotionControl
 		{
             Team team = path.Team;
 			int id = path.ID;
+
+            if (path == null)
+                return new WheelSpeeds();
+
 			RobotInfo desiredState = path.getFinalState();
+
+            if(path.Waypoints.Count <= 0 || desiredState == null)
+                return new WheelSpeeds();
 
 			RobotInfo curInfo;
 			try
