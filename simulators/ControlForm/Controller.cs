@@ -178,26 +178,26 @@ namespace Robocup.ControlForm
                 //}
 
                 RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.START_VARIABLE_CHARGING);
-                command.kickerStrength = strength;
+                command.KickerStrength = (byte)strength;
                 _cmdSender.Post(command);
                 //Console.WriteLine("Controller: robot {0} is charging for a break-beam kick", robotID);
 
                 _charging.Add(robotID);
                 _lastCharge[robotID] = currTime;
 
-                //After 5*charge time, stop charging and dribbler to save battery
-                System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
-                {
-                    _timers.Remove(robotID);
+                ////After 5*charge time, stop charging and dribbler to save battery
+                //System.Threading.Timer t = new System.Threading.Timer(delegate(object o)
+                //{
+                //    _timers.Remove(robotID);
 
-                    command = new RobotCommand(robotID, RobotCommand.Command.STOP_CHARGING);
-                    _cmdSender.Post(command);
-                    //Console.WriteLine("Controller: robot {0} stopped charging", robotID);
+                //    command = new RobotCommand(robotID, RobotCommand.Command.STOP_CHARGING);
+                //    _cmdSender.Post(command);
+                //    //Console.WriteLine("Controller: robot {0} stopped charging", robotID);
 
-                    _charging.Remove(robotID);
-                }, null, 5 * CHARGE_TIME, System.Threading.Timeout.Infinite);
-                if(_timers.ContainsKey(robotID))
-                    _timers[robotID] = t;
+                //    _charging.Remove(robotID);
+                //}, null, 5 * CHARGE_TIME, System.Threading.Timeout.Infinite);
+                //if(_timers.ContainsKey(robotID))
+                //    _timers[robotID] = t;
             }
 		}
 
@@ -273,7 +273,7 @@ namespace Robocup.ControlForm
         public void BreakBeam(int robotID, int strength)
         {
             RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
-            command.kickerStrength = strength;
+            command.KickerStrength = (byte)strength;
             _cmdSender.Post(command);
         }
 
