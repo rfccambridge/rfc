@@ -8,21 +8,22 @@ namespace Robocup.Geometry
     /// <summary>
     /// A robot shape. Circular arc, with a flat front part.
     /// </summary>
-    public class RobotShape : Geom
+    public class RobotShape : MultiGeom
     {
-        private Arc arc;
-        private LineSegment segment;
+        private const int ARC_NUM = 0;
+        private const int SEG_NUM = 1;
 
         public Arc Arc
-        { get { return arc; } }
+        { get { return (Arc)geoms[ARC_NUM]; } }
 
         public LineSegment Segment
-        { get { return segment; } }
+        { get { return (LineSegment)geoms[SEG_NUM]; } }
 
         private RobotShape(Arc arc, LineSegment segment)
         {
-            this.arc = arc;
-            this.segment = segment;
+            this.geoms = new Geom[2];
+            this.geoms[ARC_NUM] = arc;
+            this.geoms[SEG_NUM] = segment;
         }
 
         /// <summary>
@@ -32,8 +33,9 @@ namespace Robocup.Geometry
         {
             double angle = Math.Acos(frontPlateRadius / radius);
 
-            this.arc = new Arc(center, radius, orientation - angle, orientation + angle);
-            this.segment = new LineSegment(arc.StartPt, arc.StopPt);
+            this.geoms = new Geom[2];
+            this.geoms[ARC_NUM] = new Arc(center, radius, orientation - angle, orientation + angle);
+            this.geoms[SEG_NUM] = new LineSegment(Arc.StartPt, Arc.StopPt);
         }
 
         /// <summary>
@@ -41,7 +43,7 @@ namespace Robocup.Geometry
         /// </summary>
         public static RobotShape operator +(RobotShape rs, Vector2 v)
         {
-            return new RobotShape(rs.arc + v, rs.segment + v);
+            return (RobotShape)((MultiGeom)rs + v);
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace Robocup.Geometry
         /// </summary>
         public static RobotShape operator +(Vector2 v, RobotShape rs)
         {
-            return new RobotShape(v + rs.arc, v + rs.segment);
+            return (RobotShape)(v + (MultiGeom)rs);
         }
 
         /// <summary>
@@ -57,34 +59,30 @@ namespace Robocup.Geometry
         /// </summary>
         public static RobotShape operator -(RobotShape rs, Vector2 v)
         {
-            return new RobotShape(rs.arc - v, rs.segment - v);
+            return (RobotShape)((MultiGeom)rs - v);
         }
 
         /// <summary>
         /// Returns the translation of this line segment by the given vector.
         /// </summary>
-        public RobotShape translate(Vector2 v)
+        new public RobotShape translate(Vector2 v)
         {
             return this + v;
         }
-        Geom Geom.translate(Vector2 v)
-        { return translate(v); }
 
         /// <summary>
         /// Returns a line segment that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public RobotShape rotateAroundPoint(Vector2 p, double angle)
+        new public RobotShape rotateAroundPoint(Vector2 p, double angle)
         {
-            return new RobotShape(arc.rotateAroundPoint(p, angle), segment.rotateAroundPoint(p, angle));
+            return (RobotShape)(((MultiGeom)this).rotateAroundPoint(p, angle));
         }
-        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
-        { return rotateAroundPoint(p, angle); }
 
 
         public override string ToString()
         {
-            return "RobotShape[" + arc + ", " + segment + "]";
+            return "RobotShape[" + geoms[ARC_NUM].ToString() + ", " + geoms[SEG_NUM].ToString() + "]";
         }
     }
 }

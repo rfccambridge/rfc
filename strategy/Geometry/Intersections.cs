@@ -47,6 +47,14 @@ namespace Robocup.Geometry
         {
             //This function is a bit ugly, but it works...
             //All it does is dispatch to the appropriate shape-specific intersection testing
+
+            //Multigeoms
+            if (g0 is MultiGeom)
+                return intersects((MultiGeom)g0, g1);
+            else if (g1 is MultiGeom)
+                return intersects((MultiGeom)g1, g0);
+
+            //Everything else
             if (g0 is Vector2)
             {
                 if (g1 is Vector2)          return intersects((Vector2)g0, (Vector2)g1);
@@ -89,6 +97,24 @@ namespace Robocup.Geometry
             }
 
             throw new NotImplementedException();
+        }
+
+        //MULTIGEOMS---------------------------------------------------------------------------------------
+        static public bool intersects(MultiGeom a0, Geom a1)
+        {
+            for (int i = 0; i < a0.Qty; i++)
+                if (intersects(a0[i], a1))
+                    return true;
+
+            return false;
+        }
+        static public bool intersects(Geom a0, MultiGeom a1)
+        {
+            for (int i = 0; i < a1.Qty; i++)
+                if (intersects(a1[i], a0))
+                    return true;
+
+            return false;
         }
 
         //VECTOR2 VS EVERYTHING ELSE------------------------------------------------------------------------
