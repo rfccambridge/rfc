@@ -363,7 +363,7 @@ namespace Robocup.ControlForm
                 RobotPath newPath;
                 try
                 {
-                    newPath = _planner.PlanMotion(_team, i, desired, _predictor, avoidBallDist);
+                    newPath = _planner.PlanMotion(_team, i, desired, _predictor, avoidBallDist, oldPath);
                 }
                 catch (Exception e)
                 {

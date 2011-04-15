@@ -617,7 +617,8 @@ namespace Robocup.MotionControl
         }*/
 
 
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath)
         {
             //Try to find myself
             RobotInfo curinfo;

@@ -182,7 +182,8 @@ namespace Robocup.MotionControl
             if (goingToPoint1)
             {
                 RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
-            	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS);
+            	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS,
+                    null);
             	speeds = dumbPlanner.FollowPath(path, predictor).wheel_speeds;
                 //why was regular Planner being used here? it seems inconsistent, sometimes using one instance of the bugNavigator and sometimes another.
                     //regularPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
@@ -190,7 +191,7 @@ namespace Robocup.MotionControl
             else
             {
                 RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, id);
-            	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0);
+            	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0, null);
 				speeds = dumbPlanner.FollowPath(path,predictor).wheel_speeds;// This is the "normal one"
 
                 // FOR NOW!!! Go forwards rather than use PID feedback. Meant to fix forward curving problem
