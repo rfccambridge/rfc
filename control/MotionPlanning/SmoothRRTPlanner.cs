@@ -21,7 +21,7 @@ namespace Robocup.MotionControl
 
         const double ROBOT_MAX_TIME_EXTRAPOLATED = 0.7; //Extrapolate other robots' movements up to this amount of seconds.
 
-        const double RRT_ROBOT_AVOID_DIST = 0.165;  //Avoid robot distance
+        const double RRT_ROBOT_AVOID_DIST = 0.18;  //Avoid robot distance
 
         //Field boundaries
         static double FIELD_XMIN;
@@ -368,8 +368,8 @@ namespace Robocup.MotionControl
         }
 
         //Try a bunch of paths and take the best one
-        public List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState, double avoidBallRadius,
-            RobotPath oldPath)
+        public List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState, 
+            double avoidBallRadius, RobotPath oldPath)
         {
             RobotInfo currentState;
             try
@@ -377,7 +377,7 @@ namespace Robocup.MotionControl
             catch (ApplicationException e)
             { return new List<Vector2>(); }
 
-            BallInfo ball = predictor.GetBall();
+            BallInfo ball = new BallInfo(predictor.GetBall());
             List<RobotInfo> robots = predictor.GetRobots();
 
             double ballDistanceFromDesired = ball.Position.distance(desiredState.Position);
@@ -385,7 +385,22 @@ namespace Robocup.MotionControl
             {
                 // Console.WriteLine("Warning: told to move to a point closer to the ball than " + avoidBallRadius +
                 //     " at the same time as staying away from the ball!");
-                avoidBallRadius = ballDistanceFromDesired - 0.005;
+
+                //Recenter the ball avoid position, and lower the radius
+                Vector2 ballToDesired = desiredState.Position - ball.Position;
+                if(ballToDesired.magnitude() < 1e-6)
+                    avoidBallRadius = 0;
+                else
+                {
+                    Vector2 ballToAlmostDesired = ballToDesired * 0.95;
+                    Vector2 ballAwayFromDesired = (-ballToDesired).normalizeToLength(avoidBallRadius);
+
+                    Vector2 radPos1 = ballToAlmostDesired + ball.Position;
+                    Vector2 radPos2 = ballAwayFromDesired + ball.Position;
+                    Vector2 average = (radPos1 + radPos2)/2.0;
+                    avoidBallRadius = average.distance(radPos1);
+                    ball.Position = average;
+                }
             }
 
             List<Vector2> bestPath = null;
