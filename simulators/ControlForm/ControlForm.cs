@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using Robocup.Utilities;
+using Robocup.Geometry;
 using Robocup.Core;
 using Robocup.CoreRobotics;
 using Robocup.Plays;

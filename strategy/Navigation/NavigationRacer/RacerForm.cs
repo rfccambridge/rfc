@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using Navigation;
 
+using Robocup.Geometry;
 using Robocup.Core;
 using Robocup.Utilities;
 using System.IO;

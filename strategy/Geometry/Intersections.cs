@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Robocup.Core;
 
 /*
  * This file stores all the code for determining the intersection of two lines/circles.  Since there's

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Timers;
+using Robocup.Geometry;
 using Robocup.Core;
 using Robocup.Utilities;
 using Robocup.MotionControl;

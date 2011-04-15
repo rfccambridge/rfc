@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Robocup.Geometry;
 using Robocup.Core;
 using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 using Robocup.CoreRobotics;

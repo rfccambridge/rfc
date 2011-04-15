@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Robocup.Geometry;
 using Robocup.Core;
 using Robocup.Utilities;
 using Robocup.MotionControl;

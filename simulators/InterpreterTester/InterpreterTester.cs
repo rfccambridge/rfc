@@ -14,6 +14,7 @@ using System.IO;
 using Robocup.Plays;
 using Robocup.Utilities;
 
+using Robocup.Geometry;
 using Robocup.Core;
 
 //using Navigator = Navigation.Examples.LookAheadPotential;
