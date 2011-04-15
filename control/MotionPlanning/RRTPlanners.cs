@@ -388,7 +388,7 @@ namespace Robocup.MotionControl
 
             itemsToLog.Add(wheelSpeeds);
 
-            MotionPlanningResults results = new MotionPlanningResults(wheelSpeeds, nextWayPoint);
+            MotionPlanningResults results = new MotionPlanningResults(wheelSpeeds);
             
             itemsToLog.Add(path);
 

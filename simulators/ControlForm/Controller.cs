@@ -417,9 +417,7 @@ namespace Robocup.ControlForm
                     _fieldDrawer.DrawArrow(_team, i, ArrowType.Destination, desired.Position);
                 }
                 */
-
                 #endregion
-
             }
         }
 	}
