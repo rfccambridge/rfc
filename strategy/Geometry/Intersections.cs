@@ -177,7 +177,7 @@ namespace Robocup.Geometry
                 return false;
 
             //Just compute the intersections and test if they are within the desired angle range.
-            Vector2[] intersections = PlayCircleCircleIntersection.BothIntersections(a0, a1.Circle);
+            Vector2[] intersections = CircleCircleIntersection.BothIntersections(a0, a1.Circle);
             for (int i = 0; i < intersections.Length; i++)
             {
                 Vector2 dir = intersections[i] - a1.Center;
@@ -202,7 +202,7 @@ namespace Robocup.Geometry
                 return false;
 
             //Just compute the intersections and test if they are within the desired angle range.
-            Vector2[] intersections = PlayCircleCircleIntersection.BothIntersections(a0.Circle, a1.Circle);
+            Vector2[] intersections = CircleCircleIntersection.BothIntersections(a0.Circle, a1.Circle);
             for (int i = 0; i < intersections.Length; i++)
             {
                 Vector2 dir0 = intersections[i] - a0.Center;
@@ -241,7 +241,7 @@ namespace Robocup.Geometry
         }
         static public Vector2 intersection(Circle c1, Circle c2, int whichintersection)
         {
-            return PlayCircleCircleIntersection.Intersection(c1, c2, whichintersection);
+            return CircleCircleIntersection.Intersection(c1, c2, whichintersection);
         }
     }
 
@@ -263,7 +263,7 @@ namespace Robocup.Geometry
      * whichintersection = 1 : Return the intersection on the left side of the line p0 -> p1
      * whichintersection = -1 : Return the intersection on the right side of the line p0 -> p1
      */
-    static public class PlayCircleCircleIntersection
+    static public class CircleCircleIntersection
     {
         static public Vector2[] BothIntersections(Circle c0, Circle c1)
         {
