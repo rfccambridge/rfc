@@ -80,6 +80,11 @@ namespace Robocup.Geometry
         }
 
 
+        public bool contains(Vector2 p)
+        {
+            return Arc.Center.distanceSq(p) <= Arc.Radius * Arc.Radius && Segment.Line.signedDistance(p) <= 0;
+        }
+
         public override string ToString()
         {
             return "RobotShape[" + geoms[ARC_NUM].ToString() + ", " + geoms[SEG_NUM].ToString() + "]";

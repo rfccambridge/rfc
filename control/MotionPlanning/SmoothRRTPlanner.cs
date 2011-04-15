@@ -9,6 +9,63 @@ using Robocup.Geometry;
 
 namespace Robocup.MotionControl
 {
+    public class MovingShape
+    {
+        public const double RRT_ROBOT_RADIUS = 0.10;
+        public const double RRT_FRONT_PLATE_RADIUS = 0.7;
+
+        public Geom geom;
+
+        public Vector2 center;
+        public double orientation;
+        public Vector2 velocity;
+        public double boundingRadius;
+        public double angularVelocity;
+
+        public MovingShape(MovingShape other)
+        {
+            this.geom = other.geom;
+            this.center = other.center;
+            this.orientation = other.orientation;
+            this.velocity = other.velocity;
+            this.boundingRadius = other.boundingRadius;
+            this.angularVelocity = other.angularVelocity;
+        }
+
+        public MovingShape(Geom geom, Vector2 center, double orientation, Vector2 velocity, double boundingRadius, double angularVelocity)
+        {
+            this.geom = geom;
+            this.center = center;
+            this.orientation = orientation;
+            this.velocity = velocity;
+            this.boundingRadius = boundingRadius;
+            this.angularVelocity = angularVelocity;
+        }
+
+        public Geom getMovedShape(double dt)
+        {
+            return geom.rotateAroundPoint(center, dt * angularVelocity).translate(dt * velocity);
+        }
+
+
+        public MovingShape getMoved(double dt)
+        {
+            return new MovingShape(getMovedShape(dt), center + dt * velocity,
+                orientation + dt * angularVelocity, velocity, boundingRadius, angularVelocity);
+        }
+
+        public MovingShape(RobotInfo info)
+        {
+            this.geom = new Circle(info.Position, RRT_ROBOT_RADIUS);
+            //this.geom = new RobotShape(info.Position, RRT_ROBOT_RADIUS, info.Orientation, RRT_FRONT_PLATE_RADIUS);
+            this.center = info.Position;
+            this.orientation = info.Orientation;
+            this.velocity = info.Velocity;
+            this.boundingRadius = RRT_ROBOT_RADIUS;
+            this.angularVelocity = 0;
+        }
+    }
+
     public class SmoothRRTPlanner : IPathPlanner
     {
         const double TIME_STEP = 0.12;           //Time step in secs, with velocity determines RRT extension length
@@ -20,8 +77,6 @@ namespace Robocup.MotionControl
         const double CLOSE_ENOUGH_TO_GOAL = 0.001; //We're done when we get this close to the goal.
 
         const double ROBOT_MAX_TIME_EXTRAPOLATED = 0.7; //Extrapolate other robots' movements up to this amount of seconds.
-
-        const double RRT_ROBOT_AVOID_DIST = 0.165;  //Avoid robot distance
 
         //Field boundaries
         static double FIELD_XMIN;
@@ -99,74 +154,49 @@ namespace Robocup.MotionControl
             return (nextVel - node.info.Velocity).magnitudeSq() <= MAX_ACCEL_PER_STEP * MAX_ACCEL_PER_STEP;
         }
 
-        bool IntersectsObstacle(Vector2 p, Vector2 obsPos, double obsRadius, Vector2 rayUnit)
+        bool IntersectsObstacle(MovingShape robot, MovingShape obstacle)
         {
-            return rayUnit * (obsPos - p) >= 0 && obsPos.distanceSq(p) < obsRadius * obsRadius;
+            return robot.velocity * (obstacle.center - robot.center) > 0 && GeomFuncs.intersects(robot.geom, obstacle.geom);
         }
 
-        bool IntersectsObstacle(Vector2 src, Vector2 dest, Vector2 rayUnit, double rayLen, Vector2 obsPos, double obsRadius)
+        bool IntersectsObstacle(MovingShape robot, MovingShape obstacle, double time, double dt)
         {
             //We consider a step okay if it moves away from the obstacle, despite intersecting right now.
-            if (rayUnit * (obsPos - src) <= 0)
+            if (robot.velocity * (obstacle.center - robot.center) <= 0)
                 return false;
 
-            if (obsPos.distanceSq(src) < obsRadius * obsRadius)
-                return true;
-            if (obsPos.distanceSq(dest) < obsRadius * obsRadius)
-                return true;
-
-            //See if it intersects in the middle...
-            Vector2 srcToObs = obsPos - src;
-            double parallelDist = srcToObs * rayUnit;
-            if (parallelDist <= 0 || parallelDist >= rayLen)
+            //A simple bounding test to see if we could possibly ever intersect
+            if (robot.boundingRadius + obstacle.boundingRadius + dt * (robot.velocity - obstacle.velocity).magnitude()
+                < (robot.center - obstacle.center).magnitude())
                 return false;
 
-            double perpDist = Math.Abs(Vector2.cross(srcToObs, rayUnit));
-            if (perpDist < obsRadius)
-                return true;
-
+            //Test points along the step
+            int NUM_TO_TEST = 8;
+            for (int i = 0; i < NUM_TO_TEST; i++)
+            {
+                Geom r = robot.getMovedShape(dt * (double)i / NUM_TO_TEST);
+                double obsTime = Math.Min(time + dt * (double)i / NUM_TO_TEST, ROBOT_MAX_TIME_EXTRAPOLATED);
+                Geom o = obstacle.getMovedShape(obsTime);
+                //Geom o = obstacle.geom;
+                if (GeomFuncs.intersects(r, o))
+                    return true;
+                if (r is RobotShape && ((RobotShape)r).contains(obstacle.center + obsTime * obstacle.velocity))
+                    return true;
+            }
             return false;
         }
 
-        bool IsAllowedByObstacles(RobotInfo currentState, Vector2 src, Vector2 nextSegment, double curTime, BallInfo ball, List<RobotInfo> robots, double avoidBallRadius)
+        bool IsAllowedByObstacles(MovingShape robot, List<MovingShape> obstacles, double time, double dt)
         {
-            Vector2 dest = src + nextSegment;
-            Vector2 ray = dest - src;
-            if (ray.magnitudeSq() < 1e-16)
-                return true;
-
-            Vector2 rayUnit = ray.normalizeToLength(1.0);
-            double rayLen = ray.magnitude();
-
             //Avoid all robots, except myself
-            foreach (RobotInfo info in robots)
+            Console.WriteLine("Robot " + robot.center + " " + (robot.center + robot.velocity * dt));
+            foreach (MovingShape obstacle in obstacles)
             {
-                if (info.Team != currentState.Team || info.ID != currentState.ID)
-                {
-                    //Extrapolate the robot's position into the future.
-                    Vector2 obsPos = info.Position;
-                    double time = Math.Max(curTime, ROBOT_MAX_TIME_EXTRAPOLATED);
-                    obsPos += info.Velocity * time;
-
-                    if (IntersectsObstacle(src, dest, rayUnit, rayLen, obsPos, RRT_ROBOT_AVOID_DIST))
-                    { return false; }
-
-                    //It's also bad if the obstacle would collide with us next turn, by virtue of moving...
-                    //But it's still okay if we're moving away from it.
-                    Vector2 obsPosNext = obsPos += info.Velocity * TIME_STEP;
-                    if (IntersectsObstacle(dest, obsPosNext, RRT_ROBOT_AVOID_DIST, rayUnit))
-                    { return false; }
-                }
+                if (obstacle.geom is Circle) Console.WriteLine("Obstacle " + obstacle.center + " " + obstacle.boundingRadius);
+                if (IntersectsObstacle(robot, obstacle, time, dt))
+                    return false;
             }
-
-            //If needed, avoid ball
-            if (avoidBallRadius > 0 &&
-                ball != null &&
-                ball.Position != null)
-            {
-                if (IntersectsObstacle(src, dest, rayUnit, rayLen, ball.Position, avoidBallRadius))
-                { return false; }
-            }
+            Console.WriteLine("True!");
             return true;
         }
 
@@ -213,18 +243,20 @@ namespace Robocup.MotionControl
         }
 
         //Check if extending according to nextSegment (the position offset vector) would hit obstacles.
-        RRTNode TryVsObstacles(RobotInfo currentState, RRTNode node, TwoDTreeMap<RRTNode> map, Vector2 nextSegment, 
-            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius)
+        RRTNode TryVsObstacles(RobotInfo currentState, RRTNode node, TwoDTreeMap<RRTNode> map, 
+            Vector2 nextSegment, List<MovingShape> obstacles)
         {
             Vector2 nextVel = nextSegment.normalizeToLength(ROBOT_VELOCITY);
 
-            if (!IsAllowedByObstacles(currentState, node.info.Position, nextSegment, node.time, ball, robots, avoidBallRadius))
+            MovingShape nextShape = new MovingShape(currentState);
+            nextShape.velocity = (node.info.Position - currentState.Position) / TIME_STEP;
+            if (!IsAllowedByObstacles(nextShape, obstacles, node.time, TIME_STEP))
                 return null;
 
             RobotInfo newInfo = new RobotInfo(
                 node.info.Position + nextSegment, 
                 nextVel,
-                0, 0, currentState.Team, currentState.ID);
+                0, currentState.Orientation, currentState.Team, currentState.ID);
 
             RRTNode newNode = new RRTNode(newInfo, node, nextSegment.magnitude() / ROBOT_VELOCITY);
             map.Add(newInfo.Position,newNode);
@@ -248,6 +280,19 @@ namespace Robocup.MotionControl
         //Get a path!
         public List<Vector2> GetPathTo(RobotInfo currentState, Vector2 desiredPosition, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
         {
+            List<MovingShape> obstacles = new List<MovingShape>();
+            if (avoidBallRadius > 0 && avoidBallRadius >= MovingShape.RRT_ROBOT_RADIUS && ball != null)
+            {
+                double ballRad = avoidBallRadius - MovingShape.RRT_ROBOT_RADIUS;
+                obstacles.Add(new MovingShape(new Circle(ball.Position, ballRad), ball.Position, 0, ball.Velocity, ballRad, 0));
+            }
+            foreach (RobotInfo info in robots)
+            {
+                if (info == null || (info.ID == currentState.ID && info.Team == currentState.Team))
+                    continue;
+                obstacles.Add(new MovingShape(info));
+            }
+
             TwoDTreeMap<RRTNode> map = new TwoDTreeMap<RRTNode>(FIELD_XMIN, FIELD_XMAX, FIELD_YMIN, FIELD_YMAX);
 
             RRTNode startNode = new RRTNode(currentState, null, 0);
@@ -314,7 +359,7 @@ namespace Robocup.MotionControl
                 }
 
                 //Make sure the extension doesn't hit obstacles
-                RRTNode newNode = TryVsObstacles(currentState, activeNode, map, segment, ball, robots, avoidBallRadius);
+                RRTNode newNode = TryVsObstacles(currentState, activeNode, map, segment, obstacles);
                 if (newNode == null)
                 {
                     tryAgain = true;
@@ -447,174 +492,6 @@ namespace Robocup.MotionControl
             }
             return bestPath;
         }
-
-        private bool isObstacleFree(List<Vector2> path, int startIdx, RobotInfo currentState, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
-        {
-            double distSoFar = 0;
-            for (int j = 0; j < startIdx; j++)
-            {
-                distSoFar += (path[j + 1] - path[j]).magnitude();
-            }
-
-            for (int j = startIdx; j < path.Count-1; j++)
-            {
-                if (!IsAllowedByObstacles(currentState, path[j], path[j + 1] - path[j],
-                    distSoFar / ROBOT_VELOCITY, ball, robots, avoidBallRadius))
-                { return false; }
-                distSoFar += (path[j+1] - path[j]).magnitude();
-            }
-            return true;
-        }
-
-
-        private void smoothPath1(List<Vector2> path, RobotInfo currentState, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
-        {
-            if(path.Count <= 2)
-                return;
-
-            List<Vector2> smoothedPath = new List<Vector2>(path.Count);
-            for (int i = 0; i < 6; i++)
-            {
-                int x = RandGen.Next(path.Count);
-                int y = RandGen.Next(path.Count);
-                if (x == y) continue;
-                if (x > y)
-                { int temp = x; x = y; y = temp; }
-
-                smoothedPath.Clear();
-                smoothedPath.Add(path[0]);
-
-                double distSoFar = 0;
-                for (int j = 1; j <= x; j++)
-                {
-                    smoothedPath.Add(path[j]);
-                    distSoFar += (path[j]-path[j-1]).magnitude();
-                }
-
-                bool stopThisIter = false;
-                Vector2 offset = (path[y] - path[x])/(y-x);
-                for (int j = x + 1; j <= y; j++)
-                {
-                    if (!IsAllowedByObstacles(currentState, smoothedPath[j - 1], offset,
-                        distSoFar / ROBOT_VELOCITY, ball, robots, avoidBallRadius))
-                    { stopThisIter = true; break; }
-                    smoothedPath.Add(smoothedPath[j - 1] + offset);
-                    distSoFar += offset.magnitude();
-                }
-                if(stopThisIter)
-                    continue;
-
-                for (int j = y + 1; j < path.Count; j++)
-                {
-                    if (!IsAllowedByObstacles(currentState, smoothedPath[j - 1], path[j] - path[j - 1],
-                           distSoFar / ROBOT_VELOCITY, ball, robots, avoidBallRadius))
-                    { stopThisIter = true; break; }
-                    smoothedPath.Add(path[j]);
-                    distSoFar += (path[j] - path[j - 1]).magnitude();
-                }
-                if (stopThisIter)
-                    continue;
-
-                for (int j = 0; j < path.Count; j++)
-                    path[j] = smoothedPath[j];
-                
-            }
-        }
-
-        private void smoothPath2(List<Vector2> path, RobotInfo currentState, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
-        {
-            //Compute sharpness of each bend
-            int len = path.Count;
-            if (len <= 2)
-                return;
-            double[] sharpnessArr = new double[len - 2];
-            int[] indexArr = new int[len - 2];
-
-            for (int i = 1; i < len - 1; i++)
-            {
-                Vector2 vec1 = path[i] - path[i - 1];
-                Vector2 vec2 = path[i + 1] - path[i];
-                double sharpness;
-                if (vec1.magnitudeSq() < 1e-16 || vec2.magnitudeSq() < 1e-16)
-                    sharpness = 0;
-                else
-                    sharpness = Math.Abs(UsefulFunctions.angleDifference(vec1.cartesianAngle(), vec2.cartesianAngle()));
-                sharpnessArr[i - 1] = sharpness;
-                indexArr[i - 1] = i;
-            }
-
-            //Sort the most sharp to the front
-            //Insertion sort, currently
-            for (int i = 1; i < len - 2; i++)
-            {
-                int j = i;
-                while (j > 0 && sharpnessArr[j - 1] < sharpnessArr[j])
-                {
-                    int temp = indexArr[j - 1];
-                    indexArr[j - 1] = indexArr[j];
-                    indexArr[j] = temp;
-                    double temp2 = sharpnessArr[j - 1];
-                    sharpnessArr[j - 1] = sharpnessArr[j];
-                    sharpnessArr[j] = temp2;
-                }
-            }
-
-            //Now, in order of sharpness, attempt to smooth the path
-            for (int i = 0; i < len - 2; i++)
-            {
-                int idx = indexArr[i];
-
-                Vector2 cur = path[idx];
-                Vector2 prev = path[idx - 1];
-                Vector2 next = path[idx + 1];
-                Vector2 mid = (prev + next) / 2.0;
-
-                //Try just using the mid outright
-                path[idx] = mid;
-                if (isObstacleFree(path, idx - 1, currentState, robots, ball, avoidBallRadius))
-                {
-                    if ((next - prev).magnitudeSq() <= 0.15 * 0.15)
-                    {
-                        path.RemoveAt(idx);
-                        for (int j = i + 1; j < len - 2; j++)
-                            if (indexArr[j] > idx) indexArr[j]--;
-                    }
-                    continue;
-                }
-                else 
-                    path[idx] = cur;
-
-                //Try smoothing partway to the mid
-                Vector2 curmid2 = (cur + mid) / 2.0;
-                path[idx] = curmid2;
-                if (isObstacleFree(path, idx - 1, currentState, robots, ball, avoidBallRadius))
-                    continue;
-                else
-                    path[idx] = cur;
-
-                //Try smoothing partway to the mid
-                Vector2 curmid4 = (cur * 3 + mid) / 4.0;
-                path[idx] = curmid4;
-                if (isObstacleFree(path, idx - 1, currentState, robots, ball, avoidBallRadius))
-                    continue;
-                else
-                    path[idx] = cur;
-
-                //No? Okay, we can't smooth this one any more
-            }
-        }
-
-
-        /*
-        public List<RobotInfo> GetPathInDirection(Team team, int id, IPredictor predictor, Vector2 direction, double avoidBallRadius)
-        {
-
-        }
-
-        public List<RobotInfo> GetPathInterceptBall(Team team, int id, IPredictor predictor)
-        {
-
-        }*/
 
 
         public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
