@@ -379,12 +379,15 @@ namespace Robocup.MotionControl
             BallInfo ball = predictor.GetBall();
             List<RobotInfo> robots = predictor.GetRobots();
 
-            double ballDistanceFromDesired = ball.Position.distance(desiredState.Position);
-            if (ballDistanceFromDesired <= avoidBallRadius)
+            if (ball != null)
             {
-                // Console.WriteLine("Warning: told to move to a point closer to the ball than " + avoidBallRadius +
-                //     " at the same time as staying away from the ball!");
-                avoidBallRadius = ballDistanceFromDesired - 0.005;
+                double ballDistanceFromDesired = ball.Position.distance(desiredState.Position);
+                if (ballDistanceFromDesired <= avoidBallRadius)
+                {
+                    // Console.WriteLine("Warning: told to move to a point closer to the ball than " + avoidBallRadius +
+                    //     " at the same time as staying away from the ball!");
+                    avoidBallRadius = ballDistanceFromDesired - 0.005;
+                }
             }
 
             List<Vector2> bestPath = null;
