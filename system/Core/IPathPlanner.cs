@@ -30,9 +30,10 @@ namespace Robocup.CoreRobotics
             _driver.ReloadConstants();
         }
 
-        public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, 
+            double avoidBallRadius, RobotPath oldPath)
         {
-            RobotPath path = _planner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = _planner.GetPath(team, id, desiredState, predictor, avoidBallRadius, oldPath);
 
             // if path is empty, don't move
             if (path.isEmpty()) {
@@ -65,7 +66,8 @@ namespace Robocup.CoreRobotics
     /// </summary>
     public interface IPathPlanner
     {
-        RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
+        RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath);
         void ReloadConstants();
     }
 
@@ -81,7 +83,8 @@ namespace Robocup.CoreRobotics
             _navigator = navigator;
         }
 
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, 
+            double avoidBallRadius, RobotPath oldPath) {
 
             Team theirTeam = team == Team.Yellow ? Team.Blue : Team.Yellow;
 

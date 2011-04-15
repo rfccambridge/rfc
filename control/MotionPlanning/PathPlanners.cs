@@ -20,7 +20,8 @@ namespace Robocup.MotionControl
 
         }
         
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath) {
             List<RobotInfo> waypoints = new List<RobotInfo>();
             waypoints.Add(desiredState);
             return new RobotPath(waypoints);
@@ -50,7 +51,8 @@ namespace Robocup.MotionControl
             ReloadConstants();
         }
 
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath)
         {
             RobotInfo currentState;
             try
@@ -158,7 +160,8 @@ namespace Robocup.MotionControl
             previousAngle = 0;
         }
 
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath)
         {
             RobotInfo currentState;
             try
@@ -490,7 +493,8 @@ namespace Robocup.MotionControl
 			planner = new BasicRRTPlanner<Vector2, Vector2Tree>(Common.ExtendVV, Common.RandomStateV);
 		}
 
-		public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+		public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath)
 		{
             //Build obstacles!-------------------------------
 			List<Obstacle> obstacles = new List<Obstacle>();
