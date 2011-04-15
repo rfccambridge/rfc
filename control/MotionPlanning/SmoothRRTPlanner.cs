@@ -15,8 +15,8 @@ namespace Robocup.MotionControl
         const double ROBOT_VELOCITY = 1.0;       //Assume our robot can move this fast
         const double MAX_ACCEL_PER_STEP = 0.42;  //And that it can accelerate this fast.
 
-        const double MAX_TREE_SIZE = 600;       //Max nodes in tree before we give up
-        const double MAX_PATH_TRIES = 200;       //Max number of attempts to extend paths before we give up
+        const double MAX_TREE_SIZE = 250;       //Max nodes in tree before we give up
+        const double MAX_PATH_TRIES = 80;       //Max number of attempts to extend paths before we give up
         const double CLOSE_ENOUGH_TO_GOAL = 0.001; //We're completely done when we get this close to the goal.
         const double DIST_FOR_SUCCESS = 1.3; //We're done for now when we get this much closer to the goal than we are
 
