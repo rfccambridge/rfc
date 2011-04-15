@@ -368,7 +368,8 @@ namespace Robocup.MotionControl
         }
 
         //Try a bunch of paths and take the best one
-        public List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState, double avoidBallRadius)
+        public List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState, double avoidBallRadius,
+            RobotPath oldPath)
         {
             RobotInfo currentState;
             try
@@ -441,6 +442,33 @@ namespace Robocup.MotionControl
                     Vector2 firstDir = firstVec.normalize();
                     score += firstDir * currentState.Velocity * 30;
                 }
+
+                //Win/lose up to 20 points times current speed if the path agrees with our old path
+                if (oldPath != null && path.Count > 1 && oldPath.Waypoints.Count > 1)
+                {
+                    const double DISTCAP = 0.5;
+                    double distSum = 0;
+                    for (int j = 1; j < path.Count; j++)
+                    {
+                        Vector2 pathLoc = path[j];
+
+                        double closestDist = DISTCAP;
+                        for (int k = 0; k < oldPath.Waypoints.Count-1; k++)
+                        {
+                            Line seg = new Line(oldPath.Waypoints[k + 1].Position, oldPath.Waypoints[k].Position);
+                            double dist = seg.distFromSegment(pathLoc);
+                            if (dist < closestDist)
+                                closestDist = dist;
+                        }
+
+                        distSum += closestDist;
+                    }
+
+                    double avgDist = (distSum) / (path.Count - 1);
+                    score += (DISTCAP - avgDist) * 20 * currentState.Velocity.magnitude();
+                }
+
+
                 
                 if (score > bestPathScore)
                 {
@@ -634,7 +662,7 @@ namespace Robocup.MotionControl
                 return new RobotPath(team, id);
             }
 
-            List<Vector2> bestPath = GetBestPointPath(team, id, predictor, new RobotInfo(desiredState), avoidBallRadius);
+            List<Vector2> bestPath = GetBestPointPath(team, id, predictor, new RobotInfo(desiredState), avoidBallRadius, oldPath);
                         
             //Convert the path
             List<RobotInfo> robotPath = new List<RobotInfo>();
