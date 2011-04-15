@@ -152,6 +152,19 @@ namespace Robocup.ControlForm
             }
         }
 
+        //DATA RETRIVAL---------------------------------------------------------------------
+        public RobotPath[] GetLastPaths()
+        {
+            RobotPath[] paths = new RobotPath[NUM_ROBOTS];
+            for (int i = 0; i < NUM_ROBOTS; i++)
+                lock (_move_locks[i])
+                {
+                    paths[i] = _last_successful_path[i];
+                }
+            return paths;
+        }
+
+
         //ROBOT COMMANDS---------------------------------------------------------------------
 
         public void Charge(int robotID)
@@ -211,6 +224,11 @@ namespace Robocup.ControlForm
                 _move_infos[id] = new RobotInfo(destination);
                 _move_avoid_balls[id] = avoidBall;
             }
+            if (_fieldDrawer != null)
+            {
+                _fieldDrawer.DrawArrow(_team, id, ArrowType.Destination, destination.Position);
+            }
+
         }
         
         public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation)
@@ -321,6 +339,7 @@ namespace Robocup.ControlForm
             }
         }
 
+
         //CONTROL LOOP---------------------------------------------------------------------
         private void ControlLoop()
         {
@@ -365,6 +384,11 @@ namespace Robocup.ControlForm
                 if (newPath == null)
                     continue;
 
+                lock (_move_locks[i])
+                {
+                    _last_successful_path[i] = newPath;
+                }
+
                 //Follow the path
                 MotionPlanningResults mpResults;
                 try
@@ -382,6 +406,7 @@ namespace Robocup.ControlForm
                 _cmdSender.Post(command);
                 
                 #region Drawing
+                /*
                 //Arrow showing final destination
                 if (_fieldDrawer != null)
                 {
@@ -391,6 +416,8 @@ namespace Robocup.ControlForm
                     //Arrow showing final destination
                     _fieldDrawer.DrawArrow(_team, i, ArrowType.Destination, desired.Position);
                 }
+                */
+
                 #endregion
 
             }
