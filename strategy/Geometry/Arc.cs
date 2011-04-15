@@ -171,6 +171,21 @@ namespace Robocup.Geometry
             return Math.Abs(Angle) >= TWOPI - 0.00001;
         }
 
+        /// <summary>
+        /// Checks if this angle, modulo 2Pi, is in this arc.
+        /// </summary>
+        public bool angleIsInArc(double angle)
+        {
+            double arcAngle = this.Angle;
+            double dAngle = angle - this.angleStart;
+            dAngle = ((dAngle % TWOPI) + TWOPI) % TWOPI; //Mathematical modulus, ensures positive
+            if (arcAngle > 0 && dAngle <= arcAngle)
+                return true;
+            if (arcAngle < 0 && dAngle - TWOPI >= arcAngle)
+                return true;
+            return false;
+        }
+
         public override string ToString()
         {
             return "Arc(" + center + ", " + radius + "," + (angleStart/TWOPI) + "*2pi, " + (angleStop/TWOPI) + "*2pi)";

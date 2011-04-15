@@ -132,6 +132,14 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Computes the distance of the projection of p from the starting point of this line.
+        /// </summary>
+        public double distanceAlongLine(Vector2 p)
+        {
+            return (p - p0).projectionLength(Direction);
+        }
+
+        /// <summary>
         /// Returns the translation of this line by the given vector.
         /// </summary>
         public Line translate(Vector2 v)

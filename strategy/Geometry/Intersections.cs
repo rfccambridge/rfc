@@ -35,6 +35,9 @@ namespace Robocup.Geometry
 
     public static class GeomFuncs
     {
+        #region INTERSECTIONS
+        //INTERSECTIONS----------------------------------------------------------------------------
+
         /// <summary>
         /// Tests if two Geom objects intersect.
         /// If one entirely contains another, this also counts as intersection.
@@ -43,87 +46,183 @@ namespace Robocup.Geometry
         {
             if (g0 is Line)
             {
-                Line a0 = (Line)g0;
-                if (g1 is Line)
-                {
-                    //Intersect if not parallel, or if parallel and each line contains the other's starting point.
-                    //Containment is tested both ways so in case of float imprecision, the function will at least
-                    //be symmetric.
-                    Line a1 = (Line)g1;
-                    return !a0.isParallelTo(a1) || (a0.contains(a1.P0) && a1.contains(a0.P0));
-                }
-                else if (g1 is LineSegment)
-                {
-                    //Test if the line segment's points are on different sides of the line, or are on the line.
-                    LineSegment a1 = (LineSegment)g1;
-                    return a0.signedDistance(a1.P0) * a0.signedDistance(a1.P1) <= 0;
-                }
-                else if (g1 is Circle)
-                {
-                    //Test if the minimum distance of the center of the circle is closer than the radius
-                    Circle a1 = (Circle)g1;
-                    return a0.distance(a1.Center) <= a1.Radius;
-                }
-                else if (g1 is Arc)
-                {
-                    //Test if the minimum distance of the center of the arc is closer than the radius
-                    //and the closest point is on the correct side of the line between the arc endpoints.
-                    //Taking the line from start->stop, the point should be on the RIGHT side (signed dist <= 0)
-                    //of the arc, except if the arc goes the otherway, in which case we flip it.
-                    Arc a1 = (Arc)g1;
-                    if (a0.distance(a1.Center) > a1.Radius) 
-                        return false;
-                    if (a1.isFullCircle())
-                        return true;
-                    if (a1.Angle == 0)
-                        return false;
-                    Line endpointLine = new Line(a1.StartPt, a1.StopPt);
-                    if (endpointLine.Direction == Vector2.ZERO)
-                        return false;
-                    Vector2 closestPoint = a0.closestPointTo(a1.Center);
-                    return endpointLine.signedDistance(closestPoint) * a1.Angle <= 0;
-                }
+                if (g1 is Line)             return intersects((Line)g0, (Line)g1);
+                else if (g1 is LineSegment) return intersects((Line)g0, (LineSegment)g1);
+                else if (g1 is Circle)      return intersects((Line)g0, (Circle)g1);
+                else if (g1 is Arc)         return intersects((Line)g0, (Arc)g1);
             }
             else if (g0 is LineSegment)
             {
-                if (g1 is Line)
-                    return intersects(g1, g0);
-
-                LineSegment a0 = (LineSegment)g0;
-
-                if (g1 is LineSegment)
-                {
-                    //Test if both line segments' points are on opposite sides of the other's line.
-                    LineSegment a1 = (LineSegment)g1;
-                    return a0.Line.signedDistance(a1.P0) * a0.Line.signedDistance(a1.P1) <= 0 &&
-                           a1.Line.signedDistance(a0.P0) * a1.Line.signedDistance(a0.P1) <= 0;
-                }
-                else if (g1 is Circle)
-                {
-                    //Test if the minimum distance of the center of the circle is closer than the radius
-                    Circle a1 = (Circle)g1;
-                    return a0.distance(a1.Center) <= a1.Radius;
-                }
+                if (g1 is Line)             return intersects((LineSegment)g0, (Line)g1);
+                else if (g1 is LineSegment) return intersects((LineSegment)g0, (LineSegment)g1);
+                else if (g1 is Circle)      return intersects((LineSegment)g0, (Circle)g1);
+                else if (g1 is Arc)         return intersects((LineSegment)g0, (Arc)g1);
             }
             else if (g0 is Circle)
             {
-                if (g1 is Line || g1 is LineSegment)
-                    return intersects(g1, g0);
-
-                Circle a0 = (Circle)g0;
-
-                if (g1 is Circle)
-                {
-                    //Test if the circles' centers are closer than the sum of their radius.
-                    Circle a1 = (Circle)g1;
-                    double radSum = a0.Radius + a1.Radius;
-                    return a0.Center.distanceSq(a1.Center) <= radSum * radSum;
-                }
+                if (g1 is Line)             return intersects((Circle)g0, (Line)g1);
+                else if (g1 is LineSegment) return intersects((Circle)g0, (LineSegment)g1);
+                else if (g1 is Circle)      return intersects((Circle)g0, (Circle)g1);
+                else if (g1 is Arc)         return intersects((Circle)g0, (Arc)g1);
             }
-
+            else if (g0 is Arc)
+            {
+                if (g1 is Line)             return intersects((Arc)g0, (Line)g1);
+                else if (g1 is LineSegment) return intersects((Arc)g0, (LineSegment)g1);
+                else if (g1 is Circle)      return intersects((Arc)g0, (Circle)g1);
+                else if (g1 is Arc)         return intersects((Arc)g0, (Arc)g1);
+            }
 
             throw new NotImplementedException();
         }
+
+        static public bool intersects(Line a0, Line a1)
+        {
+            //Intersect if not parallel, or if parallel and each line contains the other's starting point.
+            //Containment is tested both ways so in case of float imprecision, the function will at least
+            //be symmetric.
+            return !a0.isParallelTo(a1) || (a0.contains(a1.P0) && a1.contains(a0.P0));
+        }
+
+        static public bool intersects(Line a0, LineSegment a1)
+        {
+            //Test if the line segment's points are on different sides of the line, or are on the line.
+            return a0.signedDistance(a1.P0) * a0.signedDistance(a1.P1) <= 0;
+        }
+        static public bool intersects(LineSegment a0, Line a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(Line a0, Circle a1)
+        {
+            //Test if the minimum distance of the center of the circle is closer than the radius
+            return a0.distance(a1.Center) <= a1.Radius;
+        }
+        static public bool intersects(Circle a0, Line a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(Line a0, Arc a1)
+        {
+            //Test if the minimum distance of the center of the arc is closer than the radius
+            //and the closest point is on the correct side of the line between the arc endpoints.
+            //Taking the line from start->stop, the point should be on the RIGHT side (signed dist <= 0)
+            //of the arc, except if the arc goes the otherway, in which case we flip it.
+            if (a0.distance(a1.Center) > a1.Radius)
+                return false;
+            if (a1.isFullCircle())
+                return true;
+            if (a1.Angle == 0)
+                return false;
+            Line endpointLine = new Line(a1.StartPt, a1.StopPt);
+            if (endpointLine.Direction == Vector2.ZERO)
+                return false;
+            Vector2 closestPoint = a0.closestPointTo(a1.Center);
+            return endpointLine.signedDistance(closestPoint) * a1.Angle <= 0;
+        }
+        static public bool intersects(Arc a0, Line a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(LineSegment a0, LineSegment a1)
+        {
+            //Test if both line segments' points are on opposite sides of the other's line.
+            return a0.Line.signedDistance(a1.P0) * a0.Line.signedDistance(a1.P1) <= 0 &&
+                   a1.Line.signedDistance(a0.P0) * a1.Line.signedDistance(a0.P1) <= 0;
+        }
+
+        static public bool intersects(LineSegment a0, Circle a1)
+        {
+            //Test if the minimum distance of the center of the circle is closer than the radius
+            return a0.distance(a1.Center) <= a1.Radius;
+        }
+        static public bool intersects(Circle a0, LineSegment a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(LineSegment a0, Arc a1)
+        {
+            if (a1.isFullCircle())
+                return intersects(a0, a1.Circle);
+            if (a1.Angle == 0)
+                return false;
+
+            //Just compute the intersections and test if they are within the desired angle range.
+            Vector2[] intersections = LineCircleIntersection.BothIntersections(a0.Line, a1.Circle);
+            for (int i = 0; i < intersections.Length; i++)
+            {
+                Vector2 dir = intersections[i] - a1.Center;
+                if (dir == Vector2.ZERO)
+                    return true;
+                double angle = dir.cartesianAngle();
+                if (a1.angleIsInArc(angle))
+                    return true;
+            }
+
+            return false;
+        }
+        static public bool intersects(Arc a0, LineSegment a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(Circle a0, Circle a1)
+        {
+            //Test if the circles' centers are closer than the sum of their radius.
+            double radSum = a0.Radius + a1.Radius;
+            return a0.Center.distanceSq(a1.Center) <= radSum * radSum;
+        }
+
+        static public bool intersects(Circle a0, Arc a1)
+        {
+            if (a1.isFullCircle())
+                return intersects(a0, a1.Circle);
+            if (a1.Angle == 0)
+                return false;
+
+            //Just compute the intersections and test if they are within the desired angle range.
+            Vector2[] intersections = PlayCircleCircleIntersection.BothIntersections(a0, a1.Circle);
+            for (int i = 0; i < intersections.Length; i++)
+            {
+                Vector2 dir = intersections[i] - a1.Center;
+                if (dir == Vector2.ZERO)
+                    return true;
+                double angle = dir.cartesianAngle();
+                if (a1.angleIsInArc(angle))
+                    return true;
+            }
+            return false;
+        }
+        static public bool intersects(Arc a0, Circle a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(Arc a0, Arc a1)
+        {
+            if (a0.isFullCircle())
+                return intersects(a0.Circle, a1);
+            if (a1.isFullCircle())
+                return intersects(a1.Circle, a0);
+            if (a0.Angle == 0 || a1.Angle == 0)
+                return false;
+
+            //Just compute the intersections and test if they are within the desired angle range.
+            Vector2[] intersections = PlayCircleCircleIntersection.BothIntersections(a0.Circle, a1.Circle);
+            for (int i = 0; i < intersections.Length; i++)
+            {
+                Vector2 dir0 = intersections[i] - a0.Center;
+                Vector2 dir1 = intersections[i] - a1.Center;
+                bool good0 = false;
+                bool good1 = false;
+                if (dir0 == Vector2.ZERO)
+                    good0 = true;
+                else if(a0.angleIsInArc(dir0.cartesianAngle()))
+                    good0 = true;
+                if (dir1 == Vector2.ZERO)
+                    good1 = true;
+                else if(a1.angleIsInArc(dir1.cartesianAngle()))
+                    good1 = true;
+
+                if(good0 && good1)
+                    return true;
+            }
+            return false;
+        }
+        #endregion
+
     }
 
 
@@ -164,9 +263,16 @@ namespace Robocup.Geometry
      */
     static public class PlayCircleCircleIntersection
     {
+        static public Vector2[] BothIntersections(Circle c0, Circle c1)
+        {
+            return GetPoints(c0, c1);
+        }
+
         static public Vector2 Intersection(Circle c0, Circle c1, int whichintersection)
         {
             Vector2[] bothpoints = GetPoints(c0, c1);
+            if(bothpoints.Length == 0)
+                throw new NoIntersectionException("No intersection!");
 
             Vector2 p0 = c0.Center;
             Vector2 p1 = c1.Center;
@@ -198,9 +304,8 @@ namespace Robocup.Geometry
             double r0 = c0.Radius;
             double r1 = c1.Radius;
             if (d > r0 + r1 || d < Math.Abs(r1 - r0))
-            {
-                throw new NoIntersectionException("No intersection!");
-            }
+                return new Vector2[0]; 
+
             double a = (r0 * r0 - r1 * r1 + d * d) / (2 * d);
 
             Vector2[] bothpoints = new Vector2[2];
@@ -229,10 +334,18 @@ namespace Robocup.Geometry
      */
     static public class LineCircleIntersection
     {
+        static public Vector2[] BothIntersections(Line line, Circle circle)
+        {
+            return getPoints(line, circle);
+        }
+
         static public Vector2 Intersection(Line line, Circle circle, int whichintersection)
         {
             double[] dists = new double[2];
             Vector2[] points = getPoints(line, circle);
+            if(points.Length == 0)
+                throw new NoIntersectionException("no intersection!");
+
             dists[0] = distAlongLine(points[0], line);
             dists[1] = distAlongLine(points[1], line);
 
@@ -244,6 +357,9 @@ namespace Robocup.Geometry
         static public int WhichIntersection(Line line, Circle circle, Vector2 p)
         {
             Vector2[] points = getPoints(line, circle);
+            if (points.Length == 0)
+                throw new NoIntersectionException("no intersection!");
+
             double dist = distAlongLine(p, line);
             double d0sq = points[0].distanceSq(p);
             double d1sq = points[1].distanceSq(p);
@@ -287,7 +403,7 @@ namespace Robocup.Geometry
             double r = circle.Radius;
             double det = r * r * dr * dr - D * D;
             if (det < 0)
-                throw new NoIntersectionException("no intersection!");
+                return new Vector2[0]; 
 
             Vector2[] rtnpoints = new Vector2[2];
 
