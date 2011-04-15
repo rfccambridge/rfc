@@ -381,15 +381,14 @@ namespace Robocup.MotionControl
             BallInfo ball = new BallInfo(predictor.GetBall());
             List<RobotInfo> robots = predictor.GetRobots();
 
-            double ballDistanceFromDesired = ball.Position.distance(desiredState.Position);
-            if (ballDistanceFromDesired <= avoidBallRadius)
+            if (ball != null)
             {
                 // Console.WriteLine("Warning: told to move to a point closer to the ball than " + avoidBallRadius +
                 //     " at the same time as staying away from the ball!");
 
                 //Recenter the ball avoid position, and lower the radius
                 Vector2 ballToDesired = desiredState.Position - ball.Position;
-                if(ballToDesired.magnitude() < 1e-6)
+                if (ballToDesired.magnitude() < 1e-6)
                     avoidBallRadius = 0;
                 else
                 {
@@ -398,7 +397,7 @@ namespace Robocup.MotionControl
 
                     Vector2 radPos1 = ballToAlmostDesired + ball.Position;
                     Vector2 radPos2 = ballAwayFromDesired + ball.Position;
-                    Vector2 average = (radPos1 + radPos2)/2.0;
+                    Vector2 average = (radPos1 + radPos2) / 2.0;
                     avoidBallRadius = average.distance(radPos1);
                     ball.Position = average;
                 }
