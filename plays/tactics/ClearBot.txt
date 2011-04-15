@@ -19,7 +19,7 @@ cir (circle ballpoint 0.3)
 leftcorner (point FIELD_WIDTH (- 0 FIELD_HEIGHT))
 rightcorner (point FIELD_WIDTH FIELD_HEIGHT)
 shotongoal (theirGoalBestShot)
-target (if_point (pathClear ballpoint shotongoal CLEAR_DIST) shotongoal (if_point (pathClear ballpoint leftcorner CLEAR_DIST) leftcorner rightcorner))
+kicktotarget (if_Action (pathClear ballpoint shotongoal CLEAR_DIST) (robotpointkick bot shotongoal) (if_Action (pathClear ballpoint leftcorner CLEAR_DIST) (robotpointstrengthkick bot leftcorner 2) (robotpointstrengthkick bot rightcorner 2)))
 
 Actions:
-(if_Action (= 0 (numberOfRobotsInACircle cir friendly)) (robotpointkick bot target) (robotpointpointmove bot standbypt ballpoint))
+(if_Action (= 0 (numberOfRobotsInACircle cir friendly)) kicktotarget (robotpointpointmove bot standbypt ballpoint))
