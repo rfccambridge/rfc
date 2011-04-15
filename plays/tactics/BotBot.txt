@@ -10,6 +10,10 @@ ballpoint (pointof ball)
 standbypt (point 0.0 -1.0)
 cir (circle ballpoint 0.3)
 
+# constants
+CLEAR_DIST (const-double CLEAR_DIST)
+FIELD_WIDTH (const-double FIELD_WIDTH)
+FIELD_HEIGHT (const-double FIELD_HEIGHT)
 
 leftcorner (point FIELD_WIDTH (- 0 FIELD_HEIGHT))
 rightcorner (point FIELD_WIDTH FIELD_HEIGHT)
