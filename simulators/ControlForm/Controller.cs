@@ -344,7 +344,7 @@ namespace Robocup.ControlForm
         private void ControlLoop()
         {
             PerformMotion();
-            _fieldDrawer.UpdateControllerDuration(_controlLoop.GetLoopDuration());
+            _fieldDrawer.UpdateControllerDuration(_controlLoop.GetLoopDuration() * 1000);
         }
 
 

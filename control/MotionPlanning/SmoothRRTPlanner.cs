@@ -407,7 +407,7 @@ namespace Robocup.MotionControl
             List<Vector2> bestPath = null;
             double bestPathScore = Double.NegativeInfinity;
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 12; i++)
             {
                 List<Vector2> path = GetSmoothedPointPath(currentState, desiredState, robots, ball, avoidBallRadius);
                 double score = 0;
@@ -453,7 +453,8 @@ namespace Robocup.MotionControl
                 else
                 {
                     Vector2 firstDir = firstVec.normalize();
-                    score += firstDir * currentState.Velocity * 30;
+                    double dScore = firstDir * currentState.Velocity * 30;
+                    score += dScore;
                 }
 
                 //Win/lose up to 20 points times current speed if the path agrees with our old path
@@ -478,10 +479,9 @@ namespace Robocup.MotionControl
                     }
 
                     double avgDist = (distSum) / (path.Count - 1);
-                    score += (DISTCAP - avgDist) * 20 * currentState.Velocity.magnitude();
+                    double dScore = (DISTCAP - avgDist) * 20 * currentState.Velocity.magnitude();
+                    score += dScore;
                 }
-
-
                 
                 if (score > bestPathScore)
                 {
