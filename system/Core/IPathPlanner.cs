@@ -49,9 +49,8 @@ namespace Robocup.CoreRobotics
         {
             try
             {
-                RobotInfo curr_state = predictor.GetRobot(path.Team, path.ID);
                 WheelSpeeds speeds = _driver.followPath(path, predictor);
-                return new MotionPlanningResults(speeds, path.findNearestWaypoint(curr_state));
+                return new MotionPlanningResults(speeds);
             }
             catch (ApplicationException e)
             {

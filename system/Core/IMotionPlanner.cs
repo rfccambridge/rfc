@@ -15,12 +15,7 @@ namespace Robocup.CoreRobotics
         {
             this.wheel_speeds = wheel_speeds;
         }
-        public MotionPlanningResults(WheelSpeeds wheel_speeds, RobotInfo nearestWaypoint) {
-            this.wheel_speeds = wheel_speeds;
-            this.NearestWaypoint = nearestWaypoint;
-        }
         public WheelSpeeds wheel_speeds;
-        public RobotInfo NearestWaypoint;
     }
 
     public interface IMotionPlanner
