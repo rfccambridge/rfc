@@ -11,18 +11,31 @@ namespace Robocup.MotionControl
 {
     public class SmoothRRTPlanner : IPathPlanner
     {
-        const double TIME_STEP = 0.12;           //Time step in secs, with velocity determines RRT extension length
-        const double ROBOT_VELOCITY = 1.0;       //Assume our robot can move this fast
-        const double MAX_ACCEL_PER_STEP = 0.42;  //And that it can accelerate this fast.
+        //Movement model
+        const double TIME_STEP = 0.12; //Time step in secs, with velocity determines RRT extension length
+        const double ROBOT_VELOCITY = 1.0; //Assume our robot can move this fast
+        const double MAX_ACCEL_PER_STEP = 0.42; //And that it can accelerate this fast.
 
-        const double MAX_TREE_SIZE = 250;       //Max nodes in tree before we give up
-        const double MAX_PATH_TRIES = 80;       //Max number of attempts to extend paths before we give up
+        //RRT parameters
+        const double MAX_TREE_SIZE = 250; //Max nodes in tree before we give up
+        const double MAX_PATH_TRIES = 80; //Max number of attempts to extend paths before we give up
         const double CLOSE_ENOUGH_TO_GOAL = 0.001; //We're completely done when we get this close to the goal.
         const double DIST_FOR_SUCCESS = 1.3; //We're done for now when we get this much closer to the goal than we are
 
+        //Motion extrapolation
         const double ROBOT_MAX_TIME_EXTRAPOLATED = 0.7; //Extrapolate other robots' movements up to this amount of seconds.
 
+        //Collisions
         const double RRT_ROBOT_AVOID_DIST = 0.185;  //Avoid robot distance
+
+        //Scoring
+        const double EXCESS_LEN_SCORE = 60; //Penalty for each m of path length >= the straightline distance
+        const double PER_BEND_SCORE = 1; //Bonus/Penalty per bend in the path based on bend sharpness
+        const double VELOCITY_AGREEMENT_SCORE = 30; //Bonus for agreeing with current velocity, per m/s velocity
+        const double OLDPATH_AGREEMENT_SCORE = 20; //Bonus for agreeing with the old path, per m/s velocity
+        const double OLDPATH_AGREEMENT_DIST = 0.5; //Score nothing for points that differ by this many meters from the old path
+
+        const double NUM_PATHS_TO_SCORE = 12; //How many paths do we generate and score?
 
         //Field boundaries
         static double FIELD_XMIN;
@@ -366,9 +379,6 @@ namespace Robocup.MotionControl
             {
                 ball = new BallInfo(ball);
 
-                // Console.WriteLine("Warning: told to move to a point closer to the ball than " + avoidBallRadius +
-                //     " at the same time as staying away from the ball!");
-
                 //Recenter the ball avoid position, and lower the radius
                 Vector2 ballToDesired = desiredState.Position - ball.Position;
                 if(ballToDesired.magnitude() < 1e-6)
@@ -389,66 +399,53 @@ namespace Robocup.MotionControl
             List<Vector2> bestPath = null;
             double bestPathScore = Double.NegativeInfinity;
 
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < NUM_PATHS_TO_SCORE; i++)
             {
                 List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius);
                 double score = 0;
 
-                /*
-                //Up to 60 points for geting to the goal
-                score += 80.0 / (20*20*desiredState.Position.distanceSq(path[path.Count - 1]) + 1);
-
-                //Lose 60 points per meter of path length greater than the start and end points
-                double len = 0;
-                for (int j = 0; j < path.Count-1; j++)
-                    len += path[j+1].distance(path[j]);
-                len -= path[path.Count - 1].distance(path[0]);
-                score -= len * 60;
-                 */
-
-                //Lose 60 points per meter of path length greater than the start and end points
+                //Lose points per meter of path length greater than the start and end points
                 double len = 0;
                 for (int j = 0; j < path.Count - 1; j++)
                     len += path[j + 1].distance(path[j]);
                 len += path[path.Count - 1].distance(desiredState.Position);
                 len -= desiredState.Position.distance(path[0]);
-                score -= len * 60;
+                score -= len * EXCESS_LEN_SCORE;
 
-                //Lose up to a point per node in the path if it's too sharp a bend.
+                //Lose per node in the path if it's too sharp a bend.
                 for (int j = 1; j < path.Count-1; j++)
                 {
                     Vector2 vec1 = path[j] - path[j - 1];
                     Vector2 vec2 = path[j + 1] - path[j];
                     if (vec1.magnitudeSq() < 1e-6 || vec2.magnitudeSq() < 1e-6)
                     { score += 1; continue; }
-                    score += (vec1 * vec2) / vec1.magnitude() / vec2.magnitude();
+                    score += PER_BEND_SCORE * (vec1 * vec2) / vec1.magnitude() / vec2.magnitude();
                 }
 
-                //Win/lose up to 30 points times current speed if the first segment of the path agrees 
-                //with our current velocity
+                //Win/lose points if the first segment of the path agrees 
+                //with our current velocity, multiplied by the current speed
                 int firstStep = 1;
                 Vector2 firstVec = null;
                 while(firstStep < path.Count && (firstVec = path[firstStep]-path[firstStep-1]).magnitudeSq() < 1e-12)
                 {firstStep++;}
                 if(firstStep >= path.Count)
-                    score += 30;
+                    score += VELOCITY_AGREEMENT_SCORE;
                 else
                 {
                     Vector2 firstDir = firstVec.normalize();
-                    double dScore = firstDir * currentState.Velocity * 30;
+                    double dScore = firstDir * currentState.Velocity * VELOCITY_AGREEMENT_SCORE;
                     score += dScore;
                 }
 
-                //Win/lose up to 20 points times current speed if the path agrees with our old path
+                //Win/lose points if the path agrees with our old path, multiplied by the current speed
                 if (oldPath != null && path.Count > 1 && oldPath.Waypoints.Count > 1)
                 {
-                    const double DISTCAP = 0.5;
                     double distSum = 0;
                     for (int j = 1; j < path.Count; j++)
                     {
                         Vector2 pathLoc = path[j];
 
-                        double closestDist = DISTCAP;
+                        double closestDist = OLDPATH_AGREEMENT_DIST;
                         for (int k = 0; k < oldPath.Waypoints.Count-1; k++)
                         {
                             Line seg = new Line(oldPath.Waypoints[k + 1].Position, oldPath.Waypoints[k].Position);
@@ -461,10 +458,12 @@ namespace Robocup.MotionControl
                     }
 
                     double avgDist = (distSum) / (path.Count - 1);
-                    double dScore = (DISTCAP - avgDist) * 20 * currentState.Velocity.magnitude();
+                    double dScore = (OLDPATH_AGREEMENT_DIST - avgDist) * OLDPATH_AGREEMENT_SCORE * 
+                        currentState.Velocity.magnitude();
                     score += dScore;
                 }
                 
+                //Is it the best path so far?
                 if (score > bestPathScore)
                 {
                     bestPath = path;
