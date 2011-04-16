@@ -431,19 +431,6 @@ namespace Robocup.ControlForm
                             + command.Speeds.rb + " ");
                     }
                 }*/
-                
-                /*
-                //Arrow showing final destination
-                if (_fieldDrawer != null)
-                {
-                    //Path commited for following
-                    if (DRAW_PATH)
-                        _fieldDrawer.DrawPath(newPath);
-                    //Arrow showing final destination
-                    _fieldDrawer.DrawArrow(_team, i, ArrowType.Destination, desired.Position);
-                }
-                */
-
             }
 
             /*
