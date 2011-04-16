@@ -229,18 +229,23 @@ namespace Robocup.ControlForm
             BallInfo ball = _predictor.GetBall();
 
             _fieldDrawer.BeginCollectState();
-            _fieldDrawer.UpdateRobotsAndBall(robots, ball);
-            RobotPath[] paths = ((Controller)_controller).GetLastPaths(); //TODO(davidwu): This cast is not ideal...
-            for (int i = 0; i < paths.Length; i++)
-                if (paths[i] != null)
-                    _fieldDrawer.DrawPath(paths[i]);
+            try
+            {
+                _fieldDrawer.UpdateRobotsAndBall(robots, ball);
+                RobotPath[] paths = ((Controller)_controller).GetLastPaths(); //TODO(davidwu): This cast is not ideal...
+                for (int i = 0; i < paths.Length; i++)
+                    if (paths[i] != null)
+                        _fieldDrawer.DrawPath(paths[i]);
 
-            PlayType playType = _refbox.GetCurrentPlayType();
-            _fieldDrawer.UpdatePlayType(playType);            
+                PlayType playType = _refbox.GetCurrentPlayType();
+                _fieldDrawer.UpdatePlayType(playType);
 
-            doAction();
-
-            _fieldDrawer.EndCollectState();
+                doAction();
+            }
+            finally
+            {
+                _fieldDrawer.EndCollectState();
+            }
             _fieldDrawer.UpdateInterpretDuration(_interpretLoop.GetLoopDuration() * 1000);
         }
 
