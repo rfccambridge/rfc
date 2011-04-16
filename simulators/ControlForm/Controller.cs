@@ -405,19 +405,8 @@ namespace Robocup.ControlForm
                 command = new RobotCommand(i, mpResults.wheel_speeds);
                 _cmdSender.Post(command);
                 
-                #region Drawing
-                /*
-                //Arrow showing final destination
-                if (_fieldDrawer != null)
-                {
-                    //Path commited for following
-                    if (DRAW_PATH)
-                        _fieldDrawer.DrawPath(newPath);
-                    //Arrow showing final destination
-                    _fieldDrawer.DrawArrow(_team, i, ArrowType.Destination, desired.Position);
-                }
-                */
-                #endregion
+
+
             }
         }
 	}
