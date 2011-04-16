@@ -349,25 +349,6 @@ namespace Robocup.MotionControl
 
         }
 
-        //Do some path smoothing
-        public List<Vector2> GetSmoothedPointPath(RobotInfo currentState, RobotInfo desiredState, List<RobotInfo> robots, 
-            BallInfo ball, double avoidBallRadius)
-        {
-            List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius);
-            /*
-            smoothPath1(path, currentState, robots, ball, avoidBallRadius);
-            smoothPath2(path, currentState, robots, ball, avoidBallRadius);
-            smoothPath1(path, currentState, robots, ball, avoidBallRadius);
-            smoothPath2(path, currentState, robots, ball, avoidBallRadius);
-            smoothPath1(path, currentState, robots, ball, avoidBallRadius);
-            smoothPath2(path, currentState, robots, ball, avoidBallRadius);
-            smoothPath2(path, currentState, robots, ball, avoidBallRadius);
-            smoothPath2(path, currentState, robots, ball, avoidBallRadius);
-            smoothPath2(path, currentState, robots, ball, avoidBallRadius);*/
-            return path;
-            
-        }
-
         //Try a bunch of paths and take the best one
         public List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState, 
             double avoidBallRadius, RobotPath oldPath)
@@ -410,7 +391,7 @@ namespace Robocup.MotionControl
 
             for (int i = 0; i < 12; i++)
             {
-                List<Vector2> path = GetSmoothedPointPath(currentState, desiredState, robots, ball, avoidBallRadius);
+                List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius);
                 double score = 0;
 
                 /*
@@ -492,174 +473,6 @@ namespace Robocup.MotionControl
             }
             return bestPath;
         }
-
-        private bool isObstacleFree(List<Vector2> path, int startIdx, RobotInfo currentState, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
-        {
-            double distSoFar = 0;
-            for (int j = 0; j < startIdx; j++)
-            {
-                distSoFar += (path[j + 1] - path[j]).magnitude();
-            }
-
-            for (int j = startIdx; j < path.Count-1; j++)
-            {
-                if (!IsAllowedByObstacles(currentState, path[j], path[j + 1] - path[j],
-                    distSoFar / ROBOT_VELOCITY, ball, robots, avoidBallRadius))
-                { return false; }
-                distSoFar += (path[j+1] - path[j]).magnitude();
-            }
-            return true;
-        }
-
-
-        private void smoothPath1(List<Vector2> path, RobotInfo currentState, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
-        {
-            if(path.Count <= 2)
-                return;
-
-            List<Vector2> smoothedPath = new List<Vector2>(path.Count);
-            for (int i = 0; i < 6; i++)
-            {
-                int x = RandGen.Next(path.Count);
-                int y = RandGen.Next(path.Count);
-                if (x == y) continue;
-                if (x > y)
-                { int temp = x; x = y; y = temp; }
-
-                smoothedPath.Clear();
-                smoothedPath.Add(path[0]);
-
-                double distSoFar = 0;
-                for (int j = 1; j <= x; j++)
-                {
-                    smoothedPath.Add(path[j]);
-                    distSoFar += (path[j]-path[j-1]).magnitude();
-                }
-
-                bool stopThisIter = false;
-                Vector2 offset = (path[y] - path[x])/(y-x);
-                for (int j = x + 1; j <= y; j++)
-                {
-                    if (!IsAllowedByObstacles(currentState, smoothedPath[j - 1], offset,
-                        distSoFar / ROBOT_VELOCITY, ball, robots, avoidBallRadius))
-                    { stopThisIter = true; break; }
-                    smoothedPath.Add(smoothedPath[j - 1] + offset);
-                    distSoFar += offset.magnitude();
-                }
-                if(stopThisIter)
-                    continue;
-
-                for (int j = y + 1; j < path.Count; j++)
-                {
-                    if (!IsAllowedByObstacles(currentState, smoothedPath[j - 1], path[j] - path[j - 1],
-                           distSoFar / ROBOT_VELOCITY, ball, robots, avoidBallRadius))
-                    { stopThisIter = true; break; }
-                    smoothedPath.Add(path[j]);
-                    distSoFar += (path[j] - path[j - 1]).magnitude();
-                }
-                if (stopThisIter)
-                    continue;
-
-                for (int j = 0; j < path.Count; j++)
-                    path[j] = smoothedPath[j];
-                
-            }
-        }
-
-        private void smoothPath2(List<Vector2> path, RobotInfo currentState, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
-        {
-            //Compute sharpness of each bend
-            int len = path.Count;
-            if (len <= 2)
-                return;
-            double[] sharpnessArr = new double[len - 2];
-            int[] indexArr = new int[len - 2];
-
-            for (int i = 1; i < len - 1; i++)
-            {
-                Vector2 vec1 = path[i] - path[i - 1];
-                Vector2 vec2 = path[i + 1] - path[i];
-                double sharpness;
-                if (vec1.magnitudeSq() < 1e-16 || vec2.magnitudeSq() < 1e-16)
-                    sharpness = 0;
-                else
-                    sharpness = Math.Abs(UsefulFunctions.angleDifference(vec1.cartesianAngle(), vec2.cartesianAngle()));
-                sharpnessArr[i - 1] = sharpness;
-                indexArr[i - 1] = i;
-            }
-
-            //Sort the most sharp to the front
-            //Insertion sort, currently
-            for (int i = 1; i < len - 2; i++)
-            {
-                int j = i;
-                while (j > 0 && sharpnessArr[j - 1] < sharpnessArr[j])
-                {
-                    int temp = indexArr[j - 1];
-                    indexArr[j - 1] = indexArr[j];
-                    indexArr[j] = temp;
-                    double temp2 = sharpnessArr[j - 1];
-                    sharpnessArr[j - 1] = sharpnessArr[j];
-                    sharpnessArr[j] = temp2;
-                }
-            }
-
-            //Now, in order of sharpness, attempt to smooth the path
-            for (int i = 0; i < len - 2; i++)
-            {
-                int idx = indexArr[i];
-
-                Vector2 cur = path[idx];
-                Vector2 prev = path[idx - 1];
-                Vector2 next = path[idx + 1];
-                Vector2 mid = (prev + next) / 2.0;
-
-                //Try just using the mid outright
-                path[idx] = mid;
-                if (isObstacleFree(path, idx - 1, currentState, robots, ball, avoidBallRadius))
-                {
-                    if ((next - prev).magnitudeSq() <= 0.15 * 0.15)
-                    {
-                        path.RemoveAt(idx);
-                        for (int j = i + 1; j < len - 2; j++)
-                            if (indexArr[j] > idx) indexArr[j]--;
-                    }
-                    continue;
-                }
-                else 
-                    path[idx] = cur;
-
-                //Try smoothing partway to the mid
-                Vector2 curmid2 = (cur + mid) / 2.0;
-                path[idx] = curmid2;
-                if (isObstacleFree(path, idx - 1, currentState, robots, ball, avoidBallRadius))
-                    continue;
-                else
-                    path[idx] = cur;
-
-                //Try smoothing partway to the mid
-                Vector2 curmid4 = (cur * 3 + mid) / 4.0;
-                path[idx] = curmid4;
-                if (isObstacleFree(path, idx - 1, currentState, robots, ball, avoidBallRadius))
-                    continue;
-                else
-                    path[idx] = cur;
-
-                //No? Okay, we can't smooth this one any more
-            }
-        }
-
-
-        /*
-        public List<RobotInfo> GetPathInDirection(Team team, int id, IPredictor predictor, Vector2 direction, double avoidBallRadius)
-        {
-
-        }
-
-        public List<RobotInfo> GetPathInterceptBall(Team team, int id, IPredictor predictor)
-        {
-
-        }*/
 
 
         public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
