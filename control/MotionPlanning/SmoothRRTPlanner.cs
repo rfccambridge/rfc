@@ -29,6 +29,7 @@ namespace Robocup.MotionControl
         const double RRT_ROBOT_AVOID_DIST = 0.185;  //Avoid robot distance
 
         //Scoring
+        const double DIST_FROM_GOAL_SCORE = 0; //Penalty per m of distance from goal.
         const double EXCESS_LEN_SCORE = 60; //Penalty for each m of path length >= the straightline distance
         const double PER_BEND_SCORE = 1; //Bonus/Penalty per bend in the path based on bend sharpness
         const double VELOCITY_AGREEMENT_SCORE = 30; //Bonus for agreeing with current velocity, per m/s velocity
@@ -273,7 +274,6 @@ namespace Robocup.MotionControl
             Vector2 currentTarget = desiredPosition;
             int stepsLeft = 1000;
             double closestSoFar = 1000;
-            //double closeEnoughToGoal = CLOSE_ENOUGH_TO_GOAL; //TODO
             double closeEnoughToGoal = (desiredPosition - currentState.Position).magnitude() - DIST_FOR_SUCCESS;
             if (closeEnoughToGoal < CLOSE_ENOUGH_TO_GOAL)
                 closeEnoughToGoal = CLOSE_ENOUGH_TO_GOAL;
@@ -403,6 +403,10 @@ namespace Robocup.MotionControl
             {
                 List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius);
                 double score = 0;
+
+                //Penalty based on distance from the goal, per meter
+                if(path.Count >= 1)
+                    score -= DIST_FROM_GOAL_SCORE * desiredState.Position.distance(path[path.Count - 1]);
 
                 //Lose points per meter of path length greater than the start and end points
                 double len = 0;
