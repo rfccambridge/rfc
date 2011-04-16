@@ -383,7 +383,7 @@ namespace Robocup.MotionControl
                 Vector2 ballToDesired = desiredState.Position - ball.Position;
                 if (ballToDesired.magnitude() < 1e-6)
                     avoidBallRadius = 0;
-                else
+                else if (ballToDesired.magnitude() < avoidBallRadius)
                 {
                     Vector2 ballToAlmostDesired = ballToDesired * 0.95;
                     Vector2 ballAwayFromDesired = (-ballToDesired).normalizeToLength(avoidBallRadius);
