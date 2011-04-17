@@ -1623,12 +1623,14 @@ namespace Robocup.MotionControl
         private double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
         private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
 
-        private double XY_BASIS_SCALE = 25.0;
-        private double R_BASIS_SCALE = 3.0; 
+        private const double XY_BASIS_SCALE = 25.0;
+        private const double R_BASIS_SCALE = 3.0; 
         private WheelsInfo<double> XBASIS;
         private WheelsInfo<double> YBASIS;
         private WheelsInfo<double> RBASIS;
-        private double NEXT_NEXT_PROP = 0.35;
+        private const double NEXT_NEXT_PROP = 0.35;
+
+        private const double ACCEL_LIMIT_PER_FRAME = 0.6;
 
         private Pair<double,double>[] SPEED_BY_DISTANCE =
         { new Pair<double,double>(0.0,0.15), 
@@ -1661,6 +1663,14 @@ namespace Robocup.MotionControl
           new Pair<double,double>(2.2,1.77),
           new Pair<double,double>(2.4,1.84),
           new Pair<double,double>(2.6,1.91),
+        };
+
+        private Pair<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR =
+        {
+            new Pair<double,double>(0.0,2.0),
+            new Pair<double,double>(0.3,1.8),
+            new Pair<double,double>(0.5,1.3),
+            new Pair<double,double>(1.0,1.0),
         };
 
         private static double interp(Pair<double,double>[] pairs, double d)
@@ -1714,6 +1724,7 @@ namespace Robocup.MotionControl
             if (path.Waypoints.Count <= 0 || desiredState == null)
                 return new WheelSpeeds();
 
+            //Retrieve current robot info
             RobotInfo curInfo;
             try
             {
@@ -1724,6 +1735,7 @@ namespace Robocup.MotionControl
                 return new WheelSpeeds();
             }
 
+            //Retrieve next waypoints
             int idx;
             RobotInfo nextWaypoint = null;
             RobotInfo nextNextWaypoint = null;
@@ -1746,7 +1758,10 @@ namespace Robocup.MotionControl
             if (nextWaypoint == null)
                 return new WheelSpeeds();
 
-            double distToWaypoint = curInfo.Position.distance(nextWaypoint.Position);
+            Vector2 curToNext = (nextWaypoint.Position - curInfo.Position).normalize();
+            Vector2 nextToNextNext = path.Waypoints.Count > 1 ? 
+                (nextNextWaypoint.Position - nextWaypoint.Position).normalize() :
+                null;
 
             //Compute distance left to go in the path
             double distanceLeft = 0.0;
@@ -1755,34 +1770,48 @@ namespace Robocup.MotionControl
             distanceLeft += (desiredState.Position - path[path.Waypoints.Count - 1].Position).magnitude();
 
             //Compute distance to nearest obstacle
+            //Adjusted for whether we are going towards them or not.
             List<RobotInfo> robots = predictor.GetRobots();
             double obstacleDist = 10000;
+            Vector2 headingDirection = nextToNextNext != null ? nextToNextNext : curToNext;
             foreach (RobotInfo info in robots)
             {
                 if (info.Team != team || info.ID != id)
                 {
                     double dist = info.Position.distance(curInfo.Position);
+                    if(dist > 0)
+                    {
+                        double headingTowards = (1.0 + headingDirection * (info.Position - curInfo.Position).normalize())/2;
+                        dist *= interp(AGREEMENT_EFFECTIVE_DISTANCE_FACTOR, headingTowards);
+                    }
+
                     if (dist < obstacleDist)
                         obstacleDist = dist;
                 }
             }
 
-            Vector2 curToNext = (nextWaypoint.Position - curInfo.Position).rotate(-curInfo.Orientation).normalize();
-            WheelsInfo<double> speeds = WheelSpeeds.Add(
-                WheelsInfo<double>.Times(XBASIS, curToNext.X),
-                WheelsInfo<double>.Times(YBASIS, curToNext.Y));
-
+            //Compute desired velocity
+            Vector2 desiredVelocity = curToNext.rotate(-curInfo.Orientation); //In robot reference frame
             if (path.Waypoints.Count > 1)
-            {
-                Vector2 nextToNextNext = (nextNextWaypoint.Position - nextWaypoint.Position).rotate(-curInfo.Orientation).normalize();
-                WheelsInfo<double> nextNextSpeeds = WheelSpeeds.Add(
-                    WheelsInfo<double>.Times(XBASIS, nextToNextNext.X),
-                    WheelsInfo<double>.Times(YBASIS, nextToNextNext.Y));
-                speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(nextNextSpeeds,NEXT_NEXT_PROP));
-            }
+                desiredVelocity += NEXT_NEXT_PROP * nextToNextNext.rotate(-curInfo.Orientation);
 
+            //Adjust velocity to cope with a maximum acceleration limit
+            Vector2 currentVelocity = curInfo.Velocity;
+            Vector2 dv = desiredVelocity - currentVelocity;
+            //if (dv.magnitude() > ACCEL_LIMIT_PER_FRAME)
+            //{
+            //    dv = dv.normalizeToLength(ACCEL_LIMIT_PER_FRAME);
+            //    desiredVelocity = currentVelocity + dv;
+            //}
+
+            //Scale to desired speed
             double speed = Math.Min(interp(SPEED_BY_DISTANCE, distanceLeft), interp(SPEED_BY_OBSTACLE_DISTANCE, obstacleDist));
-            speeds = WheelsInfo<double>.Times(speeds, speed * SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
+            desiredVelocity *= speed;
+
+            //Convert to wheel speeds
+            WheelsInfo<double> speeds = WheelSpeeds.Add(
+                WheelsInfo<double>.Times(XBASIS, desiredVelocity.X),
+                WheelsInfo<double>.Times(YBASIS, desiredVelocity.Y));
 
             //Smallest turn algorithm
             double dTheta = desiredState.Orientation - curInfo.Orientation;
@@ -1791,9 +1820,12 @@ namespace Robocup.MotionControl
             dTheta = dTheta % (2 * Math.PI);
             if (dTheta > Math.PI) dTheta -= 2 * Math.PI;
             if (dTheta < -Math.PI) dTheta += 2 * Math.PI;
-
             speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(RBASIS, R_BASIS_SCALE * dTheta));
 
+            //Add rotational
+            speeds = WheelsInfo<double>.Times(speeds, SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
+
+            //Done!
             WheelSpeeds command = new WheelSpeeds(
                 Convert.ToInt32(speeds.rf),
                 Convert.ToInt32(speeds.lf),
