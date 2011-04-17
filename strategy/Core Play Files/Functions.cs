@@ -759,24 +759,20 @@ namespace Robocup.Plays
 
             addFunction("ourgoal", "OurGoal", "Our goal position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                return new Vector2(-1 * ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2 - 0.08, 0);
+                return new Vector2(Constants.Field.XMIN - 0.08, 0);
             });
 
             addFunction("theirgoal", "TheirGoal", "Their goal position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                return new Vector2(ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2 + 0.08, 0);
+                return new Vector2(Constants.Field.XMAX + 0.08, 0);
             });
 
             addFunction("theirGoalBestShot", "theirGoalBestShot", "Attempts to find a good location to shoot at", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                double fieldWidth = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
-                double goalHeight = ConstantsRaw.get<double>("plays", "GOAL_HEIGHT");
-
                 double buffer = 0.01;
                 int numIncrements = 40;
-
-                Vector2 goalEnd0 = new Vector2(fieldWidth / 2, goalHeight / 2 - buffer);
-                Vector2 goalEnd1 = new Vector2(fieldWidth / 2, -goalHeight / 2 + buffer);
+                Vector2 goalEnd0 = new Vector2(Constants.Field.XMAX, Constants.Field.GOAL_YMAX - buffer);
+                Vector2 goalEnd1 = new Vector2(Constants.Field.XMAX, Constants.Field.GOAL_YMIN + buffer);
 
                 BallInfo ball = state.ballInfo;
                 if (ball == null)

@@ -82,7 +82,6 @@ namespace Robocup.PlaySystem
 
             // reload the static classes relating to plays
             SharedPlays.ReloadConstants();
-            Field.ReloadConstants();
         }
     }
 }

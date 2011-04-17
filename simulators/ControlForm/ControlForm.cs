@@ -374,6 +374,7 @@ namespace Robocup.ControlForm {
                 }
 
                 ConstantsRaw.Load();
+                Constants.Reload();
 
                 LoadConstants();
 

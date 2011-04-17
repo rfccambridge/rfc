@@ -64,17 +64,8 @@ namespace Robocup.PlaySystem
     /// </summary>
     class NormalPlayLibrary : PlayLibrary
     {
-
         // CONSTANTS
-        double BALL_KICK_DIST;
-        double STANDBY_DISTANCE;
-        double GOAL_MINIMUM;
-        double BALL_IN_RANGE;
-        double SUPPORT_AVOID;
-        double CLEAR_DIST;
-        double SUPPORT_SETUP_PASS;
         double GOALIE_X_POS_DELTA;
-        double FIELD_WIDTH;
 
         public NormalPlayLibrary()
             : base(PlayType.NormalPlay)
@@ -84,15 +75,7 @@ namespace Robocup.PlaySystem
 
         public override void ReloadConstants()
         {
-            BALL_KICK_DIST = ConstantsRaw.get<double>("plays", "BALL_KICK_DIST");
-            STANDBY_DISTANCE = ConstantsRaw.get<double>("plays", "STANDBY_DISTANCE");
-            GOAL_MINIMUM = ConstantsRaw.get<double>("plays", "GOAL_MINIMUM");
-            BALL_IN_RANGE = ConstantsRaw.get<double>("plays", "BALL_IN_RANGE");
-            SUPPORT_AVOID = ConstantsRaw.get<double>("plays", "SUPPORT_AVOID");
-            CLEAR_DIST = ConstantsRaw.get<double>("plays", "CLEAR_DIST");
-            SUPPORT_SETUP_PASS = ConstantsRaw.get<double>("plays", "SUPPORT_SETUP_PASS");
             GOALIE_X_POS_DELTA = ConstantsRaw.get<double>("plays", "GOALIE_X_POS_DELTA");
-            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
         }
 
         public override void mainplay(GameState state)
@@ -222,7 +205,7 @@ namespace Robocup.PlaySystem
             // first robot: the one closest to the center kicks the ball
             if (numRobots > 0)
             {
-                state.Assigner.Kick(state.Functions.closestRobot(Field.center).ID, Field.theirgoal);
+                state.Assigner.Kick(state.Functions.closestRobot(Constants.FieldPts.CENTER).ID, Constants.FieldPts.THEIR_GOAL);
             }
 
             // second robot: acts as a receiver
@@ -327,7 +310,7 @@ namespace Robocup.PlaySystem
             if (numRobots == 3 || numRobots == 5)
             {
                 // 1.2 meters from the goal, towards the center
-                SharedPlays.MoveClosest_1(state, new Vector2(-Field.FIELD_WIDTH / 2 + 1.2, 0));
+                SharedPlays.MoveClosest_1(state, new Vector2(-Constants.Field.WIDTH / 2 + 1.2, 0));
             }
 
             // If there are four robots, put them at the top and bottom, facing forwards
@@ -390,7 +373,7 @@ namespace Robocup.PlaySystem
             if (numRobots > 0)
             {
                 Vector2 kickerpt = new Vector2(1.8, 0);
-                SharedPlays.MoveClosest_1(state, kickerpt, Field.theirgoal);
+                SharedPlays.MoveClosest_1(state, kickerpt, Constants.FieldPts.THEIR_GOAL);
             }
 
             // second robot is a goalie. NOTE: This is different from the traditional penalty goal
@@ -463,7 +446,7 @@ namespace Robocup.PlaySystem
             // fifth robot will stay in the center of the field to be a little out of the way
             if (numRobots > 4)
             {
-                SharedPlays.MoveClosest_1(state, Field.center);
+                SharedPlays.MoveClosest_1(state, Constants.FieldPts.CENTER);
             }
         }
     }

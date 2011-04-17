@@ -127,12 +127,20 @@ namespace Robocup.Utilities
 
         const double MARKER_SIZE = 0.025;
 
+        //Local copies of constants
+        //They will not change when constants are reloaded!
         double FIELD_WIDTH;
         double FIELD_HEIGHT;
-        double REFEREE_ZONE_WIDTH;
+        double REFEREE_WIDTH;
         double CENTER_CIRCLE_RADIUS;
         double GOAL_WIDTH;
         double GOAL_HEIGHT;
+        double FIELD_FULL_XMIN;
+        double FIELD_FULL_XMAX;
+        double FIELD_FULL_YMIN;
+        double FIELD_FULL_YMAX;
+        double ROBOT_RADIUS;
+        double BALL_RADIUS;
 
         FieldDrawerForm _fieldDrawerForm; 
         State _bufferedState = new State();
@@ -166,14 +174,18 @@ namespace Robocup.Utilities
 
         public FieldDrawer()
         {
-            FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
-            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
-
-            REFEREE_ZONE_WIDTH = ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
-            CENTER_CIRCLE_RADIUS = ConstantsRaw.get<double>("plays", "CENTER_CIRCLE_RADIUS");
-
-            GOAL_HEIGHT = ConstantsRaw.get<double>("plays", "GOAL_HEIGHT");
-            GOAL_WIDTH = ConstantsRaw.get<double>("plays", "GOAL_WIDTH");
+            FIELD_WIDTH = Constants.Field.WIDTH;
+            FIELD_HEIGHT = Constants.Field.HEIGHT;
+            REFEREE_WIDTH = Constants.Field.REFEREE_WIDTH;
+            CENTER_CIRCLE_RADIUS = Constants.Field.CENTER_CIRCLE_RADIUS;
+            GOAL_HEIGHT = Constants.Field.GOAL_HEIGHT;
+            GOAL_WIDTH = Constants.Field.GOAL_WIDTH;
+            FIELD_FULL_XMIN = Constants.Field.FULL_XMIN;
+            FIELD_FULL_XMAX = Constants.Field.FULL_XMAX;
+            FIELD_FULL_YMIN = Constants.Field.FULL_YMIN;
+            FIELD_FULL_YMAX = Constants.Field.FULL_YMAX;
+            ROBOT_RADIUS = Constants.Basic.ROBOT_RADIUS;
+            BALL_RADIUS = Constants.Basic.BALL_RADIUS;
 
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
@@ -189,8 +201,7 @@ namespace Robocup.Utilities
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-            GL.Ortho(-REFEREE_ZONE_WIDTH - FIELD_WIDTH / 2, FIELD_WIDTH / 2 + REFEREE_ZONE_WIDTH,
-                     -REFEREE_ZONE_WIDTH - FIELD_HEIGHT / 2, FIELD_HEIGHT / 2 + REFEREE_ZONE_WIDTH, -1, 1);
+            GL.Ortho(FIELD_FULL_XMIN, FIELD_FULL_XMAX, FIELD_FULL_YMIN, FIELD_FULL_YMAX, -1, 1);
             GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
 
             _ballQuadric = OpenTK.Graphics.Glu.NewQuadric();
@@ -565,7 +576,6 @@ namespace Robocup.Utilities
 
         private void drawRobot(RobotDrawingInfo drawingInfo)
         {
-            const double ROBOT_RADIUS = 0.08;
             const double ROBOT_ARC_SWEEP = 270; // degrees
             const int SLICES = 10;
 
@@ -597,7 +607,6 @@ namespace Robocup.Utilities
 
         private void drawBall(BallInfo ball)
         {
-            const double BALL_RADIUS = 0.02;
             const int SLICES = 8;
             
             GL.MatrixMode(MatrixMode.Modelview);
@@ -714,10 +723,10 @@ namespace Robocup.Utilities
 
         private Vector2 controlToFieldCoords(Point loc)
         {
-            double viewWidth = 2 * REFEREE_ZONE_WIDTH + FIELD_WIDTH;
-            double viewHeight = 2 * REFEREE_ZONE_WIDTH + FIELD_HEIGHT;
-            double translateX = -FIELD_WIDTH / 2 - REFEREE_ZONE_WIDTH;
-            double translateY = -FIELD_HEIGHT / 2 - REFEREE_ZONE_WIDTH;
+            double viewWidth = 2 * REFEREE_WIDTH + FIELD_WIDTH;
+            double viewHeight = 2 * REFEREE_WIDTH + FIELD_HEIGHT;
+            double translateX = -FIELD_WIDTH / 2 - REFEREE_WIDTH;
+            double translateY = -FIELD_HEIGHT / 2 - REFEREE_WIDTH;
             return new Vector2((double)loc.X / _glControlWidth * viewWidth + translateX, 
                                (1 - (double)loc.Y / _glControlHeight) * viewHeight + translateY);
         }
