@@ -1086,4 +1086,16 @@ namespace Robocup.MotionControl
         }
     }
 
+    public class SmoothedRRTVelocityPlanner : PlannerDriver
+    {
+        static SmoothRRTPlanner pathplanner = new SmoothRRTPlanner();
+        public static VelocityDriver pathdriver = new VelocityDriver();
+
+        public SmoothedRRTVelocityPlanner()
+            : base(pathplanner, pathdriver)
+        {
+            LoadConstants();
+        }
+    }
+
 }
