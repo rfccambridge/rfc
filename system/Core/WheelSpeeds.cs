@@ -40,6 +40,10 @@ namespace Robocup.Core
         {
             return new WheelsInfo<double>(d*rhs.rf, d*rhs.lf, d*rhs.lb, d*rhs.rb);
         }
+        static public WheelsInfo<double> Times(WheelsInfo<double> lhs, double d)
+        {
+            return new WheelsInfo<double>(lhs.rf * d, lhs.lf * d, lhs.lb * d, lhs.rb * d);
+        }
     }
     
     /// <summary>
@@ -75,6 +79,7 @@ namespace Robocup.Core
         }
         static public explicit operator WheelSpeeds(WheelsInfo<double> ws)
         {
+            //TODO(davidwu): This code is wrong for negative numbers.
             return new WheelSpeeds((int)(ws.rf + .5), (int)(ws.lf + .5), (int)(ws.lb + .5), (int)(ws.rb + .5));
         }
         static public explicit operator WheelsInfo<double>(WheelSpeeds ws)

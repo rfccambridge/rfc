@@ -1615,5 +1615,195 @@ namespace Robocup.MotionControl
 			_logging = false;
 		}
 		#endregion
-	}
+
+}
+    public class VelocityDriver : IPathDriver
+    {
+        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
+        private double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
+        private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
+
+        private double XY_BASIS_SCALE = 25.0;
+        private double R_BASIS_SCALE = 3.0; 
+        private WheelsInfo<double> XBASIS;
+        private WheelsInfo<double> YBASIS;
+        private WheelsInfo<double> RBASIS;
+        private double NEXT_NEXT_PROP = 0.35;
+
+        private Pair<double,double>[] SPEED_BY_DISTANCE =
+        { new Pair<double,double>(0.0,0.15), 
+          new Pair<double,double>(0.1,0.50), 
+          new Pair<double,double>(0.2,0.80), 
+          new Pair<double,double>(0.3,1.00),
+          new Pair<double,double>(0.6,1.12),
+          new Pair<double,double>(0.9,1.24),
+          new Pair<double,double>(1.2,1.34),
+          new Pair<double,double>(1.5,1.43),
+          new Pair<double,double>(1.8,1.51),
+          new Pair<double,double>(2.1,1.58),
+          new Pair<double,double>(2.4,1.64),
+          new Pair<double,double>(2.7,1.69),
+          new Pair<double,double>(3.0,1.72),
+        };
+
+        private Pair<double,double>[] SPEED_BY_OBSTACLE_DISTANCE =
+        { new Pair<double,double>(0.0,0.50), 
+          new Pair<double,double>(0.2,0.75),
+          new Pair<double,double>(0.4,1.00),
+          new Pair<double,double>(0.6,1.13),
+          new Pair<double,double>(0.8,1.24),
+          new Pair<double,double>(1.0,1.34),
+          new Pair<double,double>(1.2,1.42),
+          new Pair<double,double>(1.4,1.50),
+          new Pair<double,double>(1.6,1.57),
+          new Pair<double,double>(1.8,1.63),
+          new Pair<double,double>(2.0,1.70),
+          new Pair<double,double>(2.2,1.77),
+          new Pair<double,double>(2.4,1.84),
+          new Pair<double,double>(2.6,1.91),
+        };
+
+        private static double interp(Pair<double,double>[] pairs, double d)
+        {
+            for(int i = 0; i<pairs.Length; i++)
+            {
+                if(pairs[i].First >= d)
+                {
+                    if(i == 0)
+                        return pairs[0].Second;
+                    double lambda = (d - pairs[i-1].First) / (pairs[i].First - pairs[i-1].First);
+                    return pairs[i-1].Second + lambda * (pairs[i].Second - pairs[i-1].Second);
+                }
+            }
+            return pairs[pairs.Length-1].Second;
+        }
+
+        public VelocityDriver()
+        {
+            double xyb = XY_BASIS_SCALE;
+            double rb = R_BASIS_SCALE;
+            XBASIS = new WheelsInfo<double>(xyb, -xyb, -xyb, xyb);
+            YBASIS = new WheelsInfo<double>(xyb, xyb, -xyb, -xyb);
+            RBASIS = new WheelsInfo<double>(rb, rb, rb, rb);
+
+            LoadConstants();
+        }
+
+	    public void LoadConstants()
+	    {
+            SPEED_SCALING_FACTOR_ALL = Constants.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
+            for (int i = 0; i < NUM_ROBOTS; i++)
+                SPEED_SCALING_FACTORS[i] = Constants.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
+	    }
+
+        public void ReloadConstants()
+        {
+            LoadConstants();
+        }
+
+        public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
+        {
+            Team team = path.Team;
+            int id = path.ID;
+
+            if (path == null)
+                return new WheelSpeeds();
+
+            RobotInfo desiredState = path.getFinalState();
+
+            if (path.Waypoints.Count <= 0 || desiredState == null)
+                return new WheelSpeeds();
+
+            RobotInfo curInfo;
+            try
+            {
+                curInfo = predictor.GetRobot(team, id);
+            }
+            catch (ApplicationException e)
+            {
+                return new WheelSpeeds();
+            }
+
+            int idx;
+            RobotInfo nextWaypoint = null;
+            RobotInfo nextNextWaypoint = null;
+            for(idx = 0; idx < path.Waypoints.Count; idx++)
+            {
+                if((path.Waypoints[idx].Position - curInfo.Position).magnitude() > 1e-5)
+                {
+                    nextWaypoint = path.Waypoints[idx];
+                    break;
+                }
+            }
+            for (idx++;  idx < path.Waypoints.Count; idx++)
+            {
+                if ((path.Waypoints[idx].Position - path.Waypoints[idx-1].Position).magnitude() > 1e-5)
+                {
+                    nextNextWaypoint = path.Waypoints[idx];
+                    break;
+                }
+            }
+            if (nextWaypoint == null)
+                return new WheelSpeeds();
+
+            double distToWaypoint = curInfo.Position.distance(nextWaypoint.Position);
+
+            //Compute distance left to go in the path
+            double distanceLeft = 0.0;
+            for (int i = 0; i < path.Waypoints.Count - 1; i++)
+                distanceLeft += (path[i + 1].Position - path[i].Position).magnitude();
+            distanceLeft += (desiredState.Position - path[path.Waypoints.Count - 1].Position).magnitude();
+
+            //Compute distance to nearest obstacle
+            List<RobotInfo> robots = predictor.GetRobots();
+            double obstacleDist = 10000;
+            foreach (RobotInfo info in robots)
+            {
+                if (info.Team != team || info.ID != id)
+                {
+                    double dist = info.Position.distance(curInfo.Position);
+                    if (dist < obstacleDist)
+                        obstacleDist = dist;
+                }
+            }
+
+            Vector2 curToNext = (nextWaypoint.Position - curInfo.Position).rotate(-curInfo.Orientation).normalize();
+            WheelsInfo<double> speeds = WheelSpeeds.Add(
+                WheelsInfo<double>.Times(XBASIS, curToNext.X),
+                WheelsInfo<double>.Times(YBASIS, curToNext.Y));
+
+            if (path.Waypoints.Count > 1)
+            {
+                Vector2 nextToNextNext = (nextNextWaypoint.Position - nextWaypoint.Position).rotate(-curInfo.Orientation).normalize();
+                WheelsInfo<double> nextNextSpeeds = WheelSpeeds.Add(
+                    WheelsInfo<double>.Times(XBASIS, nextToNextNext.X),
+                    WheelsInfo<double>.Times(YBASIS, nextToNextNext.Y));
+                speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(nextNextSpeeds,NEXT_NEXT_PROP));
+            }
+
+            double speed = Math.Min(interp(SPEED_BY_DISTANCE, distanceLeft), interp(SPEED_BY_OBSTACLE_DISTANCE, obstacleDist));
+            speeds = WheelsInfo<double>.Times(speeds, speed * SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
+
+            //Smallest turn algorithm
+            double dTheta = desiredState.Orientation - curInfo.Orientation;
+
+            //Map dTheta to the equivalent angle in [-PI,PI]
+            dTheta = dTheta % (2 * Math.PI);
+            if (dTheta > Math.PI) dTheta -= 2 * Math.PI;
+            if (dTheta < -Math.PI) dTheta += 2 * Math.PI;
+
+            speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(RBASIS, R_BASIS_SCALE * dTheta));
+
+            WheelSpeeds command = new WheelSpeeds(
+                Convert.ToInt32(speeds.rf),
+                Convert.ToInt32(speeds.lf),
+                Convert.ToInt32(speeds.lb),
+                Convert.ToInt32(speeds.rb));
+            Console.WriteLine(command);
+
+            return command;
+        }
+    }
+
+	
 }
