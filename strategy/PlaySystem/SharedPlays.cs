@@ -44,17 +44,17 @@ namespace Robocup.PlaySystem
         /// </summary>
         public static void ReloadConstants()
         {
-            OFFENSE_SUPPORT_AVOID = Constants.get<double>("plays", "OFFENSE_SUPPORT_AVOID");
-            OFFENSE_STANDBY_DISTANCE = Constants.get<double>("plays", "OFFENSE_STANDBY_DISTANCE");
-            OFFENSE_BALL_IN_RANGE = Constants.get<double>("plays", "OFFENSE_BALL_IN_RANGE");
-            GOALIE_DISTANCE = Constants.get<double>("plays", "GOALIE_DISTANCE");
-            GOALIE_MAX_MIN_Y = Constants.get<double>("plays", "GOALIE_MAX_MIN_Y");
-            TWO_MAN_WALL_PERIMETER = Constants.get<double>("plays", "TWO_MAN_WALL_PERIMITER");
-            TWO_MAN_WALL_KICK_DISTANCE = Constants.get<double>("plays", "TWO_MAN_WALL_KICK_DISTANCE");
-            TWO_MAN_WALL_DISTANCE_APART = Constants.get<double>("plays", "TWO_MAN_WALL_DISTANCE_APART");
-            GUARD_BALL_DISTANCE = Constants.get<double>("plays", "GUARD_BALL_DISTANCE");
-            GUARD_BALL_ROTATE_ANGLE = Constants.get<double>("plays", "GUARD_BALL_ROTATE_ANGLE");
-            CIRCULAR_DEFENDER_PERIMETER = Constants.get<double>("plays", "CIRCULAR_DEFENDER_PERIMETER");
+            OFFENSE_SUPPORT_AVOID = ConstantsRaw.get<double>("plays", "OFFENSE_SUPPORT_AVOID");
+            OFFENSE_STANDBY_DISTANCE = ConstantsRaw.get<double>("plays", "OFFENSE_STANDBY_DISTANCE");
+            OFFENSE_BALL_IN_RANGE = ConstantsRaw.get<double>("plays", "OFFENSE_BALL_IN_RANGE");
+            GOALIE_DISTANCE = ConstantsRaw.get<double>("plays", "GOALIE_DISTANCE");
+            GOALIE_MAX_MIN_Y = ConstantsRaw.get<double>("plays", "GOALIE_MAX_MIN_Y");
+            TWO_MAN_WALL_PERIMETER = ConstantsRaw.get<double>("plays", "TWO_MAN_WALL_PERIMITER");
+            TWO_MAN_WALL_KICK_DISTANCE = ConstantsRaw.get<double>("plays", "TWO_MAN_WALL_KICK_DISTANCE");
+            TWO_MAN_WALL_DISTANCE_APART = ConstantsRaw.get<double>("plays", "TWO_MAN_WALL_DISTANCE_APART");
+            GUARD_BALL_DISTANCE = ConstantsRaw.get<double>("plays", "GUARD_BALL_DISTANCE");
+            GUARD_BALL_ROTATE_ANGLE = ConstantsRaw.get<double>("plays", "GUARD_BALL_ROTATE_ANGLE");
+            CIRCULAR_DEFENDER_PERIMETER = ConstantsRaw.get<double>("plays", "CIRCULAR_DEFENDER_PERIMETER");
         }
 
         // DEFENSE HELPERS

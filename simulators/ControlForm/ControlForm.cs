@@ -119,8 +119,8 @@ namespace Robocup.ControlForm {
 
         public void LoadConstants()
         {
-            LOG_FILE = Constants.get<string>("motionplanning", "LOG_FILE");
-            STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
+            LOG_FILE = ConstantsRaw.get<string>("motionplanning", "LOG_FILE");
+            STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
 
             if (_predictor != null)
                 _predictor.LoadConstants();
@@ -306,12 +306,12 @@ namespace Robocup.ControlForm {
             // There's no better place than lstPlayers to get all the players
             foreach (Player player in lstPlayers.Items)
             {
-                string TACTIC_DIR = Constants.get<string>("default", "TACTIC_DIR");
+                string TACTIC_DIR = ConstantsRaw.get<string>("default", "TACTIC_DIR");
 
                 Dictionary<string, InterpreterTactic> tacticBook = PlayUtils.loadTactics(TACTIC_DIR);
 
                 // Currently indexing by team, but could index by name or whatever here
-                string PLAY_DIR = Constants.get<string>("default", "PLAY_DIR_" + player.Team.ToString().ToUpper());
+                string PLAY_DIR = ConstantsRaw.get<string>("default", "PLAY_DIR_" + player.Team.ToString().ToUpper());
 
                 List<InterpreterPlay> playObjs = new List<InterpreterPlay>(PlayUtils.loadPlays(PLAY_DIR, tacticBook).Keys);
                 player.LoadPlays(playObjs);
@@ -359,7 +359,7 @@ namespace Robocup.ControlForm {
                     return false;
                 }
 
-                Constants.Load();
+                ConstantsRaw.Load();
 
                 LoadConstants();
 

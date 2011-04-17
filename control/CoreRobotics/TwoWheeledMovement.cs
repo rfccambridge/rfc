@@ -28,18 +28,18 @@ namespace Robocup.CoreRobotics
 
         const double MoveTol = .01;
         GeneralPID anglePID = new GeneralPID(
-            Constants.get<double>("control", "ANGLE_PID_KP"),
-            Constants.get<double>("control", "ANGLE_PID_KI"),
-            Constants.get<double>("control", "ANGLE_PID_KD"),
-            Constants.get<double>("control", "ANGLE_PID_MAX"),
-            Constants.get<double>("control", "ANGLE_PID_RESET")
+            ConstantsRaw.get<double>("control", "ANGLE_PID_KP"),
+            ConstantsRaw.get<double>("control", "ANGLE_PID_KI"),
+            ConstantsRaw.get<double>("control", "ANGLE_PID_KD"),
+            ConstantsRaw.get<double>("control", "ANGLE_PID_MAX"),
+            ConstantsRaw.get<double>("control", "ANGLE_PID_RESET")
             );
         GeneralPID movePID = new GeneralPID(
-            Constants.get<double>("control", "MOVE_PID_KP"),
-            Constants.get<double>("control", "MOVE_PID_KI"),
-            Constants.get<double>("control", "MOVE_PID_KD"),
-            Constants.get<double>("control", "MOVE_PID_MAX"),
-            Constants.get<double>("control", "MOVE_PID_RESET")
+            ConstantsRaw.get<double>("control", "MOVE_PID_KP"),
+            ConstantsRaw.get<double>("control", "MOVE_PID_KI"),
+            ConstantsRaw.get<double>("control", "MOVE_PID_KD"),
+            ConstantsRaw.get<double>("control", "MOVE_PID_MAX"),
+            ConstantsRaw.get<double>("control", "MOVE_PID_RESET")
             );
 
         public WheelSpeeds calculateWheelSpeeds(IPredictor predictor, int robotID, RobotInfo currentInfo, NavigationResults results, double desiredOrientation)
@@ -107,18 +107,18 @@ namespace Robocup.CoreRobotics
         public void reloadPID()
         {
             anglePID = new GeneralPID(
-                Constants.get<double>("default", "ANGLE_PID_KP"),
-                Constants.get<double>("default", "ANGLE_PID_KD"),
-                Constants.get<double>("default", "ANGLE_PID_KI"),
-                Constants.get<double>("default", "ANGLE_PID_MAX"),
-                Constants.get<double>("default", "ANGLE_PID_RESET")
+                ConstantsRaw.get<double>("default", "ANGLE_PID_KP"),
+                ConstantsRaw.get<double>("default", "ANGLE_PID_KD"),
+                ConstantsRaw.get<double>("default", "ANGLE_PID_KI"),
+                ConstantsRaw.get<double>("default", "ANGLE_PID_MAX"),
+                ConstantsRaw.get<double>("default", "ANGLE_PID_RESET")
             );
             movePID = new GeneralPID(
-                Constants.get<double>("default", "MOVE_PID_KP"),
-                Constants.get<double>("default", "MOVE_PID_KD"),
-                Constants.get<double>("default", "MOVE_PID_KI"),
-                Constants.get<double>("default", "MOVE_PID_MAX"),
-                Constants.get<double>("default", "MOVE_PID_RESET")
+                ConstantsRaw.get<double>("default", "MOVE_PID_KP"),
+                ConstantsRaw.get<double>("default", "MOVE_PID_KD"),
+                ConstantsRaw.get<double>("default", "MOVE_PID_KI"),
+                ConstantsRaw.get<double>("default", "MOVE_PID_MAX"),
+                ConstantsRaw.get<double>("default", "MOVE_PID_RESET")
             );
         }
 

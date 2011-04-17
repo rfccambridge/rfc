@@ -61,16 +61,16 @@ namespace Robocup.Simulation
         public void LoadConstants()
         {
             // field drawing
-            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
 
             FIELD_XMIN = -FIELD_WIDTH / 2;
             FIELD_XMAX = FIELD_WIDTH / 2;
             FIELD_YMIN = -FIELD_HEIGHT / 2;
             FIELD_YMAX = FIELD_HEIGHT / 2;
 
-            GOAL_WIDTH = Constants.get<double>("plays", "GOAL_WIDTH");
-            GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
+            GOAL_WIDTH = ConstantsRaw.get<double>("plays", "GOAL_WIDTH");
+            GOAL_HEIGHT = ConstantsRaw.get<double>("plays", "GOAL_HEIGHT");
         }
 
         public void RunRef(IPredictor predictor)

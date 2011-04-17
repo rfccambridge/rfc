@@ -122,10 +122,10 @@ namespace Robocup.MotionControl
 
         public void ReloadConstants()
         {
-            Constants.Load("motionplanning");
+            ConstantsRaw.Load();
 
-            REPULSION_FACTOR = Constants.get<double>("motionplanning", "REPULSION_FACTOR");
-            PERPINDICULAR_LENGTH = Constants.get<double>("motionplanning", "PERPINDICULAR_LENGTH");
+            REPULSION_FACTOR = ConstantsRaw.get<double>("motionplanning", "REPULSION_FACTOR");
+            PERPINDICULAR_LENGTH = ConstantsRaw.get<double>("motionplanning", "PERPINDICULAR_LENGTH");
         }
     }
 
@@ -349,22 +349,22 @@ namespace Robocup.MotionControl
 
         public void ReloadConstants()
         {
-            Constants.Load("motionplanning");
+            ConstantsRaw.Load();
 
-            LOOK_AHEAD_DIST = Constants.get<double>("motionplanning", "LOOK_AHEAD_DIST");
-            AVOID_DIST = Constants.get<double>("motionplanning", "AVOID_DIST");
-            WAYPOINT_DIST = Constants.get<double>("motionplanning", "WAYPOINT_DIST");
-            MIN_ABS_VAL_STICK = Constants.get<double>("motionplanning", "MIN_ABS_VAL_STICK");
-            EXTRA_GOAL_DIST = Constants.get<double>("motionplanning", "EXTRA_GOAL_DIST");
-        	STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
+            LOOK_AHEAD_DIST = ConstantsRaw.get<double>("motionplanning", "LOOK_AHEAD_DIST");
+            AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "AVOID_DIST");
+            WAYPOINT_DIST = ConstantsRaw.get<double>("motionplanning", "WAYPOINT_DIST");
+            MIN_ABS_VAL_STICK = ConstantsRaw.get<double>("motionplanning", "MIN_ABS_VAL_STICK");
+            EXTRA_GOAL_DIST = ConstantsRaw.get<double>("motionplanning", "EXTRA_GOAL_DIST");
+        	STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
 
             
-            MIN_X_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MIN_X_ROBOT_BOUNDARY");
-            MAX_X_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MAX_X_ROBOT_BOUNDARY");
-            MIN_Y_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MIN_Y_ROBOT_BOUNDARY");
-            MAX_Y_ROBOT_BOUNDARY = Constants.get<double>("motionplanning", "MAX_Y_ROBOT_BOUNDARY");
+            MIN_X_ROBOT_BOUNDARY = ConstantsRaw.get<double>("motionplanning", "MIN_X_ROBOT_BOUNDARY");
+            MAX_X_ROBOT_BOUNDARY = ConstantsRaw.get<double>("motionplanning", "MAX_X_ROBOT_BOUNDARY");
+            MIN_Y_ROBOT_BOUNDARY = ConstantsRaw.get<double>("motionplanning", "MIN_Y_ROBOT_BOUNDARY");
+            MAX_Y_ROBOT_BOUNDARY = ConstantsRaw.get<double>("motionplanning", "MAX_Y_ROBOT_BOUNDARY");
 
-            BOUNDARY_AVOID = Constants.get<double>("motionplanning", "BOUNDARY_AVOID");
+            BOUNDARY_AVOID = ConstantsRaw.get<double>("motionplanning", "BOUNDARY_AVOID");
 
             // field edges
             // corner points
@@ -384,8 +384,8 @@ namespace Robocup.MotionControl
             // right
             boundary_lines.Add(new Line(topright, bottomright));
             
-            //ROTATE_ANGLE = Constants.get<double>("motionplanning", "ROTATE_ANGLE");
-            //ITER_INCREMENT = Constants.get<double>("motionplanning", "ITER_INCREMENT");
+            //ROTATE_ANGLE = ConstantsRaw.get<double>("motionplanning", "ROTATE_ANGLE");
+            //ITER_INCREMENT = ConstantsRaw.get<double>("motionplanning", "ITER_INCREMENT");
         }
 
         private bool isOutOfWay(Vector2 position, Vector2 start, Vector2 pathVector)
@@ -589,8 +589,8 @@ namespace Robocup.MotionControl
 
 		public void ReloadConstants()
 		{
-			AVOID_DIST = Constants.get<double>("motionplanning", "AVOID_DIST");
-			STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
+			AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "AVOID_DIST");
+			STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
 		}
 	}
 

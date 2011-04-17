@@ -53,10 +53,10 @@ namespace Robocup.CoreRobotics
 
             public void LoadConstants()
             {
-                VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
-                WEIGHT_OLD = Constants.get<double>("default", "WEIGHT_OLD");
-                WEIGHT_NEW = Constants.get<double>("default", "WEIGHT_NEW");
-                FLIP_COORDINATES = Constants.get<bool>("default", "FLIP_COORDINATES");
+                VELOCITY_DT = ConstantsRaw.get<double>("default", "VELOCITY_DT");
+                WEIGHT_OLD = ConstantsRaw.get<double>("default", "WEIGHT_OLD");
+                WEIGHT_NEW = ConstantsRaw.get<double>("default", "WEIGHT_NEW");
+                FLIP_COORDINATES = ConstantsRaw.get<bool>("default", "FLIP_COORDINATES");
             }
 
             // Update the believed state with new observations
@@ -275,12 +275,12 @@ namespace Robocup.CoreRobotics
 
         public void LoadConstants()
         {
-            MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
-            VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
-            BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
-            DELTA_DIST_SQ_MERGE = Constants.get<double>("default", "DELTA_DIST_SQ_MERGE");
+            MAX_SECONDS_TO_KEEP_INFO = ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
+            VELOCITY_DT = ConstantsRaw.get<double>("default", "VELOCITY_DT");
+            BALL_MOVED_DIST = ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
+            DELTA_DIST_SQ_MERGE = ConstantsRaw.get<double>("default", "DELTA_DIST_SQ_MERGE");
 
-            COMBINE_FREQUENCY = Constants.get<double>("default", "COMBINE_FREQUENCY");
+            COMBINE_FREQUENCY = ConstantsRaw.get<double>("default", "COMBINE_FREQUENCY");
             combineTimer.Interval = 1 / COMBINE_FREQUENCY * 1000; // Convert to seconds, and find period 
 
             foreach (FieldState fieldState in fieldStates)

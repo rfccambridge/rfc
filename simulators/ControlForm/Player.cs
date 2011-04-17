@@ -125,9 +125,9 @@ namespace Robocup.ControlForm
             for (int i = 0; i < 10; i++)
             {
                 bool value;
-                if (Constants.nondestructiveGet("default", "ROBOT_HAS_KICKER_" + i, out value))
+                if (ConstantsRaw.nondestructiveGet("default", "ROBOT_HAS_KICKER_" + i, out value))
                     TagSystem.AddTag(i, "kicker");
-                if (Constants.nondestructiveGet("default", "ROBOT_IS_GOALIE_" + i, out value))
+                if (ConstantsRaw.nondestructiveGet("default", "ROBOT_IS_GOALIE_" + i, out value))
                     TagSystem.AddTag(i, "goalie");
             }
 
@@ -191,7 +191,7 @@ namespace Robocup.ControlForm
             if (_running)
                 throw new ApplicationException("Already running.");
 
-            double freq = Constants.get<double>("default", "STRATEGY_FREQUENCY");
+            double freq = ConstantsRaw.get<double>("default", "STRATEGY_FREQUENCY");
             double period = 1.0 / freq * 1000; // in ms
 
             _running = true;

@@ -128,8 +128,8 @@ namespace Robocup.MotionControl
             //TODO goal hack
             if (!TagSystem.GetTags(id).Contains("goalie"))
             {
-                obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
-                obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(-ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
             }
 
             RobotInfo curinfo = predictor.GetRobot(team, id);
@@ -197,8 +197,8 @@ namespace Robocup.MotionControl
             //TODO goal hack
             if (!TagSystem.GetTags(id).Contains("goalie"))
             {
-                obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
-                obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(-ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
             }
 
             RobotInfo curinfo = predictor.GetRobot(team, id);
@@ -317,8 +317,8 @@ namespace Robocup.MotionControl
         	//TODO goal hack
         	if (!TagSystem.GetTags(id).Contains("goalie"))
         	{
-        		obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH")/2, 0), .7 + .1));
-        		obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH")/2, 0), .7 + .1));
+        		obstacles.Add(new Obstacle(new Vector2(ConstantsRaw.get<double>("plays", "FIELD_WIDTH")/2, 0), .7 + .1));
+        		obstacles.Add(new Obstacle(new Vector2(-ConstantsRaw.get<double>("plays", "FIELD_WIDTH")/2, 0), .7 + .1));
         	}
 
         	RobotInfo curinfo;
@@ -413,7 +413,7 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
 
-            LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
+            LOG_EVERY_MSEC = ConstantsRaw.get<int>("control", "LOG_EVERY_MSEC");
         }
 
         #region ILogger
@@ -576,8 +576,8 @@ namespace Robocup.MotionControl
             }
             //TODO goal hack
             if (!TagSystem.GetTags(id).Contains("goalie")) {
-                obstacles.Add(new Obstacle(new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
-                obstacles.Add(new Obstacle(new Vector2(-Constants.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
+                obstacles.Add(new Obstacle(new Vector2(-ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2, 0), .7 + .1));
             }
 
             RobotInfo curinfo;
@@ -673,7 +673,7 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
 
-            LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
+            LOG_EVERY_MSEC = ConstantsRaw.get<int>("control", "LOG_EVERY_MSEC");
         }
 
         #region ILogger

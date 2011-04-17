@@ -29,14 +29,6 @@ namespace Robocup.Simulation
 		private Vector2 _markedPosition;
 
 		private double BALL_MOVED_DIST;
-        static double FIELD_WIDTH;
-        static double FIELD_HEIGHT;
-        static double FIELD_XMIN;
-        static double FIELD_XMAX;
-        static double FIELD_YMIN;
-        static double FIELD_YMAX;
-        static double GOAL_WIDTH;
-        static double REFEREE_ZONE_WIDTH;
 
         private bool running = false;
         private System.Timers.Timer mainTimer = new System.Timers.Timer();
@@ -114,18 +106,7 @@ namespace Robocup.Simulation
 
         public void LoadConstants()
         {
-            BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
-
-            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
-            GOAL_WIDTH = Constants.get<double>("plays", "GOAL_WIDTH");
-            REFEREE_ZONE_WIDTH = Constants.get<double>("plays", "REFEREE_ZONE_WIDTH");
-
-            // Calculate physics based on physical boundaries slightly larger than field
-            FIELD_XMIN = -FIELD_WIDTH / 2 - REFEREE_ZONE_WIDTH;
-            FIELD_XMAX = FIELD_WIDTH / 2 + REFEREE_ZONE_WIDTH;
-            FIELD_YMIN = -FIELD_HEIGHT / 2 - REFEREE_ZONE_WIDTH;
-            FIELD_YMAX = FIELD_HEIGHT / 2 + REFEREE_ZONE_WIDTH;            
+            BALL_MOVED_DIST = ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");        
         }
 
         public void StartCommander(int port)
@@ -227,7 +208,7 @@ namespace Robocup.Simulation
 
 			InitState();
 
-            double freq = Constants.get<double>("default", "SIM_ENGINE_FREQUENCY");
+            double freq = ConstantsRaw.get<double>("default", "SIM_ENGINE_FREQUENCY");
             double period = 1.0 / freq * 1000; // in ms
 
             mainTimer.Interval = period;
@@ -346,14 +327,14 @@ namespace Robocup.Simulation
                     double ballY = newBallLocation.Y;
                     double ballVx = newBallVelocity.X;
                     double ballVy = newBallVelocity.Y;
-                    if (ballX < FIELD_XMIN)
-                    { ballVx = Math.Abs(ballVx) * BALL_WALL_ELASTICITY; ballX = 2 * FIELD_XMIN - ballX; }
-                    else if (ballX > FIELD_XMAX)
-                    { ballVx = -Math.Abs(ballVx) * BALL_WALL_ELASTICITY; ballX = 2 * FIELD_XMAX - ballX; }
-                    if (ballY < FIELD_YMIN)
-                    { ballVy = Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * FIELD_YMIN - ballY; }
-                    else if (ballY > FIELD_YMAX)
-                    { ballVy = -Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * FIELD_YMAX - ballY; }
+                    if (ballX < Constants.Field.FULL_XMIN)
+                    { ballVx = Math.Abs(ballVx) * BALL_WALL_ELASTICITY; ballX = 2 * Constants.Field.FULL_XMIN - ballX; }
+                    else if (ballX > Constants.Field.FULL_XMAX)
+                    { ballVx = -Math.Abs(ballVx) * BALL_WALL_ELASTICITY; ballX = 2 * Constants.Field.FULL_XMAX - ballX; }
+                    if (ballY < Constants.Field.FULL_YMIN)
+                    { ballVy = Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * Constants.Field.FULL_YMIN - ballY; }
+                    else if (ballY > Constants.Field.FULL_YMAX)
+                    { ballVy = -Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * Constants.Field.FULL_YMAX - ballY; }
 
                     newBallVelocity = new Vector2(ballVx, ballVy);
                     newBallLocation = new Vector2(ballX, ballY);

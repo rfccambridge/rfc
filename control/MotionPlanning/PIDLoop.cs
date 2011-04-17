@@ -58,16 +58,16 @@ namespace Robocup.MotionControl
         public void ReloadConstants()
         {
             // Reload this constants file
-            Constants.Load(category);
+            ConstantsRaw.Load();
 
             // Set P, I, and D, possibly a cap on the error
-            P = Constants.get<double>(category, constype + "_P");
-            I = Constants.get<double>(category, constype + "_I");
-            D = Constants.get<double>(category, constype + "_D");
+            P = ConstantsRaw.get<double>(category, constype + "_P");
+            I = ConstantsRaw.get<double>(category, constype + "_I");
+            D = ConstantsRaw.get<double>(category, constype + "_D");
 
             cap = 0;
-            if (Constants.isDefined(constype + "_CAP")) {
-                cap = Constants.get<double>(category, constype + "_CAP");
+            if (ConstantsRaw.isDefined(constype + "_CAP")) {
+                cap = ConstantsRaw.get<double>(category, constype + "_CAP");
             }
         }
 

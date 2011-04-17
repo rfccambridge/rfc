@@ -84,15 +84,15 @@ namespace Robocup.PlaySystem
 
         public override void ReloadConstants()
         {
-            BALL_KICK_DIST = Constants.get<double>("plays", "BALL_KICK_DIST");
-            STANDBY_DISTANCE = Constants.get<double>("plays", "STANDBY_DISTANCE");
-            GOAL_MINIMUM = Constants.get<double>("plays", "GOAL_MINIMUM");
-            BALL_IN_RANGE = Constants.get<double>("plays", "BALL_IN_RANGE");
-            SUPPORT_AVOID = Constants.get<double>("plays", "SUPPORT_AVOID");
-            CLEAR_DIST = Constants.get<double>("plays", "CLEAR_DIST");
-            SUPPORT_SETUP_PASS = Constants.get<double>("plays", "SUPPORT_SETUP_PASS");
-            GOALIE_X_POS_DELTA = Constants.get<double>("plays", "GOALIE_X_POS_DELTA");
-            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+            BALL_KICK_DIST = ConstantsRaw.get<double>("plays", "BALL_KICK_DIST");
+            STANDBY_DISTANCE = ConstantsRaw.get<double>("plays", "STANDBY_DISTANCE");
+            GOAL_MINIMUM = ConstantsRaw.get<double>("plays", "GOAL_MINIMUM");
+            BALL_IN_RANGE = ConstantsRaw.get<double>("plays", "BALL_IN_RANGE");
+            SUPPORT_AVOID = ConstantsRaw.get<double>("plays", "SUPPORT_AVOID");
+            CLEAR_DIST = ConstantsRaw.get<double>("plays", "CLEAR_DIST");
+            SUPPORT_SETUP_PASS = ConstantsRaw.get<double>("plays", "SUPPORT_SETUP_PASS");
+            GOALIE_X_POS_DELTA = ConstantsRaw.get<double>("plays", "GOALIE_X_POS_DELTA");
+            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
         }
 
         public override void mainplay(GameState state)

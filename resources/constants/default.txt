@@ -3,9 +3,12 @@
 #       e.g. string MYCONST "text" is returned as "text" NOT text
 # each text file represents a different constants category
 
+#BASIC CONSTANTS--------------------------------------------------------
+
 # number of robots, which includes opponents and also IDs that are sometimes
 # bigger than 10 from the SSLVision system
 int NUM_ROBOTS 12
+
 
 # RFCSystem constants
 double STRATEGY_FREQUENCY 10

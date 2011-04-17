@@ -37,16 +37,16 @@ namespace Robocup.CoreRobotics
             }
             public void LoadConstants()
             {
-                DELTA_DIST_SQ_MERGE = Constants.get<double>("default", "DELTA_DIST_SQ_MERGE");
-                VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
-                VELOCITY_WEIGHT_OLD = Constants.get<double>("default", "VELOCITY_WEIGHT_OLD");
-                VELOCITY_WEIGHT_NEW = Constants.get<double>("default", "VELOCITY_WEIGHT_NEW");
-                POSITION_WEIGHT_OLD = Constants.get<double>("default", "POSITION_WEIGHT_OLD");
-                POSITION_WEIGHT_NEW = Constants.get<double>("default", "POSITION_WEIGHT_NEW");
-                MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
+                DELTA_DIST_SQ_MERGE = ConstantsRaw.get<double>("default", "DELTA_DIST_SQ_MERGE");
+                VELOCITY_DT = ConstantsRaw.get<double>("default", "VELOCITY_DT");
+                VELOCITY_WEIGHT_OLD = ConstantsRaw.get<double>("default", "VELOCITY_WEIGHT_OLD");
+                VELOCITY_WEIGHT_NEW = ConstantsRaw.get<double>("default", "VELOCITY_WEIGHT_NEW");
+                POSITION_WEIGHT_OLD = ConstantsRaw.get<double>("default", "POSITION_WEIGHT_OLD");
+                POSITION_WEIGHT_NEW = ConstantsRaw.get<double>("default", "POSITION_WEIGHT_NEW");
+                MAX_SECONDS_TO_KEEP_INFO = ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
 
-                BLUE_HAS_PATTERN = Constants.get<bool>("configuration", "BLUE_HAS_PATTERN");
-                YELLOW_HAS_PATTERN = Constants.get<bool>("configuration", "YELLOW_HAS_PATTERN");
+                BLUE_HAS_PATTERN = ConstantsRaw.get<bool>("configuration", "BLUE_HAS_PATTERN");
+                YELLOW_HAS_PATTERN = ConstantsRaw.get<bool>("configuration", "YELLOW_HAS_PATTERN");
 
             }
             private object object_lock = new object();
@@ -277,21 +277,21 @@ namespace Robocup.CoreRobotics
         
         public void LoadConstants()
         {
-            MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
-            VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
-            BALL_POSITION_WEIGHT_OLD = Constants.get<double>("default", "BALL_POSITION_WEIGHT_OLD");
-            BALL_POSITION_WEIGHT_NEW = Constants.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
-            BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
+            MAX_SECONDS_TO_KEEP_INFO = ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
+            VELOCITY_DT = ConstantsRaw.get<double>("default", "VELOCITY_DT");
+            BALL_POSITION_WEIGHT_OLD = ConstantsRaw.get<double>("default", "BALL_POSITION_WEIGHT_OLD");
+            BALL_POSITION_WEIGHT_NEW = ConstantsRaw.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
+            BALL_MOVED_DIST = ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
 
-            OUR_TEAM = (Team)Enum.Parse(typeof(Team), Constants.get<string>("configuration", "OUR_TEAM"), true);
-            FIELD_HALF = (FieldHalf)Enum.Parse(typeof(FieldHalf), Constants.get<string>("plays", "FIELD_HALF"), true);
+            OUR_TEAM = (Team)Enum.Parse(typeof(Team), ConstantsRaw.get<string>("configuration", "OUR_TEAM"), true);
+            FIELD_HALF = (FieldHalf)Enum.Parse(typeof(FieldHalf), ConstantsRaw.get<string>("plays", "FIELD_HALF"), true);
 
             // Predefined locations of the ball  based on the play
-            ASSUME_BALL = Constants.get<bool>("plays", "ASSUME_BALL");
-            BALL_POS_PENALTY = new BallInfo(new Vector2(Constants.get<double>("plays", "BALL_POS_PENALTY_X"),
-                                                        Constants.get<double>("plays", "BALL_POS_PENALTY_Y")));
-            BALL_POS_KICKOFF = new BallInfo(new Vector2(Constants.get<double>("plays", "BALL_POS_KICKOFF_X"),
-                                                        Constants.get<double>("plays", "BALL_POS_KICKOFF_Y")));
+            ASSUME_BALL = ConstantsRaw.get<bool>("plays", "ASSUME_BALL");
+            BALL_POS_PENALTY = new BallInfo(new Vector2(ConstantsRaw.get<double>("plays", "BALL_POS_PENALTY_X"),
+                                                        ConstantsRaw.get<double>("plays", "BALL_POS_PENALTY_Y")));
+            BALL_POS_KICKOFF = new BallInfo(new Vector2(ConstantsRaw.get<double>("plays", "BALL_POS_KICKOFF_X"),
+                                                        ConstantsRaw.get<double>("plays", "BALL_POS_KICKOFF_Y")));
             
             our_helper.LoadConstants();
             their_helper.LoadConstants();

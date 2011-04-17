@@ -124,7 +124,7 @@ namespace Robocup.Plays
             playAssigner.ReloadConstants();
 
             // reload single constant from a file
-            USE_C_SHARP_PLAY_SYSTEM = Constants.get<bool>("default", "USE_C_SHARP_PLAY_SYSTEM");
+            USE_C_SHARP_PLAY_SYSTEM = ConstantsRaw.get<bool>("default", "USE_C_SHARP_PLAY_SYSTEM");
         }
  
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();

@@ -79,7 +79,7 @@ namespace Robocup.Simulation
                         return;
                     }
                     // For convenience reload constants on every restart
-                    Constants.Load();
+                    ConstantsRaw.Load();
                     _physicsEngine.LoadConstants();
 
                     _physicsEngine.SetScenario(lstScenarios.SelectedItem as SimulatedScenario);

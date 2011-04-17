@@ -10,7 +10,7 @@ namespace Robocup.MotionControl
 	public class ModelFeedback
 	{
         // scaling factor applied to the matrix
-        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
         double [] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS];
 
         private double SPEED_SCALING_FACTOR_ALL;
@@ -25,15 +25,15 @@ namespace Robocup.MotionControl
 
 		public void LoadConstants()
 		{
-            SPEED_SCALING_FACTOR_ALL = Constants.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
+            SPEED_SCALING_FACTOR_ALL = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
 
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
-                SPEED_SCALING_FACTORS[i] = Constants.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
+                SPEED_SCALING_FACTORS[i] = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
             }
 
-			GainMatrix = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));
-            GainMatrix *= Constants.get<double>("control", "GAIN_MATRIX_SCALE");
+			GainMatrix = new Matrix(ConstantsRaw.get<string>("control","GAIN_MATRIX"));
+            GainMatrix *= ConstantsRaw.get<double>("control", "GAIN_MATRIX_SCALE");
 			
 			if(GainMatrix.ColumnCount != 6 || GainMatrix.RowCount != 4)
 				throw new ApplicationException("Invalid dimensoins of GAIN_MATRIX in control.txt!");

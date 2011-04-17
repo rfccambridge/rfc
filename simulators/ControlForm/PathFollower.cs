@@ -81,8 +81,8 @@ namespace Robocup.ControlForm
         public override void LoadConstants()
         {
             base.LoadConstants();
-            MIN_GOAL_DIST = Constants.get<double>("motionplanning", "MIN_GOAL_DIST");
-            MIN_GOAL_DIFF_ORIENTATION = Constants.get<double>("motionplanning", "MIN_GOAL_DIFF_ORIENTATION");
+            MIN_GOAL_DIST = ConstantsRaw.get<double>("motionplanning", "MIN_GOAL_DIST");
+            MIN_GOAL_DIFF_ORIENTATION = ConstantsRaw.get<double>("motionplanning", "MIN_GOAL_DIFF_ORIENTATION");
         }      
 
         protected override void doAction()

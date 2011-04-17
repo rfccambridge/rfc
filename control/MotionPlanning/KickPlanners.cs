@@ -304,39 +304,39 @@ namespace Robocup.MotionControl
 
 
         public void LoadConstants() {
-            Constants.Load("kickplanning");
+            ConstantsRaw.Load();
 
-            DIST_BEHIND_BALL = Constants.get<double>("kickplanning", "DIST_BEHIND_BALL");
-            DIST_THROUGH_BALL = Constants.get<double>("kickplanning", "DIST_THROUGH_BALL");
+            DIST_BEHIND_BALL = ConstantsRaw.get<double>("kickplanning", "DIST_BEHIND_BALL");
+            DIST_THROUGH_BALL = ConstantsRaw.get<double>("kickplanning", "DIST_THROUGH_BALL");
 
             // convert waiting time to milliseconds
-            TIME_WAIT_POINT_1 = Constants.get<double>("kickplanning", "TIME_WAIT_POINT_1") * 1000;
+            TIME_WAIT_POINT_1 = ConstantsRaw.get<double>("kickplanning", "TIME_WAIT_POINT_1") * 1000;
 
-            MAX_LATERAL_GO_THROUGH = Constants.get<double>("kickplanning", "MAX_LATERAL_GO_THROUGH");
-            MAX_PARALLEL_GO_THROUGH = Constants.get<double>("kickplanning", "MAX_PARALLEL_GO_THROUGH");
+            MAX_LATERAL_GO_THROUGH = ConstantsRaw.get<double>("kickplanning", "MAX_LATERAL_GO_THROUGH");
+            MAX_PARALLEL_GO_THROUGH = ConstantsRaw.get<double>("kickplanning", "MAX_PARALLEL_GO_THROUGH");
 
-            MAX_DIST_BREAK_BEAM = Constants.get<double>("kickplanning", "MAX_DIST_BREAK_BEAM");
+            MAX_DIST_BREAK_BEAM = ConstantsRaw.get<double>("kickplanning", "MAX_DIST_BREAK_BEAM");
 
-            DIST_ACTIVATE_KICK_PLANNER = Constants.get<double>("kickplanning", "DIST_ACTIVATE_KICK_PLANNER");
+            DIST_ACTIVATE_KICK_PLANNER = ConstantsRaw.get<double>("kickplanning", "DIST_ACTIVATE_KICK_PLANNER");
 
-            MAX_DIST_MOVE_TRANSLATE_POINT_1 = Constants.get<double>("kickplanning", "MAX_DIST_MOVE_TRANSLATE_POINT_1");
-            MAX_DIST_POINT_1 = Constants.get<double>("kickplanning", "MAX_DIST_POINT_1");
-            MAX_DIFF_ORIENTATION_POINT_1 = Constants.get<double>("kickplanning", "MAX_DIFF_ORIENTATION_POINT_1");
+            MAX_DIST_MOVE_TRANSLATE_POINT_1 = ConstantsRaw.get<double>("kickplanning", "MAX_DIST_MOVE_TRANSLATE_POINT_1");
+            MAX_DIST_POINT_1 = ConstantsRaw.get<double>("kickplanning", "MAX_DIST_POINT_1");
+            MAX_DIFF_ORIENTATION_POINT_1 = ConstantsRaw.get<double>("kickplanning", "MAX_DIFF_ORIENTATION_POINT_1");
             
-            SPEED_LATERAL = Constants.get<int>("kickplanning", "SPEED_LATERAL");
+            SPEED_LATERAL = ConstantsRaw.get<int>("kickplanning", "SPEED_LATERAL");
 
-            SPIN_SPEED_CAP = Constants.get<int>("kickplanning", "SPIN_SPEED_CAP");
+            SPIN_SPEED_CAP = ConstantsRaw.get<int>("kickplanning", "SPIN_SPEED_CAP");
 
-            SATURATION_LIMIT = Constants.get<int>("kickplanning", "SATURATION_LIMIT");
+            SATURATION_LIMIT = ConstantsRaw.get<int>("kickplanning", "SATURATION_LIMIT");
 
-            BALL_AVOID_RADIUS = Constants.get<double>("kickplanning", "BALL_AVOID_RADIUS");
+            BALL_AVOID_RADIUS = ConstantsRaw.get<double>("kickplanning", "BALL_AVOID_RADIUS");
 
             LeftSpeed = new WheelSpeeds(-SPEED_LATERAL, SPEED_LATERAL, SPEED_LATERAL, -SPEED_LATERAL);
             RightSpeed = new WheelSpeeds(-SPEED_LATERAL, SPEED_LATERAL, SPEED_LATERAL, -SPEED_LATERAL);
 
             WHEEL_SPEED_TURN = SPIN_SPEED_CAP;
 
-            BALL_DISTANCE_CHARGE = Constants.get<double>("kickplanning", "BALL_DISTANCE_CHARGE");
+            BALL_DISTANCE_CHARGE = ConstantsRaw.get<double>("kickplanning", "BALL_DISTANCE_CHARGE");
 
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);

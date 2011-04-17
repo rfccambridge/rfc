@@ -150,7 +150,7 @@ namespace Robocup.MotionControl
             yPID.ReloadConstants();
             thetaPID.ReloadConstants();
 
-            DESIRED_SPEED = Constants.get<double>(constantsFile, "DESIRED_SPEED");
+            DESIRED_SPEED = ConstantsRaw.get<double>(constantsFile, "DESIRED_SPEED");
         }
 
         public void UpdateConstants(DOF_Constants x, DOF_Constants y, DOF_Constants theta, bool save)
@@ -256,13 +256,12 @@ namespace Robocup.MotionControl
                     oldErrorsWindow[i] = 0;
                 Ierror = 0;
 
-                Constants.Load();
+                ConstantsRaw.Load();
 
-
-                constants.P = Constants.get<double>(constantsFile, "P_" + dofType.ToString() + "_" + robotID.ToString());
-                constants.I = Constants.get<double>(constantsFile, "I_" + dofType.ToString() + "_" + robotID.ToString());
-                constants.D = Constants.get<double>(constantsFile, "D_" + dofType.ToString() + "_" + robotID.ToString());
-                constants.ALPHA = Constants.get<double>(constantsFile, "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.P = ConstantsRaw.get<double>(constantsFile, "P_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.I = ConstantsRaw.get<double>(constantsFile, "I_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.D = ConstantsRaw.get<double>(constantsFile, "D_" + dofType.ToString() + "_" + robotID.ToString());
+                constants.ALPHA = ConstantsRaw.get<double>(constantsFile, "ALPHA_" + dofType.ToString() + "_" + robotID.ToString());
 
                 //if (!Constants.nondestructiveGet<double>(constantsFile, "P_" + dofType.ToString() + "_" + robotID.ToString(), out constants.P)) {
                 //    Console.WriteLine("DOF_Numbers: constant not found " + "P_" + dofType.ToString() + "_" + robotID.ToString());

@@ -21,7 +21,7 @@ namespace Robocup.ControlForm
 	public class Controller : IController
 	{
         private const int CONTROL_TIMEOUT = 10;
-        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
         private const int CHARGE_TIME = 1000;  // milliseconds
         private const int DRIBBLER_TIMER_PERIOD = 1000; //milliseconds
         private const double DRIBBLER_TIMEOUT = 6.0; // seconds
@@ -94,12 +94,12 @@ namespace Robocup.ControlForm
         public void LoadConstants()
         {
             
-            CONTROL_LOOP_FREQUENCY = Constants.get<double>("default", "CONTROL_LOOP_FREQUENCY");
+            CONTROL_LOOP_FREQUENCY = ConstantsRaw.get<double>("default", "CONTROL_LOOP_FREQUENCY");
             _controlPeriod = 1 / CONTROL_LOOP_FREQUENCY * 1000; //in ms
 
-            DRAW_PATH = Constants.get<bool>("drawing", "DRAW_PATH");
+            DRAW_PATH = ConstantsRaw.get<bool>("drawing", "DRAW_PATH");
 
-            BALL_AVOID_DIST = Constants.get<double>("motionplanning", "BALL_AVOID_DIST");
+            BALL_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "BALL_AVOID_DIST");
 
             _planner.LoadConstants();
             _kickPlanner.LoadConstants();
