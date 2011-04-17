@@ -252,7 +252,7 @@ namespace Robocup.Simulation
 
 			InitState();
 
-            double freq = ConstantsRaw.get<double>("default", "SIM_ENGINE_FREQUENCY");
+            double freq = Constants.Time.SIM_ENGINE_FREQUENCY;
             double period = 1.0 / freq * 1000; // in ms
 
             mainTimer.Interval = period;

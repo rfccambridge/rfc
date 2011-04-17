@@ -198,11 +198,9 @@ namespace Robocup.ControlForm
                 if (Running)
                     throw new ApplicationException("Already running.");
 
-                double freq = ConstantsRaw.get<double>("default", "STRATEGY_FREQUENCY");
-
                 _fieldDrawer.UpdateTeam(_team);
                 _controller.StartControlling();
-                _interpretLoop.SetPeriod(1.0 / freq);
+                _interpretLoop.SetPeriod(1.0 / Constants.Time.STRATEGY_FREQUENCY);
                 _interpretLoop.Start();
             }
         }

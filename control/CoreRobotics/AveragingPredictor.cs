@@ -270,7 +270,6 @@ namespace Robocup.CoreRobotics
         private static double MAX_SECONDS_TO_KEEP_BALL;
         private static double VELOCITY_DT;
         private static double BALL_MOVED_DIST;
-        private static double COMBINE_FREQUENCY;
 
         public AveragingPredictor()
         {
@@ -293,8 +292,7 @@ namespace Robocup.CoreRobotics
             BALL_MOVED_DIST = ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
             DELTA_DIST_SQ_MERGE = ConstantsRaw.get<double>("default", "DELTA_DIST_SQ_MERGE");
 
-            COMBINE_FREQUENCY = ConstantsRaw.get<double>("default", "COMBINE_FREQUENCY");
-            combineTimer.Interval = 1 / COMBINE_FREQUENCY * 1000; // Convert to seconds, and find period 
+            combineTimer.Interval = (1.0 / Constants.Time.COMBINE_FREQUENCY) * 1000; // Convert hz -> secs -> ms
 
             foreach (FieldState fieldState in fieldStates)
             {

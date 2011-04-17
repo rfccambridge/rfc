@@ -248,11 +248,38 @@ namespace Robocup.Core
             }
         }
 
+        static public class Time
+        {
+            /// <summary> Number of robots and/or robot ids possible </summary>
+            static public double STRATEGY_FREQUENCY { get { InitializeIfNeeded(); return _STRATEGY_FREQUENCY; } } static volatile float _STRATEGY_FREQUENCY;
+
+            /// <summary> Radius of a robot </summary>
+            static public double SIM_ENGINE_FREQUENCY { get { InitializeIfNeeded(); return _SIM_ENGINE_FREQUENCY; } } static volatile float _SIM_ENGINE_FREQUENCY;
+
+            /// <summary> Distance from the center to the front of a robot </summary>
+            static public double CONTROL_LOOP_FREQUENCY { get { InitializeIfNeeded(); return _CONTROL_LOOP_FREQUENCY; } } static volatile float _CONTROL_LOOP_FREQUENCY;
+
+            /// <summary> Radius of the ball </summary>
+            static public double COMBINE_FREQUENCY { get { InitializeIfNeeded(); return _COMBINE_FREQUENCY; } } static volatile float _COMBINE_FREQUENCY;
+
+            static public void Reload()
+            {
+                _STRATEGY_FREQUENCY = (float)ConstantsRaw.get<double>("default", "STRATEGY_FREQUENCY");
+                _SIM_ENGINE_FREQUENCY = (float)ConstantsRaw.get<double>("default", "SIM_ENGINE_FREQUENCY");
+                _CONTROL_LOOP_FREQUENCY = (float)ConstantsRaw.get<double>("default", "CONTROL_LOOP_FREQUENCY");
+                _COMBINE_FREQUENCY = (float)ConstantsRaw.get<double>("default", "COMBINE_FREQUENCY");
+            }
+        }
+
+
+        //INITIALIZATION AND RELOAD MECHANISM---------------------------------------------------------
+
         static Object _lock = new Object();
         static volatile bool _is_initialized = false;
         static volatile bool _is_reloading = false;
         static void InitializeIfNeeded()
         {
+            //Fast check first, if it fails, then we lock and check again, for thread-safety
             if (!_is_initialized)
             {
                 lock (_lock)
@@ -280,6 +307,7 @@ namespace Robocup.Core
                 Basic.Reload();
                 Field.Reload();
                 FieldPts.Reload();
+                Time.Reload();
                 _is_reloading = false;
             }
         }
