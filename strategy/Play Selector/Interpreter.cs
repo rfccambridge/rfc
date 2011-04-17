@@ -118,8 +118,6 @@ namespace Robocup.Plays
         {
             actioninterpreter.LoadConstants();
 
-            TacticsEval.LoadConstants();
-
             // load the new play system's constants
             playAssigner.ReloadConstants();
 

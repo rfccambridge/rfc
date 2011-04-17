@@ -22,8 +22,6 @@ namespace Robocup.Simulation
     {
         protected string _name;
         protected PhysicsEngine _engine;
-        protected double FIELD_WIDTH;
-        protected double FIELD_HEIGHT;
         protected double FREEKICK_DISTANCE;
 
         public SimulatedScenario(string name, PhysicsEngine engine)
@@ -41,8 +39,6 @@ namespace Robocup.Simulation
 
         public virtual void LoadConstants()
         {
-            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
-            FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
             FREEKICK_DISTANCE = ConstantsRaw.get<double>("plays", "FREEKICK_DISTANCE");
         }
 
@@ -124,19 +120,13 @@ namespace Robocup.Simulation
             double freeKickX, freeKickY;
 
             // Make sure we are some distance away from field lines (as by rule)
-            if (lastPosition.X > FIELD_WIDTH / 2 - FREEKICK_DISTANCE)
-                freeKickX = FIELD_WIDTH / 2 - FREEKICK_DISTANCE;
-            else if (lastPosition.X < -FIELD_WIDTH / 2 + FREEKICK_DISTANCE)
-                freeKickX = -FIELD_WIDTH / 2 + FREEKICK_DISTANCE;
-            else
-                freeKickX = lastPosition.X;
+            if      (lastPosition.X > Constants.Field.XMAX - FREEKICK_DISTANCE) freeKickX = Constants.Field.XMAX - FREEKICK_DISTANCE;
+            else if (lastPosition.X < Constants.Field.XMIN + FREEKICK_DISTANCE) freeKickX = Constants.Field.XMIN + FREEKICK_DISTANCE;
+            else                                                                freeKickX = lastPosition.X;
 
-            if (lastPosition.Y > FIELD_HEIGHT / 2 - FREEKICK_DISTANCE)
-                freeKickY = FIELD_HEIGHT / 2 - FREEKICK_DISTANCE;
-            else if (lastPosition.Y < -FIELD_HEIGHT / 2 + FREEKICK_DISTANCE)
-                freeKickY = -FIELD_HEIGHT / 2 + FREEKICK_DISTANCE;
-            else
-                freeKickY = lastPosition.Y;
+            if      (lastPosition.Y > Constants.Field.YMAX - FREEKICK_DISTANCE) freeKickY = Constants.Field.YMAX - FREEKICK_DISTANCE;
+            else if (lastPosition.Y < Constants.Field.YMIN + FREEKICK_DISTANCE) freeKickY = Constants.Field.YMIN + FREEKICK_DISTANCE;
+            else                                                                freeKickY = lastPosition.Y;
 
             BallInfo newBall = new BallInfo(new Vector2(freeKickX, freeKickY));
             _engine.UpdateBall(newBall);
@@ -177,30 +167,30 @@ namespace Robocup.Simulation
             List<RobotInfo> blueRobots = new List<RobotInfo>();
 
             //Add goalie
-            yellowRobots.Add(new RobotInfo(new Vector2(-FIELD_WIDTH / 2 + 0.2, 0f), 0, Team.Yellow, 0));
+            yellowRobots.Add(new RobotInfo(new Vector2(Constants.Field.XMIN + 0.2, 0f), 0, Team.Yellow, 0));
 
             //Shooter and ball based on current scene
             switch (index)
             {
                 case 0:
-                    blueRobots.Add(new RobotInfo(new Vector2(-2.0f, FIELD_HEIGHT / 2 - 0.5), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-2.2f, FIELD_HEIGHT / 2 - 0.7));
+                    blueRobots.Add(new RobotInfo(new Vector2(-2.0f, Constants.Field.YMAX - 0.5), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Vector2(-2.2f, Constants.Field.YMAX - 0.7));
                     break;
                 case 1:
-                    blueRobots.Add(new RobotInfo(new Vector2(-1.5f, FIELD_HEIGHT / 2 - 1.0), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-1.7f, FIELD_HEIGHT / 2 - 1.2));
+                    blueRobots.Add(new RobotInfo(new Vector2(-1.5f, Constants.Field.YMAX - 1.0), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Vector2(-1.7f, Constants.Field.YMAX - 1.2));
                     break;
                 case 2:
                     blueRobots.Add(new RobotInfo(new Vector2(-1.3f, 0), Math.PI, Team.Blue, 5));
                     scene.Ball = new BallInfo(new Vector2(-1.5f, 0));
                     break;
                 case 3:
-                    blueRobots.Add(new RobotInfo(new Vector2(-1.5f, -FIELD_HEIGHT / 2 + 1.0), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-1.7f, -FIELD_HEIGHT / 2 + 1.2));
+                    blueRobots.Add(new RobotInfo(new Vector2(-1.5f, Constants.Field.YMIN + 1.0), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Vector2(-1.7f, Constants.Field.YMIN + 1.2));
                     break;
                 case 4:
-                    blueRobots.Add(new RobotInfo(new Vector2(-2.0f, -FIELD_HEIGHT / 2 + 0.5), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-2.2f, -FIELD_HEIGHT / 2 + 0.7));
+                    blueRobots.Add(new RobotInfo(new Vector2(-2.0f, Constants.Field.YMIN + 0.5), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Vector2(-2.2f, Constants.Field.YMIN + 0.7));
                     break;
                 default:
                     break;

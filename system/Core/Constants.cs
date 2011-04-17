@@ -13,18 +13,18 @@ namespace Robocup.Core
         static public class Basic
         {
             /// <summary> Number of robots and/or robot ids possible </summary>
-            static public int NUM_ROBOTS { get { initializeIfNeeded(); return _NUM_ROBOTS; } } static volatile int _NUM_ROBOTS;
+            static public int NUM_ROBOTS { get { InitializeIfNeeded(); return _NUM_ROBOTS; } } static volatile int _NUM_ROBOTS;
 
             /// <summary> Radius of a robot </summary>
-            static public double ROBOT_RADIUS { get { initializeIfNeeded(); return _ROBOT_RADIUS; } } static volatile float _ROBOT_RADIUS;
+            static public double ROBOT_RADIUS { get { InitializeIfNeeded(); return _ROBOT_RADIUS; } } static volatile float _ROBOT_RADIUS;
 
             /// <summary> Distance from the center to the front of a robot </summary>
-            static public double ROBOT_FRONT_RADIUS { get { initializeIfNeeded(); return _ROBOT_FRONT_RADIUS; } } static volatile float _ROBOT_FRONT_RADIUS;
+            static public double ROBOT_FRONT_RADIUS { get { InitializeIfNeeded(); return _ROBOT_FRONT_RADIUS; } } static volatile float _ROBOT_FRONT_RADIUS;
 
             /// <summary> Radius of the ball </summary>
-            static public double BALL_RADIUS { get { initializeIfNeeded(); return _BALL_RADIUS; } } static volatile float _BALL_RADIUS;
+            static public double BALL_RADIUS { get { InitializeIfNeeded(); return _BALL_RADIUS; } } static volatile float _BALL_RADIUS;
 
-            static public void initialize()
+            static public void Reload()
             {
                 _NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
                 _ROBOT_RADIUS = (float)ConstantsRaw.get<double>("plays", "ROBOT_RADIUS");
@@ -38,68 +38,74 @@ namespace Robocup.Core
             //SIZES-----------------------------------------------------------
 
             /// <summary> Width of the in-bounds part of the field </summary>
-            static public double WIDTH { get { initializeIfNeeded(); return _WIDTH; } } static volatile float _WIDTH;
+            static public double WIDTH { get { InitializeIfNeeded(); return _WIDTH; } } static volatile float _WIDTH;
 
             /// <summary> Height of the in-bounds part of the field </summary>
-            static public double HEIGHT { get { initializeIfNeeded(); return _HEIGHT; } } static volatile float _HEIGHT;
+            static public double HEIGHT { get { InitializeIfNeeded(); return _HEIGHT; } } static volatile float _HEIGHT;
 
             /// <summary> Width of field including ref zone </summary>
-            static public double FULL_WIDTH { get { initializeIfNeeded(); return _FULL_WIDTH; } } static volatile float _FULL_WIDTH;
+            static public double FULL_WIDTH { get { InitializeIfNeeded(); return _FULL_WIDTH; } } static volatile float _FULL_WIDTH;
 
             /// <summary> Height of field including ref zone </summary>
-            static public double FULL_HEIGHT { get { initializeIfNeeded(); return _FULL_HEIGHT; } } static volatile float _FULL_HEIGHT;
+            static public double FULL_HEIGHT { get { InitializeIfNeeded(); return _FULL_HEIGHT; } } static volatile float _FULL_HEIGHT;
 
             //BOUNDS----------------------------------------------------------
 
             /// <summary> X coord of the left boundary line </summary>
-            static public double XMIN { get { initializeIfNeeded(); return _XMIN; } } static volatile float _XMIN;
+            static public double XMIN { get { InitializeIfNeeded(); return _XMIN; } } static volatile float _XMIN;
 
             /// <summary> X coord of the right boundary line </summary>
-            static public double XMAX { get { initializeIfNeeded(); return _XMAX; } } static volatile float _XMAX;
+            static public double XMAX { get { InitializeIfNeeded(); return _XMAX; } } static volatile float _XMAX;
 
             /// <summary> Y coord of the bottom boundary line </summary>
-            static public double YMIN { get { initializeIfNeeded(); return _YMIN; } } static volatile float _YMIN;
+            static public double YMIN { get { InitializeIfNeeded(); return _YMIN; } } static volatile float _YMIN;
 
             /// <summary> Y coord of the top boundary line </summary>
-            static public double YMAX { get { initializeIfNeeded(); return _YMAX; } } static volatile float _YMAX;
+            static public double YMAX { get { InitializeIfNeeded(); return _YMAX; } } static volatile float _YMAX;
 
 
             /// <summary> X coord of the left boundary including the ref zone </summary>
-            static public double FULL_XMIN { get { initializeIfNeeded(); return _FULL_XMIN; } } static volatile float _FULL_XMIN;
+            static public double FULL_XMIN { get { InitializeIfNeeded(); return _FULL_XMIN; } } static volatile float _FULL_XMIN;
 
             /// <summary> X coord of the right boundary including the ref zone </summary>
-            static public double FULL_XMAX { get { initializeIfNeeded(); return _FULL_XMAX; } } static volatile float _FULL_XMAX;
+            static public double FULL_XMAX { get { InitializeIfNeeded(); return _FULL_XMAX; } } static volatile float _FULL_XMAX;
 
             /// <summary> Y coord of the bottom boundary including the ref zone </summary>
-            static public double FULL_YMIN { get { initializeIfNeeded(); return _FULL_YMIN; } } static volatile float _FULL_YMIN;
+            static public double FULL_YMIN { get { InitializeIfNeeded(); return _FULL_YMIN; } } static volatile float _FULL_YMIN;
 
             /// <summary> Y coord of the top boundary including the ref zone </summary>
-            static public double FULL_YMAX { get { initializeIfNeeded(); return _FULL_YMAX; } } static volatile float _FULL_YMAX;
+            static public double FULL_YMAX { get { InitializeIfNeeded(); return _FULL_YMAX; } } static volatile float _FULL_YMAX;
 
             /// <summary> Width of the referree zone </summary>
-            static public double REFEREE_WIDTH { get { initializeIfNeeded(); return _REFEREE_WIDTH; } } static volatile float _REFEREE_WIDTH;
+            static public double REFEREE_WIDTH { get { InitializeIfNeeded(); return _REFEREE_WIDTH; } } static volatile float _REFEREE_WIDTH;
 
             //GOAL--------------------------------------------------------------
 
             /// <summary> Width of the goal zone </summary>
-            static public double GOAL_WIDTH { get { initializeIfNeeded(); return _GOAL_WIDTH; } } static volatile float _GOAL_WIDTH;
+            static public double GOAL_WIDTH { get { InitializeIfNeeded(); return _GOAL_WIDTH; } } static volatile float _GOAL_WIDTH;
 
             /// <summary> Height of the goal zone </summary>
-            static public double GOAL_HEIGHT { get { initializeIfNeeded(); return _GOAL_HEIGHT; } } static volatile float _GOAL_HEIGHT;
+            static public double GOAL_HEIGHT { get { InitializeIfNeeded(); return _GOAL_HEIGHT; } } static volatile float _GOAL_HEIGHT;
 
             /// <summary> Y coord of the bottom of goal zone </summary>
-            static public double GOAL_YMIN { get { initializeIfNeeded(); return _GOAL_YMIN; } } static volatile float _GOAL_YMIN;
+            static public double GOAL_YMIN { get { InitializeIfNeeded(); return _GOAL_YMIN; } } static volatile float _GOAL_YMIN;
 
             /// <summary> Y coord of the top of goal zone </summary>
-            static public double GOAL_YMAX { get { initializeIfNeeded(); return _GOAL_YMAX; } } static volatile float _GOAL_YMAX;
+            static public double GOAL_YMAX { get { InitializeIfNeeded(); return _GOAL_YMAX; } } static volatile float _GOAL_YMAX;
+
+            /// <summary> X coord of the left of the LEFT goal zone </summary>
+            static public double GOAL_XMIN { get { InitializeIfNeeded(); return _GOAL_XMIN; } } static volatile float _GOAL_XMIN;
+
+            /// <summary> X coord of the right of the RIGHT goal zone </summary>
+            static public double GOAL_XMAX { get { InitializeIfNeeded(); return _GOAL_XMAX; } } static volatile float _GOAL_XMAX;
 
             //OTHER----------------------------------------------------------
 
-            static public double CENTER_CIRCLE_RADIUS { get { initializeIfNeeded(); return _CENTER_CIRCLE_RADIUS; } } static volatile float _CENTER_CIRCLE_RADIUS;
+            static public double CENTER_CIRCLE_RADIUS { get { InitializeIfNeeded(); return _CENTER_CIRCLE_RADIUS; } } static volatile float _CENTER_CIRCLE_RADIUS;
 
             //--------------------------------------------------------------
 
-            static public void initialize()
+            static public void Reload()
             {
                 _WIDTH = (float)ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
                 _HEIGHT = (float)ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
@@ -123,13 +129,128 @@ namespace Robocup.Core
 
                 _GOAL_YMIN = -_GOAL_HEIGHT / 2.0f;
                 _GOAL_YMAX = _GOAL_HEIGHT / 2.0f;
+                _GOAL_XMIN = _XMIN - _GOAL_WIDTH;
+                _GOAL_XMAX = _XMAX + _GOAL_WIDTH;
+            }
+        }
+
+        static public class FieldPts
+        {
+            //BASIC LOCATIONS----------------------------------------------------------------------
+
+            /// <summary> Top left corner of field </summary>
+            static public Vector2 TOP_LEFT { get { InitializeIfNeeded(); return _TOP_LEFT; } } static volatile Vector2 _TOP_LEFT;
+
+            /// <summary> Bottom left corner of field </summary>
+            static public Vector2 BOTTOM_LEFT { get { InitializeIfNeeded(); return _BOTTOM_LEFT; } } static volatile Vector2 _BOTTOM_LEFT;
+
+            /// <summary> Top right corner of field </summary>
+            static public Vector2 TOP_RIGHT { get { InitializeIfNeeded(); return _TOP_RIGHT; } } static volatile Vector2 _TOP_RIGHT;
+
+            /// <summary> Bottom right corner of field </summary>
+            static public Vector2 BOTTOM_RIGHT { get { InitializeIfNeeded(); return _BOTTOM_RIGHT; } } static volatile Vector2 _BOTTOM_RIGHT;
+
+            /// <summary> Top center edge of field </summary>
+            static public Vector2 TOP { get { InitializeIfNeeded(); return _TOP; } } static volatile Vector2 _TOP;
+
+            /// <summary> Bottom center edge of field </summary>
+            static public Vector2 BOTTOM { get { InitializeIfNeeded(); return _BOTTOM; } } static volatile Vector2 _BOTTOM;
+
+            /// <summary> Left center edge of field </summary>
+            static public Vector2 LEFT { get { InitializeIfNeeded(); return _LEFT; } } static volatile Vector2 _LEFT;
+
+            /// <summary> Right center edge of field </summary>
+            static public Vector2 RIGHT { get { InitializeIfNeeded(); return _RIGHT; } } static volatile Vector2 _RIGHT;
+
+            /// <summary> Center of field </summary>
+            static public Vector2 CENTER { get { InitializeIfNeeded(); return _CENTER; } } static volatile Vector2 _CENTER;
+
+
+            //QUADRANTS (octants, really)-----------------------------------------------------------------
+
+            /// <summary> Halfway in between center and top left corner </summary>
+            static public Vector2 TOP_LEFT_QUAD { get { InitializeIfNeeded(); return _TOP_LEFT_QUAD; } } static volatile Vector2 _TOP_LEFT_QUAD;
+
+            /// <summary> Halfway in between center and top left corner </summary>
+            static public Vector2 BOTTOM_LEFT_QUAD { get { InitializeIfNeeded(); return _BOTTOM_LEFT_QUAD; } } static volatile Vector2 _BOTTOM_LEFT_QUAD;
+
+            /// <summary> Halfway in between center and bottom right corner  </summary>
+            static public Vector2 TOP_RIGHT_QUAD { get { InitializeIfNeeded(); return _TOP_RIGHT_QUAD; } } static volatile Vector2 _TOP_RIGHT_QUAD;
+
+            /// <summary> Halfway in between center and bottom right corner </summary>
+            static public Vector2 BOTTOM_RIGHT_QUAD { get { InitializeIfNeeded(); return _BOTTOM_RIGHT_QUAD; } } static volatile Vector2 _BOTTOM_RIGHT_QUAD;
+
+            /// <summary> Halfway in between center and top edge </summary>
+            static public Vector2 TOP_QUAD { get { InitializeIfNeeded(); return _TOP_QUAD; } } static volatile Vector2 _TOP_QUAD;
+
+            /// <summary> Halfway in between center and bottom edge </summary>
+            static public Vector2 BOTTOM_QUAD { get { InitializeIfNeeded(); return _BOTTOM_QUAD; } } static volatile Vector2 _BOTTOM_QUAD;
+
+            /// <summary> Halfway in between center and left edge </summary>
+            static public Vector2 LEFT_QUAD { get { InitializeIfNeeded(); return _LEFT_QUAD; } } static volatile Vector2 _LEFT_QUAD;
+
+            /// <summary> Halfway in between center and right edge </summary>
+            static public Vector2 RIGHT_QUAD { get { InitializeIfNeeded(); return _RIGHT_QUAD; } } static volatile Vector2 _RIGHT_QUAD;
+
+
+            //GOAL---------------------------------------------------------
+
+            /// <summary> Center location of the opening of our goal, same as LEFT </summary>
+            static public Vector2 OUR_GOAL { get { InitializeIfNeeded(); return _OUR_GOAL; } } static volatile Vector2 _OUR_GOAL;
+
+            /// <summary> Bottom point of our goal </summary>
+            static public Vector2 OUR_GOAL_BOTTOM { get { InitializeIfNeeded(); return _OUR_GOAL_BOTTOM; } } static volatile Vector2 _OUR_GOAL_BOTTOM;
+
+            /// <summary> Top point of our goal </summary>
+            static public Vector2 OUR_GOAL_TOP { get { InitializeIfNeeded(); return _OUR_GOAL_TOP; } } static volatile Vector2 _OUR_GOAL_TOP;
+
+            /// <summary> Center location of the opening of their goal, same as RIGHT </summary>
+            static public Vector2 THEIR_GOAL { get { InitializeIfNeeded(); return _THEIR_GOAL; } } static volatile Vector2 _THEIR_GOAL;
+            
+            /// <summary> Bottom point of their goal </summary>
+            static public Vector2 THEIR_GOAL_BOTTOM { get { InitializeIfNeeded(); return _THEIR_GOAL_BOTTOM; } } static volatile Vector2 _THEIR_GOAL_BOTTOM;
+
+            /// <summary> Top point of their goal </summary>
+            static public Vector2 THEIR_GOAL_TOP { get { InitializeIfNeeded(); return _THEIR_GOAL_TOP; } } static volatile Vector2 _THEIR_GOAL_TOP;
+
+            static public void Reload()
+            {
+                double dx = (float)ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2;
+                double dy = (float)ConstantsRaw.get<double>("plays", "FIELD_HEIGHT") / 2;
+                double dyg = (float)ConstantsRaw.get<double>("plays", "GOAL_HEIGHT") / 2;
+
+                _TOP_LEFT = new Vector2(-dx, dy);
+                _BOTTOM_LEFT = new Vector2(-dx, -dy);
+                _TOP_RIGHT = new Vector2(dx, dy);
+                _BOTTOM_RIGHT = new Vector2(dx, -dy);
+                _TOP = new Vector2(0, dy);
+                _BOTTOM = new Vector2(0, -dy);
+                _LEFT = new Vector2(-dx, 0);
+                _RIGHT = new Vector2(dx, 0);
+                _CENTER = new Vector2(0, 0);
+
+                _TOP_LEFT_QUAD =     (_TOP_LEFT     + _CENTER) / 2.0;
+                _BOTTOM_LEFT_QUAD =  (_BOTTOM_LEFT  + _CENTER) / 2.0;
+                _TOP_RIGHT_QUAD =    (_TOP_RIGHT    + _CENTER) / 2.0;
+                _BOTTOM_RIGHT_QUAD = (_BOTTOM_RIGHT + _CENTER) / 2.0;
+                _TOP_QUAD =          (_TOP          + _CENTER) / 2.0;
+                _BOTTOM_QUAD =       (_BOTTOM       + _CENTER) / 2.0;
+                _LEFT_QUAD =         (_LEFT         + _CENTER) / 2.0;
+                _RIGHT_QUAD =        (_RIGHT        + _CENTER) / 2.0;
+
+                _OUR_GOAL = new Vector2(-dx, 0);
+                _OUR_GOAL_BOTTOM = new Vector2(-dx, -dyg);
+                _OUR_GOAL_TOP = new Vector2(-dx, dyg);
+                _THEIR_GOAL = new Vector2(dx, 0);
+                _THEIR_GOAL_BOTTOM = new Vector2(dx, -dyg);
+                _THEIR_GOAL_TOP = new Vector2(dx, dyg);
             }
         }
 
         static Object _lock = new Object();
         static volatile bool _is_initialized = false;
-        static volatile bool _is_initializing = false;
-        static void initializeIfNeeded()
+        static volatile bool _is_reloading = false;
+        static void InitializeIfNeeded()
         {
             if (!_is_initialized)
             {
@@ -137,27 +258,28 @@ namespace Robocup.Core
                 {
                     if (!_is_initialized)
                     {
-                        initialize();
+                        Reload();
                         _is_initialized = true;
                     }
                 }
             }
         }
 
-        static void initialize()
+        public static void Reload()
         {
             lock (_lock)
             {
-                if (_is_initializing)
+                if (_is_reloading)
                 {
-                    Console.WriteLine("Somehow we made it in to Constants.initialize() when we are already initializing!");
+                    Console.WriteLine("Somehow we made it in to Constants.reload() when we are already reloading!");
                     Console.WriteLine("THIS IS EXTREMELY BAD!");
-                    throw new Exception("Somehow we made it in to Constants.initialize() when we are already initializing!");
+                    throw new Exception("Somehow we made it in to Constants.reload() when we are already reloading!");
                 }
-                _is_initializing = true;
-                Basic.initialize();
-                Field.initialize();
-                _is_initializing = false;
+                _is_reloading = true;
+                Basic.Reload();
+                Field.Reload();
+                FieldPts.Reload();
+                _is_reloading = false;
             }
         }
     }

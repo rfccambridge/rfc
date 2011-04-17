@@ -76,12 +76,12 @@ namespace Robocup.PlaySystem
         public static void Goalie_1(GameState state, double goaliedist)
         {
             Vector2 ballpoint = state.Predictor.GetBall().Position;
-            Line ballgoalline = new Line(ballpoint, Field.ourgoal);
+            Line ballgoalline = new Line(ballpoint, Constants.FieldPts.OUR_GOAL);
 
             // Find a good blocking position for the goalie
-            double goalieXpos = goaliedist - (Field.FIELD_WIDTH / 2);
-            Line vertgoalline = new Line(new Vector2(goalieXpos, Field.FIELD_HEIGHT),
-                                         new Vector2(goalieXpos, -Field.FIELD_HEIGHT));
+            double goalieXpos = goaliedist - (Constants.Field.WIDTH / 2);
+            Line vertgoalline = new Line(new Vector2(goalieXpos, Constants.Field.HEIGHT),
+                                         new Vector2(goalieXpos, -Constants.Field.HEIGHT));
             Vector2 goaliept = Intersections.intersect(ballgoalline, vertgoalline);
 
             // prevent the Y coordinate of the goalie point from being too high or too low
@@ -106,8 +106,8 @@ namespace Robocup.PlaySystem
         public static void TwoManWall_2(GameState state, double perimeter)
         {
             Vector2 ballpoint = state.Predictor.GetBall().Position;
-            Line ballgoalline = new Line(ballpoint, Field.ourgoal);
-            Circle goalperim = new Circle(Field.ourgoal, perimeter);
+            Line ballgoalline = new Line(ballpoint, Constants.FieldPts.OUR_GOAL);
+            Circle goalperim = new Circle(Constants.FieldPts.OUR_GOAL, perimeter);
 
             Vector2 point1 = Intersections.intersect(ballgoalline, goalperim, -1);
             Circle circle1 = new Circle(point1, TWO_MAN_WALL_DISTANCE_APART);
@@ -131,7 +131,7 @@ namespace Robocup.PlaySystem
             if (robot.Position.distanceSq(state.Predictor.GetBall().Position)
                  < TWO_MAN_WALL_KICK_DISTANCE * TWO_MAN_WALL_KICK_DISTANCE)
             {
-                state.Assigner.Kick(robot.ID, Field.theirgoal);
+                state.Assigner.Kick(robot.ID, Constants.FieldPts.THEIR_GOAL);
             }
             else
             {
@@ -155,8 +155,8 @@ namespace Robocup.PlaySystem
         public static void CircularDefender_1(GameState state, double distance)
         {
             Vector2 ballpoint = state.Predictor.GetBall().Position;
-            Line ballgoalline = new Line(ballpoint, Field.ourgoal);
-            Circle goalperim = new Circle(Field.ourgoal, distance);
+            Line ballgoalline = new Line(ballpoint, Constants.FieldPts.OUR_GOAL);
+            Circle goalperim = new Circle(Constants.FieldPts.OUR_GOAL, distance);
             Vector2 defenderpoint = Intersections.intersect(ballgoalline, goalperim, -1);
 
             MoveClosest_1(state, defenderpoint, ballpoint);
@@ -186,7 +186,7 @@ namespace Robocup.PlaySystem
         public static void OneKicker_1(GameState state)
         {
             int closestRobot = state.Functions.closestRobot(state.Predictor.GetBall().Position).ID;
-            state.Assigner.Kick(closestRobot, Field.theirgoal);
+            state.Assigner.Kick(closestRobot, Constants.FieldPts.THEIR_GOAL);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Robocup.PlaySystem
         {
             // see if the ball is in range of the goal
             Vector2 ballpoint = state.Predictor.GetBall().Position;
-            bool ballinrange = (ballpoint.distanceSq(Field.theirgoal) < OFFENSE_BALL_IN_RANGE * OFFENSE_BALL_IN_RANGE);
+            bool ballinrange = (ballpoint.distanceSq(Constants.FieldPts.THEIR_GOAL) < OFFENSE_BALL_IN_RANGE * OFFENSE_BALL_IN_RANGE);
 
             // find the appropriate robot
             RobotInfo supportRobot = state.Functions.closestRobot(ballpoint);
@@ -208,18 +208,18 @@ namespace Robocup.PlaySystem
             if (ballinrange)
             {
                 // the ball is close to the goal, find a good standby point
-                Circle theirgoalcircle = new Circle(Field.theirgoal, OFFENSE_STANDBY_DISTANCE);
-                Vector2 theirgoalpositivequad = Intersections.intersect(new Line(Field.theirgoal, Field.topCenter), theirgoalcircle, 1);
-                Vector2 theirgoalnegativequad = Intersections.intersect(new Line(Field.theirgoal, Field.bottomCenter), theirgoalcircle, 1);
+                Circle theirgoalcircle = new Circle(Constants.FieldPts.THEIR_GOAL, OFFENSE_STANDBY_DISTANCE);
+                Vector2 theirgoalpositivequad = Intersections.intersect(new Line(Constants.FieldPts.THEIR_GOAL, Constants.FieldPts.TOP), theirgoalcircle, 1);
+                Vector2 theirgoalnegativequad = Intersections.intersect(new Line(Constants.FieldPts.THEIR_GOAL, Constants.FieldPts.BOTTOM), theirgoalcircle, 1);
                 support_point = (ballpoint.Y > 0) ? theirgoalnegativequad : theirgoalpositivequad;
             }
             else
             {
                 // the ball is far from the goal, find a support point to retrieve the ball after it is kicked
-                Vector2 balldestination = Intersections.intersect(new Line(ballpoint, Field.theirgoal), new Circle(ballpoint, 1), 1);
+                Vector2 balldestination = Intersections.intersect(new Line(ballpoint, Constants.FieldPts.THEIR_GOAL), new Circle(ballpoint, 1), 1);
 
                 // support point is either above or below the point
-                if (state.Functions.pointAboveLine(supportRobot.Position, new Line(ballpoint, Field.theirgoal)))
+                if (state.Functions.pointAboveLine(supportRobot.Position, new Line(ballpoint, Constants.FieldPts.THEIR_GOAL)))
                 {
                     support_point = balldestination + new Vector2(0, OFFENSE_SUPPORT_AVOID);
                 }
@@ -249,7 +249,7 @@ namespace Robocup.PlaySystem
             // set up geometry for the play
             Vector2 ballpoint = state.Predictor.GetBall().Position;
             Circle ballcircle = new Circle(ballpoint, .63);
-            Line ballgoalline = new Line(ballpoint, Field.ourgoal);
+            Line ballgoalline = new Line(ballpoint, Constants.FieldPts.OUR_GOAL);
             Vector2 wall1pt = Intersections.intersect(ballgoalline, ballcircle, 1);
 
             // First robot- guards the ball from GUARD_BALL_DISTANCE away

@@ -12,22 +12,13 @@ namespace Robocup.Plays
         const double ROBOT_MAX_ACCEL = 2.5; //in m/s^2
         //const double ROBOT_MAX_SPEED = 2; //in m/s
 
-        static double FIELD_WIDTH;
-        static double FIELD_HEIGHT;
-        
-        public static void LoadConstants()
-        {
-            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
-            FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
-        }
-
         public static bool InField(Vector2 point)
         {
             if (point == null)
                 return false;
 
-            bool result = ((point.X <= FIELD_WIDTH / 2) && (point.X >= - FIELD_WIDTH / 2)
-                        && (point.Y <= FIELD_HEIGHT / 2) && (point.Y >= - FIELD_HEIGHT / 2));
+            bool result = ((point.X <= Constants.Field.XMAX) && (point.X >= Constants.Field.XMIN)
+                        && (point.Y <= Constants.Field.YMAX) && (point.Y >= Constants.Field.YMIN));
             return result;
         }
 

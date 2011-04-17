@@ -113,6 +113,8 @@ namespace Robocup.PlaySystem
             return (projpoint.Y < point.Y);
         }
 
+        //TODO(davidwu): This function and others of its sort deserve to be somewhere else, because this calculation
+        //and similar ones are reproduced all over the place.
         /// <summary>
         /// Is a point in the boundaries of the soccer field
         /// </summary>
@@ -120,8 +122,8 @@ namespace Robocup.PlaySystem
         /// <returns></returns>
         public bool inField(Vector2 point)
         {
-            return ((point.X <= Field.FIELD_WIDTH / 2) && (point.X >= -Field.FIELD_WIDTH / 2)
-                    && (point.Y <= Field.FIELD_HEIGHT / 2) && (point.Y >= -Field.FIELD_HEIGHT / 2));
+            return ((point.X <= Constants.Field.XMAX) && (point.X >= Constants.Field.XMIN) &&
+                    (point.Y <= Constants.Field.YMAX) && (point.Y >= Constants.Field.YMIN));
         }
 
         /// <summary>
