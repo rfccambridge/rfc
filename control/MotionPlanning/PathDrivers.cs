@@ -214,7 +214,6 @@ namespace Robocup.MotionControl
         double STOP_DISTANCE;
         double MAX_FINAL_ANGLE_DIFFERENCE;
         double DIST_SLOW_DOWN;
-        double WHEEL_RADIUS;
         double MIN_ANGLE_KEEP_SPINNING;
 
         double MIN_ANGLE_SWITCH;
@@ -225,15 +224,8 @@ namespace Robocup.MotionControl
         // double currentGoalOrientation = 0;
         double currentForwardAngle = 0;
 
-        /*Wheel orientations
-        double RF_orientation;
-        double LF_orientation;
-        double LB_orientation;
-        double RB_orientation;*/
-
         //double LOOK_AHEAD_DISTANCE;        
 
-        double ANGLE_AXIS_TO_WHEEL;
         WheelSpeeds forwardSpeeds;
         WheelSpeeds CWSpeeds;
         WheelSpeeds CCWSpeeds;
@@ -290,15 +282,7 @@ namespace Robocup.MotionControl
 
             USE_INDIVIDUAL_WHEEL_SPEEDS = ConstantsRaw.get<bool>("motionplanning", "USE_INDIVIDUAL_WHEEL_SPEEDS");
 
-            /* Wheel orientations
-            double RF_ORIENTATION = Constants.get<double>("motionplanning", "RF_ORIENTATION");
-            double LF_ORIENTATION = Constants.get<double>("motionplanning", "LF_ORIENTATION");
-            double LB_ORIENTATION = Constants.get<double>("motionplanning", "LB_ORIENTATION");
-            double RB_ORIENTATION = Constants.get<double>("motionplanning", "RB_ORIENTATION");*/
-
             // robot composition
-            ANGLE_AXIS_TO_WHEEL = ConstantsRaw.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
-            WHEEL_RADIUS = ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
 
             MIN_ANGLE_SWITCH = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
 
@@ -631,7 +615,6 @@ namespace Robocup.MotionControl
         double STOP_DISTANCE;
         double MAX_FINAL_ANGLE_DIFFERENCE;
         double DIST_SLOW_DOWN;
-        double WHEEL_RADIUS;
         double MIN_ANGLE_KEEP_SPINNING;
 
         double MIN_ANGLE_SWITCH;
@@ -640,15 +623,8 @@ namespace Robocup.MotionControl
         // double currentGoalOrientation = 0;
         double currentForwardAngle = 0;
 
-        /*Wheel orientations
-        double RF_orientation;
-        double LF_orientation;
-        double LB_orientation;
-        double RB_orientation;*/
-
         //double LOOK_AHEAD_DISTANCE;        
 
-        double ANGLE_AXIS_TO_WHEEL;
         WheelSpeeds forwardSpeeds;
         WheelSpeeds CWSpeeds;
         WheelSpeeds CCWSpeeds;
@@ -700,16 +676,6 @@ namespace Robocup.MotionControl
             MAX_FINAL_ANGLE_DIFFERENCE = ConstantsRaw.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
 
             DIST_SLOW_DOWN = ConstantsRaw.get<double>("motionplanning", "DIST_SLOW_DOWN");
-
-            /* Wheel orientations
-            double RF_ORIENTATION = Constants.get<double>("motionplanning", "RF_ORIENTATION");
-            double LF_ORIENTATION = Constants.get<double>("motionplanning", "LF_ORIENTATION");
-            double LB_ORIENTATION = Constants.get<double>("motionplanning", "LB_ORIENTATION");
-            double RB_ORIENTATION = Constants.get<double>("motionplanning", "RB_ORIENTATION");*/
-
-            // robot composition
-            ANGLE_AXIS_TO_WHEEL = ConstantsRaw.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
-            WHEEL_RADIUS = ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
 
             MIN_ANGLE_SWITCH = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
 
@@ -879,7 +845,6 @@ namespace Robocup.MotionControl
         double STOP_DISTANCE;
         double MAX_FINAL_ANGLE_DIFFERENCE;
         double DIST_SLOW_DOWN;
-        double WHEEL_RADIUS;
         double MIN_ANGLE_KEEP_SPINNING;
 
         double MIN_ANGLE_SWITCH;
@@ -887,14 +852,7 @@ namespace Robocup.MotionControl
         // Keep track of goal orientation for angular velocity veer
         // double currentGoalOrientation = 0;
         double currentForwardAngle = 0;
-
-        /*Wheel orientations
-        double RF_orientation;
-        double LF_orientation;
-        double LB_orientation;
-        double RB_orientation;*/
         
-        double ANGLE_AXIS_TO_WHEEL;
         WheelSpeeds forwardSpeeds;
         WheelSpeeds CWSpeeds;
         WheelSpeeds CCWSpeeds;
@@ -947,16 +905,6 @@ namespace Robocup.MotionControl
             MAX_FINAL_ANGLE_DIFFERENCE = ConstantsRaw.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
 
             DIST_SLOW_DOWN = ConstantsRaw.get<double>("motionplanning", "DEFAULT_DIST_SLOW_DOWN");
-
-            /* Wheel orientations
-            double RF_ORIENTATION = Constants.get<double>("motionplanning", "RF_ORIENTATION");
-            double LF_ORIENTATION = Constants.get<double>("motionplanning", "LF_ORIENTATION");
-            double LB_ORIENTATION = Constants.get<double>("motionplanning", "LB_ORIENTATION");
-            double RB_ORIENTATION = Constants.get<double>("motionplanning", "RB_ORIENTATION");*/
-
-            // robot composition
-            ANGLE_AXIS_TO_WHEEL = ConstantsRaw.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
-            WHEEL_RADIUS = ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
 
             MIN_ANGLE_SWITCH = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
 

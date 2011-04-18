@@ -304,6 +304,29 @@ namespace Robocup.Core
             }
         }
 
+        static public class Motion
+        {
+            /// <summary> Minimum allowed speed of wheel </summary>
+            static public int WHEEL_SPEED_MIN { get { InitializeIfNeeded(); return _WHEEL_SPEED_MIN; } } static volatile int _WHEEL_SPEED_MIN;
+
+            /// <summary> Maximum allowed speed of wheel </summary>
+            static public int WHEEL_SPEED_MAX { get { InitializeIfNeeded(); return _WHEEL_SPEED_MAX; } } static volatile int _WHEEL_SPEED_MAX;
+
+            /// <summary> TODO(davidwu): Add useful comment here. </summary>
+            static public double ANGLE_AXIS_TO_WHEEL { get { InitializeIfNeeded(); return _ANGLE_AXIS_TO_WHEEL; } } static volatile float _ANGLE_AXIS_TO_WHEEL;
+
+            /// <summary> Distance from center of robot to wheels. </summary>
+            static public double WHEEL_RADIUS { get { InitializeIfNeeded(); return _WHEEL_RADIUS; } } static volatile float _WHEEL_RADIUS;
+
+            static public void Reload()
+            {
+                _WHEEL_SPEED_MAX = ConstantsRaw.get<int>("motionplanning", "MAX_SINGLE_WHEEL_SPEED");
+                _WHEEL_SPEED_MIN = -_WHEEL_SPEED_MAX;
+
+                _ANGLE_AXIS_TO_WHEEL = (float)((Math.PI/180.0) * ConstantsRaw.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL"));
+                _WHEEL_RADIUS = (float)ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
+            }
+        }
 
         //INITIALIZATION AND RELOAD MECHANISM---------------------------------------------------------
 

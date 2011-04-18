@@ -1,16 +1,18 @@
 # Motion planning constants
 
 #general constants used in MotionPlanning
-int MIN_SINGLE_WHEEL_SPEED 0
 int MAX_SINGLE_WHEEL_SPEED 127
 
-#wheel ORIENTATIONs
+#wheel ORIENTATIONS
 #double RF_ORIENTATION 0.5236
 #double LF_ORIENTATION 2.618
 #double LB_ORIENTATION 3.6652
 #double RB_ORIENTATION 5.7596
 
-double ANGLE_AXIS_TO_WHEEL 0.715584993
+#in degrees
+double ANGLE_AXIS_TO_WHEEL 41
+
+#distance from robot center to wheels
 double WHEEL_RADIUS 0.0782828
 
 #DumbTurnPlanner constants

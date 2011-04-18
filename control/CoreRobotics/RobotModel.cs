@@ -34,13 +34,11 @@ namespace Robocup.CoreRobotics
         /// <returns></returns>
         public WheelSpeeds Convert(double forward, double lateral, double angularV)
         {
-            const double WHEEL_R = 0.0782828; //distance from the center of the robot to the wheels in meters
-            const double ANGLE_AXIS_TO_WHEEL = 41 * Math.PI / 180;
+            double WHEEL_RADIUS = Constants.Motion.WHEEL_RADIUS;
+            double ANGLE_AXIS_TO_WHEEL = Constants.Motion.ANGLE_AXIS_TO_WHEEL;
 
             //I assume the x command is effectively in m/s, so r the radius of the wheels from the center of
             //the robot is in meters
-
-            //Console.WriteLine(lateral.ToString() + " lateral|Forward: " + forward.ToString());
 
             //computed here to save typing, since used 4 times
             double sing = Math.Sin(ANGLE_AXIS_TO_WHEEL);
@@ -49,10 +47,10 @@ namespace Robocup.CoreRobotics
             //wheel one is the front right wheel  wheel 2 is the front left wheel, 
             //and so on around the the robot counterclockwise
 
-            double rf = -sing * lateral - cosg * forward + WHEEL_R * angularV;
-            double lf = -sing * lateral + cosg * forward + WHEEL_R * angularV;
-            double lb =  sing * lateral + cosg * forward + WHEEL_R * angularV;
-            double rb =  sing * lateral - cosg * forward + WHEEL_R * angularV;
+            double rf = -sing * lateral - cosg * forward + WHEEL_RADIUS * angularV;
+            double lf = -sing * lateral + cosg * forward + WHEEL_RADIUS * angularV;
+            double lb =  sing * lateral + cosg * forward + WHEEL_RADIUS * angularV;
+            double rb =  sing * lateral - cosg * forward + WHEEL_RADIUS * angularV;
 
             //Note somewhere we need to check and ensure that wheel speeds being 
             //sent do not exceed maximum values allowed by the protocol (done in SerialRobots somewhere).
