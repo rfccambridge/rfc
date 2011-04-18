@@ -140,15 +140,7 @@ namespace Robocup.MotionControl
         double EXTRA_GOAL_DIST;
         double BOUNDARY_AVOID;
 
-        double MIN_X_ROBOT_BOUNDARY;
-        double MAX_X_ROBOT_BOUNDARY;
-        double MIN_Y_ROBOT_BOUNDARY;
-        double MAX_Y_ROBOT_BOUNDARY;
-
     	double STEADY_STATE_SPEED;
-
-        // line segments that must be avoided- field edges and goals
-        List<Line> boundary_lines;
 
         double previousAngle;
 
@@ -257,8 +249,10 @@ namespace Robocup.MotionControl
             // avoid boundary lines, but only if inside boundaries
             double dist_to_line;
             // do not perform this loop if not inside boundaries
-            if (start.X > MIN_X_ROBOT_BOUNDARY && start.X < MAX_X_ROBOT_BOUNDARY &&
-                start.Y > MIN_Y_ROBOT_BOUNDARY && start.Y < MAX_Y_ROBOT_BOUNDARY) {
+            if (start.X > Constants.Field.FULL_XMIN && start.X < Constants.Field.FULL_XMAX &&
+                start.Y > Constants.Field.FULL_YMIN && start.Y < Constants.Field.FULL_YMAX)
+            {
+                IList<Line> boundary_lines = Constants.FieldPts.BOUNDARY_LINES;
                 foreach (Line l in boundary_lines) {
                     // get distance from line
                     dist_to_line = l.distance(start);
@@ -361,34 +355,7 @@ namespace Robocup.MotionControl
             EXTRA_GOAL_DIST = ConstantsRaw.get<double>("motionplanning", "EXTRA_GOAL_DIST");
         	STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
 
-            
-            MIN_X_ROBOT_BOUNDARY = ConstantsRaw.get<double>("motionplanning", "MIN_X_ROBOT_BOUNDARY");
-            MAX_X_ROBOT_BOUNDARY = ConstantsRaw.get<double>("motionplanning", "MAX_X_ROBOT_BOUNDARY");
-            MIN_Y_ROBOT_BOUNDARY = ConstantsRaw.get<double>("motionplanning", "MIN_Y_ROBOT_BOUNDARY");
-            MAX_Y_ROBOT_BOUNDARY = ConstantsRaw.get<double>("motionplanning", "MAX_Y_ROBOT_BOUNDARY");
-
             BOUNDARY_AVOID = ConstantsRaw.get<double>("motionplanning", "BOUNDARY_AVOID");
-
-            // field edges
-            // corner points
-            Vector2 topleft = new Vector2(MIN_X_ROBOT_BOUNDARY, MAX_Y_ROBOT_BOUNDARY);
-            Vector2 topright = new Vector2(MAX_X_ROBOT_BOUNDARY, MAX_Y_ROBOT_BOUNDARY);
-            Vector2 bottomleft = new Vector2(MIN_X_ROBOT_BOUNDARY, MIN_Y_ROBOT_BOUNDARY);
-            Vector2 bottomright = new Vector2(MAX_Y_ROBOT_BOUNDARY, MIN_Y_ROBOT_BOUNDARY);
-
-            // create boundary lines
-            boundary_lines = new List<Line>();
-            // top
-            boundary_lines.Add(new Line(topleft, topright));
-            // left
-            boundary_lines.Add(new Line(topleft, bottomleft));
-            // bottom
-            boundary_lines.Add(new Line(bottomleft, bottomright));
-            // right
-            boundary_lines.Add(new Line(topright, bottomright));
-            
-            //ROTATE_ANGLE = Constants.get<double>("motionplanning", "ROTATE_ANGLE");
-            //ITER_INCREMENT = Constants.get<double>("motionplanning", "ITER_INCREMENT");
         }
 
         private bool isOutOfWay(Vector2 position, Vector2 start, Vector2 pathVector)

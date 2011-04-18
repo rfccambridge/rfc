@@ -214,6 +214,25 @@ namespace Robocup.Core
             /// <summary> Top point of their goal </summary>
             static public Vector2 THEIR_GOAL_TOP { get { InitializeIfNeeded(); return _THEIR_GOAL_TOP; } } static volatile Vector2 _THEIR_GOAL_TOP;
 
+            //FULL BOUNDS---------------------------------------------------------
+
+            /// <summary> Top left corner of field including ref zone </summary>
+            static public Vector2 FULL_TOP_LEFT { get { InitializeIfNeeded(); return _FULL_TOP_LEFT; } } static volatile Vector2 _FULL_TOP_LEFT;
+
+            /// <summary> Bottom left corner of field including ref zone </summary>
+            static public Vector2 FULL_BOTTOM_LEFT { get { InitializeIfNeeded(); return _FULL_BOTTOM_LEFT; } } static volatile Vector2 _FULL_BOTTOM_LEFT;
+
+            /// <summary> Top right corner of field including ref zone </summary>
+            static public Vector2 FULL_TOP_RIGHT { get { InitializeIfNeeded(); return _FULL_TOP_RIGHT; } } static volatile Vector2 _FULL_TOP_RIGHT;
+
+            /// <summary> Bottom right corner of field including ref zone </summary>
+            static public Vector2 FULL_BOTTOM_RIGHT { get { InitializeIfNeeded(); return _FULL_BOTTOM_RIGHT; } } static volatile Vector2 _FULL_BOTTOM_RIGHT;
+
+            //LINES------------------------------------------------------------------------------
+
+            /// <summary> Bottom right corner of field including ref zone </summary>
+            static public IList<Line> BOUNDARY_LINES { get { InitializeIfNeeded(); return _BOUNDARY_LINES.AsReadOnly(); } } static volatile List<Line> _BOUNDARY_LINES;
+
             static public void Reload()
             {
                 double dx = (float)ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2;
@@ -245,6 +264,20 @@ namespace Robocup.Core
                 _THEIR_GOAL = new Vector2(dx, 0);
                 _THEIR_GOAL_BOTTOM = new Vector2(dx, -dyg);
                 _THEIR_GOAL_TOP = new Vector2(dx, dyg);
+
+                double refwidth = ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
+                _FULL_TOP_LEFT = new Vector2(-dx - refwidth, dy + refwidth);
+                _FULL_BOTTOM_LEFT = new Vector2(-dx - refwidth, -dy - refwidth);
+                _FULL_TOP_RIGHT = new Vector2(dx + refwidth, dy + refwidth);
+                _FULL_BOTTOM_RIGHT = new Vector2(dx + refwidth, -dy - refwidth);
+
+                List<Line> boundaryLines = new List<Line>();
+                boundaryLines.Add(new Line(_FULL_TOP_RIGHT, _FULL_TOP_LEFT));
+                boundaryLines.Add(new Line(_FULL_TOP_LEFT, _FULL_BOTTOM_LEFT));
+                boundaryLines.Add(new Line(_FULL_BOTTOM_LEFT, _FULL_BOTTOM_RIGHT));
+                boundaryLines.Add(new Line(_FULL_BOTTOM_RIGHT, _FULL_TOP_RIGHT));
+                _BOUNDARY_LINES = boundaryLines;
+                
             }
         }
 
