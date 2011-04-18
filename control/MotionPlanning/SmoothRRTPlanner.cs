@@ -17,10 +17,10 @@ namespace Robocup.MotionControl
         const double MAX_ACCEL_PER_STEP = 0.42; //And that it can accelerate this fast.
 
         //RRT parameters
-        const double MAX_TREE_SIZE = 250; //Max nodes in tree before we give up
-        const double MAX_PATH_TRIES = 80; //Max number of attempts to extend paths before we give up
+        const double MAX_TREE_SIZE = 200; //Max nodes in tree before we give up
+        const double MAX_PATH_TRIES = 70; //Max number of attempts to extend paths before we give up
         const double CLOSE_ENOUGH_TO_GOAL = 0.001; //We're completely done when we get this close to the goal.
-        const double DIST_FOR_SUCCESS = 1.3; //We're done for now when we get this much closer to the goal than we are
+        const double DIST_FOR_SUCCESS = 1.2; //We're done for now when we get this much closer to the goal than we are
 
         //Motion extrapolation
         const double ROBOT_MAX_TIME_EXTRAPOLATED = 0.7; //Extrapolate other robots' movements up to this amount of seconds.
@@ -36,7 +36,7 @@ namespace Robocup.MotionControl
         const double OLDPATH_AGREEMENT_SCORE = 20; //Bonus for agreeing with the old path, per m/s velocity
         const double OLDPATH_AGREEMENT_DIST = 0.5; //Score nothing for points that differ by this many meters from the old path
 
-        const double NUM_PATHS_TO_SCORE = 12; //How many paths do we generate and score?
+        const double NUM_PATHS_TO_SCORE = 9; //How many paths do we generate and score?
 
         //Field boundaries
         static double FIELD_XMIN;
@@ -146,31 +146,35 @@ namespace Robocup.MotionControl
         bool IsAllowedByObstacles(RobotInfo currentState, Vector2 src, Vector2 nextSegment, double curTime, BallInfo ball, List<RobotInfo> robots, double avoidBallRadius)
         {
             Vector2 dest = src + nextSegment;
-            Vector2 ray = dest - src;
+            Vector2 ray = nextSegment;
             if (ray.magnitudeSq() < 1e-16)
                 return true;
 
             Vector2 rayUnit = ray.normalizeToLength(1.0);
             double rayLen = ray.magnitude();
 
+            //Time to extrapolate forth
+            double time = Math.Max(curTime, ROBOT_MAX_TIME_EXTRAPOLATED);
+
             //Avoid all robots, except myself
-            foreach (RobotInfo info in robots)
+            int count = robots.Count;
+            for(int i = 0; i<count; i++)
             {
+                RobotInfo info = robots[i];
                 if (info.Team != currentState.Team || info.ID != currentState.ID)
                 {
                     //Extrapolate the robot's position into the future.
                     Vector2 obsPos = info.Position;
-                    double time = Math.Max(curTime, ROBOT_MAX_TIME_EXTRAPOLATED);
                     obsPos += info.Velocity * time;
 
                     if (IntersectsObstacle(src, dest, rayUnit, rayLen, obsPos, RRT_ROBOT_AVOID_DIST))
-                    { return false; }
+                        return false;
 
                     //It's also bad if the obstacle would collide with us next turn, by virtue of moving...
                     //But it's still okay if we're moving away from it.
-                    Vector2 obsPosNext = obsPos += info.Velocity * TIME_STEP;
+                    Vector2 obsPosNext = obsPos + info.Velocity * TIME_STEP;
                     if (IntersectsObstacle(dest, obsPosNext, RRT_ROBOT_AVOID_DIST, rayUnit))
-                    { return false; }
+                        return false;
                 }
             }
 
@@ -263,7 +267,12 @@ namespace Robocup.MotionControl
         //Get a path!
         public List<Vector2> GetPathTo(RobotInfo currentState, Vector2 desiredPosition, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
         {
-            TwoDTreeMap<RRTNode> map = new TwoDTreeMap<RRTNode>(FIELD_XMIN, FIELD_XMAX, FIELD_YMIN, FIELD_YMAX);
+            double mapXMin = Math.Min(currentState.Position.X, desiredPosition.X) - 0.3;
+            double mapYMin = Math.Min(currentState.Position.Y, desiredPosition.Y) - 0.3;
+            double mapXMax = Math.Max(currentState.Position.X, desiredPosition.X) + 0.3;
+            double mapYMax = Math.Max(currentState.Position.Y, desiredPosition.Y) + 0.3;
+
+            TwoDTreeMap<RRTNode> map = new TwoDTreeMap<RRTNode>(mapXMin, mapXMax, mapYMin, mapYMax);
 
             RRTNode startNode = new RRTNode(currentState, null, 0);
             map.Add(currentState.Position, startNode);
