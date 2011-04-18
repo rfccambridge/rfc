@@ -4,8 +4,11 @@ name OurSmartGoalie
 
 Parameters:
 goaliebot robot
+forwardbot robot
 
 Objects:
+CLEAR_DIST (const-double CLEAR_DIST)
+
 #goaliebot (closest friendly (ourgoal) loose)
 goaliebotpt (pointof goaliebot)
 goaltoppt (point GOALIE_X_POS 0.35)
@@ -38,7 +41,8 @@ attackerverticalpt (linelineintersection attackerline vertgoalline)
 # should the goalie try to kick the ball?
 goalieshouldkick (pointInGoal ballpoint)
 
-kickaction (robotpointkick goaliebot (theirgoal))
+#kickaction (robotpointkick goaliebot (theirgoal))
+kickaction (if_Action (pathClear ballpoint (theirgoal) CLEAR_DIST) (robotpointkick goaliebot (theirgoal)) (robotpointkick goaliebot (pointof forwardbot)))
 attackeraction (robotpointpointmove goaliebot attackerverticalpt attackerpt)
 projballaction (robotpointpointmovenoavoid goaliebot ballprojverticalpt ballpoint)
 ballaction (robotpointpointmove goaliebot ballverticalpt ballpoint)
