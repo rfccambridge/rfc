@@ -20,12 +20,6 @@ namespace Robocup.Simulation
         const double BALL_WALL_ELASTICITY = 0.9; //The fraction of the speed kept when bouncing off a wall
         const double BALL_FRICTION = .76; //The amount of speed lost per second by the ball
 
-        const double ROBOT_RADIUS = 0.09;
-        const double ROBOT_FRONT_RADIUS = 0.075;
-        const double BALL_RADIUS = 0.02;
-
-        const double BALL_COLLISION_RADIUS = BALL_RADIUS + ROBOT_RADIUS;
-
 		private bool _marking = false;
 		private Vector2 _markedPosition;
 
@@ -274,7 +268,13 @@ namespace Robocup.Simulation
         /// Steps forward the given number of seconds
         /// </summary>
         public void Step(double dt)
-        {            
+        {
+            //Grab constants for this iteration
+            double BALL_RADIUS = Constants.Basic.BALL_RADIUS;
+            double ROBOT_RADIUS = Constants.Basic.ROBOT_RADIUS;
+            double ROBOT_FRONT_RADIUS = Constants.Basic.ROBOT_FRONT_RADIUS;
+            double BALL_COLLISION_RADIUS = BALL_RADIUS + ROBOT_RADIUS;
+
             foreach (Team team in Enum.GetValues(typeof(Team)))
                 foreach (RobotInfo info in robots[team])
                     UpdateRobot(info, movement_modelers[team][info.ID].ModelWheelSpeeds(info, speeds[team][info.ID], dt));
@@ -451,15 +451,15 @@ namespace Robocup.Simulation
         {
             double minDist = Double.PositiveInfinity;
             foreach (Team team in Enum.GetValues(typeof(Team)))
+            {
                 foreach (RobotInfo info in robots[team])
                 {
-                    double dist = (info.Position - ball.Position).magnitude();
-                    dist -= ROBOT_RADIUS;
-                    dist -= BALL_RADIUS;
+                    double dist = info.Position.distance(ball.Position);
                     if (dist < minDist)
                         minDist = dist;
                 }
-            return minDist;
+            }
+            return minDist - Constants.Basic.BALL_RADIUS + Constants.Basic.ROBOT_RADIUS;
         }
 
         private bool checkVisionBallLoss()

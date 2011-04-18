@@ -205,7 +205,8 @@ namespace Robocup.MotionControl
         // CONSTANTS
         int ANGULAR_VEER;
 
-        static int NUM_ROBOTS = ConstantsRaw.get<int>("motionplanning", "NUM_ROBOTS");
+        //Grabbing the constant now - won't change if constants are reloaded
+        private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
 
         static int WHEEL_SPEED_STRAIGHT;
         static int WHEEL_SPEED_TURN;
@@ -621,7 +622,8 @@ namespace Robocup.MotionControl
         // CONSTANTS
         int ANGULAR_VEER;
 
-        static int NUM_ROBOTS = ConstantsRaw.get<int>("motionplanning", "NUM_ROBOTS");
+        //Grabbing the constant now - won't change if constants are reloaded
+        private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
 
         static int WHEEL_SPEED_STRAIGHT;
         static int WHEEL_SPEED_TURN;
@@ -868,7 +870,8 @@ namespace Robocup.MotionControl
         // CONSTANTS
         int ANGULAR_VEER;
 
-        static int NUM_ROBOTS = ConstantsRaw.get<int>("motionplanning", "NUM_ROBOTS");
+        //Grabbing the constant now - won't change if constants are reloaded
+        private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
 
         static int WHEEL_SPEED_STRAIGHT;
         static int WHEEL_SPEED_TURN;
@@ -1262,7 +1265,8 @@ namespace Robocup.MotionControl
         private Feedback[] shortFeedbackObjs;
         public Feedback GetShortFeedbackObj(int robotID) { return shortFeedbackObjs[robotID]; }
 
-        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");       
+        //Grabbing the constant now - won't change if constants are reloaded
+        private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;     
 
         private double MIN_DIST_TO_WP;
         private double MIN_ANGLE_DIFF_TO_WP;
@@ -1450,8 +1454,10 @@ namespace Robocup.MotionControl
 
     }
 
-	public class ModelFeedbackDriver : IPathDriver, ILogger {
-        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
+	public class ModelFeedbackDriver : IPathDriver, ILogger 
+    {
+        //Grabbing the constant now - won't change if constants are reloaded
+        private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
 
 		private ModelFeedback[] feedbackObjs;
 		public ModelFeedback GetFeedbackObj(int robotID) { return feedbackObjs[robotID]; }

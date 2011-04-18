@@ -18,7 +18,10 @@ namespace Robocup.ControlForm
 	{
         //Constants
         private const int CONTROL_TIMEOUT = 10;
-        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
+
+        //Grabbing the constant now - won't change if constants are reloaded
+        private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
+
         private const double DRIBBLER_TIMER_PERIOD = 0.5; //seconds
         private const double DRIBBLER_TIMEOUT = 6.0; // seconds
         private bool DRAW_PATH;

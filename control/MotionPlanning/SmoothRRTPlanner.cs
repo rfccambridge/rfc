@@ -46,35 +46,8 @@ namespace Robocup.MotionControl
 
         const double NUM_PATHS_TO_SCORE = 9; //How many paths do we generate and score?
 
-        //Field boundaries
-        static double FIELD_XMIN;
-        static double FIELD_XMAX;
-        static double FIELD_YMIN;
-        static double FIELD_YMAX;
-
-        //Steady state speed for path
-        static double STEADY_STATE_SPEED;
-
         public void ReloadConstants()
         {
-            LoadConstants();
-        }
-
-        public static void LoadConstants()
-        {
-            double FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
-            double FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
-            double GOAL_WIDTH = ConstantsRaw.get<double>("plays", "GOAL_WIDTH");
-            double REFEREE_ZONE_WIDTH = ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
-
-            STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
-
-            // Calculate physics based on physical boundaries slightly larger than field
-            FIELD_XMIN = -FIELD_WIDTH / 2 - REFEREE_ZONE_WIDTH;
-            FIELD_XMAX = FIELD_WIDTH / 2 + REFEREE_ZONE_WIDTH;
-            FIELD_YMIN = -FIELD_HEIGHT / 2 - REFEREE_ZONE_WIDTH;
-            FIELD_YMAX = FIELD_HEIGHT / 2 + REFEREE_ZONE_WIDTH;
-
         }
 
         //One node in the tree
@@ -623,6 +596,7 @@ namespace Robocup.MotionControl
 
             //Overly simplistic conversion from planning on position vectors to RobotInfo that has orientation and velocity information
             //velocity at every waypoint just points to next one with constant speed
+            double STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
             int pathStart = includeCurStateInPath ? 0 : 1;
             for (int i = pathStart; i < bestPath.Count; i++)
             {

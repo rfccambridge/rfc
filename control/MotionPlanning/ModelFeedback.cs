@@ -13,7 +13,7 @@ namespace Robocup.MotionControl
 		public Matrix GAIN_MATRIX = null;
 
         // scaling factor applied to the matrix
-        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
+        private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
         double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
         private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
         private double WAYPOINT_DIST;

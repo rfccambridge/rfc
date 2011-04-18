@@ -60,7 +60,8 @@ namespace Robocup.MotionControl
 
         int WHEEL_SPEED_TURN;
 
-        const int NUM_ROBOTS = 10; // Both teams (when in simulation)
+        //Local copy, will not change on reload
+        static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
 
         DateTime arbitraryPastTime = new DateTime(2000, 1, 1);
 

@@ -1,7 +1,6 @@
 # Motion planning constants
 
 #general constants used in MotionPlanning
-int NUM_ROBOTS 12
 int MIN_SINGLE_WHEEL_SPEED 0
 int MAX_SINGLE_WHEEL_SPEED 127
 

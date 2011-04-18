@@ -13,12 +13,6 @@ double SIM_ENGINE_FREQUENCY 20
 double CONTROL_LOOP_FREQUENCY 60
 double COMBINE_FREQUENCY 60
 
-int UPDATE_SLEEP_TIME 50
-int REBOOT_TIME 15000
-
-#label clearing in ms
-int REFBOX_COMMAND_CLEAR_INTERVAL 1000
-
 # is the new play system (C# one) used?
 bool USE_C_SHARP_PLAY_SYSTEM false
 
@@ -66,4 +60,3 @@ bool ROBOT_HAS_KICKER_4 true
 
 bool ROBOT_IS_GOALIE_3 true
 
-int PATH_RECALCULATE_INTERVAL 500

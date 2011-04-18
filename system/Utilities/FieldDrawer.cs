@@ -127,7 +127,7 @@ namespace Robocup.Utilities
 
         const double MARKER_SIZE = 0.025;
 
-        //Local copies of constants
+        //Local copies of constants for the field size and parameters
         //They will not change when constants are reloaded!
         double FIELD_WIDTH;
         double FIELD_HEIGHT;
@@ -139,8 +139,6 @@ namespace Robocup.Utilities
         double FIELD_FULL_XMAX;
         double FIELD_FULL_YMIN;
         double FIELD_FULL_YMAX;
-        double ROBOT_RADIUS;
-        double BALL_RADIUS;
 
         FieldDrawerForm _fieldDrawerForm; 
         State _bufferedState = new State();
@@ -184,8 +182,6 @@ namespace Robocup.Utilities
             FIELD_FULL_XMAX = Constants.Field.FULL_XMAX;
             FIELD_FULL_YMIN = Constants.Field.FULL_YMIN;
             FIELD_FULL_YMAX = Constants.Field.FULL_YMAX;
-            ROBOT_RADIUS = Constants.Basic.ROBOT_RADIUS;
-            BALL_RADIUS = Constants.Basic.BALL_RADIUS;
 
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
@@ -588,7 +584,7 @@ namespace Robocup.Utilities
             GL.Rotate(angle, 0, 0, 1);
             GL.Color3(robot.Team == Team.Yellow ? Color.Yellow : Color.Blue);            
             GL.Begin(BeginMode.Polygon);
-            OpenTK.Graphics.Glu.PartialDisk(_robotQuadric, 0, ROBOT_RADIUS, SLICES, 1,
+            OpenTK.Graphics.Glu.PartialDisk(_robotQuadric, 0, Constants.Basic.ROBOT_RADIUS, SLICES, 1,
                                             -(360 - ROBOT_ARC_SWEEP) / 2, ROBOT_ARC_SWEEP);
             GL.End();
 
@@ -614,7 +610,7 @@ namespace Robocup.Utilities
             GL.Translate(ball.Position.X, ball.Position.Y, 0);
             GL.Color3(Color.Orange);
             GL.Begin(BeginMode.Polygon);
-            OpenTK.Graphics.Glu.Disk(_ballQuadric, 0, BALL_RADIUS, SLICES, 1);
+            OpenTK.Graphics.Glu.Disk(_ballQuadric, 0, Constants.Basic.BALL_RADIUS, SLICES, 1);
             GL.End();
         }
 
