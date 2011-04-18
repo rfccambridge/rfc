@@ -60,7 +60,6 @@ namespace InterpreterTester
 
         string OFFENSE_PLAY_DIR;
         string DEFENSE_PLAY_DIR;
-        string TACTIC_DIR;
 
         Random r = new Random();
 
@@ -113,7 +112,6 @@ namespace InterpreterTester
 
         public void LoadConstants()
         {
-            TACTIC_DIR = ConstantsRaw.get<string>("default", "TACTIC_DIR");
             OFFENSE_PLAY_DIR = ConstantsRaw.get<string>("default", "INTERPRETER_TESTER_OFFENSE_PLAY_DIR");
             DEFENSE_PLAY_DIR = ConstantsRaw.get<string>("default", "INTERPRETER_TESTER_DEFENSE_PLAY_DIR");
         }
@@ -123,7 +121,7 @@ namespace InterpreterTester
             if (play_manager != null)
                 play_manager.Close();
 
-            Dictionary<string, InterpreterTactic> tacticBook = PlayUtils.loadTactics(TACTIC_DIR);
+            Dictionary<string, InterpreterTactic> tacticBook = PlayUtils.loadTactics(Constants.PlayFiles.TACTIC_DIR);
 
             // Player 1 plays
             Dictionary<InterpreterPlay, string> offensePlays = PlayUtils.loadPlays(OFFENSE_PLAY_DIR, tacticBook);

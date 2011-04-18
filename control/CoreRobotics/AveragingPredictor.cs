@@ -36,11 +36,6 @@ namespace Robocup.CoreRobotics
             // For assigning IDs to unidentified robots; one per team
             Dictionary<Team, int> nextID = new Dictionary<Team, int>();
 
-            // "Constants"
-            static double VELOCITY_DT;
-            static double WEIGHT_OLD, WEIGHT_NEW;
-            static bool FLIP_COORDINATES;
-
             public FieldState()
             {
                 foreach (Team team in Enum.GetValues(typeof(Team)))
@@ -52,20 +47,17 @@ namespace Robocup.CoreRobotics
                 }
             }
 
-            public void LoadConstants()
-            {
-                VELOCITY_DT = ConstantsRaw.get<double>("default", "VELOCITY_DT");
-                WEIGHT_OLD = ConstantsRaw.get<double>("default", "WEIGHT_OLD");
-                WEIGHT_NEW = ConstantsRaw.get<double>("default", "WEIGHT_NEW");
-                FLIP_COORDINATES = ConstantsRaw.get<bool>("default", "FLIP_COORDINATES");
-            }
-
             // Update the believed state with new observations
             public void Update(VisionMessage msg)
             {
                 double time = HighResTimer.SecondsSinceStart();
 
-                if (FLIP_COORDINATES)
+                double WEIGHT_OLD = Constants.Predictor.WEIGHT_OLD;
+                double WEIGHT_NEW = Constants.Predictor.WEIGHT_NEW;
+                double DELTA_DIST_SQ_MERGE = Constants.Predictor.DELTA_DIST_SQ_MERGE;
+                double VELOCITY_DT = Constants.Predictor.VELOCITY_DT;
+
+                if (Constants.Predictor.FLIP_COORDINATES)
                 {
                     VisionMessage newMessage = new VisionMessage(msg.CameraID);
                     if (msg.Ball != null)
@@ -83,7 +75,7 @@ namespace Robocup.CoreRobotics
                     if (msg.Ball == null)
                     {
                         if (ball == null ||
-                           (ball != null && (time - ball.LastSeen <= MAX_SECONDS_TO_KEEP_INFO)))
+                           (ball != null && (time - ball.LastSeen <= Constants.Predictor.MAX_SECONDS_TO_KEEP_INFO)))
                             ball = null;
                     }
                     // If we see the ball for the fist time, just record it; otherwise update
@@ -226,7 +218,7 @@ namespace Robocup.CoreRobotics
                     List<RobotInfo> tempRobots = new List<RobotInfo>(robots[team].Count);
                     for (int i = 0; i < robots[team].Count; i++)
                     {
-                        if (time - robots[team][i].LastSeen < MAX_SECONDS_TO_KEEP_INFO)
+                        if (time - robots[team][i].LastSeen < Constants.Predictor.MAX_SECONDS_TO_KEEP_INFO)
                         {
                             tempRobots.Add(robots[team][i]);
                         }
@@ -265,10 +257,6 @@ namespace Robocup.CoreRobotics
         private Vector2 markedPosition = null;
 
         // "Constants"
-        private static double DELTA_DIST_SQ_MERGE;
-        private static double MAX_SECONDS_TO_KEEP_INFO;
-        private static double MAX_SECONDS_TO_KEEP_BALL;
-        private static double VELOCITY_DT;
         private static double BALL_MOVED_DIST;
 
         public AveragingPredictor()
@@ -286,18 +274,9 @@ namespace Robocup.CoreRobotics
 
         public void LoadConstants()
         {
-            MAX_SECONDS_TO_KEEP_INFO = ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
-            MAX_SECONDS_TO_KEEP_BALL = ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_BALL");
-            VELOCITY_DT = ConstantsRaw.get<double>("default", "VELOCITY_DT");
             BALL_MOVED_DIST = ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
-            DELTA_DIST_SQ_MERGE = ConstantsRaw.get<double>("default", "DELTA_DIST_SQ_MERGE");
 
             combineTimer.Interval = (1.0 / Constants.Time.COMBINE_FREQUENCY) * 1000; // Convert hz -> secs -> ms
-
-            foreach (FieldState fieldState in fieldStates)
-            {
-                fieldState.LoadConstants();
-            }
         }
 
         public void Update(VisionMessage msg)
@@ -417,7 +396,7 @@ namespace Robocup.CoreRobotics
                 lastBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
             }
             // Predict the latest position with zero velocity if all cameras have timed out
-            else if (lastBall != null && (time - lastBall.LastSeen <= MAX_SECONDS_TO_KEEP_BALL))
+            else if (lastBall != null && (time - lastBall.LastSeen <= Constants.Predictor.MAX_SECONDS_TO_KEEP_BALL))
             {
                 retBall = new BallInfo(lastBall.Position, Vector2.ZERO, lastBall.LastSeen);
             }
@@ -471,7 +450,7 @@ namespace Robocup.CoreRobotics
                     });
                     matchByPosPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
                     {
-                        return robot.Position.distanceSq(fsRobot.Position) < DELTA_DIST_SQ_MERGE;
+                        return robot.Position.distanceSq(fsRobot.Position) < Constants.Predictor.DELTA_DIST_SQ_MERGE;
                     });
 
                     // Find the matching robot: m*n search

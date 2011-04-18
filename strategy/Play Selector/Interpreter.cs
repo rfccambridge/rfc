@@ -12,8 +12,6 @@ namespace Robocup.Plays
 {
     public class Interpreter
     {
-        bool USE_C_SHARP_PLAY_SYSTEM;
-
         private List<int> active = new List<int>();
         private readonly PlaySelector selector;
         private IActionInterpreter actioninterpreter;
@@ -120,9 +118,6 @@ namespace Robocup.Plays
 
             // load the new play system's constants
             playAssigner.ReloadConstants();
-
-            // reload single constant from a file
-            USE_C_SHARP_PLAY_SYSTEM = ConstantsRaw.get<bool>("default", "USE_C_SHARP_PLAY_SYSTEM");
         }
  
         List<SelectorResults.RobotAssignments> lastAssignments = new List<SelectorResults.RobotAssignments>();
@@ -151,7 +146,7 @@ namespace Robocup.Plays
         public bool interpret(PlayType type, Score score)
         {
             // if the appropriate constant is set, use the new play system
-            if (USE_C_SHARP_PLAY_SYSTEM) {
+            if (Constants.PlayFiles.USE_C_SHARP_PLAY_SYSTEM) {
                 return interpret_csharp(type);
             }
             

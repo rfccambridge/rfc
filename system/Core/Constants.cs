@@ -28,9 +28,9 @@ namespace Robocup.Core
             static public void Reload()
             {
                 _NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
-                _ROBOT_RADIUS = (float)ConstantsRaw.get<double>("plays", "ROBOT_RADIUS");
-                _ROBOT_FRONT_RADIUS = (float)ConstantsRaw.get<double>("plays", "ROBOT_FRONT_RADIUS");
-                _BALL_RADIUS = (float)ConstantsRaw.get<double>("plays", "BALL_RADIUS");
+                _ROBOT_RADIUS = (float)ConstantsRaw.get<double>("default", "ROBOT_RADIUS");
+                _ROBOT_FRONT_RADIUS = (float)ConstantsRaw.get<double>("default", "ROBOT_FRONT_RADIUS");
+                _BALL_RADIUS = (float)ConstantsRaw.get<double>("default", "BALL_RADIUS");
             }
         }
 
@@ -102,6 +102,7 @@ namespace Robocup.Core
 
             //OTHER----------------------------------------------------------
 
+            /// <summary> Radius of the center circle of the field </summary>
             static public double CENTER_CIRCLE_RADIUS { get { InitializeIfNeeded(); return _CENTER_CIRCLE_RADIUS; } } static volatile float _CENTER_CIRCLE_RADIUS;
 
             //--------------------------------------------------------------
@@ -283,16 +284,16 @@ namespace Robocup.Core
 
         static public class Time
         {
-            /// <summary> Number of robots and/or robot ids possible </summary>
+            /// <summary> Frequency of strategy/interpreter loop </summary>
             static public double STRATEGY_FREQUENCY { get { InitializeIfNeeded(); return _STRATEGY_FREQUENCY; } } static volatile float _STRATEGY_FREQUENCY;
 
-            /// <summary> Radius of a robot </summary>
+            /// <summary> Frequency of simulator engine </summary>
             static public double SIM_ENGINE_FREQUENCY { get { InitializeIfNeeded(); return _SIM_ENGINE_FREQUENCY; } } static volatile float _SIM_ENGINE_FREQUENCY;
 
-            /// <summary> Distance from the center to the front of a robot </summary>
+            /// <summary> Frequency of robot control loop </summary>
             static public double CONTROL_LOOP_FREQUENCY { get { InitializeIfNeeded(); return _CONTROL_LOOP_FREQUENCY; } } static volatile float _CONTROL_LOOP_FREQUENCY;
 
-            /// <summary> Radius of the ball </summary>
+            /// <summary> Frequency of averaging predictor combos </summary>
             static public double COMBINE_FREQUENCY { get { InitializeIfNeeded(); return _COMBINE_FREQUENCY; } } static volatile float _COMBINE_FREQUENCY;
 
             static public void Reload()
@@ -327,6 +328,91 @@ namespace Robocup.Core
                 _WHEEL_RADIUS = (float)ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
             }
         }
+
+        static public class PlayFiles
+        {
+            /// <summary>  </summary>
+            static public bool USE_C_SHARP_PLAY_SYSTEM { get { InitializeIfNeeded(); return _USE_C_SHARP_PLAY_SYSTEM; } } static volatile bool _USE_C_SHARP_PLAY_SYSTEM;
+
+            /// <summary>  </summary>
+            static public string TACTIC_DIR { get { InitializeIfNeeded(); return _TACTIC_DIR; } } static volatile string _TACTIC_DIR;
+
+            /// <summary>  </summary>
+            static public string PLAY_DIR_YELLOW { get { InitializeIfNeeded(); return _PLAY_DIR_YELLOW; } } static volatile string _PLAY_DIR_YELLOW;
+
+            /// <summary>  </summary>
+            static public string PLAY_DIR_BLUE { get { InitializeIfNeeded(); return _PLAY_DIR_BLUE; } } static volatile string _PLAY_DIR_BLUE;
+
+            static public void Reload()
+            {
+                _USE_C_SHARP_PLAY_SYSTEM = ConstantsRaw.get<bool>("default", "USE_C_SHARP_PLAY_SYSTEM");
+                _TACTIC_DIR = ConstantsRaw.get<string>("default", "TACTIC_DIR");
+                _PLAY_DIR_YELLOW = ConstantsRaw.get<string>("default", "PLAY_DIR_YELLOW");
+                _PLAY_DIR_BLUE = ConstantsRaw.get<string>("default", "PLAY_DIR_BLUE");
+
+            }
+        }
+
+        static public class Predictor
+        {
+            /// <summary>  </summary>
+            static public bool FLIP_COORDINATES { get { InitializeIfNeeded(); return _FLIP_COORDINATES; } } static volatile bool _FLIP_COORDINATES;
+
+            /// <summary>  </summary>
+            static public double DELTA_DIST_SQ_MERGE { get { InitializeIfNeeded(); return _DELTA_DIST_SQ_MERGE; } } static volatile float _DELTA_DIST_SQ_MERGE;
+
+            /// <summary>  </summary>
+            static public double MAX_SECONDS_TO_KEEP_INFO { get { InitializeIfNeeded(); return _MAX_SECONDS_TO_KEEP_INFO; } } static volatile float _MAX_SECONDS_TO_KEEP_INFO;
+
+            /// <summary>  </summary>
+            static public double MAX_SECONDS_TO_KEEP_BALL { get { InitializeIfNeeded(); return _MAX_SECONDS_TO_KEEP_BALL; } } static volatile float _MAX_SECONDS_TO_KEEP_BALL;
+
+            /// <summary>  </summary>
+            static public double VELOCITY_DT { get { InitializeIfNeeded(); return _VELOCITY_DT; } } static volatile float _VELOCITY_DT;
+
+            /// <summary>  </summary>
+            static public double VELOCITY_WEIGHT_OLD { get { InitializeIfNeeded(); return _VELOCITY_WEIGHT_OLD; } } static volatile float _VELOCITY_WEIGHT_OLD;
+
+            /// <summary>  </summary>
+            static public double VELOCITY_WEIGHT_NEW { get { InitializeIfNeeded(); return _VELOCITY_WEIGHT_NEW; } } static volatile float _VELOCITY_WEIGHT_NEW;
+
+            /// <summary>  </summary>
+            static public double POSITION_WEIGHT_OLD { get { InitializeIfNeeded(); return _POSITION_WEIGHT_OLD; } } static volatile float _POSITION_WEIGHT_OLD;
+
+            /// <summary>  </summary>
+            static public double POSITION_WEIGHT_NEW { get { InitializeIfNeeded(); return _POSITION_WEIGHT_NEW; } } static volatile float _POSITION_WEIGHT_NEW;
+
+            /// <summary>  </summary>
+            static public double BALL_POSITION_WEIGHT_OLD { get { InitializeIfNeeded(); return _BALL_POSITION_WEIGHT_OLD; } } static volatile float _BALL_POSITION_WEIGHT_OLD;
+
+            /// <summary>  </summary>
+            static public double BALL_POSITION_WEIGHT_NEW { get { InitializeIfNeeded(); return _BALL_POSITION_WEIGHT_NEW; } } static volatile float _BALL_POSITION_WEIGHT_NEW;
+
+            /// <summary>  </summary>
+            static public double WEIGHT_OLD { get { InitializeIfNeeded(); return _WEIGHT_OLD; } } static volatile float _WEIGHT_OLD;
+
+            /// <summary>  </summary>
+            static public double WEIGHT_NEW { get { InitializeIfNeeded(); return _WEIGHT_NEW; } } static volatile float _WEIGHT_NEW;
+
+
+            static public void Reload()
+            {
+                _FLIP_COORDINATES = ConstantsRaw.get<bool>("default", "FLIP_COORDINATES");
+                _DELTA_DIST_SQ_MERGE = (float)ConstantsRaw.get<double>("default", "DELTA_DIST_SQ_MERGE");
+                _MAX_SECONDS_TO_KEEP_INFO = (float)ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
+                _MAX_SECONDS_TO_KEEP_BALL = (float)ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_BALL");
+                _VELOCITY_DT = (float)ConstantsRaw.get<double>("default", "VELOCITY_DT");
+                _VELOCITY_WEIGHT_OLD = (float)ConstantsRaw.get<double>("default", "VELOCITY_WEIGHT_OLD");
+                _VELOCITY_WEIGHT_NEW = (float)ConstantsRaw.get<double>("default", "VELOCITY_WEIGHT_NEW");
+                _POSITION_WEIGHT_OLD = (float)ConstantsRaw.get<double>("default", "POSITION_WEIGHT_OLD");
+                _POSITION_WEIGHT_NEW = (float)ConstantsRaw.get<double>("default", "POSITION_WEIGHT_NEW");
+                _BALL_POSITION_WEIGHT_OLD = (float)ConstantsRaw.get<double>("default", "BALL_POSITION_WEIGHT_OLD");
+                _BALL_POSITION_WEIGHT_NEW = (float)ConstantsRaw.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
+                _WEIGHT_OLD = (float)ConstantsRaw.get<double>("default", "WEIGHT_OLD");
+                _WEIGHT_NEW = (float)ConstantsRaw.get<double>("default", "WEIGHT_NEW");
+            }
+        }
+
 
         //INITIALIZATION AND RELOAD MECHANISM---------------------------------------------------------
 
@@ -364,6 +450,9 @@ namespace Robocup.Core
                 Field.Reload();
                 FieldPts.Reload();
                 Time.Reload();
+                Motion.Reload();
+                PlayFiles.Reload();
+                Predictor.Reload();
                 _is_reloading = false;
             }
         }
