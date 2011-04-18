@@ -1,6 +1,6 @@
 Metadata:
 type tactic
-name OurSmartGoalie
+name DefSmartGoalie
 
 Parameters:
 goaliebot robot

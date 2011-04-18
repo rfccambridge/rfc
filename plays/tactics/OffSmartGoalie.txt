@@ -1,0 +1,57 @@
+Metadata:
+type tactic
+name OffSmartGoalie
+
+Parameters:
+goaliebot robot
+
+Objects:
+CLEAR_DIST (const-double CLEAR_DIST)
+
+#goaliebot (closest friendly (ourgoal) loose)
+goaliebotpt (pointof goaliebot)
+goaltoppt (point GOALIE_X_POS 0.35)
+goalbotpt (point GOALIE_X_POS -0.35)
+
+#goal geometry
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
+endtopgoalpt (point GOALIE_X_POS 1.6)
+endbottomgoalpt (point GOALIE_X_POS -1.6)
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+
+#ball geometry
+ballpoint (pointof ball)
+ballgoalline (line ballpoint (ourgoal))
+ballverticalpt (linelineintersection ballgoalline vertgoalline)
+
+#ball-velocity projected geometry
+ballvelocity (velocityof ball)
+balldirection (getAngle ballvelocity)
+ballprojline (linedirection ballpoint balldirection)
+ballprojverticalpt (linelineintersection ballprojline vertgoalline)
+
+#attacker geometry
+attacker (closest enemy ballpoint loose)
+attackerpt (pointof attacker)
+attackerorient (orientationof attacker)
+attackerline (linedirection attackerpt attackerorient)
+attackerverticalpt (linelineintersection attackerline vertgoalline)
+
+# should the goalie try to kick the ball?
+goalieshouldkick (pointInGoal ballpoint)
+
+kickaction (robotpointkick goaliebot (theirgoal))
+attackeraction (robotpointpointmove goaliebot attackerverticalpt attackerpt)
+projballaction (robotpointpointmovenoavoid goaliebot ballprojverticalpt ballpoint)
+ballaction (robotpointpointmove goaliebot ballverticalpt ballpoint)
+topaction (robotpointpointmove goaliebot goaltoppt ballpoint)
+bottomaction (robotpointpointmove goaliebot goalbotpt ballpoint)
+
+attackeraimsgoal (and (> (getYcoord attackerverticalpt) (getYcoord goalbotpt)) (< (getYcoord attackerverticalpt) (getYcoord goaltoppt)))
+attackerhasball (< (pointpointdistance ballpoint attackerpt) 0.12)
+ballaimsgoal (and (> (getYcoord ballprojverticalpt) (getYcoord goalbotpt)) (< (getYcoord ballprojverticalpt) (getYcoord goaltoppt)))
+ballmoves (> (pointpointdistance ballvelocity (point 0 0)) 0.05)
+
+Conditions:
+Actions:
+(if_Action goalieshouldkick kickaction (if_Action (and attackeraimsgoal attackerhasball) attackeraction (if_Action  (and ballaimsgoal ballmoves) projballaction (if_Action (< (getYcoord ballverticalpt) (getYcoord goalbotpt)) bottomaction (if_Action (> (getYcoord ballverticalpt) (getYcoord goaltoppt)) topaction ballaction)))))

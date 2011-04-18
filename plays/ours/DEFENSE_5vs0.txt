@@ -36,7 +36,7 @@ Mark defensebot2 defensept2 forwardbot
 OneManWall (ourgoal) 1.5 True 0 forwardbot
 #OurTwoManWall twomanbot1 twomanpt1 True 
 #OurTwoManWall twomanbot2 twomanpt2 False 
-OurSmartGoalie goaliebot forwardbot
+DefSmartGoalie goaliebot forwardbot
 #ClearBot clearbot
 Forward forwardbot
 

@@ -17,7 +17,7 @@ sideassist (closest friendly ballpoint loose)
 Tactics:
 SideAssistTac striker sideassist
 OurStriker striker sideassist botbot
-OurSmartGoalie goaliebot
+OffSmartGoalie goaliebot
 BotBot botbot 
 TopBot topbot 
 
