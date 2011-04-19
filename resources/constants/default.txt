@@ -43,7 +43,7 @@ string PLAY_DIR_BLUE ../../plays/refboxplays
 
 ## Basic Predictor constants
 double DELTA_DIST_SQ_MERGE .01
-double MAX_SECONDS_TO_KEEP_INFO 0.80
+double MAX_SECONDS_TO_KEEP_INFO 0.10
 
 #flip coordinates in case we are on the wrong side of the field
 bool FLIP_COORDINATES false
