@@ -26,13 +26,12 @@ namespace Robocup.ControlForm
         protected IController _controller;
         protected IMotionPlanner _motionPlanner;
         protected RefBoxState _refbox;
-        
-        protected bool _running = false;
 
-        System.Timers.Timer _interpretLoopTimer = new System.Timers.Timer();
-        int _interpretLoopTimerSync = 0;
-        HighResTimer _timerFreq = new HighResTimer();
-        HighResTimer _timerDuration = new HighResTimer();
+        //The loop for actual playing
+        private FunctionLoop _interpretLoop;
+
+        //Lock for starting and stopping in a synchronized way
+        private Object _startStopLock = new Object();
 
         public Team Team
         {
@@ -44,7 +43,7 @@ namespace Robocup.ControlForm
             get { return _fieldHalf; }
             set
             {
-                if (_running)
+                if (Running)
                     throw new ApplicationException("Cannot change field half while running.");
                 _fieldHalf = value;
                 _interpreter.FieldHalf = _fieldHalf;
@@ -53,7 +52,11 @@ namespace Robocup.ControlForm
 
         public bool Running
         {
-            get { return _running; }
+            get { 
+                bool b;
+                lock(_startStopLock) {b = _interpretLoop.IsRunning();} 
+                return b;
+            }
         }
 
         public Player(string name, Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) {
@@ -84,8 +87,9 @@ namespace Robocup.ControlForm
             //IMotionPlanner planner = new Robocup.MotionControl.DefaultMotionPlanner();
             //_motionPlanner = new Robocup.MotionControl.TangentBugFeedbackMotionPlanner();
 
-            _motionPlanner = new Robocup.MotionControl.TangentBugModelFeedbackMotionPlanner();
+           // _motionPlanner = new Robocup.MotionControl.TangentBugModelFeedbackMotionPlanner();
 			//_motionPlanner = new Robocup.MotionControl.BasicRRTModelFeedbackMotionPlanner();
+            _motionPlanner = new Robocup.MotionControl.SmoothedRRTModelFeedbackMotionPlanner();
 			//IMotionPlanner planner = new Robocup.MotionControl.TangentBugVeerMotionPlanner();
 
             /*Dictionary<int, IMovement> planners = new Dictionary<int, IMovement>();
@@ -131,8 +135,8 @@ namespace Robocup.ControlForm
                     TagSystem.AddTag(i, "goalie");
             }
 
-            _interpretLoopTimer.AutoReset = true;
-            _interpretLoopTimer.Elapsed += _interpretLoopTimer_Elapsed;
+
+            _interpretLoop = new FunctionLoop(InterpretLoop);
         }
 
         public override string ToString()
@@ -188,73 +192,69 @@ namespace Robocup.ControlForm
 
         public virtual void Start()
         {
-            if (_running)
-                throw new ApplicationException("Already running.");
+            lock (_startStopLock)
+            {
+                if (Running)
+                    throw new ApplicationException("Already running.");
 
-            double freq = Constants.get<double>("default", "STRATEGY_FREQUENCY");
-            double period = 1.0 / freq * 1000; // in ms
+                double freq = Constants.get<double>("default", "STRATEGY_FREQUENCY");
 
-            _running = true;
-
-            _fieldDrawer.UpdateTeam(_team);            
-
-            _controller.StartControlling();
-
-            _interpretLoopTimer.Interval = period;                        
-            _interpretLoopTimer.Start();
+                _fieldDrawer.UpdateTeam(_team);
+                _controller.StartControlling();
+                _interpretLoop.SetPeriod(1.0 / freq);
+                _interpretLoop.Start();
+            }
         }
 
         public virtual void Stop()
         {
-            if (!_running)
-                throw new ApplicationException("Not running.");
+            lock (_startStopLock)
+            {
+                if (!Running)
+                    throw new ApplicationException("Not running.");
 
-            _interpretLoopTimer.Stop();
-            
-            foreach (RobotInfo info in _predictor.GetRobots(_team))
-                _controller.Stop(info.ID);
-			_controller.StopControlling();
-            _running = false;
+                _interpretLoop.Stop();
+
+                foreach (RobotInfo info in _predictor.GetRobots(_team))
+                    _controller.Stop(info.ID);
+                _controller.StopControlling();
+            }
         }
 
-        private void runRound()
+        private void InterpretLoop()
         {
-            _timerFreq.Stop();
-            _fieldDrawer.UpdateInterpretFreq(1.0 / _timerFreq.Duration);
-            _timerFreq.Start();
+            _fieldDrawer.UpdateInterpretFreq(1.0 / _interpretLoop.GetObservedPeriod());
 
             List<RobotInfo> robots = _predictor.GetRobots();
             BallInfo ball = _predictor.GetBall();
 
             _fieldDrawer.BeginCollectState();
-            _fieldDrawer.UpdateRobotsAndBall(robots, ball);
+            try
+            {
+                _fieldDrawer.UpdateRobotsAndBall(robots, ball);
+                RobotPath[] paths = ((Controller)_controller).GetLastPaths(); //TODO(davidwu): This cast is not ideal...
+                for (int i = 0; i < paths.Length; i++)
+                    if (paths[i] != null)
+                        _fieldDrawer.DrawPath(paths[i]);
 
-            PlayType playType = _refbox.GetCurrentPlayType();
-            _fieldDrawer.UpdatePlayType(playType);            
+                PlayType playType = _refbox.GetCurrentPlayType();
+                _fieldDrawer.UpdatePlayType(playType);
 
-            _timerDuration.Start();
-            doAction();
-            _timerDuration.Stop();
-
-            _fieldDrawer.EndCollectState();
-
-            _fieldDrawer.UpdateInterpretDuration(_timerDuration.Duration * 1000);
+                doAction();
+            }
+            finally
+            {
+                _fieldDrawer.EndCollectState();
+            }
+            _fieldDrawer.UpdateInterpretDuration(_interpretLoop.GetLoopDuration() * 1000);
         }
 
         protected virtual void doAction()
         {
             PlayType playType = _refbox.GetCurrentPlayType();
-            _interpreter.interpret(playType);
+            Score score = _refbox.GetScore();
+            _interpreter.interpret(playType, score);
         }
-        
-        void _interpretLoopTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {            
-            // Skip the event if a previous one is still being handled
-            if (Interlocked.CompareExchange(ref _interpretLoopTimerSync, 1, 0) == 0)
-            {
-                runRound();
-                _interpretLoopTimerSync = 0;
-            }
-        }
+
     }
 }

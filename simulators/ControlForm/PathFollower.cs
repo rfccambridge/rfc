@@ -33,7 +33,7 @@ namespace Robocup.ControlForm
 
         public int AddWaypoint(RobotInfo waypoint)
         {
-            if (_running)
+            if (Running)
                 throw new ApplicationException("Can't add/remove endpoints while player is running.");
             _waypoints.Add(waypoint);
             return _waypoints.Count - 1;
@@ -41,14 +41,14 @@ namespace Robocup.ControlForm
 
         public void RemoveWaypoint(int index)
         {
-            if (_running)
+            if (Running)
                 throw new ApplicationException("Can't add/remove endpoints while player is running.");
             _waypoints.RemoveAt(index);
         }
 
         public void ClearWaypoints()
         {
-            if (_running)
+            if (Running)
                 throw new ApplicationException("Can't add/remove endpoints while player is running.");
             _waypoints.Clear();
             _waypointIndex = 0;

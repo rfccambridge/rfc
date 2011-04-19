@@ -1063,7 +1063,7 @@ namespace Robocup.MotionControl
 
 	public class BasicRRTModelFeedbackMotionPlanner : PlannerDriver
 	{
-		static BasicRRTMotionPlanner pathplanner = new BasicRRTMotionPlanner();
+		static BasicRRTMotionPlanner pathplanner = new BasicRRTMotionPlanner(false);
 		public static ModelFeedbackDriver pathdriver = new ModelFeedbackDriver();
 
 		public BasicRRTModelFeedbackMotionPlanner()
@@ -1072,5 +1072,18 @@ namespace Robocup.MotionControl
 			LoadConstants();
 		}
 	}
+
+    public class SmoothedRRTModelFeedbackMotionPlanner : PlannerDriver
+    {
+        static SmoothRRTPlanner pathplanner = new SmoothRRTPlanner();
+        public static ModelFeedbackDriver pathdriver = new ModelFeedbackDriver();
+
+        public SmoothedRRTModelFeedbackMotionPlanner()
+            : base(pathplanner, pathdriver)
+        {
+            LoadConstants();
+            pathdriver.UseFixedSpeedHackProp();
+        }
+    }
 
 }

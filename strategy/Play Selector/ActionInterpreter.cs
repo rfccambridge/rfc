@@ -21,27 +21,20 @@ namespace Robocup.Plays
         private double MAX_ANGLE_TO_KICK_AXIS; // rad
         private double KICK_ORIENTATION_ERROR; // rad        
 
+        private double BUMP_ANGLE_TOLERANCE;  //rad
+        private double BUMP_DIST_TOLERANCE;   //m
+
+        private double DRIBBLE_DIST; //m
+
         private IController commander;
         private IPredictor predictor;
         private Team team;
 
         public ActionInterpreter(Team team, IController commander, IPredictor predictor)
-            : this(team, commander, predictor, 0.0, 0.0, 0.0, 0.0) { }
-
-        /// <param name="kickDistance">Default: .12</param>
-        /// <param name="ballLead">Default: 3</param>
-        /// <param name="distTolerance">Default: .04</param>
-        /// <param name="angleTolerance">Default: Math.PI/60</param>
-        public ActionInterpreter(Team team, IController commander, IPredictor predictor, double kickDistance, double ballLead,
-                                 double distTolerance, double angleTolerance)
         {
             this.team = team;
             this.commander = commander;
             this.predictor = predictor;
-            this.kickDistance = kickDistance;
-            this.ballLeading = ballLead;
-            this.distanceTolerance = distTolerance;
-            this.angleTolerance = angleTolerance;
 
             LoadConstants();
         }
@@ -60,6 +53,11 @@ namespace Robocup.Plays
 
             MAX_ANGLE_TO_KICK_AXIS = Math.PI / 180 * Constants.get<double>("kickplanning", "MAX_ANGLE_TO_KICK_AXIS");
             KICK_ORIENTATION_ERROR = Math.PI / 180 * Constants.get<double>("kickplanning", "KICK_ORIENTATION_ERROR");
+
+            BUMP_ANGLE_TOLERANCE = Math.PI / 180 * Constants.get<double>("kickplanning", "BUMP_ANGLE_TOLERANCE");
+            BUMP_DIST_TOLERANCE = Constants.get<double>("kickplanning", "BUMP_DIST_TOLERANCE");
+
+            DRIBBLE_DIST = Constants.get<double>("kickplanning", "DRIBBLE_DIST");
         }
 
         private RobotInfo getOurRobotFromID(int robotID)
@@ -92,7 +90,7 @@ namespace Robocup.Plays
             else
             {
                 avoidBall = true;
-                destination = extend(target, ball, kickDistance);
+                destination = extend(target, ball, DRIBBLE_DIST);
             }
 
             Move(robotID, avoidBall, destination, ball);
@@ -105,12 +103,6 @@ namespace Robocup.Plays
         private Vector2 extend(Vector2 p1, Vector2 p2, double distance)
         {
             return p2 + (p2 - p1).normalizeToLength(distance);
-            /*double dx = p2.X - p1.X;
-            double dy = p2.Y - p1.Y;
-            double mag = Math.Sqrt(dx * dx + dy * dy);
-            dx *= distance / mag;
-            dy *= distance / mag;
-            return new Vector2(p2.X + dx, p2.Y + dy);*/
         }
         /// <summary>
         /// Returns the angle that this robot will have to face to face at the target.
@@ -119,16 +111,6 @@ namespace Robocup.Plays
         {
             return (target - robot).cartesianAngle();
         }
-        /// <summary>
-        /// This is the distance that the robots should put themselves from the ball,
-        /// when they get ready to kick it.
-        /// </summary>
-        private readonly double kickDistance = .085;//.095;
-
-        /// <summary>
-        /// This is how many ticks of ball motion you should add to the distance to lead the ball appropriately
-        /// </summary>
-        private readonly double ballLeading = 0;//3.0;
 
         public void Stop(int robotID)
         {
@@ -144,14 +126,11 @@ namespace Robocup.Plays
             commander.Charge(robotID, strength);
         }
 
-        private readonly double bumpDistance = 0.2;
-        private readonly double bumpOrientationOffset = Math.PI / 6;
         /// <summary>
         /// This is a fail-safe replacement of kicking - just go to the ball and bump it hard with the side of the robot
         /// </summary>
         public void Bump(int robotID, Vector2 target)
         {
-
             RobotInfo thisrobot;
             Vector2 ball;
             BallInfo ballinfo;
@@ -167,32 +146,22 @@ namespace Robocup.Plays
                 return;
             }
 
-            Vector2 destination = extend(target, ball, bumpDistance);
-            double destinationAngle = targetAngle(ball, target) + bumpOrientationOffset;
+            Vector2 destination = extend(target, ball, BUMP_DIST_TOLERANCE);
+            double destinationAngle = targetAngle(ball, target);
 
-            Vector2 destinationBehind = extend(target, ball, -bumpDistance);
+            Vector2 destinationBehind = extend(target, ball, -BUMP_DIST_TOLERANCE);
 
             Vector2 robotToBall = ball - thisrobot.Position;
-            Vector2 robotToDest = destination - thisrobot.Position;
+            Vector2 robotToTarget = target - thisrobot.Position;
 
-            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), robotToDest.cartesianAngle()));
-            bool nearLine = thisrobot.Position.distanceSq(destination) <= bumpDistance * bumpDistance && angleDiff <= 3 * angleTolerance;
-            bool tooClose = thisrobot.Position.distanceSq(destination) <= 0.01 * bumpDistance * bumpDistance && angleDiff <= Math.PI / 2;
+            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), robotToTarget.cartesianAngle()));
+            bool nearLine = thisrobot.Position.distanceSq(destination) <= BUMP_DIST_TOLERANCE * BUMP_DIST_TOLERANCE 
+                && angleDiff <= BUMP_ANGLE_TOLERANCE;
 
-            if (nearLine || tooClose)
-            {
-                commander.Move(robotID,
-                        false,
-                        destinationBehind,
-                        destinationAngle);
-            }
+            if (nearLine)
+                commander.Move(robotID,false,destinationBehind,destinationAngle);
             else
-            {
-                commander.Move(robotID,
-                               true,
-                               destination,
-                               destinationAngle);
-            }
+                commander.Move(robotID,true,destination,destinationAngle);
 
             return;
         }
@@ -205,7 +174,6 @@ namespace Robocup.Plays
         public void Kick(int robotID, Vector2 target, int strength)
         {
             //DEBUG!
-
             BeamKick(robotID, target, strength);
             return;
 #if FALSE
@@ -224,35 +192,15 @@ namespace Robocup.Plays
                 return;
             }
 
-            //JUST FOR TEMPORARY TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //ball = new Vector2(1.0, 0);
-
-
-
-            //Console.WriteLine("Ball's position: "+ball.ToString());
-            /*if (ball.X > 2.2 || ball.X < .4 || ball.Y > 1.4 || ball.Y < -1.5)
-                Console.WriteLine("Terrible ball location!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");*/
-            //double dx = ballinfo.Position.X - target.X;
-            //double dy = ballinfo.Position.Y - target.Y;
             Vector2 destination = extend(target, ball, kickDistance);
-            /*Console.WriteLine("destination: " + destination.ToString());
-            if (destination.X > 2.2 || destination.X < .4 || destination.Y > 1.4 || destination.Y < -1.5) {
-                Console.WriteLine("Terrible destination!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            }*/
 
             double destinationAngle = targetAngle(ball, target);
-            //Console.WriteLine("Distance from robot to ball: " + Math.Sqrt(ball.distanceSq(thisrobot.Position)));
-            //Console.WriteLine("angle Difference: " + UsefulFunctions.angleDifference(destinationAngle, thisrobot.Orientation));
+
             if (closeEnough(thisrobot, destination.X, destination.Y, destinationAngle))
             {
                 Console.WriteLine("Distance from robot to ball:{0}", Math.Sqrt(thisrobot.Position.distanceSq(destination)));
                 Console.WriteLine("Going to try and Kick!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 commander.Kick(robotID, target);
-                /*commander.move(
-                    robotID,
-                    true,
-                    new Vector2(destination.X, destination.Y),
-                    destinationAngle);*/
             }
             else if (thisrobot.Position.distanceSq(destination) < 4 * kickDistance * kickDistance)
             {
@@ -288,7 +236,7 @@ namespace Robocup.Plays
         /// The main difference is that closeness to the ball is determined by a break-beam sensor on the robot itself and 
         /// that is, hopefully, much more accurate than vision distances.
         /// </summary>
-        public void BeamKick(int robotID, Vector2 target, int strength = RobotCommand.MAX_KICKER_STRENGTH)
+        public void BeamKick(int robotID, Vector2 target, int strength = RobotCommand.MAX_KICKER_STRENGTH-1)
         {
             RobotInfo thisrobot;
             Vector2 ball;
@@ -341,7 +289,7 @@ namespace Robocup.Plays
             {
                 if (VERBOSE)
                     Console.WriteLine("Close to the ball. CHARGING!");
-                
+
                 commander.Charge(robotID, strength);
             }
 
@@ -453,31 +401,28 @@ namespace Robocup.Plays
             //HACK: commander.move(robotID, true, target, Math.Atan2(facing.Y - target.Y, facing.X - target.X));
         }
 
-        private readonly double angleTolerance = Math.PI / 20;// 2 degrees | 120;  //1.5º
-        //private const double angleTolerance = (Math.PI);  //180º
-        private readonly double distanceTolerance = .05;  //4d cm
 
         /// <summary>
         /// Returns if this robot is close enough to the desired position and orientation
         /// (such as to decide whether or not the robot is in position to kick the ball)
         /// </summary>
         /// 
+        /*
+        TODO (davidwu): And can we remove this code?
         private bool closeEnough(RobotInfo robot, double x, double y, double orientation)
         {
             double anglediff = UsefulFunctions.angleDifference(orientation, robot.Orientation);
             double dist = UsefulFunctions.distance(new Vector2(x, y), robot.Position);
             return (Math.Abs(anglediff) <= angleTolerance) && (dist <= distanceTolerance);
-        }
+        }*/
     }
 
 
 
     public class ActionInfo
     {
-        //private int[] robots;
         public int[] RobotsInvolved
         {
-            //get { return robots; }
             get { return Definition.RobotsInvolved; }
         }
         private ActionDefinition definition;
@@ -491,10 +436,9 @@ namespace Robocup.Plays
             get { return play; }
         }
 
-        public ActionInfo(ActionDefinition definition, InterpreterPlay play)//,params int[] robotsinvolved)
+        public ActionInfo(ActionDefinition definition, InterpreterPlay play)
         {
             this.definition = definition;
-            //this.robots = robotsinvolved;
             this.play = play;
         }
     }

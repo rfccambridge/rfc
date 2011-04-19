@@ -182,6 +182,14 @@ namespace Robocup.CoreRobotics
                 return _lastPacket.cmd;
             }
         }
+        public Score GetScore()
+        {
+            Score score = new Score();
+            RefBoxPacket lastPacket = GetLastPacket();
+            score.GoalsYellow = lastPacket.goals_yellow;
+            score.GoalsBlue = lastPacket.goals_blue;
+            return score;
+        }
 
     }
 

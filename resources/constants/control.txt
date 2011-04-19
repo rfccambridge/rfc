@@ -3,20 +3,50 @@
 # they should also all be positive values except maybe D            
 
 
-#Used be ModelFeedback
-#string GAIN_MATRIX  1, 1, 1, 1, 1, 1; -1, 1, 1, -1, 1, 1; -1, -1, 1, -1, -1, 1; 1, -1, 1, 1, -1, 1
-#string GAIN_MATRIX 1, 1, 1, 0, 0, 0; -1, 1, 1, 0, 0, 0; -1, -1, 1, 0, 0, 0; 1, -1, 1, 0, 0, 0
-#string GAIN_MATRIX 1, 1, 1, 0, 0, 0; -1, 1, 1, 0, 0, 0; -1, -1, 1, 0, 0, 0; 1, -1, 1, 0, 0, 0
-#Translation only
-#string GAIN_MATRIX -5, 5, 0, -0.75, 0.75, 0; -5, -5, 0, -0.75, -0.75, 0; 5, -5, 0, 0.75, -0.75, 0; 5, 5, 0, 0.75, 0.75, 0
-#Rotation only
-#string GAIN_MATRIX 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75; 0, 0, 5, 0, 0, 0.75
-#Final version
-string GAIN_MATRIX -5, 5, 0.2, -0.3, 0.3, 0.75; -5, -5, 0.2, -0.3, -0.3, 0.75; 5, -5, 0.2, 0.3, -0.3, 0.75; 5, 5, 0.2, 0.3, 0.3, 0.75
+#Gain matrix for ModelFeedback-------------------------------------------------
 
+#Wheels are diagonally oriented. The robot is facing RIGHT.
+#Starting from the upper right wheel, going counterclockwise, we number the wheels 1,2,3,4
+# 3   2
+#  / \
+#   R ->
+#  \ /
+# 4   1
+#Sending POSITIVE speeds to all wheels causes the robot to go COUNTERCLOCKWISE
+
+#Each column in the gain matrix specifies what wheel speeds we should contribute for a given desired motion.
+# Column 1: Wheel speeds if the robot wants to go RIGHT (+X)
+# Column 2: Wheel speeds if the robot wants to go UP (+Y)
+# Column 3: Wheel speeds if the robot wants spin COUNTERCLOCKWISE
+# Column 4: Wheel speeds if the robot wants RIGHTWARD velocity(+X)
+# Column 5: Wheel speeds if the robot wants UPWARD velocity(+Y)
+# Column 6: Wheel speeds if the robot wants COUNTERCLOCKWISE angular velocity
+
+#Translation only
+# 5,  5,  0,  0.75,  0.75,  0; 
+#-5,  5,  0, -0.75,  0.75,  0; 
+#-5, -5,  0, -0.75, -0.75,  0; 
+# 5, -5,  0,  0.75, -0.75,  0
+
+#Rotation only
+# 0, 0, 5, 0, 0, 0.75; 
+# 0, 0, 5, 0, 0, 0.75; 
+# 0, 0, 5, 0, 0, 0.75; 
+# 0, 0, 5, 0, 0, 0.75
+
+#Final version
+# 5,  5, 0.2,  0.3,  0.3, 0.75; 
+#-5,  5, 0.2, -0.3,  0.3, 0.75; 
+#-5, -5, 0.2, -0.3, -0.3, 0.75; 
+# 5, -5, 0.2,  0.3, -0.3, 0.75
+string GAIN_MATRIX 5,  5, 0.2,  0.3,  0.3, 0.75; -5,  5, 0.2, -0.3,  0.3, 0.75; -5, -5, 0.2, -0.3, -0.3, 0.75; 5, -5, 0.2,  0.3, -0.3, 0.75
+
+#How much we should scale the values in the gain matrix?
 
 #double GAIN_MATRIX_SCALE 20
 double GAIN_MATRIX_SCALE 15
+
+#Robot speed scaling factors-------------------------------------------------
 
 # Speed scaling factor- applied in ModelFeedback.cs, and multiplied
 # by the full speed vector
@@ -37,6 +67,7 @@ double SPEED_SCALING_FACTOR_9 1
 double SPEED_SCALING_FACTOR_10 1
 double SPEED_SCALING_FACTOR_11 1
 
+#Other stuff-------------------------------------------------
 
 ##alpha should be between 0 and 1.
 

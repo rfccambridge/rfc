@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.Plays
 {
     public static class TacticsEval
     {
-        const double KICK_SPEED = 6; //in m/s
-        const double ROBOT_MAX_ACCEL = 2.5; //in m/s^2
-        //const double ROBOT_MAX_SPEED = 2; //in m/s
 
         static double FIELD_WIDTH;
         static double FIELD_HEIGHT;
@@ -30,39 +28,59 @@ namespace Robocup.Plays
                         && (point.Y <= FIELD_HEIGHT / 2) && (point.Y >= - FIELD_HEIGHT / 2));
             return result;
         }
-
-        public static double kickBlockedness(RobotInfo[] ourRobots, RobotInfo[] theirRobots, 
-            BallInfo ball, Vector2 target, double kickDT)
+        //For reference, 
+        //                   O
+        //                   | x
+        // Me ------>------>------>
+        // 0m                1m
+        // Me is kicking to the right, O is an opposing robot 1m away horizontally, and vertical distance x
+        //
+        // The blockedness for different values of x:
+        // 
+        // 0.1m - 0.93    (ball would just about graze opposing robot even if it didn't move)
+        // 0.2m - 0.65    (about 10 cm of leeway if opposing robot doesn't move)
+        // 0.3m - 0.37
+        // 0.5m - 0.12
+        // 1.0m - 0.01
+        public static double kickBlockednessLinear(RobotInfo[] theirRobots, BallInfo ball, Vector2 target)
         {
-            double totalTravelTime = (target - ball.Position).magnitude() /  KICK_SPEED;
-            
-            const int NUM_INCREMENTS = 60;
+            if (ball == null)
+                return 0;
 
-            double worstBlockedness = 0;
-            double totalBlockedness = 0;
-            for (int i = 0; i <= NUM_INCREMENTS; i++)
+            Vector2 trajectory = target - ball.Position;
+            if(trajectory.magnitudeSq() < 0.005 * 0.005)
+                return 0;
+            Vector2 trajectoryUnit = trajectory.normalizeToLength(1.0);
+
+            double closestScaledDist = 10000000;
+            for (int j = 0; j < theirRobots.Length; j++)
             {
-                double prop = (double)i / NUM_INCREMENTS;
-                Vector2 ballPos = ball.Position + prop * (target - ball.Position);
-                double dt = kickDT + prop * totalTravelTime;
+                RobotInfo robot = theirRobots[j];
+                if (robot == null || robot.Position == null)
+                    continue;
+                Vector2 ballToRobot = robot.Position - ball.Position;
+                double parallelDist = ballToRobot * trajectoryUnit;
+                double perpDist;
+                if (parallelDist > 0)
+                    perpDist = Math.Abs(Vector2.cross(ballToRobot, trajectoryUnit));
+                else
+                    perpDist = ballToRobot.magnitude();
 
-                for (int j = 0; j < theirRobots.Length; j++)
-                {
-                    RobotInfo robot = theirRobots[j];
-                    Vector2 robotFuturePosNoAccel = robot.Position + dt * robot.Velocity;
-                    Vector2 robotToBall = ballPos - robotFuturePosNoAccel;
-                    double dist = robotToBall.magnitude();
-                    double distWithAccel = dist - 0.5 * ROBOT_MAX_ACCEL * dt * dt;
-                    if (distWithAccel < 0)
-                        distWithAccel = 0;
-                    double blockedness = 1.0 / (1.0 + distWithAccel * distWithAccel * 100.0);
+                if (parallelDist < 0)
+                    parallelDist = 0;
+                parallelDist += 0.2; //Arbitarily add a little small value, to remove weird effects around 0                 
+                perpDist += 0.01; //Arbitarily add a cm, to remove weird effects around 0
 
-                    totalBlockedness += blockedness;
-                    if(blockedness > worstBlockedness)
-                        worstBlockedness = blockedness;
-                }
+                double scaledDist = perpDist / parallelDist;
+                if (scaledDist < closestScaledDist)
+                    closestScaledDist = scaledDist;
             }
-            return worstBlockedness + totalBlockedness/(NUM_INCREMENTS*6);
+
+            if (closestScaledDist < 0)
+                closestScaledDist = 0;
+
+            return 1 / (1 + closestScaledDist * closestScaledDist * closestScaledDist * 100);
+
         }
     }
 }

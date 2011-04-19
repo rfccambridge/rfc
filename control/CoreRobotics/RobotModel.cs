@@ -46,20 +46,13 @@ namespace Robocup.CoreRobotics
             double sing = Math.Sin(ANGLE_AXIS_TO_WHEEL);
             double cosg = Math.Cos(ANGLE_AXIS_TO_WHEEL);
 
-            //wheel one is the front right wheel  wheel 2 is the back right wheel, and so on around the the robot clockwise
+            //wheel one is the front right wheel  wheel 2 is the front left wheel, 
+            //and so on around the the robot counterclockwise
 
-            double _rf = -(sing * lateral + cosg * forward - WHEEL_R * angularV);
-            double _lf = -(sing * lateral - cosg * forward - WHEEL_R * angularV);
-            double _lb = -(-sing * lateral - cosg * forward - WHEEL_R * angularV);
-            double _rb = -(-sing * lateral + cosg * forward - WHEEL_R * angularV);
-
-            /*int scaleUpFactor = 2;
-            if (Math.Abs(_lf) < 10 && Math.Abs(_rf) < 10 && Math.Abs(_lb) < 10 && Math.Abs(_rb) < 10) {
-                _lf *= scaleUpFactor;
-                _rf *= scaleUpFactor;
-                _lb *= scaleUpFactor;
-                _rb *= scaleUpFactor;
-            }*/
+            double _rf = -sing * lateral - cosg * forward + WHEEL_R * angularV;
+            double _lf = -sing * lateral + cosg * forward + WHEEL_R * angularV;
+            double _lb =  sing * lateral + cosg * forward + WHEEL_R * angularV;
+            double _rb =  sing * lateral - cosg * forward + WHEEL_R * angularV;
 
             int lf, rf, lb, rb;
             lf = (int)_lf;
