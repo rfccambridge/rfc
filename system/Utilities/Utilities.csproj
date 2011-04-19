@@ -86,6 +86,7 @@
     <Compile Include="FieldDrawerForm.Designer.cs">
       <DependentUpon>FieldDrawerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FunctionLoop.cs" />
     <Compile Include="GeneralPID.cs" />
     <Compile Include="GenerateOption.cs" />
     <Compile Include="HighResTimer.cs" />

@@ -25,6 +25,7 @@ namespace Robocup.Core {
 
         public RobotPath() {
             // Create empty path
+            _path = new List<RobotInfo>();
         }
 
         public RobotPath(Team team, int id) {
@@ -32,6 +33,7 @@ namespace Robocup.Core {
             _team = team;
             _id = id;
             empty = true;
+            _path = new List<RobotInfo>();
         }
 
         /// <summary>
@@ -250,6 +252,9 @@ namespace Robocup.Core {
             if (_finalState != null) {
                 return _finalState;
             }
+
+            if(_path.Count <= 0)
+                return null;
 
             // if none is set, return the last waypoint in the path
             return _path[_path.Count-1];
