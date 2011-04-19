@@ -37,11 +37,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -62,7 +63,9 @@
     <Compile Include="BasicRRTPlanner.cs" />
     <Compile Include="BidirectionalRRTPlanner.cs" />
     <Compile Include="CirclePlanner.cs" />
+    <Compile Include="TwoDTreeMap.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="SmoothRRTPlanner.cs" />
     <Compile Include="Feedback.cs" />
     <Compile Include="KickPlanners.cs" />
     <Compile Include="ModelFeedback.cs" />

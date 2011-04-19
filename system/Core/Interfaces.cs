@@ -177,15 +177,18 @@ namespace Robocup.Core {
         /// Move to desitnation while keeping current orientation; Velocity at destination = 0;
         /// </summary>
         void Move(int robotID, bool avoidBall, Vector2 dest);
+
         /// <summary>
         /// Move to (destination, orienatation); velocity at desitantion = 0;
         /// </summary>
         void Move(int robotID, bool avoidBall, Vector2 dest, double orientation);
+
         /// <summary>
         /// Most general; Move to (destination, orientation, velocity, angular_velocity); 
         /// Assumes these 4 are set to sensible values
         /// </summary>
         void Move(RobotInfo robotID, bool avoidBall);
+
         void Charge(int robotID);
         void Charge(int robotID, int strength);
         void BreakBeam(int robotID, int strength);        

@@ -802,25 +802,54 @@ namespace Robocup.Plays
             {
                 double fieldWidth = Constants.get<double>("plays", "FIELD_WIDTH");
                 double goalHeight = Constants.get<double>("plays", "GOAL_HEIGHT");
-                double buffer = 0.02;
+
+                double buffer = 0.01;
+                int numIncrements = 40;
+
                 Vector2 goalEnd0 = new Vector2(fieldWidth / 2, goalHeight / 2 - buffer);
                 Vector2 goalEnd1 = new Vector2(fieldWidth / 2, -goalHeight / 2 + buffer);
 
-                Vector2 bestTarget = (goalEnd0 + goalEnd1) / 2.0;
-                double bestBlockedness = Double.PositiveInfinity;
-                for (int i = 0; i <= 16; i++)
+                BallInfo ball = state.ballInfo;
+                if (ball == null)
+                    return (goalEnd0 + goalEnd1) / 2.0;
+
+                //Simulate a bell curve in our expectation of where the ball will actually go
+                double[] kickUncertaintyFactor = {1,8,28,56,70,56,28,8,1};
+                int kickUncertantyMid = 4;
+                double kickUncertaintyDiv = 256;
+                double[] blockednessArray = new double[numIncrements + 1 + kickUncertantyMid*2];
+                for(int i = 0; i<blockednessArray.Length; i++)
+                    blockednessArray[i] = 1;
+
+                //Interpolate between the ends of the goal, testing the point every increment
+                for (int i = 0; i <= numIncrements; i++)
                 {
-                    double prop = (double)i / 16;
+                    double prop = (double)i / numIncrements;
                     Vector2 target = goalEnd0 + prop * (goalEnd1 - goalEnd0);
-                    double blockedness = TacticsEval.kickBlockedness(state.OurTeamInfo, state.TheirTeamInfo,
-                        state.ballInfo, target, 0);
-                    if (blockedness < bestBlockedness)
+
+                    //Distance from enemy robots
+                    double blockedness = TacticsEval.kickBlockednessLinear(state.TheirTeamInfo, state.ballInfo, target);
+                    blockednessArray[i+kickUncertantyMid] = blockedness;
+                }
+
+                //Find the best shot!
+                int besti = 0;
+                double bestBlockedness = 10000;
+                for (int i = 0; i <= numIncrements; i++)
+                {
+                    double blockedness = 0;
+                    for (int j = 0; j < kickUncertantyMid * 2; j++)
+                        blockedness += blockednessArray[i + j] * kickUncertaintyFactor[j];
+                    blockedness /= kickUncertaintyDiv;
+                    if(blockedness < bestBlockedness)
                     {
                         bestBlockedness = blockedness;
-                        bestTarget = target;
+                        besti = i;
                     }
                 }
-                return bestTarget;
+                
+                double bestProp = (double)besti / numIncrements;
+                return goalEnd0 + bestProp * (goalEnd1 - goalEnd0);
             });
 
 
@@ -851,14 +880,14 @@ namespace Robocup.Plays
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
-            addFunction("robotvariablepointkick", "Robot, Point, Strength - Kick", "Have robot ~ kick the ball to ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2), typeof(int)}, delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointstrengthkick", "Robot, strength - Kick", "Have robot ~ kick the ball towards ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot),  typeof(Vector2), typeof(int) }, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];
                 Vector2 p = (Vector2)objects[1];
-                int strength = (int)objects[2];
+                int s = (int)objects[2];
                 return new ActionDefinition(delegate(IActionInterpreter a)
                 {
-                    a.Kick(robot.getID(), p, strength);
+                    a.Kick(robot.getID(), p, s);
                 }, robot.getID());
             });
             addFunction("robotpointbump", "Robot, Point - bump", "Have robot ~ bump the ball to ~", typeof(ActionDefinition), new Type[] { typeof(Robot), typeof(Vector2) }, delegate(EvaluatorState state, object[] objects)
