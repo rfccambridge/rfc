@@ -1,6 +1,6 @@
 Metadata:
 playtype NormalPlay
-name DEFENSE_5vs0
+name DEFENSE_5vs3
 score 500
 
 Objects:
@@ -36,7 +36,7 @@ Mark defensebot2 defensept2 forwardbot
 OneManWall (ourgoal) 1.5 True 0 forwardbot
 #OurTwoManWall twomanbot1 twomanpt1 True 
 #OurTwoManWall twomanbot2 twomanpt2 False 
-DefSmartGoalie goaliebot forwardbot
+DefSmartGoalie goaliebot forwardbot attacker0
 #ClearBot clearbot
 Forward forwardbot
 

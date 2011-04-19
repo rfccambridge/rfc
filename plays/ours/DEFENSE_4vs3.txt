@@ -1,6 +1,6 @@
 Metadata:
 playtype NormalPlay
-name DEFENSE_4vs0
+name DEFENSE_4vs3
 score 500
 
 Objects:
@@ -34,7 +34,7 @@ Tactics:
 Mark defensebot1 defensept1 forwardbot
 #Mark defensebot2 defensept2
 OneManWall (ourgoal) 1.5 True 0 forwardbot
-DefSmartGoalie goaliebot forwardbot
+DefSmartGoalie goaliebot forwardbot attacker0
 #ClearBot clearbot
 Forward forwardbot
 
