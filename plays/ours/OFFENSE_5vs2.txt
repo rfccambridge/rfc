@@ -1,6 +1,6 @@
 Metadata:
 playtype NormalPlay
-name OFFENSE_5vs0
+name OFFENSE_5vs2
 score 500
 
 Objects:
@@ -16,7 +16,7 @@ sideassist (closest friendly ballpoint loose)
 
 Tactics:
 SideAssistTac striker sideassist
-OurStriker_vs0 striker sideassist botbot
+OurStriker striker sideassist botbot
 OffSmartGoalie goaliebot
 BotBot botbot 
 TopBot topbot 

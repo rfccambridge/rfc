@@ -10,6 +10,7 @@ bottomRightCorner (point 3.05 -2.1)
 topRightCorner (point 3.05 2.1)
 
 numRobots (numourbots)
+numEnemies (numtheirbots)
 
 nothing (nullAction)
 
@@ -18,7 +19,8 @@ Conditions:
 Actions:
 # Change for more than 4 or 5 case
 
-(if_Action (= numRobots 4) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_4vs0) (assignPlay DEFENSE_4vs3)) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_5vs0) (assignPlay DEFENSE_5vs3))) 
+(if_Action (= numRobots 4) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_4vs0) (if_Action (< numEnemies 3) (assignPlay DEFENSE_4vs0) (assignPlay DEFENSE_4vs3))) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_5vs0) (if_Action (< numEnemies 3) (assignPlay DEFENSE_5vs0) (assignPlay DEFENSE_5vs3)))) 
+
 
 #(if_Action (and (= numRobots 4) (= (prioritize) 0.0)) (assignPlay OFFENSE_4vs0) (assignPlay DEFENSE_4vs0))
 
