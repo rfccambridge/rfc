@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.Plays
 {

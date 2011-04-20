@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 using Robocup.Core;
+using Robocup.Geometry;
 
 /* This file holds all the code for the separate variables that we want to keep track of,
  * based on what the user is currently doing (rather than cluttering up the main form, and

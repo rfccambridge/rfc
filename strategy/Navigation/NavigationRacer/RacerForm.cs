@@ -12,6 +12,7 @@ using Robocup.Core;
 using Robocup.Utilities;
 using System.IO;
 using Robocup.Simulation;
+using Robocup.Geometry;
 using System.Runtime.Remoting.Messaging;
 
 namespace NavigationRacer
