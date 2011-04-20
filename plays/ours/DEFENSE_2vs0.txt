@@ -1,14 +1,21 @@
 Metadata:
 playtype NormalPlay
 name DEFENSE_2vs0
-score 200
-
-Tactics:
-DumbGoalie
-DefendPoint (ourgoal) 0.9 True
+score 500
 
 Objects:
+# FRIENDLY CALL
+goaliebot (closest friendly (ourgoal) loose)
+forwardbot (closest friendly (point 1.0 0.0) loose)
 
+ballpoint (pointof ball)
+distance (double 0.5)
+
+
+Tactics:
+DefSmartGoalie goaliebot forwardbot
+Forward forwardbot
 
 Conditions:
+
 Actions:
