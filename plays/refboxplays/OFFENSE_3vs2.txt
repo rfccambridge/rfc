@@ -1,0 +1,24 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_3vs2
+score 3.002615
+
+Objects:
+
+ballpoint (pointof ball)
+
+enemyshooter (closest enemy ballpoint loose)
+goalie (closest friendly (ourgoal) loose)
+shooter (closest friendly ballpoint loose)
+support (closest friendly (theirgoal) loose)
+enemygoalie (closest enemy (theirgoal) loose)
+enemygoaliept (pointof enemygoalie)
+
+Tactics:
+
+Goalie goalie enemyshooter
+ShooterWithPartner shooter support enemygoaliept
+Support support shooter
+
+Conditions:
+Actions:

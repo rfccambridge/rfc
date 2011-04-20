@@ -5,40 +5,47 @@ name ShooterWithPartner
 Parameters:
 bot robot
 support robot
+goaliept point
 
 Objects:
-standbypoint (point -2 0.0)
-range (+ 4.0 0.0)
+standbypoint (point 2 0.0)
 shooterpt (pointof bot)
 supportpt (pointof support)
 
+top (pointAboveLine goaliept goalgoalline)
+
 WIDE (- (/ (const-double FIELD_WIDTH) 2) 1.0)
 BACK (+ (/ (const-double FIELD_WIDTH) 2) 0.18)
+GOAL (/ (const-double FIELD_WIDTH) 2)
 ballpoint (pointof ball)
 
 widetop (point WIDE (/ (const-double FIELD_HEIGHT) 2))
 widebot (point WIDE (/ (const-double FIELD_HEIGHT) -2))
-ltarget (point BACK 0.35) 
-rtarget (point BACK -0.35) 
-lpost (point (/ (const-double FIELD_WIDTH) 2) 0.35)
-rpost (point (/ (const-double FIELD_WIDTH) 2) -0.35)
+ttarget (point GOAL 0.28) 
+btarget (point GOAL -0.28) 
+bpost (point (/ (const-double FIELD_WIDTH) 2) 0.35)
+tpost (point (/ (const-double FIELD_WIDTH) 2) -0.35)
 goalgoalline (line (ourgoal) (theirgoal))
-widetopline (line widetop lpost)
-widebotline (line widebot rpost)
+widetopline (line widetop bpost)
+widebotline (line widebot tpost)
 
-standby (and (pointInGoal ballpoint) (robotInGoal))
+first (if_point top btarget ttarget) 
+second (if_point top ttarget btarget) 
+
+standby (pointInGoal ballpoint)
 wide (or (pointAboveLine ballpoint widetopline) (not (pointAboveLine ballpoint widebotline)))
 near (and (and (< (getYcoord ballpoint) 0.35) (> (getYcoord ballpoint) -0.35)) (< (pointpointdistance ballpoint (theirgoal)) 0.5))
-OOR (> (pointpointdistance ballpoint (theirgoal)) range)
-JOOR (< (- (pointpointdistance ballpoint (theirgoal)) range) 0.5)
-top (pointAboveLine ballpoint goalgoalline)
-clearToPartner (pathClear shooterpt supportpt 3.0)
-clearToLtarget (pathClear shooterpt ltarget 3.0)
-clearToRtarget (pathClear shooterpt rtarget 3.0)
+clearToPartner (pathClear ballpoint supportpt 3.0)
+clearToFirst (pathClear ballpoint ttarget 3.0)
+clearToSecond (pathClear ballpoint btarget 3.0)
+clearToCenter (pathClear ballpoint (theirgoal) 3.0)
+
+pass (robotpointstrengthkick bot supportpt 2)
+shoot (if_Action clearToFirst (robotpointkick bot first) (if_Action clearToSecond (robotpointkick bot second) (if_Action clearToCenter (robotpointkick bot (theirgoal)) pass)))
 
 Actions:
 
 # check if we shouldn't go after the ball- that is, if it is
 # in the goal and there is another robot there
 
-(if_Action standby (robotpointmove bot standbypoint) (if_Action wide (robotvariablepointkick bot supportpt 2) (if_Action near (if_Action top (if_Action clearToLtarget (robotpointkick bot ltarget) (robotpointkick bot rtarget)) (if_Action clearToRtarget (robotpointkick bot rtarget) (robotpointkick bot ltarget))) (if_Action OOR (if_Action JOOR (robotvariablepointkick bot supportpt 2) (robotvariablepointkick bot supportpt 2)) (if_Action top (if_Action clearToRtarget (robotpointkick bot rtarget) (robotvariablepointkick bot supportpt 2)) (if_Action clearToLtarget (robotpointkick bot ltarget) (robotvariablepointkick bot supportpt 2)))))))
+(if_Action standby (robotpointmove bot standbypoint) (if_Action wide pass shoot))

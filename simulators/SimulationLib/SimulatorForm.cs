@@ -84,11 +84,20 @@ namespace Robocup.Simulation
 
                     _physicsEngine.SetScenario(lstScenarios.SelectedItem as SimulatedScenario);
 
-                    _physicsEngine.StartCommander(cmdPort);
-                    _physicsEngine.StartVision(visionIp, visionPort);
-                    
-                    if(chkReferee.Checked)
-                        _physicsEngine.StartReferee(refBoxIp, refBoxPort);
+                    try
+                    {
+                        _physicsEngine.StartCommander(cmdPort);
+                        _physicsEngine.StartVision(visionIp, visionPort);
+
+                        if (chkReferee.Checked)
+                            _physicsEngine.StartReferee(refBoxIp, refBoxPort);
+                    }
+                    catch (System.Net.Sockets.SocketException sock_exc)
+                    {
+                        MessageBox.Show(sock_exc.ToString());
+                        return;
+                    }
+
 
                     _physicsEngine.Start(numYellow, numBlue);
 
@@ -154,6 +163,12 @@ namespace Robocup.Simulation
 
             txtNumBlue.Enabled = selected.SupportsNumbers;
             txtNumYellow.Enabled = selected.SupportsNumbers;
-        }        
+        }
+
+
+        private void noisyVisionBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            _physicsEngine.SetNoisyVision(noisyVisionBox.Checked);            
+        }
     }
 }

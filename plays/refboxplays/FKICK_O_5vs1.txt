@@ -16,11 +16,10 @@ blocker (closest friendly pressurept loose)
 support (closest friendly (theirgoal) loose)
 safety (closest friendly (ourgoal) loose)
 
-
 Tactics:
 
 Goalie goalie pressure
-ShooterWithPartner shooter support
+ShooterWithPartner shooter support pressurept
 Blocker blocker shooter pressure
 Support support shooter
 Safety safety

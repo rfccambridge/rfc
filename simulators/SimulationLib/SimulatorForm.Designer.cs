@@ -43,6 +43,7 @@ namespace Robocup.Simulation
             this.chkReferee = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.lstScenarios = new System.Windows.Forms.ListBox();
+            this.noisyVisionBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // txtSimRefereeHost
@@ -56,7 +57,7 @@ namespace Robocup.Simulation
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(11, 87);
+            this.label5.Location = new System.Drawing.Point(11, 79);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(76, 13);
             this.label5.TabIndex = 59;
@@ -64,7 +65,7 @@ namespace Robocup.Simulation
             // 
             // txtSimVisionHost
             // 
-            this.txtSimVisionHost.Location = new System.Drawing.Point(23, 103);
+            this.txtSimVisionHost.Location = new System.Drawing.Point(23, 95);
             this.txtSimVisionHost.Name = "txtSimVisionHost";
             this.txtSimVisionHost.Size = new System.Drawing.Size(117, 20);
             this.txtSimVisionHost.TabIndex = 58;
@@ -119,7 +120,7 @@ namespace Robocup.Simulation
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 136);
+            this.label1.Location = new System.Drawing.Point(11, 118);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(64, 13);
             this.label1.TabIndex = 63;
@@ -128,7 +129,7 @@ namespace Robocup.Simulation
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(81, 136);
+            this.label2.Location = new System.Drawing.Point(81, 118);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(54, 13);
             this.label2.TabIndex = 64;
@@ -136,7 +137,7 @@ namespace Robocup.Simulation
             // 
             // txtNumYellow
             // 
-            this.txtNumYellow.Location = new System.Drawing.Point(18, 161);
+            this.txtNumYellow.Location = new System.Drawing.Point(19, 134);
             this.txtNumYellow.Name = "txtNumYellow";
             this.txtNumYellow.Size = new System.Drawing.Size(44, 20);
             this.txtNumYellow.TabIndex = 65;
@@ -144,7 +145,7 @@ namespace Robocup.Simulation
             // 
             // txtNumBlue
             // 
-            this.txtNumBlue.Location = new System.Drawing.Point(84, 161);
+            this.txtNumBlue.Location = new System.Drawing.Point(84, 134);
             this.txtNumBlue.Name = "txtNumBlue";
             this.txtNumBlue.Size = new System.Drawing.Size(44, 20);
             this.txtNumBlue.TabIndex = 66;
@@ -178,11 +179,23 @@ namespace Robocup.Simulation
             this.lstScenarios.TabIndex = 69;
             this.lstScenarios.SelectedIndexChanged += new System.EventHandler(this.lstScenarios_SelectedIndexChanged);
             // 
+            // noisyVisionBox
+            // 
+            this.noisyVisionBox.AutoSize = true;
+            this.noisyVisionBox.Location = new System.Drawing.Point(14, 160);
+            this.noisyVisionBox.Name = "noisyVisionBox";
+            this.noisyVisionBox.Size = new System.Drawing.Size(123, 17);
+            this.noisyVisionBox.TabIndex = 70;
+            this.noisyVisionBox.Text = "Simulate noisy vision";
+            this.noisyVisionBox.UseVisualStyleBackColor = true;
+            this.noisyVisionBox.CheckStateChanged += new System.EventHandler(this.noisyVisionBox_CheckStateChanged);
+            // 
             // SimulatorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(323, 308);
+            this.Controls.Add(this.noisyVisionBox);
             this.Controls.Add(this.lstScenarios);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.chkReferee);
@@ -223,5 +236,6 @@ namespace Robocup.Simulation
         private System.Windows.Forms.CheckBox chkReferee;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ListBox lstScenarios;
+        private System.Windows.Forms.CheckBox noisyVisionBox;
     }
 }

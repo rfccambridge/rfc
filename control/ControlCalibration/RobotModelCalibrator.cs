@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.CoreRobotics;
 using Robocup.Utilities;
+using Robocup.Geometry;
 using Robocup.Core;
 using MachineLearning;
 

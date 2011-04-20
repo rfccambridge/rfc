@@ -15,7 +15,7 @@ support (closest friendly (theirgoal) loose)
 Tactics:
 
 Goalie goalie enemyshooter
-Shooter shooter support
+ShooterWithPartner shooter support (pointof enemyshooter)
 Support support shooter
 
 Conditions:

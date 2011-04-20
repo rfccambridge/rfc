@@ -83,7 +83,6 @@
     <Compile Include="RobotInfo.cs" />
     <Compile Include="RobotPath.cs" />
     <Compile Include="TagSystem.cs" />
-    <Compile Include="Vector2.cs" />
     <Compile Include="VisionMessage.cs" />
     <Compile Include="WheelSpeeds.cs" />
     <Compile Include="WheelSpeedsExtender.cs" />
@@ -92,6 +91,10 @@
     <None Include="rfc.snk" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\strategy\Geometry\Geometry.csproj">
+      <Project>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</Project>
+      <Name>Geometry</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MessageSystem\MessageSystem.csproj">
       <Project>{1C7044F7-B506-46B2-AF61-E38E224EC33A}</Project>
       <Name>MessageSystem</Name>

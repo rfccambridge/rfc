@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Robocup.Core;
 using System.Drawing;
+using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.CoreRobotics
 {
-    
-    // This interface is still under construction- please do not use.
     /// <summary>
     /// The parent class for motion planners that are separated into planner and driver classes
     /// planner and driver should be initialized in constructor
@@ -32,9 +31,10 @@ namespace Robocup.CoreRobotics
             _driver.ReloadConstants();
         }
 
-        public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius)
+        public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, 
+            double avoidBallRadius, RobotPath oldPath)
         {
-            RobotPath path = _planner.GetPath(team, id, desiredState, predictor, avoidBallRadius);
+            RobotPath path = _planner.GetPath(team, id, desiredState, predictor, avoidBallRadius, oldPath);
 
             // if path is empty, don't move
             if (path.isEmpty()) {
@@ -50,9 +50,8 @@ namespace Robocup.CoreRobotics
         {
             try
             {
-                RobotInfo curr_state = predictor.GetRobot(path.Team, path.ID);
                 WheelSpeeds speeds = _driver.followPath(path, predictor);
-                return new MotionPlanningResults(speeds, path.findNearestWaypoint(curr_state));
+                return new MotionPlanningResults(speeds);
             }
             catch (ApplicationException e)
             {
@@ -67,7 +66,8 @@ namespace Robocup.CoreRobotics
     /// </summary>
     public interface IPathPlanner
     {
-        RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius);
+        RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath);
         void ReloadConstants();
     }
 
@@ -83,7 +83,8 @@ namespace Robocup.CoreRobotics
             _navigator = navigator;
         }
 
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius) {
+        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, 
+            double avoidBallRadius, RobotPath oldPath) {
 
             Team theirTeam = team == Team.Yellow ? Team.Blue : Team.Yellow;
 

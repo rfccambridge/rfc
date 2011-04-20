@@ -5,40 +5,24 @@ score 1
 
 Objects:
 
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
 
-center (point 0 0)
-centertop (point 0 2.1)
-centerbottom (point 0 -2.1)
+numRobots (numourbots)
 
-ballpoint (pointof ball)
-ballcircle (circle ballpoint 0.63)
-ballgoalline (line ballpoint (ourgoal))
-
-goalie (closest friendly (ourgoal) loose)
-shooter (closest enemy ballpoint loose)
-
-wall1line (line ballpoint (ourgoal))
-wall1point (linecircleintersection wall1line ballcircle 1)
-
-#20 deg rotation
-wall2point (rotatePointAroundAnotherPoint ballpoint wall1point 0.349065)
-wall3point (rotatePointAroundAnotherPoint ballpoint wall1point -0.349065)
-
-
-wall1bot (closest friendly wall1point loose)
-wall2bot (closest friendly wall2point loose)
-wall3bot (closest friendly wall3point loose)
-
-wall1bkp (point 1.0 0)
-wall2bkp (point 1.5 -1)
-wall3bkp (point 1.5 1)
-
-Tactics:
-Goalie goalie shooter 
-DefendPoint (ourgoal) 0.9 False
+nothing (nullAction)
 
 Conditions:
+
 Actions:
-(if_Action (inField wall1point) (robotpointpointmove wall1bot wall1point ballpoint) (robotpointpointmove wall1bot wall1bkp ballpoint))
-(if_Action (inField wall2point) (robotpointpointmove wall2bot wall2point ballpoint) (robotpointpointmove wall2bot wall2bkp ballpoint))
-(if_Action (inField wall3point) (robotpointpointmove wall3bot wall3point ballpoint) (robotpointpointmove wall3bot wall3bkp ballpoint))
+(if_Action (= numRobots 1) nothing nothing)
+
+(if_Action (= numRobots 2) nothing nothing)
+
+(if_Action (= numRobots 3) nothing nothing)
+
+(if_Action (= numRobots 4) nothing nothing)
+
+(if_Action (= numRobots 5) nothing nothing)

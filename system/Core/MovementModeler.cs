@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.CoreRobotics
 {
@@ -15,10 +16,10 @@ namespace Robocup.CoreRobotics
         const double rr = 0.0783;
         double velocityCoe = 127 * 3 / (2 * Math.Sqrt(2)); // assuming maximum velocity is 3m/s
         double angVelocityCoe = 10 * 3 / (2 * Math.Sqrt(2)); 
-        public double changeConstlf = 2.5;//proportional constant. we set the change is proportional to the gap. 
-        public double changeConstlb = 2.5;
-        public double changeConstrf = 2.5;
-        public double changeConstrb = 2.5;
+        public double changeConstlf = 5;//proportional constant. we set the change is proportional to the gap. 
+        public double changeConstlb = 5;
+        public double changeConstrf = 5;
+        public double changeConstrb = 5;
 
         private double GetNewVelocity(double command, double actual, double dt, double changek)
         {

@@ -16,7 +16,7 @@ safety (closest friendly (ourgoal) loose)
 Tactics:
 
 Goalie goalie enemyshooter
-ShooterWithPartner shooter support
+ShooterWithPartner shooter support (pointof enemyshooter)
 Support support shooter
 Safety safety
 

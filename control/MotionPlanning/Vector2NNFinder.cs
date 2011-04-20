@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.MotionControl
 {
@@ -20,6 +21,7 @@ namespace Robocup.MotionControl
 
         public Vector2 NearestNeighbor(Vector2 point)
         {
+            //TODO (davidwu): Speed this up, it seems to be a bottleneck
             //This is a naive brute-force search.
             double mindist = double.MaxValue;
             Vector2 best = null;

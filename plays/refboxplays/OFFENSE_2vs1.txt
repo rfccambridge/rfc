@@ -14,8 +14,7 @@ shooter (closest friendly ballpoint loose)
 Tactics:
 
 Goalie goalie enemyshooter
-#This is a bit of a hack
-Shooter shooter shooter
+Shooter shooter (pointof enemyshooter)
 
 Conditions:
 Actions:

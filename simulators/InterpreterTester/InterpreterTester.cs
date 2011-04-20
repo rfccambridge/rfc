@@ -15,6 +15,7 @@ using Robocup.Plays;
 using Robocup.Utilities;
 
 using Robocup.Core;
+using Robocup.Geometry;
 
 //using Navigator = Navigation.Examples.LookAheadPotential;
 //using Navigator = Navigation.Examples.DumbNavigator;
@@ -270,8 +271,11 @@ namespace InterpreterTester
             Console.WriteLine(timer.Duration * 1000 + " ms for getting ready to interpreter.interpret()");
             timer.Start();
 #endif
-            interpreter.interpret(playType);
-            defensiveinterpreter.interpret(playType);
+            Score score = new Score();
+            score.SetScore(OUR_TEAM, ourgoals);
+            score.SetScore(THEIR_TEAM, theirgoals);
+            interpreter.interpret(playType, score);
+            defensiveinterpreter.interpret(playType, score);
 #if TIMING
             timer.Stop();
             Console.WriteLine(timer.Duration * 1000 + " ms for calling interpreter.interpret()");

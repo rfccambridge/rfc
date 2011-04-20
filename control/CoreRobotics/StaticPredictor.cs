@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Robocup.Core;
 using Robocup.Utilities;
+using Robocup.Geometry;
 
 namespace Robocup.CoreRobotics
 {
@@ -12,7 +13,7 @@ namespace Robocup.CoreRobotics
     /// </summary>
     public class StaticPredictor : IPredictor, IInfoAcceptor
     {          
-        BallInfo _ballInfo = new BallInfo(new Vector2(0, 0));
+        BallInfo _ballInfo = new BallInfo(new Vector2());
         Dictionary<Team, Dictionary<int, RobotInfo>> _robots = new Dictionary<Team, Dictionary<int, RobotInfo>>();
 
         public StaticPredictor()

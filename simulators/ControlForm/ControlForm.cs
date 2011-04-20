@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Robocup.Utilities;
 using Robocup.Core;
 using Robocup.CoreRobotics;
+using Robocup.Geometry;
 using Robocup.Plays;
 
 using System.Runtime.InteropServices;
@@ -133,7 +134,7 @@ namespace Robocup.ControlForm {
             Player playerFollower = new PathFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
         	Player playerMeasuringFollower = new MeasuringFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
             Player playerKick = new KickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player playerBeamKick = new BeamKickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player playerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
 
             lstPlayers.Items.Add(player1);
             lstPlayers.Items.Add(player2);
