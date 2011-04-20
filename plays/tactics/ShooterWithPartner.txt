@@ -32,7 +32,7 @@ widebotline (line widebot tpost)
 first (if_point top btarget ttarget) 
 second (if_point top ttarget btarget) 
 
-standby (and (pointInGoal ballpoint) (robotInGoal))
+standby (pointInGoal ballpoint)
 wide (or (pointAboveLine ballpoint widetopline) (not (pointAboveLine ballpoint widebotline)))
 near (and (and (< (getYcoord ballpoint) 0.35) (> (getYcoord ballpoint) -0.35)) (< (pointpointdistance ballpoint (theirgoal)) 0.5))
 clearToPartner (pathClear ballpoint supportpt 3.0)
