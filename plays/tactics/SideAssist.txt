@@ -9,16 +9,23 @@ sideassist robot
 Objects:
 
 ballpoint (pointof ball)
-strikerYpt (getYcoord (pointof striker))
-strikerXpt (getXcoord (pointof striker))
+ourtopPost (point (getXcoord (theirgoal)) 0.35)
+theirtopPost (point (getXcoord (ourgoal)) 0.35)
+topPostLine (line theirtopPost ourtopPost)
 
-# Side Assist will be on opposite side of field as Striker
-# Y coord of Side Assist Point is aligned with goalpost
-# X coord of Side Assist Point is halfway between Striker's X and goal
-halfwayX (+ strikerXpt (/ (- (/ (const-double FIELD_WIDTH) 2) strikerXpt) 2))
-possidept (point halfwayX (const-double GOALIE_MAX_MIN_Y))
-negsidept (point halfwayX (- 0 (const-double GOALIE_MAX_MIN_Y)))
+pointKickTop (point (- (getXcoord ourtopPost) 0.5) (getYcoord ourtopPost))
+pointkickBottom (point (getXcoord pointKickTop) (- 0 .35))
+
+
+pointRobotTop (point (- (getXcoord pointKickTop) 0.02) (+ (getYcoord pointKickTop) 0.07))
+pointRobotBottom (point (- (getXcoord pointkickBottom) 0.02) (- (getYcoord pointkickBottom) 0.07))
+
+faceBottom (point 0 (- 0 2.02))
+faceTop (point 0 2.02)
+
+pointKick (if_point (pointAboveLine ballpoint topPostLine) pointRobotBottom pointRobotTop)
+faceKick (if_point (pointAboveLine ballpoint topPostLine) faceBottom faceTop)
 
 
 Actions:
-(if_Action (< strikerYpt 0) (robotpointpointmovenoavoid sideassist possidept ballpoint) (robotpointpointmovenoavoid sideassist negsidept ballpoint))
+(robotpointpointmovenoavoid sideassist pointKick faceKick)

@@ -1,0 +1,45 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_5vs3
+score 500
+
+Objects:
+# FRIENDLY CALL
+goaliebot (closest friendly (ourgoal) loose)
+
+attacker0 (closest enemy ballpoint loose)
+attacker1 (closest enemy ballpoint loose)
+attacker2 (closest enemy ballpoint loose)
+ballpoint (pointof ball)
+distance (double 0.5)
+
+point_defended1 (pointof attacker1)
+perimeter1 (circle point_defended1 distance)
+ballline1 (line ballpoint point_defended1)
+defensept1 (linecircleintersection ballline1 perimeter1 -1)
+# FRIENDLY CALL
+defensebot1 (closest friendly defensept1 loose)
+
+point_defended2 (pointof attacker2)
+perimeter2 (circle point_defended2 distance)
+ballline2 (line ballpoint point_defended2)
+defensept2 (linecircleintersection ballline2 perimeter2 -1)
+# FRIENDLY CALL
+defensebot2 (closest friendly defensept2 loose)
+
+#clearbot (closest friendly (point -1.0 0.0) loose)
+forwardbot (closest friendly (point 1.0 0.0) loose)
+
+Tactics:
+Mark defensebot1 defensept1 forwardbot
+Mark defensebot2 defensept2 forwardbot
+OneManWall (ourgoal) 1.5 True 0 forwardbot
+#OurTwoManWall twomanbot1 twomanpt1 True 
+#OurTwoManWall twomanbot2 twomanpt2 False 
+DefSmartGoalie goaliebot forwardbot attacker0
+#ClearBot clearbot
+Forward forwardbot
+
+Conditions:
+
+Actions:

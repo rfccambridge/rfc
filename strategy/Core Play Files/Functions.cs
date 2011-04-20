@@ -676,6 +676,10 @@ namespace Robocup.Plays
             {
                 return Math.Cos((double)objects[0]);
             });
+            addFunction("doubleArcSin", "double - ArcSin", "The arcsine of ~", typeof(double), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return Math.Asin((double)objects[0]);
+            });
             #endregion
 
             #region misc
