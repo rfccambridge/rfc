@@ -4,7 +4,6 @@ name Shooter
 
 Parameters:
 bot robot
-support robot
 
 Objects:
 standbypoint (point -2.0 0.0)
