@@ -18,4 +18,6 @@ Conditions:
 
 Actions:
 (if_Action (= numRobots 5) (assignPlay KOFF_O_5vs2) nothing)
-
+(if_Action (= numRobots 4) (assignPlay KOFF_O_4vs2) nothing)
+(if_Action (= numRobots 3) (assignPlay KOFF_O_3vs2) nothing)
+(if_Action (= numRobots 2) (assignPlay KOFF_O_2vs2) nothing)
