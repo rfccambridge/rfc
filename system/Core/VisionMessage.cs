@@ -4,10 +4,8 @@ using System.Text;
 
 namespace Robocup.Core
 {
-    [Serializable]
     public class VisionMessage
     {        
-        [Serializable]
         public class RobotData
         {
             private Team team;
