@@ -12,7 +12,7 @@ ballpoint (pointof ball)
 distance (double 0.5)
 
 Tactics:
-DefSmartGoalie goaliebot forwardbot
+DumbGoalie
 OneManWall (ourgoal) 1.5 True 0 forwardbot
 Forward forwardbot
 

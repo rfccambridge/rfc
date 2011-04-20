@@ -18,7 +18,7 @@ SideAssistTac striker sideassist
 #it probably should kick back to our goalie...
 #OurStriker striker goaliebot goaliebot
 Striker
-OffSmartGoalie goaliebot
+DumbGoalie
 
 Conditions:
 

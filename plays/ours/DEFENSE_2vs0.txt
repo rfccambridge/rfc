@@ -13,7 +13,7 @@ distance (double 0.5)
 
 
 Tactics:
-DefSmartGoalie goaliebot forwardbot
+DumbGoalie
 Forward forwardbot
 
 Conditions:
