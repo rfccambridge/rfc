@@ -114,9 +114,11 @@ namespace Robocup.Simulation
             _engine.UpdateBall(new BallInfo(Vector2.ZERO));
 
             // Update referee state
-            // XXX: Assume Blue always gets everything for now, implement _engine.LastTouched
+            // XXX: This is plain wrong for autogoals, but there's no trivial way of determining who attacks which side
+            char newCommand = (_engine.LastTouched == Team.Blue) ? MulticastRefBoxListener.KICKOFF_YELLOW 
+                                                                 : MulticastRefBoxListener.KICKOFF_BLUE;
             _engine.Referee.SetCurrentCommand(MulticastRefBoxListener.STOP);
-            _engine.Referee.EnqueueCommand(MulticastRefBoxListener.KICKOFF_BLUE, 5000);
+            _engine.Referee.EnqueueCommand(newCommand, 5000);
             _engine.Referee.EnqueueCommand(MulticastRefBoxListener.READY, 2000);
         }
 
@@ -143,9 +145,10 @@ namespace Robocup.Simulation
             _engine.UpdateBall(newBall);
 
             // Update referee state
-            // XXX: Assume Blue always gets everything for now, implement _engine.LastTouched
+            char newCommand = (_engine.LastTouched == Team.Blue) ? MulticastRefBoxListener.INDIRECT_YELLOW
+                                                                 : MulticastRefBoxListener.INDIRECT_BLUE;
             _engine.Referee.SetCurrentCommand(MulticastRefBoxListener.STOP);
-            _engine.Referee.EnqueueCommand(MulticastRefBoxListener.INDIRECT_BLUE, 5000);
+            _engine.Referee.EnqueueCommand(newCommand, 5000);
         }
     }
 
