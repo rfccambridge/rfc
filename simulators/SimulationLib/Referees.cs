@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using Robocup.Core;
 using Robocup.CoreRobotics;
+using Robocup.Geometry;
 
 namespace Robocup.Simulation
 {

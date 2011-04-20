@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Robocup.Utilities;
 using Robocup.Core;
 using Robocup.CoreRobotics;
+using Robocup.Geometry;
 using Robocup.Plays;
 
 using System.Runtime.InteropServices;

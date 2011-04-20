@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.Plays
 {

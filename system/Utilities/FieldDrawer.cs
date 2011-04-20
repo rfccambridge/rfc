@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.Utilities
 {

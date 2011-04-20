@@ -7,12 +7,12 @@ using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 using Robocup.CoreRobotics;
 using Robocup.Utilities;
 using Robocup.MessageSystem;
+using Robocup.Geometry;
 
 namespace Robocup.Simulation
 {
     public class PhysicsEngine : IPredictor
     {
-        // TODO 189: Your job is to characterize this for different kick strengths
         const double KICKED_BALL_SPEED = 4.3;  //In m/s
 
         const double BALL_ROBOT_ELASTICITY = 0.5; //The fraction of the speed kept when bouncing off a robot
@@ -68,6 +68,7 @@ namespace Robocup.Simulation
         //Refbox and scenarios----------------------------------------------------
         private bool refBoxStarted = false;
         private MulticastRefBoxSender refBoxSender = new MulticastRefBoxSender();
+        public Team LastTouched = Team.Blue;
         public IVirtualReferee Referee;
 
         private SimulatedScenario scenario;
@@ -85,7 +86,6 @@ namespace Robocup.Simulation
 
         private Dictionary<Team, Dictionary<int, MovementModeler>> movement_modelers = new Dictionary<Team, Dictionary<int, MovementModeler>>();
         private Dictionary<Team, Dictionary<int, WheelSpeeds>> speeds = new Dictionary<Team, Dictionary<int, WheelSpeeds>>();
-        // TODO 189: Your job is to maintain state about the level of charge on the robots
         private Dictionary<Team, Dictionary<int, bool>> break_beams = new Dictionary<Team, Dictionary<int, bool>>();
 
 		public PhysicsEngine()
@@ -338,6 +338,8 @@ namespace Robocup.Simulation
 
                     if (collided)
                     {
+                        LastTouched = r.Team;
+
                         //Compute new position of ball
                         newBallLocation = robotLoc + (COLLISION_RADIUS + .005) * (ball.Position - robotLoc).normalize();
 
@@ -542,7 +544,6 @@ namespace Robocup.Simulation
                     case RobotCommand.Command.MOVE:
                         this.speeds[team][command.ID] = command.Speeds;
                         break;
-                    // TODO 189: Your job is to capture START_CHARGING and START_VARIABLE_CHARGING commands
                     case RobotCommand.Command.KICK:
                         {
                             // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist                                                
@@ -561,6 +562,8 @@ namespace Robocup.Simulation
                             //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
                             //RobotInfo prev = robot;
                             //const double recoil = .02 / initial_ball_speed; ;
+                            LastTouched = robot.Team;
+                            
                             UpdateBall(new BallInfo(ball.Position, new Vector2(ballVx, ballVy)));
                             //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
                             break;
@@ -575,7 +578,7 @@ namespace Robocup.Simulation
                             const int BREAKBEAM_CHECK_PERIOD = 100; // ms
                             const double BREAKBEAM_TIMEOUT = 10; // s
 
-                            double varspeed = 4.3;
+                            double varspeed = KICKED_BALL_SPEED;
 
 
                             if (!break_beams[team].ContainsKey(command.ID))
@@ -644,6 +647,8 @@ namespace Robocup.Simulation
                                         //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
                                         //RobotInfo prev = robot;
                                         //const double recoil = .02 / initial_ball_speed; ;
+                                        LastTouched = robot.Team;
+                                        
                                         UpdateBall(new BallInfo(ball.Position + newVelocity / 100.0, newVelocity));
                                         //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
 
