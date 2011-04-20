@@ -7,12 +7,12 @@ using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 using Robocup.CoreRobotics;
 using Robocup.Utilities;
 using Robocup.MessageSystem;
+using Robocup.Geometry;
 
 namespace Robocup.Simulation
 {
     public class PhysicsEngine : IPredictor
     {
-        // TODO 189: Your job is to characterize this for different kick strengths
         const double KICKED_BALL_SPEED = 4.3;  //In m/s
 
         const double BALL_ROBOT_ELASTICITY = 0.5; //The fraction of the speed kept when bouncing off a robot

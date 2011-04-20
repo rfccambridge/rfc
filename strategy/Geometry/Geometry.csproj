@@ -37,7 +37,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -62,12 +62,7 @@
     <Compile Include="Line.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UsefulFunctions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\system\Core\Core.csproj">
-      <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
+    <Compile Include="Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rfc.snk" />

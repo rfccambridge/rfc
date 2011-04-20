@@ -10,6 +10,7 @@ using System.IO;
 using Robocup.Utilities;
 using Robocup.Core;
 using Robocup.CoreRobotics;
+using Robocup.Geometry;
 
 namespace Robocup.MotionControl
 {
