@@ -1,5 +1,6 @@
 ﻿using System;
 using Robocup.Core;
+using Robocup.Geometry;
 using CSML;
 
 namespace Robocup.MotionControl
