@@ -15,13 +15,11 @@ pressurept (pointof pressure)
 blocker (closest friendly pressurept loose)
 support (closest friendly (theirgoal) loose)
 safety (closest friendly (ourgoal) loose)
-enemygoalie (closest enemy (theirgoal) loose)
-enemygoaliept (pointof enemygoalie)
 
 Tactics:
 
 Goalie goalie pressure
-ShooterWithPartner shooter support enemygoaliept
+ShooterWithPartner shooter support pressurept
 Blocker blocker shooter pressure
 Support support shooter
 Safety safety

@@ -20,7 +20,7 @@ safety (closest friendly (ourgoal) loose)
 Tactics:
 
 Goalie goalie pressure
-Shooter shooter
+ShooterWithPartner shooter support pressurept
 Blocker blocker shooter pressure
 Support support shooter
 Safety safety

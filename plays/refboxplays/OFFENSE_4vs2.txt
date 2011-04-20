@@ -1,6 +1,6 @@
 Metadata:
 playtype NormalPlay
-name OFFENSE_2vs1
+name OFFENSE_4vs2
 score 3.002615
 
 Objects:
@@ -10,11 +10,17 @@ ballpoint (pointof ball)
 enemyshooter (closest enemy ballpoint loose)
 goalie (closest friendly (ourgoal) loose)
 shooter (closest friendly ballpoint loose)
+support (closest friendly (theirgoal) loose)
+safety (closest friendly (ourgoal) loose)
+enemygoalie (closest enemy (theirgoal) loose)
+enemygoaliept (pointof enemygoalie)
 
 Tactics:
 
 Goalie goalie enemyshooter
-Shooter shooter (pointof enemyshooter)
+ShooterWithPartner shooter support enemygoaliept
+Support support shooter
+Safety safety
 
 Conditions:
 Actions:

@@ -1,0 +1,17 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_1vs0
+score 3.002615
+
+Objects:
+
+ballpoint (pointof ball)
+
+shooter (closest friendly ballpoint loose)
+
+Tactics:
+
+Shooter shooter (theirgoal)
+
+Conditions:
+Actions:

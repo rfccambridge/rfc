@@ -17,12 +17,12 @@ nothing (nullAction)
 Conditions:
 
 Actions:
-(if_Action (= numRobots 1) (assignPlay ST_1x0) nothing)
+(if_Action (= numRobots 1) nothing nothing)
 
-(if_Action (= numRobots 2) (assignPlay ST_2x0) nothing)
+(if_Action (= numRobots 2) nothing nothing)
 
-(if_Action (= numRobots 3) (assignPlay ST_3x0) nothing)
+(if_Action (= numRobots 3) nothing nothing)
 
-(if_Action (= numRobots 4) (assignPlay ST_4x0) nothing)
+(if_Action (= numRobots 4) nothing nothing)
 
-(if_Action (= numRobots 5) (assignPlay ST_5x0) nothing)
+(if_Action (= numRobots 5) nothing nothing)

@@ -14,7 +14,7 @@ shooter (closest friendly ballpoint loose)
 Tactics:
 
 Goalie goalie enemyshooter
-Shooter shooter 
+Shooter shooter (pointof enemyshooter)
 
 Conditions:
 Actions:
