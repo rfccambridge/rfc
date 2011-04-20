@@ -477,7 +477,8 @@ namespace Robocup.Utilities
 
             lock (_collectingStateLock)
             {
-                _bufferedState.Robots[team][robotID].Path = path;
+                if(_bufferedState.Robots[team].ContainsKey(robotID))
+                    _bufferedState.Robots[team][robotID].Path = path;
             }
         }
         
