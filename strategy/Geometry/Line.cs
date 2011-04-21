@@ -168,7 +168,7 @@ namespace Robocup.Geometry
             Vector2 dir = Direction;
             Vector2 dir2 = l.Direction;
             double dot = dir * dir2;
-            return Math.Abs(dot * dot) >= dir.magnitudeSq() * dir2.magnitudeSq();
+            return dot * dot >= dir.magnitudeSq() * dir2.magnitudeSq();
         }
 
         /// <summary>

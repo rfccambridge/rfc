@@ -17,22 +17,6 @@ using System.Text;
  */
 namespace Robocup.Geometry
 {
-    /// <summary>
-    /// Standard interface for geometric objects
-    /// </summary>
-    public interface Geom
-    {
-        /// <summary>
-        /// Returns the translation of this object by the given vector
-        /// </summary>
-        Geom translate(Vector2 v);
-
-        /// <summary>
-        /// Returns the rotation of this object around the given point by the given angle
-        /// </summary>
-        Geom rotateAroundPoint(Vector2 p, double angle);
-    }
-
     public static class GeomFuncs
     {
         #region INTERSECTIONS
@@ -106,6 +90,7 @@ namespace Robocup.Geometry
             //and the closest point is on the correct side of the line between the arc endpoints.
             //Taking the line from start->stop, the point should be on the RIGHT side (signed dist <= 0)
             //of the arc, except if the arc goes the otherway, in which case we flip it.
+            //Also test if we intersect the segment between the arc's endpoints.
             if (a0.distance(a1.Center) > a1.Radius)
                 return false;
             if (a1.isFullCircle())
@@ -115,6 +100,8 @@ namespace Robocup.Geometry
             Line endpointLine = new Line(a1.StartPt, a1.StopPt);
             if (endpointLine.Direction == Vector2.ZERO)
                 return false;
+            if (intersects(a0, endpointLine.Segment))
+                return true;
             Vector2 closestPoint = a0.closestPointTo(a1.Center);
             return endpointLine.signedDistance(closestPoint) * a1.Angle <= 0;
         }
