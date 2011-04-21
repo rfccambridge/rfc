@@ -5,6 +5,7 @@ score 500
 
 Objects:
 ballpoint (pointof ball)
+
 goaliebot (closest friendly (ourgoal) loose)
 striker (closest friendly ballpoint loose)
 

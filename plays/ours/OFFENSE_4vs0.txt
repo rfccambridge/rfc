@@ -7,9 +7,9 @@ Objects:
 ballpoint (pointof ball)
 
 goaliebot (closest friendly (ourgoal) loose)
-clearbot (closest friendly (point -1.0 0.0) loose)
-sideassist (closest friendly (theirgoal) loose)
 striker (closest friendly ballpoint loose)
+sideassist (closest friendly (theirgoal) loose)
+clearbot (closest friendly (point 0.0 0.0) loose)
 
 
 Tactics:
