@@ -26,7 +26,7 @@ namespace Navigation
         {
             foreach (Obstacle o in obstacles)
             {
-                double d = line.distFromSegment(o.position);
+                double d = line.Segment.distance(o.position);
                 if (d < o.size)
                     return true;
             }
@@ -49,7 +49,7 @@ namespace Navigation
 
         private Vector2 repulsion(Obstacle o, Line l)
         {
-            double d = l.distFromSegment(o.position);
+            double d = l.Segment.distance(o.position);
             if (d > o.size + maxExtraAvoid)
                 return new Vector2(0, 0);
             Vector2 projection = l.projectionOntoLine(o.position);
