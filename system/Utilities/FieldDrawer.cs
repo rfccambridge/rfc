@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.Utilities
 {
@@ -476,7 +477,8 @@ namespace Robocup.Utilities
 
             lock (_collectingStateLock)
             {
-                _bufferedState.Robots[team][robotID].Path = path;
+                if(_bufferedState.Robots[team].ContainsKey(robotID))
+                    _bufferedState.Robots[team][robotID].Path = path;
             }
         }
         

@@ -3,19 +3,23 @@ playtype PenaltyKick_Ours
 name main
 score 1
 
+
 Objects:
+BACK (+ (/ (const-double FIELD_WIDTH) 2) 0.18)
 
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
+mid1 (ourgoal)
+mid2 (theirgoal)
 
-numRobots (numourbots)
+ballpoint (pointof ball)
+robot0 (closest friendly ballpoint loose)
+ltarget (point BACK 0.35) 
+rtarget (point BACK -0.35) 
+goalgoalline (line mid1 mid2)
 
-nothing (nullAction)
-
-Conditions:
 
 Actions:
 
+# check if we shouldn't go after the ball- that is, if it is
+# in the goal and there is another robot there
 
+(if_Action (pointAboveLine ballpoint goalgoalline) (robotpointkick robot0 ltarget) (robotpointkick robot0 rtarget)) 

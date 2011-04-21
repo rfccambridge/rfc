@@ -15,6 +15,7 @@ using Robocup.Plays;
 using Robocup.Utilities;
 
 using Robocup.Core;
+using Robocup.Geometry;
 
 //using Navigator = Navigation.Examples.LookAheadPotential;
 //using Navigator = Navigation.Examples.DumbNavigator;

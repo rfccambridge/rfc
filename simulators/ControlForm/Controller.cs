@@ -9,6 +9,7 @@ using Robocup.Utilities;
 using Robocup.MotionControl;
 using Robocup.CoreRobotics;
 using Robocup.MessageSystem;
+using Robocup.Geometry;
 
 namespace Robocup.ControlForm
 {

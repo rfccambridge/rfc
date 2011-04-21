@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using System.Collections;
 using Robocup.Core;
+using Robocup.Geometry;
 
 /* The way that the designer/interpreter is currently set up is so that they can share a lot of the same code logic.
  * Here are the basic classes that each is going to override; they're all abstract and begin with the word "Play"
