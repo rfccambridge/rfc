@@ -1,13 +1,15 @@
 Metadata:
 playtype NormalPlay
 name OFFENSE_1vs0
-score 10001.002615
-
-Tactics:
-
-Striker
+score 500
 
 Objects:
+ballpoint (pointof ball)
+
+strikerbot (closest friendly ballpoint loose)
+
+Tactics:
+DumbStriker strikerbot
 
 Conditions:
 

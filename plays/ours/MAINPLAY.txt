@@ -17,8 +17,8 @@ Conditions:
 
 Actions:
 
-#If we can only see ONE robot, we better be playing D....
-(if_Action (= numRobots 1) (assignPlay DEFENSE_1vs0) nothing)
+# play offense if there are no opponents
+(if_Action (= numRobots 1) (if_Action (= numEnemies 0) (assignPlay OFFENSE_1vs0) (assignPlay DEFENSE_1vs1)) nothing)
 
 (if_Action (= numRobots 2) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_2vs0) (assignPlay DEFENSE_2vs0)) nothing)
 (if_Action (= numRobots 3) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_3vs0) (assignPlay DEFENSE_3vs0)) nothing)

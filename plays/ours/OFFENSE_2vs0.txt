@@ -1,6 +1,6 @@
 Metadata:
 playtype NormalPlay
-name OFFENSE_3vs0
+name OFFENSE_2vs0
 score 500
 
 Objects:
