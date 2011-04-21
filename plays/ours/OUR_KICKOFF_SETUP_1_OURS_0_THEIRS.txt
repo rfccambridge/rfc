@@ -4,7 +4,6 @@ score 100
 name O_KFF_STP_1x0
 
 Objects:
-
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)

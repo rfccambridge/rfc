@@ -3,10 +3,12 @@ playtype NormalPlay
 name DEFENSE_1vs0
 score 150
 
-Tactics:
-DumbGoalie
-
 Objects:
+goaliebot (closest friendly (ourgoal) loose)
+
+Tactics:
+OurDumbGoalie goaliebot
 
 Conditions:
+
 Actions:

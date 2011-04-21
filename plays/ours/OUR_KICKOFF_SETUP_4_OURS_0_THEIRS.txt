@@ -3,11 +3,7 @@ playtype KickOff_Ours_Setup
 score 400
 name O_KFF_STP_4x0
 
-Tactics:
-DumbGoalie
-
 Objects:
-
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
@@ -22,9 +18,13 @@ centerpoint (point -0.5 0)
 middleabovepoint (point -2 0.3)
 middlebelowpoint (point -2 -.3)
 
+goaliebot (closest friendly (ourgoal) loose)
 centerbot (closest friendly center loose)
 middleabovebot (closest friendly middleabovepoint loose)
 middlebelowbot (closest friendly middlebelowpoint loose)
+
+Tactics:
+OurDumbGoalie goaliebot
 
 Conditions:
 Actions:

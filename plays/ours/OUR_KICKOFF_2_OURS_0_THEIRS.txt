@@ -3,24 +3,17 @@ playtype Kickoff_Ours
 score 200
 name O_KFF_2x0
 
-Tactics:
-Striker
-
 Objects:
+ballpoint (pointof ball)
 
-topLeftCorner (point -3.05 2.1)
-bottomLeftCorner (point -3.05 -2.1)
-bottomRightCorner (point 3.05 -2.1)
-topRightCorner (point 3.05 2.1)
-center (point 0 0)
-centertop (point 0 2.1)
-centerbottom (point 0 -2.1)
+goaliebot (closest friendly (ourgoal) loose)
+strikerbot (closest friendly ballpoint loose)
 
-recpoint (point -0.2 -1.0)
 
-receiverbot (closest friendly centerbottom loose)
-receiverbotpt (pointof receiverbot)
+Tactics:
+OurDumbGoalie goaliebot
+DumbStriker strikerbot
 
 Conditions:
+
 Actions:
-(robotpointmove receiverbot recpoint)

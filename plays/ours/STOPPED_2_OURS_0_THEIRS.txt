@@ -3,10 +3,8 @@ playtype Stopped
 score 200
 name ST_2x0
 
-Tactics:
-DumbGoalie
-
 Objects:
+goaliebot (closest friendly (ourgoal) loose)
 
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
@@ -24,6 +22,9 @@ wall1point (linecircleintersection wall1line ballcircle 1)
 
 wall1bot (closest friendly wall1point loose)
 wall1bkp (point 1.0 0)
+
+Tactics:
+OurDumbGoalie goaliebot
 
 Conditions:
 Actions:

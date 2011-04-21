@@ -3,10 +3,11 @@ playtype Stopped
 score 100
 name ST_1x0
 
-Tactics:
-DumbGoalie
-
 Objects:
+goaliebot (closest friendly (ourgoal) loose)
+
+Tactics:
+OurDumbGoalie goaliebot
 
 Conditions:
 

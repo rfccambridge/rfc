@@ -3,11 +3,9 @@ playtype Stopped
 score 400
 name ST_4x0
 
-Tactics:
-DumbGoalie
-DefendPoint (ourgoal) 0.9 False
 
 Objects:
+goaliebot (closest friendly (ourgoal) loose)
 center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)
@@ -36,6 +34,10 @@ wall2bot (closest friendly wall2point loose)
 
 wall1bkp (point 1.0 0)
 wall2bkp (point 1.5 -1)
+
+Tactics:
+OurDumbGoalie goaliebot
+DefendPoint (ourgoal) 0.9 False
 
 Conditions:
 Actions:

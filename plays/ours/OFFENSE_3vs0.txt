@@ -5,22 +5,14 @@ score 500
 
 Objects:
 ballpoint (pointof ball)
-
 goaliebot (closest friendly (ourgoal) loose)
 striker (closest friendly ballpoint loose)
 sideassist (closest friendly ballpoint loose)
 
-
-
-
 Tactics:
+OurDumbGoalie goaliebot
 SideAssistTac striker sideassist
-
-#Not sure if this is the best idea. If no clear path to sideassist, 
-#it probably should kick back to our goalie...
-OurStriker striker sideassist goaliebot
-
-DumbGoalie
+DumbStriker striker
 
 Conditions:
 

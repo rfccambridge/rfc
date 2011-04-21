@@ -3,10 +3,14 @@ playtype Kickoff_Ours
 score 100
 name O_KFF_1x0
 
-Tactics:
-Striker
-
 Objects:
+ballpoint (pointof ball)
+
+strikerbot (closest friendly ballpoint loose)
+
+
+Tactics:
+DumbStriker strikerbot
 
 Conditions:
 

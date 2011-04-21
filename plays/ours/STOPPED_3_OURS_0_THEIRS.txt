@@ -3,11 +3,8 @@ playtype Stopped
 score 300
 name ST_3x0
 
-Tactics:
-DumbGoalie
-DefendPoint (ourgoal) 0.9 False
-
 Objects:
+goaliebot (closest friendly (ourgoal) loose)
 
 center (point 0 0)
 centertop (point 0 2.1)
@@ -23,6 +20,10 @@ wall1point (linecircleintersection wall1line ballcircle 1)
 wall1bot (closest friendly wall1point loose)
 
 wall1bkp (point 1.0 0)
+
+Tactics:
+OurDumbGoalie goaliebot
+DefendPoint (ourgoal) 0.9 False
 
 Conditions:
 Actions:

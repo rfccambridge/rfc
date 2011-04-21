@@ -1,0 +1,12 @@
+Metadata:
+type tactic
+name DumbStriker
+
+Parameters:
+striker robot
+
+Objects:
+ballpoint (pointof ball)
+
+Actions:
+(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick striker (theirgoal)) (robotpointmove striker (point 1 0)))

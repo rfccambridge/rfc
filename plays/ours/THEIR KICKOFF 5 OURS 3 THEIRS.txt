@@ -3,11 +3,8 @@ playtype KickOff_Theirs
 score 530
 name TH_KOFF_5x3
 
-Tactics:
-DumbGoalie
-
 Objects:
-
+goaliebot (closest friendly (ourgoal) loose)
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
@@ -57,6 +54,9 @@ toppt (linelineintersection topline vertline)
 fartoppt (linelineintersection topline farvertline)
 #farbotpt (linelineintersection bottomline farvertline)
 centercirclept (linecircleintersection centergoalline centercircle 1)
+
+Tactics:
+OurDumbGoalie goaliebot
 
 Conditions:
 Actions:

@@ -3,13 +3,21 @@ playtype SetPlay_Ours
 name O_FK_4x0
 score 400
 
-Tactics:
-DumbGoalie
-Striker
-TwoManWall (ourgoal) 0.9 True 0
-TwoManWall (ourgoal) 0.9 True 1
-
 Objects:
+ballpoint (pointof ball)
+
+goaliebot (closest friendly (ourgoal) loose)
+clearbot (closest friendly (point -1.0 0.0) loose)
+sideassistbot (closest friendly (theirgoal) loose)
+strikerbot (closest friendly ballpoint loose)
+
+
+Tactics:
+OurDumbGoalie goaliebot
+ClearBot clearbot
+SideAssistTac strikerbot sideassistbot
+DumbStriker strikerbot
 
 Conditions:
+
 Actions:

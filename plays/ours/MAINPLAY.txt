@@ -11,7 +11,6 @@ topRightCorner (point 3.05 2.1)
 
 numRobots (numourbots)
 numEnemies (numtheirbots)
-
 nothing (nullAction)
 
 Conditions:
@@ -24,12 +23,6 @@ Actions:
 (if_Action (= numRobots 2) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_2vs0) (assignPlay DEFENSE_2vs0)) nothing)
 (if_Action (= numRobots 3) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_3vs0) (assignPlay DEFENSE_3vs0)) nothing)
 
-
-# Change for more than 4 or 5 case
-
-(if_Action (= numRobots 4) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_4vs0) (if_Action (< numEnemies 3) (assignPlay DEFENSE_4vs0) (assignPlay DEFENSE_4vs3))) (if_Action (= (prioritize) 0.0) (assignPlay OFFENSE_5vs0) (if_Action (< numEnemies 3) (assignPlay DEFENSE_5vs0) (assignPlay DEFENSE_5vs3)))) 
-
-
-#(if_Action (and (= numRobots 4) (= (prioritize) 0.0)) (assignPlay OFFENSE_4vs0) (assignPlay DEFENSE_4vs0))
-
-#(if_Action (and (= numRobots 5) (= (prioritize) 0.0)) (assignPlay OFFENSE_5vs0) (assignPlay DEFENSE_5vs0))
+# 4 and 5 person plays depend on the number of enemies
+(if_Action (= numRobots 4) (if_Action (= (prioritize) 0.0) (if_Action (< numEnemies 2) (assignPlay OFFENSE_4vs0) (assignPlay OFFENSE_4vs2)) (if_Action (> numEnemies 2) (assignPlay DEFENSE_4vs3) (if_Action (= numEnemies 2) (assignPlay DEFENSE_4vs2) (if_Action (= numEnemies 1) (assignPlay DEFENSE_4vs1) (assignPlay DEFENSE_4vs0))))) nothing)
+(if_Action (= numRobots 5) (if_Action (= (prioritize) 0.0) (if_Action (< numEnemies 2) (assignPlay OFFENSE_5vs0) (assignPlay OFFENSE_5vs2)) (if_Action (> numEnemies 2) (assignPlay DEFENSE_5vs3) (if_Action (= numEnemies 2) (assignPlay DEFENSE_5vs2) (if_Action (= numEnemies 1) (assignPlay DEFENSE_5vs1) (assignPlay DEFENSE_5vs0))))) nothing)

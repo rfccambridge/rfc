@@ -4,17 +4,12 @@ name DEFENSE_2vs0
 score 500
 
 Objects:
-# FRIENDLY CALL
 goaliebot (closest friendly (ourgoal) loose)
 forwardbot (closest friendly (point 1.0 0.0) loose)
 
-ballpoint (pointof ball)
-distance (double 0.5)
-
-
 Tactics:
-DumbGoalie
 Forward forwardbot
+
 
 Conditions:
 

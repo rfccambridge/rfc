@@ -3,11 +3,8 @@ playtype Kickoff_Theirs
 score 300
 name TH_KOFF_3x0
 
-Tactics:
-DumbGoalie
-
 Objects:
-
+goaliebot (closest friendly (ourgoal) loose)
 topLeftCorner (point -3.05 2.1)
 bottomLeftCorner (point -3.05 -2.1)
 bottomRightCorner (point 3.05 -2.1)
@@ -31,6 +28,9 @@ centergoalline (line center (ourgoal))
 middlerpt (linecircleintersection centergoalline ourgoalwideperim -1)
 
 centercirclept (linecircleintersection centergoalline centercircle 1)
+
+Tactics:
+OurDumbGoalie goaliebot
 
 Conditions:
 Actions:
