@@ -18,7 +18,7 @@ OffSmartGoalie goaliebot
 BotBot botbot 
 TopBot topbot 
 SideAssistTac striker sideassist
-OurStriker striker sideassist clearbot
+OurStriker striker sideassist topbot
 
 Conditions:
 
