@@ -7,16 +7,16 @@ Objects:
 ballpoint (pointof ball)
 
 goaliebot (closest friendly (ourgoal) loose)
-striker (closest friendly ballpoint loose)
-sideassist (closest friendly (theirgoal) loose)
+strikerbot (closest friendly ballpoint loose)
+sideassistbot (closest friendly (theirgoal) loose)
 clearbot (closest friendly (point 0.0 0.0) loose)
 
 
 Tactics:
 OurDumbGoalie goaliebot
 ClearBot clearbot
-SideAssistTac striker sideassist
-DumbStriker striker
+SideAssistTac strikerbot sideassistbot
+DumbStriker strikerbot
 
 Conditions:
 
