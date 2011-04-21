@@ -462,7 +462,7 @@ namespace Robocup.MotionControl
                         for (int k = 0; k < oldPath.Waypoints.Count-1; k++)
                         {
                             Line seg = new Line(oldPath.Waypoints[k + 1].Position, oldPath.Waypoints[k].Position);
-                            double dist = seg.distFromSegment(pathLoc);
+                            double dist = seg.Segment.distance(pathLoc);
                             if (dist < closestDist)
                                 closestDist = dist;
                         }
