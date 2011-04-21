@@ -71,7 +71,7 @@ double CLEAR_DIST .25
 double SUPPORT_SETUP_PASS 2
 
 # goalie constants
-double GOALIE_X_POS_DELTA 0.10
+double GOALIE_X_POS_DELTA 0.15
 
 # penalty constants
 # distance from the enemy goal robots shouldn't pass
