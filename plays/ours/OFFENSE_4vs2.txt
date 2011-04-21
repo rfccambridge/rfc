@@ -6,17 +6,20 @@ score 500
 Objects:
 ballpoint (pointof ball)
 
+enemy0 (closest enemy ballpoint loose)
+enemy1 (closest enemy ballpoint loose)
+
 goaliebot (closest friendly (ourgoal) loose)
 clearbot (closest friendly (point -1.0 0.0) loose)
-sideassist (closest friendly (theirgoal) loose)
-striker (closest friendly ballpoint loose)
+sideassistbot (closest friendly (theirgoal) loose)
+strikerbot (closest friendly ballpoint loose)
 
 
 Tactics:
-OffSmartGoalie goaliebot
+OffSmartGoalie goaliebot enemy0
 ClearBot clearbot
-SideAssistTac striker sideassist
-OurStriker striker sideassist clearbot
+SideAssistTac strikerbot sideassistbot
+OurStriker strikerbot sideassistbot enemy0 enemy1
 
 Conditions:
 

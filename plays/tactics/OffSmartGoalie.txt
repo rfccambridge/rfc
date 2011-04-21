@@ -4,6 +4,7 @@ name OffSmartGoalie
 
 Parameters:
 goaliebot robot
+attacker robot
 
 Objects:
 CLEAR_DIST (const-double CLEAR_DIST)
@@ -31,7 +32,6 @@ ballprojline (linedirection ballpoint balldirection)
 ballprojverticalpt (linelineintersection ballprojline vertgoalline)
 
 #attacker geometry
-attacker (closest enemy ballpoint loose)
 attackerpt (pointof attacker)
 attackerorient (orientationof attacker)
 attackerline (linedirection attackerpt attackerorient)

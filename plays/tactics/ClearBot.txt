@@ -13,7 +13,7 @@ FIELD_WIDTH (const-double FIELD_WIDTH)
 FIELD_HEIGHT (const-double FIELD_HEIGHT)
 
 ballpoint (pointof ball)
-standbypt (point -1.0 0.0)
+standbypt (point 0.0 0.0)
 cir (circle ballpoint 0.3)
 
 leftcorner (point FIELD_WIDTH (- 0 FIELD_HEIGHT))
