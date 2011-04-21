@@ -5,9 +5,10 @@ score 500
 
 Objects:
 ballpoint (pointof ball)
+
 goaliebot (closest friendly (ourgoal) loose)
-striker (closest friendly ballpoint loose)
 sideassist (closest friendly ballpoint loose)
+striker (closest friendly ballpoint loose)
 
 Tactics:
 OurDumbGoalie goaliebot
