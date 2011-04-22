@@ -1,0 +1,25 @@
+Metadata:
+type tactic
+name Deflect
+
+Parameters:
+#Robot that is closest to the ball
+ballRobot robot
+
+#Robot that is closest to pointKick (see FKICK 5vs1 for example)    
+helpRobot robot
+
+#
+pointKick point
+faceKick point  
+actualKick point
+
+Objects:
+
+Actions:
+
+# check if we shouldn't go after the ball- that is, if it is
+# in the goal and there is another robot there
+
+(robotpointpointmovenoavoid helpRobot pointKick faceKick)
+(robotpointstrengthkick ballRobot actualKick 2)
