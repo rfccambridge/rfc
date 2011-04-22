@@ -11,12 +11,12 @@ attacker0 (closest enemy ballpoint loose)
 
 # defenders
 goaliebot (closest friendly (ourgoal) loose)
-forwardbot (closest friendly (point 1.0 0.0) loose)
+clearbot (closest friendly (point 1.0 0.0) loose)
 
 
 Tactics:
-DefSmartGoalie goaliebot forwardbot attacker0
-Forward forwardbot
+DefSmartGoalie goaliebot clearbot attacker0
+ClearBot clearbot
 
 
 Conditions:

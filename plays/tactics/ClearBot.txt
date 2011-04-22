@@ -22,4 +22,4 @@ shotongoal (theirGoalBestShot)
 kicktotarget (if_Action (pathClear ballpoint shotongoal CLEAR_DIST) (robotpointkick bot shotongoal) (if_Action (pathClear ballpoint leftcorner CLEAR_DIST) (robotpointstrengthkick bot leftcorner 2) (robotpointstrengthkick bot rightcorner 2)))
 
 Actions:
-(if_Action (= 0 (numberOfRobotsInACircle cir friendly)) kicktotarget (robotpointpointmove bot standbypt ballpoint))
+(if_Action (< (numberOfRobotsInACircle cir friendly) 2) kicktotarget (robotpointpointmove bot standbypt ballpoint))

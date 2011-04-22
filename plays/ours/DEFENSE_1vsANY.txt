@@ -1,10 +1,10 @@
 Metadata:
 playtype NormalPlay
-name DEFENSE_1vs1
+name DEFENSE_1vsANY
 score 150
 
 Tactics:
-SmartGoalie
+DumbGoalie
 
 Objects:
 
