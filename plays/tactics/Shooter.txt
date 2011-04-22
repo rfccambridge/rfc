@@ -4,10 +4,7 @@ name Shooter
 
 Parameters:
 bot robot
-<<<<<<< HEAD
-=======
 goaliept point
->>>>>>> 2c533624dbc571e9e5566f862a0dd89b29635b90
 
 Objects:
 standbypoint (point 2 0.0)

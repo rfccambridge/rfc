@@ -698,7 +698,13 @@ namespace Robocup.Plays
             });
             addFunction("doubleCos", "double - Cos", "The cosine of ~", typeof(double), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
             {
+                
                 return Math.Cos((double)objects[0]);
+            });
+            addFunction("doubleArcSin", "double - val", "The number whose cosine is ~", typeof(double), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+
+                return Math.Asin((double)objects[0]);
             });
             #endregion
 
