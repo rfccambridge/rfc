@@ -13,13 +13,14 @@ attacker1 (closest enemy ballpoint loose)
 
 # defenders
 goaliebot (closest friendly (ourgoal) loose)
-forwardbot (closest friendly (point 1.0 0.0) loose)
 
 point_defended1 (pointof attacker1)
 perimeter1 (circle point_defended1 distance)
 ballline1 (line ballpoint point_defended1)
 defensept1 (linecircleintersection ballline1 perimeter1 -1)
 defensebot1 (closest friendly defensept1 loose)
+
+forwardbot (closest friendly (point 1.0 0.0) loose)
 
 
 Tactics:
