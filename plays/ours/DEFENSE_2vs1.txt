@@ -1,14 +1,21 @@
 Metadata:
 playtype NormalPlay
-name DEFENSE_2vs0
+name DEFENSE_2vs1
 score 500
 
 Objects:
+ballpoint (pointof ball)
+
+# attackers
+attacker0 (closest enemy ballpoint loose)
+
+# defenders
 goaliebot (closest friendly (ourgoal) loose)
 forwardbot (closest friendly (point 1.0 0.0) loose)
 
+
 Tactics:
-OurDumbGoalie goaliebot
+DefSmartGoalie goaliebot forwardbot attacker0
 Forward forwardbot
 
 
