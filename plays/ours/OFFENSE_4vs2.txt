@@ -11,8 +11,8 @@ enemy1 (closest enemy ballpoint loose)
 
 goaliebot (closest friendly (ourgoal) loose)
 strikerbot (closest friendly ballpoint loose)
-clearbot (closest friendly (point -1.0 0.0) loose)
 sideassistbot (closest friendly (theirgoal) loose)
+clearbot (closest friendly (point -1.0 0.0) loose)
 
 
 Tactics:
