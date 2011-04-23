@@ -30,7 +30,7 @@ wall1bkp (point 1.0 0)
 wall2bkp (point 1.5 -1)
 wall3bkp (point 1.5 1)
 
-centercircle (circle center 0.7)
+centercircle (circle center 1.0)
 centergoalline (line center (ourgoal))
 centercirclept (linecircleintersection centergoalline centercircle 1)
 centerbot (closest friendly center loose)

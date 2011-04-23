@@ -477,11 +477,7 @@ namespace Robocup.Utilities
 
             lock (_collectingStateLock)
             {
-<<<<<<< HEAD
                 if(_bufferedState.Robots[team].ContainsKey(robotID))
-=======
-                if (_bufferedState.Robots[team].ContainsKey(robotID))
->>>>>>> remotes/origin/master
                     _bufferedState.Robots[team][robotID].Path = path;
             }
         }

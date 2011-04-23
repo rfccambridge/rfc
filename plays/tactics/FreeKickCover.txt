@@ -16,10 +16,16 @@ freekickzone (circle ballpoint 0.6)
 
 krintersept (pointdirectiondistance ballpoint target 0.6)
 rgintersept (pointdirectiondistance target (ourgoal) 0.6)
+standby1 (pointdirectiondistance ballpoint (ourgoal) 0.6)
+standby2 (pointdirectiondistance ballpoint (theirgoal) 0.6)
+
+legal1 (> (pointpointdistance krintersept ballpoint) 0.6)
+legal2 (> (pointpointdistance rgintersept ballpoint) 0.6)
+legal3 (> (pointpointdistance standby1 ballpoint) 0.6)
 
 Actions:
 #if receiver is inside freekickzone, position to intersept shot from receiver to goal
 #if receiver is outside freekickzone, position to intersept pass from kicker to receiver
 
-(if_Action (= (numberOfRobotsInACircle freekickzone enemy) 2) (robotpointpointmovenoavoid bot rgintersept ballpoint) (robotpointpointmovenoavoid bot krintersept ballpoint))
+(if_Action legal1 (robotpointpointmove bot krintersept ballpoint) (if_Action legal1 (robotpointpointmove bot rgintersept ballpoint) (if_Action legal3 (robotpointpointmove bot standby1 ballpoint) (robotpointpointmove bot standby2 ballpoint))))
 
