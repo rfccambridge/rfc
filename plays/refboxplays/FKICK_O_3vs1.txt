@@ -1,0 +1,24 @@
+Metadata:
+playtype SetPlay_Ours
+name FKICK_O_3vs1
+score 300
+
+Objects: 
+
+ballpoint (pointof ball)
+
+goalie (closest friendly (ourgoal) loose)
+shooter (closest friendly ballpoint loose)
+shooterpt (pointof shooter)
+pressure (closest enemy shooterpt loose)
+pressurept (pointof pressure)
+support (closest friendly (theirgoal) loose)
+
+Tactics:
+
+Goalie goalie pressure
+ShooterWithPartner shooter support pressurept
+Support support shooter
+
+Conditions:
+Actions:

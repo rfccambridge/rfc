@@ -1,0 +1,19 @@
+Metadata:
+playtype SetPlay_Ours
+name FKICK_O_1vs1
+score 300
+
+Objects: 
+
+ballpoint (pointof ball)
+
+shooter (closest friendly ballpoint loose)
+shooterpt (pointof shooter)
+pressure (closest enemy shooterpt loose)
+
+Tactics:
+
+Shooter shooter (pointof pressure) 
+
+Conditions:
+Actions:
