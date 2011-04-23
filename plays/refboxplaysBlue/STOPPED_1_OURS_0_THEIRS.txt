@@ -1,0 +1,18 @@
+Metadata:
+playtype Stopped
+score 100
+name ST_1x0
+
+
+Objects:
+ballpoint (pointof ball)
+goalie (closest friendly (ourgoal) loose)
+shooter (closest enemy ballpoint loose)
+
+
+Tactics:
+Goalie goalie shooter
+
+Conditions:
+
+Actions:

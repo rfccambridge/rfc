@@ -1,6 +1,6 @@
 Metadata:
-playtype KickOff_Theirs
-name KOFF_T_1vs4
+playtype KickOff_Ours_Setup
+name KOFF_OS_1vs4
 score 300
 
 

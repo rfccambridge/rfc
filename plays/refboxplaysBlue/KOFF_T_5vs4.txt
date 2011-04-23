@@ -3,9 +3,6 @@ playtype KickOff_Theirs
 name KOFF_T_5vs4
 score 300
 
-
-
-
 Objects:
 ballpoint (pointof ball)
 goalie (closest friendly (ourgoal) loose)

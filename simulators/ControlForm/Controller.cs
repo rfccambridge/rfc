@@ -37,11 +37,14 @@ namespace Robocup.ControlForm
         private IMotionPlanner _planner;
 		private IKickPlanner _kickPlanner;
 
-        //Move commands
-		private RobotInfo[] _move_infos;
-        private bool[] _move_avoid_balls;
+        private RobotPath[] _paths_to_follow;
         private RobotPath[] _last_successful_path;
-        private Object[] _move_locks;
+        private Object[] _path_locks;
+
+        //Move commands
+        //private RobotInfo[] _move_infos;
+        //private bool[] _move_avoid_balls;
+        //private Object[] _move_locks;
 
         //Loop for running path driver
         private FunctionLoop _controlLoop;
@@ -73,12 +76,13 @@ namespace Robocup.ControlForm
             _planner = planner;
 			_kickPlanner = new FeedbackVeerKickPlanner(new TangentBugFeedbackMotionPlanner());
 
-            _move_infos = new RobotInfo[NUM_ROBOTS];
-            _move_avoid_balls = new bool[NUM_ROBOTS];
             _last_successful_path = new RobotPath[NUM_ROBOTS];
-            _move_locks = new Object[NUM_ROBOTS];
+
+            _paths_to_follow = new RobotPath[NUM_ROBOTS];
+            _path_locks = new Object[NUM_ROBOTS];
+
             for (int i = 0; i < NUM_ROBOTS; i++)
-                _move_locks[i] = new Object();
+                _path_locks[i] = new Object();
 
             //Initialize loops with the functions that they should call
             _controlLoop = new FunctionLoop(ControlLoop);
@@ -136,11 +140,10 @@ namespace Robocup.ControlForm
 
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
-                lock (_move_locks[i])
+                lock (_path_locks[i])
                 {
-                    _move_infos[i] = null;
-                    _move_avoid_balls[i] = false;
                     _last_successful_path[i] = null;
+                    _paths_to_follow[i] = null;
                 }
 
                 //Stop all robots from moving and dribbling
@@ -158,7 +161,7 @@ namespace Robocup.ControlForm
         {
             RobotPath[] paths = new RobotPath[NUM_ROBOTS];
             for (int i = 0; i < NUM_ROBOTS; i++)
-                lock (_move_locks[i])
+                lock (_path_locks[i])
                 {
                     paths[i] = _last_successful_path[i];
                 }
@@ -220,15 +223,47 @@ namespace Robocup.ControlForm
             }
 
             int id = destination.ID;
-            lock (_move_locks[id])
+
+            double avoidBallDist = (avoidBall ? BALL_AVOID_DIST : 0f);
+            RobotPath oldPath;
+            lock (_path_locks[id])
             {
-                _move_infos[id] = new RobotInfo(destination);
-                _move_avoid_balls[id] = avoidBall;
+                oldPath = _last_successful_path[id];
             }
+
+            //No RobotInfo - do nothing
+            if (destination == null)
+                return;
+
+            //Plan a path
+            RobotPath newPath;
+            try
+            {
+                newPath = _planner.PlanMotion(_team, id, destination, _predictor, avoidBallDist, oldPath);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
+                return;
+            }
+
+            lock (_path_locks[id])
+            {
+                if (newPath != null)
+                    _last_successful_path[id] = newPath;
+                _paths_to_follow[id] = newPath;
+            }
+
+            #region Drawing
             if (_fieldDrawer != null)
             {
+                //Path commited for following
+                if (DRAW_PATH)
+                    _fieldDrawer.DrawPath(newPath);
+                //Arrow showing final destination
                 _fieldDrawer.DrawArrow(_team, id, ArrowType.Destination, destination.Position);
             }
+            #endregion
 
         }
         
@@ -287,10 +322,11 @@ namespace Robocup.ControlForm
 
 		public void Stop(int robotID)
 		{
-            lock (_move_locks[robotID])
+            lock (_path_locks[robotID])
             {
-                _move_infos[robotID] = null;
+                _paths_to_follow[robotID] = null;
             }
+            
             RobotCommand command = new RobotCommand(robotID, new WheelSpeeds());
             _cmdSender.Post(command);
 		}
@@ -344,51 +380,26 @@ namespace Robocup.ControlForm
         //CONTROL LOOP---------------------------------------------------------------------
         private void ControlLoop()
         {
-            PerformMotion();
+            FollowPaths();
             _fieldDrawer.UpdateControllerDuration(_controlLoop.GetLoopDuration() * 1000);
         }
 
 
-        private void PerformMotion()
+        private void FollowPaths()
         {
             RobotCommand command;
 
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
-                //Retrieve commands given to the controller for the robot
-                RobotInfo desired;
-                double avoidBallDist;
-                RobotPath oldPath;
-                lock (_move_locks[i])
-                {
-                    desired = _move_infos[i];
-                    avoidBallDist = (_move_avoid_balls[i] ? BALL_AVOID_DIST : 0f);
-                    oldPath = _last_successful_path[i];
-                }
-
-                //No RobotInfo - do nothing
-                if (desired == null)
-                    continue;
-
-                //Plan a path
                 RobotPath newPath;
-                try
+                //Retrieve commands given to the controller for the robot
+                lock (_path_locks[i])
                 {
-                    newPath = _planner.PlanMotion(_team, i, desired, _predictor, avoidBallDist, oldPath);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
-                    continue;
+                    newPath = _paths_to_follow[i];
                 }
 
                 if (newPath == null)
                     continue;
-
-                lock (_move_locks[i])
-                {
-                    _last_successful_path[i] = newPath;
-                }
 
                 //Follow the path
                 MotionPlanningResults mpResults;
@@ -405,9 +416,6 @@ namespace Robocup.ControlForm
                 //Send the wheel speeds
                 command = new RobotCommand(i, mpResults.wheel_speeds);
                 _cmdSender.Post(command);
-                
-
-
             }
         }
 	}
