@@ -36,7 +36,7 @@ namespace Robocup.Plays
             for (int stringnum = 0; stringnum < lines.Length; stringnum++)
             {
                 string line = lines[stringnum].Trim();
-                if (line[0] == '#')
+                if (line == "" || line[0] == '#')
                     continue;
                 //if the last character is a colon,
                 //then it's a label for something:

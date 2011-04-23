@@ -5,10 +5,8 @@ using Robocup.Geometry;
 
 namespace Robocup.Core
 {
-    [Serializable]
     public class VisionMessage
     {        
-        [Serializable]
         public class RobotData
         {
             private Team team;
