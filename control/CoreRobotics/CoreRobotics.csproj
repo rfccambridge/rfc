@@ -63,6 +63,10 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net, Version=1.0.0.280, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vision\SSLClient\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -102,10 +106,9 @@
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\vision\SSLClientWrapper\SSLClientWrapper.vcxproj">
-      <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>
-      <Name>SSLClientWrapper</Name>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+    <ProjectReference Include="..\..\vision\SSLClient\SSLVisionLib.csproj">
+      <Project>{8360F24F-CB7C-47E8-BB2F-E3E0B83BAAA0}</Project>
+      <Name>SSLVisionLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

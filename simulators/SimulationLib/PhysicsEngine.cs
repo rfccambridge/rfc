@@ -8,6 +8,7 @@ using Robocup.CoreRobotics;
 using Robocup.Utilities;
 using Robocup.MessageSystem;
 using Robocup.Geometry;
+using Robocup.SSLVisionLib;
 
 namespace Robocup.Simulation
 {
@@ -52,7 +53,7 @@ namespace Robocup.Simulation
 
         //Vision-------------------------------------------------------------------
         private bool visionStarted = false;
-        SSLVision.RoboCupSSLServerManaged sslVisionServer;
+        SSLVisionServer sslVisionServer;
 
         private bool noisyVision = false;
         const double noisyVisionStdev = 0.004; //Standard deviation of gaussian noise in meters
@@ -171,8 +172,8 @@ namespace Robocup.Simulation
             if (visionStarted)
                 throw new ApplicationException("Vision already running.");
 
-            sslVisionServer= new SSLVision.RoboCupSSLServerManaged(port, host, "");
-            sslVisionServer.open();
+            sslVisionServer= new SSLVisionServer();
+            sslVisionServer.Connect(host, port);
 
             visionStarted = true;
         }
@@ -182,7 +183,7 @@ namespace Robocup.Simulation
             if (!visionStarted)
                 throw new ApplicationException("Vision not running.");
 
-            sslVisionServer.close();
+            sslVisionServer.Disconnect();
 
             visionStarted = false;
         }
@@ -390,8 +391,8 @@ namespace Robocup.Simulation
             }
             
             // Synchronously (at least for now) send out a vision message
-            SSLVision.SSL_DetectionFrameManaged frame = constructSSLVisionFrame();
-            sslVisionServer.send(frame);
+            SSL_WrapperPacket packet = constructSSLVisionFrame();
+            sslVisionServer.Send(packet);
 
             Referee.RunRef(this);
             if (refBoxStarted)
@@ -483,35 +484,55 @@ namespace Robocup.Simulation
             return noisyVision_BallLost;
         }
 
-        private SSLVision.SSL_DetectionFrameManaged constructSSLVisionFrame()
+        private SSL_WrapperPacket constructSSLVisionFrame()
         {
-            SSLVision.SSL_DetectionFrameManaged frame = new SSLVision.SSL_DetectionFrameManaged();
+            SSL_WrapperPacket packet = new SSL_WrapperPacket();
+
+            SSL_DetectionFrame frame = new SSL_DetectionFrame();
 
             if (!checkVisionBallLoss())
             {
                 Vector2 ballPos = convertToSSLCoords(applyVisionNoise(ball.Position));
-                frame.add_ball(1, (float)ballPos.X, (float)ballPos.Y);
+                SSL_DetectionBall newBall = new SSL_DetectionBall();
+                newBall.confidence = 1;
+                newBall.x = (float)ballPos.X;
+                newBall.y = (float)ballPos.Y;
+                frame.balls.Add(newBall);
             }
             foreach (RobotInfo robot in robots[Team.Yellow])
             {
                 Vector2 pos = convertToSSLCoords(applyVisionNoise(robot.Position));
-                frame.add_robot_yellow(1, robot.ID, (float)pos.X, (float)pos.Y,
-                                        (float)robot.Orientation);
+                SSL_DetectionRobot newBot = new SSL_DetectionRobot();
+                newBot.confidence = 1;
+                newBot.robot_id = (uint)robot.ID;
+                newBot.x = (float)pos.X;
+                newBot.y = (float)pos.Y;
+                newBot.orientation = (float)robot.Orientation;
+
+                frame.robots_yellow.Add(newBot);
             }
             foreach (RobotInfo robot in robots[Team.Blue])
             {
                 Vector2 pos = convertToSSLCoords(applyVisionNoise(robot.Position));
-                frame.add_robot_blue(1, robot.ID, (float)pos.X, (float)pos.Y,
-                                        (float)robot.Orientation);
+                SSL_DetectionRobot newBot = new SSL_DetectionRobot();
+                newBot.confidence = 1;
+                newBot.robot_id = (uint)robot.ID;
+                newBot.x = (float)pos.X;
+                newBot.y = (float)pos.Y;
+                newBot.orientation = (float)robot.Orientation;
+
+                frame.robots_blue.Add(newBot);
             }
 
             // dummy-fill required fields
-            frame.set_frame_number(0);
-            frame.set_camera_id(0);
-            frame.set_t_capture(0);
-            frame.set_t_sent(0);
+            frame.frame_number = 0;
+            frame.camera_id = 0;
+            frame.t_capture = 0;
+            frame.t_sent = 0;
 
-            return frame;
+            packet.detection = frame;
+
+            return packet;
         }
 
         private Vector2 convertToSSLCoords(Vector2 pt)
