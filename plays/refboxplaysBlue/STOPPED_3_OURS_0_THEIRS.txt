@@ -1,0 +1,39 @@
+Metadata:
+playtype Stopped
+score 300
+name ST_3x0
+
+
+Objects:
+
+goalie (closest friendly (ourgoal) loose)
+shooter (closest enemy ballpoint loose)
+
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+ballpoint (pointof ball)
+ballcircle (circle ballpoint 0.63)
+ballgoalline (line ballpoint (ourgoal))
+
+wall1line (line ballpoint (ourgoal))
+wall1point (linecircleintersection wall1line ballcircle 1)
+
+wall1bot (closest friendly wall1point loose)
+
+wall1bkp (point 1.0 0)
+
+centercircle (circle center 0.7)
+centergoalline (line center (ourgoal))
+centercirclept (linecircleintersection centergoalline centercircle 1)
+centerbot (closest friendly center loose)
+
+Tactics:
+Goalie goalie shooter
+
+
+Conditions:
+Actions:
+(if_Action (inField wall1point) (robotpointpointmove wall1bot wall1point ballpoint) (robotpointpointmove wall1bot wall1bkp ballpoint))
+(robotpointpointmove centerbot centercirclept center)
