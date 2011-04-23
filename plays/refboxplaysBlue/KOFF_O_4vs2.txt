@@ -4,26 +4,50 @@ name KOFF_O_4vs2
 score 3.002615
 
 Objects:
-
 ballpoint (pointof ball)
-
 goalie (closest friendly (ourgoal) loose)
-shooter (closest friendly ballpoint loose)
-shooterpt (pointof shooter)
-pressure (closest enemy shooterpt loose)
-# pressurept (pointof pressure)
-# blocker (closest friendly pressurept loose)
-support (closest friendly (theirgoal) loose)
-safety (closest friendly (ourgoal) loose)
+shooter (closest enemy ballpoint loose)
 
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
 
-Tactics:
+centercircle (circle center 0.7)
 
-Goalie goalie pressure
-ShooterWithPartner shooter support
-# Blocker blocker shooter pressure
-Support support shooter
-Safety safety
+ourgoalwideperim (circle (ourgoal) 1.2)
+
+centerbot (closest friendly center loose)
+centerbotpt (pointof centerbot)
+
+topbot (closest friendly centertop loose)
+topbotpt (pointof topbot)
+
+#bottombot (closest friendly centerbottom loose)
+#bottompt (pointof bottombot)
+
+middlerbot (closest friendly center loose)
+middlerbotpt (pointof middlerbot)
+
+centergoalline (line center (ourgoal))
+middlerpt (linecircleintersection centergoalline ourgoalwideperim -1)
+
+toppt (point -0.3 1.5)
+topptfwd (point 0 1.5)
+botpt (point -0.3 -1.5)
+botptfwd (point 0 -1.5)
+centercirclept (linecircleintersection centergoalline centercircle 1)
 
 Conditions:
+
+Tactics:
+Goalie goalie shooter 
+
 Actions:
+(robotpointpointmove middlerbot middlerpt center)
+(robotpointstrengthkick centerbot toppt 2)
+(robotpointpointmove topbot toppt topptfwd)
+# (robotpointpointmove bottombot botpt botptfwd)
