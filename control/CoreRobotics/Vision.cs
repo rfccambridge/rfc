@@ -63,7 +63,7 @@ namespace Robocup.CoreRobotics
         
         private void loop()
         {
-            SSLVision.SSL_WrapperPacketManaged packet = new SSLVision.SSL_WrapperPacketManaged();            
+            SSLVision.SSL_WrapperPacketManaged packet = new SSLVision.SSL_WrapperPacketManaged(); 
 
             while (true)
             {
@@ -76,7 +76,11 @@ namespace Robocup.CoreRobotics
                     SSLVision.SSL_DetectionFrameManaged detection = packet.detection();
                     //Display the contents of the robot detection results:
                     //double t_now = GetTimeSec();
-                    double t_now = 0;
+                    //double t_now = 0;
+
+                    double t_processing = detection.t_sent() - detection.t_capture();
+                    if (t_processing > 0.010)
+                        Console.WriteLine("Vision processing too slow: {0}", t_processing);
 
                     //Frame info:
                     int balls_n = detection.balls_size();
@@ -84,7 +88,9 @@ namespace Robocup.CoreRobotics
                     int robots_yellow_n = detection.robots_yellow_size();
 
                     VisionMessage msg = new VisionMessage((int)detection.camera_id());
-                    
+
+                    msg.Delay = t_processing;
+
                     //Ball info:
                     float maxBallConfidence = float.MinValue;
                     for (int i = 0; i < balls_n; i++)

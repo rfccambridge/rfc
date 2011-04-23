@@ -398,7 +398,7 @@ namespace Robocup.ControlForm
                     newPath = _paths_to_follow[i];
                 }
 
-                if (newPath == null)
+                if (newPath == null || newPath.isEmpty())
                     continue;
 
                 //Follow the path

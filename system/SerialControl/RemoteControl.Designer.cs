@@ -53,6 +53,7 @@ namespace Robocup.SerialControl
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.udKickStrength = new System.Windows.Forms.NumericUpDown();
             this.udDribblerPower = new System.Windows.Forms.NumericUpDown();
             this.udBoardID = new System.Windows.Forms.NumericUpDown();
             this.chkCfgFeedback = new System.Windows.Forms.CheckBox();
@@ -105,7 +106,6 @@ namespace Robocup.SerialControl
             this.lblSpeed = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.lblDuration = new System.Windows.Forms.Label();
-            this.udKickStrength = new System.Windows.Forms.NumericUpDown();
             label7 = new System.Windows.Forms.Label();
             label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.udCmdOutCOMPort)).BeginInit();
@@ -113,11 +113,11 @@ namespace Robocup.SerialControl
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udKickStrength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDribblerPower)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udBoardID)).BeginInit();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udDataInCOMPort)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udKickStrength)).BeginInit();
             this.SuspendLayout();
             // 
             // label7
@@ -220,7 +220,7 @@ namespace Robocup.SerialControl
             this.udCmdOutCOMPort.Size = new System.Drawing.Size(114, 20);
             this.udCmdOutCOMPort.TabIndex = 52;
             this.udCmdOutCOMPort.Value = new decimal(new int[] {
-            9,
+            3,
             0,
             0,
             0});
@@ -407,6 +407,28 @@ namespace Robocup.SerialControl
             this.groupBox4.TabIndex = 64;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Robot";
+            // 
+            // udKickStrength
+            // 
+            this.udKickStrength.Location = new System.Drawing.Point(30, 69);
+            this.udKickStrength.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.udKickStrength.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.udKickStrength.Name = "udKickStrength";
+            this.udKickStrength.Size = new System.Drawing.Size(110, 20);
+            this.udKickStrength.TabIndex = 63;
+            this.udKickStrength.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
             // 
             // udDribblerPower
             // 
@@ -911,28 +933,6 @@ namespace Robocup.SerialControl
             this.lblDuration.TabIndex = 63;
             this.lblDuration.Text = "0 ms";
             // 
-            // udKickStrength
-            // 
-            this.udKickStrength.Location = new System.Drawing.Point(30, 69);
-            this.udKickStrength.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.udKickStrength.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.udKickStrength.Name = "udKickStrength";
-            this.udKickStrength.Size = new System.Drawing.Size(110, 20);
-            this.udKickStrength.TabIndex = 63;
-            this.udKickStrength.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            // 
             // RemoteControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -966,12 +966,12 @@ namespace Robocup.SerialControl
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udKickStrength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udDribblerPower)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udBoardID)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udDataInCOMPort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udKickStrength)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
