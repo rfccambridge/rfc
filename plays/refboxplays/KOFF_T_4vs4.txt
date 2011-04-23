@@ -26,8 +26,8 @@ ourgoalwideperim (circle (ourgoal) 1.2)
 centerbot (closest friendly center loose)
 centerbotpt (pointof centerbot)
 
-topbot (closest friendly centertop loose)
-topbotpt (pointof topbot)
+#topbot (closest friendly centertop loose)
+#topbotpt (pointof topbot)
 
 bottombot (closest friendly centerbottom loose)
 bottompt (pointof bottombot)
