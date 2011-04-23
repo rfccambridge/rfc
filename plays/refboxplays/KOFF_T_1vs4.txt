@@ -23,17 +23,17 @@ centercircle (circle center 0.7)
 
 ourgoalwideperim (circle (ourgoal) 1.2)
 
-centerbot (closest friendly center loose)
-centerbotpt (pointof centerbot)
+#centerbot (closest friendly center loose)
+#centerbotpt (pointof centerbot)
 
-topbot (closest friendly centertop loose)
-topbotpt (pointof topbot)
+#topbot (closest friendly centertop loose)
+#topbotpt (pointof topbot)
 
-bottombot (closest friendly centerbottom loose)
-bottompt (pointof bottombot)
+#bottombot (closest friendly centerbottom loose)
+#bottompt (pointof bottombot)
 
-middlerbot (closest friendly center loose)
-middlerbotpt (pointof middlerbot)
+#middlerbot (closest friendly center loose)
+#middlerbotpt (pointof middlerbot)
 
 centergoalline (line center (ourgoal))
 middlerpt (linecircleintersection centergoalline ourgoalwideperim -1)
