@@ -24,7 +24,7 @@ namespace Robocup.SerialControl {
         private event DataAcquired OnDataAcquired;
 
         private const int NUM_ROBOTS = 5;
-        private const int DEFAULT_SPEED = 40;
+        private const int DEFAULT_SPEED = 30;
         private const string DATA_IN_FILE = "data.csv";
 
         private int _speed = DEFAULT_SPEED;

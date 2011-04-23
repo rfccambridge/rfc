@@ -95,6 +95,9 @@ namespace Robocup.CoreRobotics
                             // Update position
                             ball.Position = new Vector2(WEIGHT_OLD * ball.Position + WEIGHT_NEW * newBall.Position);
 
+                            // Project velocity to compensate for delays that we are sure of
+                            ball.Position += ball.Velocity * msg.Delay;
+
                             // Update velocity if a reasonable interval has passed
                             double dt = time - ballDtStart;
                             if (dt > VELOCITY_DT)
@@ -164,6 +167,9 @@ namespace Robocup.CoreRobotics
                             oldRobot.Position = new Vector2(WEIGHT_OLD * oldRobot.Position + WEIGHT_NEW * newRobot.Position);
                             oldRobot.Orientation = WEIGHT_OLD * oldRobot.Orientation + WEIGHT_NEW * newRobot.Orientation;
 
+                            // Project velocity to compensate for delays that we are sure of
+                            oldRobot.Position += oldRobot.Velocity * msg.Delay;
+
                             // Update velocity if a reasonable interval has passed                    
                             double dt = time - velocityDtStart[newRobot.Team][oldRobotIdx];
 
@@ -176,6 +182,7 @@ namespace Robocup.CoreRobotics
                                 velocityDtStart[newRobot.Team][oldRobotIdx] = time;
                                 robotsAtDtStart[newRobot.Team][oldRobotIdx] = new RobotInfo(oldRobot);
                             }
+
                             newRobotIdx = oldRobotIdx;
                         }
 
@@ -322,10 +329,7 @@ namespace Robocup.CoreRobotics
         {
             // TODO: this is frequently executed: change to use a dictionary
             List<RobotInfo> robots = GetRobots(team);
-            RobotInfo robot = robots.Find(new Predicate<RobotInfo>(delegate(RobotInfo r)
-            {
-                return r.ID == id;
-            }));
+            RobotInfo robot = robots.Find((RobotInfo r) => r.ID == id);
             if (robot == null)
             {
                 throw new ApplicationException("AveragingPredictor.GetRobot: no robot with id=" +
