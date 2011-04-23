@@ -27,7 +27,8 @@ Tactics:
 DefSmartGoalie goaliebot forwardbot attacker0
 OneManWall (ourgoal) 1.5 True 0 forwardbot
 Mark defensebot1 defensept1 forwardbot
-Forward forwardbot
+#Forward forwardbot
+ClearBot forwardbot
 
 Conditions:
 
