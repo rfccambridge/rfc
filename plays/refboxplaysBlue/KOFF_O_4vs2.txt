@@ -6,6 +6,7 @@ score 3.002615
 Objects:
 ballpoint (pointof ball)
 goalie (closest friendly (ourgoal) loose)
+<<<<<<< HEAD
 shooter (closest enemy ballpoint loose)
 
 topLeftCorner (point -3.05 2.1)
@@ -15,6 +16,17 @@ topRightCorner (point 3.05 2.1)
 center (point 0 0)
 centertop (point 0 2.1)
 centerbottom (point 0 -2.1)
+=======
+shooter (closest friendly ballpoint loose)
+shooterpt (pointof shooter)
+pressure (closest enemy shooterpt loose)
+# pressurept (pointof pressure)
+# blocker (closest friendly pressurept loose)
+support (closest friendly (theirgoal) loose)
+safety (closest friendly (ourgoal) loose)
+enemygoalie (closest enemy (theirgoal) loose)
+enemygoaliept (pointof enemygoalie)
+>>>>>>> b53d7bf8c1641e56e7d129a1575fabbb58ef0b12
 
 centercircle (circle center 0.7)
 
@@ -26,6 +38,7 @@ centerbotpt (pointof centerbot)
 topbot (closest friendly centertop loose)
 topbotpt (pointof topbot)
 
+<<<<<<< HEAD
 #bottombot (closest friendly centerbottom loose)
 #bottompt (pointof bottombot)
 
@@ -40,6 +53,13 @@ topptfwd (point 0 1.5)
 botpt (point -0.3 -1.5)
 botptfwd (point 0 -1.5)
 centercirclept (linecircleintersection centergoalline centercircle 1)
+=======
+Goalie goalie pressure
+ShooterWithPartner shooter support enemygoaliept 
+# Blocker blocker shooter pressure
+Support support shooter
+Safety safety
+>>>>>>> b53d7bf8c1641e56e7d129a1575fabbb58ef0b12
 
 Conditions:
 

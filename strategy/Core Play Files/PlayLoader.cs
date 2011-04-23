@@ -188,7 +188,8 @@ namespace Robocup.Plays
                 return playable.TheBall;
 
             //else, it's a name:
-            E rtn;
+            E rtn;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+
             if (playable.PlayObjects.TryGetValue(definition, out rtn))
             {
                 if (!wantedType.IsAssignableFrom(rtn.ReturnType))
