@@ -95,6 +95,16 @@ namespace Robocup.Core
         public List<RobotData> Robots
         {
             get { return robots; }
-        }       
+        }
+
+        /// <summary>
+        /// Delays we can measure with certainty (that is, lower bounds on delay)
+        /// </summary>
+        private double delay;
+        public double Delay
+        {
+            get { return delay; }
+            set { delay = value; }
+        }
     }
 }

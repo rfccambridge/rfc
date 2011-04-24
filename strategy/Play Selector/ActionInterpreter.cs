@@ -236,7 +236,7 @@ namespace Robocup.Plays
         /// The main difference is that closeness to the ball is determined by a break-beam sensor on the robot itself and 
         /// that is, hopefully, much more accurate than vision distances.
         /// </summary>
-        public void BeamKick(int robotID, Vector2 target, int strength = RobotCommand.MAX_KICKER_STRENGTH-1)
+        public void BeamKick(int robotID, Vector2 target, int strength = 2)
         {
             RobotInfo thisrobot;
             Vector2 ball;
@@ -290,7 +290,7 @@ namespace Robocup.Plays
                 if (VERBOSE)
                     Console.WriteLine("Close to the ball. CHARGING!");
 
-                commander.Charge(robotID, strength);
+                commander.Charge(robotID);
             }
 
             if (VERBOSE)
