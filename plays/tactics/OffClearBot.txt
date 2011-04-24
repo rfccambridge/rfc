@@ -15,7 +15,7 @@ FIELD_HEIGHT (const-double FIELD_HEIGHT)
 
 ballpoint (pointof ball)
 standbypt (point -1.0 0.0)
-cir (circle ballpoint 0.3)
+cir (circle ballpoint 0.55)
 botpoint (pointof bot)
 
 leftcorner (point FIELD_WIDTH (- 0 FIELD_HEIGHT))
@@ -24,4 +24,4 @@ shotongoal (theirGoalBestShot)
 kicktotarget (if_Action (pathClear ballpoint shotongoal CLEAR_DIST) (robotpointkick bot shotongoal) (if_Action (pathClear ballpoint leftcorner CLEAR_DIST) (robotpointstrengthkick bot leftcorner 2) (robotpointstrengthkick bot rightcorner 2)))
 
 Actions:
-(if_Action (and (< (numberOfRobotsInACircle cir friendly) 2) (< (pointpointdistance ballpoint botpoint) 0.3)) kicktotarget (robotpointpointmove bot standbypt ballpoint))
+(if_Action (< (numberOfRobotsInACircle cir friendly) 2) kicktotarget (robotpointpointmove bot standbypt ballpoint))

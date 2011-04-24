@@ -226,6 +226,19 @@ namespace Robocup.Plays
                             return Intersections.intersect(line, circle, (int)objects[2]);
                             //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
                         });
+            addFunction("existslinecircleintersection", "Line, Circle - Intersection",
+                        "The intersection of line ~ and circle ~ Does it exist?", typeof(bool),
+                        new Type[] { typeof(Line), typeof(Circle)},
+                        delegate(EvaluatorState state, object[] objects)
+                        {
+                            Line line = (Line)objects[0];
+                            Circle circle = (Circle)objects[1];
+                            try { Intersections.intersect(line, circle, 1); }
+                            catch (NoIntersectionException e) { return false; }
+                            return true;
+                            //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
+                        });
+
             addFunction("pointdirectiondistance", "Point, Direction, Distance - Point",
                                     "The point ~, translated in the direction of point ~ by distance ~", typeof(Vector2),
                                     new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) },
@@ -680,6 +693,11 @@ namespace Robocup.Plays
             {
                 return Math.Asin((double)objects[0]);
             });
+            addFunction("pi", "double - PI", "PI", typeof(double), new Type[] {}, delegate(EvaluatorState state, object[] objects)
+            {
+                //return Math.Asin((double)objects[0]);
+                return Math.PI;
+            });
             #endregion
 
             #region misc
@@ -875,7 +893,7 @@ namespace Robocup.Plays
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
-            addFunction("robotpointstrengthkick", "Robot, strength - Kick", "Have robot ~ kick the ball towards ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot),  typeof(Vector2), typeof(int) }, delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointstrengthkick", "Robot, Point, Strength - Kick", "Have robot ~ kick the ball towards ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot),  typeof(Vector2), typeof(int) }, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];
                 Vector2 p = (Vector2)objects[1];
