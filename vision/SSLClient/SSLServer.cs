@@ -44,9 +44,9 @@ namespace Robocup.SSLVisionLib
             if (!connected)
                 throw new ApplicationException("Trying to send to vision SSLClient socket that wasn't open");
 
-            byte[] buf = new byte[MAX_BUF_SIZE];
-            MemoryStream stream = new MemoryStream(buf, true);
+            MemoryStream stream = new MemoryStream();
             ProtoBuf.Serializer.Serialize<SSL_WrapperPacket>(stream, packet);
+            byte[] buf = stream.GetBuffer();
 
             socket.SendTo(buf, endPoint);
         }
