@@ -13,13 +13,44 @@ helpRobot robot
 pointKick point
 faceKick point  
 actualKick point
+goaliept point 
 
 Objects:
+standbypoint (point 2 0.0)
+shooterpt (pointof ballRobot)
+supportpt (pointof helpRobot)
+top (pointAboveLine goaliept goalgoalline)
 
+WIDE (- (/ (const-double FIELD_WIDTH) 2) 1.0)
+BACK (+ (/ (const-double FIELD_WIDTH) 2) 0.18)
+GOAL (/ (const-double FIELD_WIDTH) 2)
+ballpoint (pointof ball)
+
+widetop (point WIDE (/ (const-double FIELD_HEIGHT) 2))
+widebot (point WIDE (/ (const-double FIELD_HEIGHT) -2))
+ttarget (point GOAL 0.28) 
+btarget (point GOAL -0.28) 
+bpost (point (/ (const-double FIELD_WIDTH) 2) 0.35)
+tpost (point (/ (const-double FIELD_WIDTH) 2) -0.35)
+goalgoalline (line (ourgoal) (theirgoal))
+widetopline (line widetop bpost)
+widebotline (line widebot tpost)
+
+first (if_point top btarget ttarget) 
+second (if_point top ttarget btarget) 
+
+standby (pointInGoal ballpoint)
+wide (or (pointAboveLine ballpoint widetopline) (not (pointAboveLine ballpoint widebotline)))
+near (and (and (< (getYcoord ballpoint) 0.35) (> (getYcoord ballpoint) -0.35)) (< (pointpointdistance ballpoint (theirgoal)) 0.5))
+clearToPartner (pathClear ballpoint supportpt 3.0)
+clearToFirst (pathClear ballpoint ttarget 3.0)
+clearToSecond (pathClear ballpoint btarget 3.0)
+clearToCenter (pathClear ballpoint (theirgoal) 3.0)
+
+pass (robotpointstrengthkick ballRobot supportpt 2)
+shoot (if_Action clearToFirst (robotpointkick ballRobot first) (if_Action clearToSecond (robotpointkick ballRobot second) (if_Action clearToCenter (robotpointkick ballRobot (theirgoal)) pass)))
 Actions:
 
-# check if we shouldn't go after the ball- that is, if it is
-# in the goal and there is another robot there
+(if_Action standby (robotpointmove ballRobot standbypoint) (if_Action wide (robotpointpointmovenoavoid helpRobot pointKick faceKick) shoot))
 
-(robotpointpointmovenoavoid helpRobot pointKick faceKick)
-(robotpointstrengthkick ballRobot actualKick 2)
+(if_Action standby (robotpointmove ballRobot standbypoint) (if_Action wide (robotpointstrengthkick ballRobot actualKick 2) shoot))
