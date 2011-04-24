@@ -14,7 +14,7 @@ clearbot (closest friendly (point 1.0 0.0) loose)
 
 Tactics:
 OurDumbGoalie goaliebot
-ClearBot clearbot
+DefClearBot clearbot
 SideAssistTac strikerbot sideassistbot
 DumbStriker strikerbot
 

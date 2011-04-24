@@ -3,6 +3,8 @@ playtype NormalPlay
 name DEFENSE_3vs2
 score 400
 
+# This is actually vs 
+
 Objects:
 distance (double 0.5)
 ballpoint (pointof ball)

@@ -13,7 +13,7 @@ Tactics:
 OurDumbGoalie goaliebot
 TwoManWall (ourgoal) 0.9 True 0
 TwoManWall (ourgoal) 0.9 True 1
-ClearBot clearbot
+DefClearBot clearbot
 Forward forwardbot
 
 

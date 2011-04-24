@@ -10,12 +10,12 @@ enemy0 (closest enemy ballpoint loose)
 
 goaliebot (closest friendly (ourgoal) loose)
 strikerbot (closest friendly ballpoint loose)
-clearbot (closest friendly (point 1.0 0.0) loose)
+clearbot (closest friendly (point -1.0 0.0) loose)
 
 
 Tactics:
 OffSmartGoalie goaliebot enemy0
-ClearBot clearbot
+OffClearBot clearbot
 DumbStriker strikerbot
 
 Conditions:

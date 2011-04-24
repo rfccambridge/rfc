@@ -16,7 +16,7 @@ clearbot (closest friendly (point 1.0 0.0) loose)
 
 Tactics:
 DefSmartGoalie goaliebot clearbot attacker0
-ClearBot clearbot
+DefClearBot clearbot
 
 
 Conditions:

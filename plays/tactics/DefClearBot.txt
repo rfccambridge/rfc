@@ -1,6 +1,6 @@
 Metadata:
 type tactic
-name ClearBot
+name DefClearBot
 
 Parameters:
 bot robot

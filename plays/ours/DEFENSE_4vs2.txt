@@ -20,15 +20,15 @@ ballline1 (line ballpoint point_defended1)
 defensept1 (linecircleintersection ballline1 perimeter1 -1)
 defensebot1 (closest friendly defensept1 loose)
 
-forwardbot (closest friendly (point 1.0 0.0) loose)
+clearbot (closest friendly (point 1.0 0.0) loose)
 
 
 Tactics:
-DefSmartGoalie goaliebot forwardbot attacker0
-OneManWall (ourgoal) 1.5 True 0 forwardbot
-Mark defensebot1 defensept1 forwardbot
+DefSmartGoalie goaliebot clearbot attacker0
+OneManWall (ourgoal) 1.5 True 0 clearbot
+Mark defensebot1 defensept1 clearbot
 #Forward forwardbot
-ClearBot forwardbot
+DefClearBot clearbot
 
 Conditions:
 
