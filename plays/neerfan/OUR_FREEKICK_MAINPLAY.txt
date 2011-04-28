@@ -1,0 +1,28 @@
+Metadata:
+playtype SetPlay_Ours
+name main
+score 1
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+numRobots (numourbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+(if_Action (= numRobots 1) (assignPlay O_FK_1x0) nothing)
+
+(if_Action (= numRobots 2) (assignPlay O_FK_2x0) nothing)
+
+(if_Action (= numRobots 3) (assignPlay O_FK_3x0) nothing)
+
+(if_Action (= numRobots 4) (assignPlay O_FK_4x0) nothing)
+
+(if_Action (= numRobots 5) (assignPlay O_FK_5x0) nothing)

@@ -1123,6 +1123,29 @@ namespace Robocup.Plays
                             }
                             return rtn;
                         });
+            addFunction("pointdirectiondistance", "Point, Direction, Distance - Point",
+                             "The point ~, translated in the direction of point ~ by distance ~", typeof(Vector2),
+                             new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) },
+
+                             delegate(EvaluatorState state, object[] objects)
+                             {
+                                 Line line = new Line((Vector2)objects[0], (Vector2)objects[1]);
+                                 Circle circle = new Circle((Vector2)objects[0], (double)objects[2]);
+                                 return Intersections.intersect(line, circle, 1);
+                                 //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
+                             });
+
+            addFunction("prioritize", "Prioritize", "Determines role assignment based on ball position", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                // Positive is closer to their goal
+                if (state.ballInfo.Position.X >= 0)
+                    return 0.0;
+                // 0 is for offense
+                else
+                    return 1.0;
+                // 1 is for defense
+
+            });
 
 
             #endregion

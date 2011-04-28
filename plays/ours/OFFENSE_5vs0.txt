@@ -1,0 +1,62 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_5vs0
+score 500
+
+# Side2Assist creates oscillation too
+# What do with last 2 robots?
+	# Have them chill at a certain point
+	# If ball is bot (top) part of field and there is no robot near it, kick it to their goal
+	# else go to standbypoint
+
+Objects:
+goaliebot (closest friendly (ourgoal) loose)
+botbot (closest friendly (ourgoal) loose)
+topbot (closest friendly (ourgoal) loose)
+
+
+center (point 0.0 0.0)
+ballpoint (pointof ball)
+striker (closest friendly ballpoint loose)
+sideassist (closest friendly ballpoint loose)
+CLEAR_DIST (const-double CLEAR_DIST)
+strikerYpt (getYcoord (pointof striker))
+strikerXpt (getXcoord (pointof striker))
+
+# Side Assist will be on opposite side of field as Striker
+# Y coord of Side Assist Point is aligned with goalpost
+# X coord of Side Assist Point is halfway between Striker's X and goal
+halfwayX (+ strikerXpt (/ (- (/ (const-double FIELD_WIDTH) 2) strikerXpt) 2))
+possidept (point halfwayX (const-double GOALIE_MAX_MIN_Y))
+negsidept (point halfwayX (- 0 (const-double GOALIE_MAX_MIN_Y)))
+sideassistaction (if_Action (< strikerYpt 0) (robotpointpointmovenoavoid sideassist possidept ballpoint) (robotpointpointmovenoavoid sideassist negsidept ballpoint))
+
+
+# Shooting between Two Man Wall
+enemy1 (closest enemy ballpoint loose)
+enemy2 (closest enemy ballpoint loose)
+
+midpoint (midpoint (pointof enemy1) (pointof enemy2))
+
+Tactics:
+OurSmartGoalie goaliebot
+BotBot botbot 
+TopBot topbot 
+#TwoManWall (ourgoal) 0.9 True 0
+#TwoManWall (ourgoal) 0.9 True 1
+
+Conditions:
+
+Actions:
+sideassistaction
+(if_Action (and (not (and (pointInGoal ballpoint) (robotInGoal))) (pathClear (pointof striker) (theirgoal) CLEAR_DIST)) (robotpointkick striker (theirgoal)) (if_Action (and (< (pointpointdistance ballpoint (pointof enemy1)) 0.5) (< (pointpointdistance ballpoint (pointof enemy2)) 0.5)) (robotpointkick striker midpoint) (if_Action (pathClear (pointof striker) (theirGoalBestShot) CLEAR_DIST) (robotpointkick striker (theirGoalBestShot)) (if_Action (pathClear (pointof striker) (pointof sideassist) CLEAR_DIST) (robotpointkick striker (pointof sideassist)) (robotpointkick striker (pointof botbot))))))
+
+
+# If the ball is not in goal and robot is not in goal and if path is clear to their goal
+# then shoot to their goal
+# # else if there is a two man wall then shoot between them
+# else if path is clear to best target
+       # then shoot to best target
+       # else if path is clear to side assist
+	      # then shoot to side assist
+              # else shoot to back assist

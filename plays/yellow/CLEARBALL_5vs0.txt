@@ -1,0 +1,35 @@
+Metadata:
+playtype NormalPlay
+name CLEARBALL_5vs0
+score 200
+
+Objects: 
+
+# constants
+FIELD_HEIGHT (double 4.05)
+
+clearpoint1 (point -2 (- 0 (/ FIELD_HEIGHT 2)))
+clearpoint2 (point -2 (/ FIELD_HEIGHT 2))
+
+ballpoint (pointof ball)
+
+# Assign roles to robots
+enemykicker (closest enemy ballpoint loose)
+enemykickerpoint (pointof enemykicker)
+marker (closest friendly enemykickerpoint loose)
+
+clearer (closest friendly ballpoint loose)
+clearerpoint (pointof clearer)
+
+clearpoint (if_point (pathClear ballpoint clearpoint1 0.2) clearpoint1 clearpoint2)
+
+Tactics:
+SmartGoalie
+Sweep (ourgoal) 0.8 True 
+Sweep (ourgoal) 1.5 True
+Mark marker enemykicker
+
+Conditions:
+
+Actions:
+(robotpointkickvar clearer clearpoint 3)
