@@ -17,7 +17,7 @@ ballpoint (pointof ball)
 # enemy geometry
 enemycircle (circle enemypoint MARK_DIST)
 passline (line ballpoint enemypoint)
-markpoint (linecircleintersection passline enemycircle 1)
+markpoint (linecircleintersection passline enemycircle 0)
 
 Actions: 
 (robotpointpointmovenoavoid marker markpoint ballpoint)

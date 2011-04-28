@@ -16,13 +16,18 @@ receiverpoint (pointof receiver)
 stealer (closest friendly ballpoint loose)
 stealerpoint (pointof stealer)
 
+blocktarget (closest enemy ballpoint loose)
+blocktargetpoint (pointof blocktarget)
+linetoblock (line ballpoint blocktargetpoint)
+blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
+
 Tactics:
 SmartGoalie
 Sweep (ourgoal) 0.8 True 
-Sweep (ourgoal) 1.5 True
+BlockPass blocker blocktarget
 
 Conditions:
 
 Actions:
 (robotpointpointmovenoavoid receiver regionpoint2 ballpoint)
-(robotpointpointmovenoavoid stealer ballpoint receiverpoint)
+(robotpointpointmovenoavoid stealer ballpoint ballpoint)

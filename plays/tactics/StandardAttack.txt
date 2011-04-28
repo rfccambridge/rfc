@@ -15,6 +15,15 @@ VICINITY (double 0.3)
 RANGE (double 2)
 PI (double 3.1415)
 
+ourTopCorner (point -3.05 2.1)
+ourBottomCorner (point -3.05 -2.1)
+theirBottomCorner (point 3.05 -2.1)
+theirTopCorner (point 3.05 2.1)
+
+goaltop (point 3.025 -0.33)
+goalbottom (point 3.025 0.33)
+
+CLEAR_DIST (const-double CLEAR_DIST)
 
 # Regions
 regionpoint1 (point 2.4 -0.6)
@@ -53,17 +62,17 @@ supporterinregion3 (inRegion supporterpoint regionpoint3 REGION_RADIUS)
 
 supporterinrange (< (pointpointdistance supporterpoint (theirGoalBestShot)) RANGE)
 
-supportershotclear (pathClear supporterpoint (theirGoalBestShot) 0.2)
+supportershotclear (pathClear supporterpoint (theirGoalBestShot) CLEAR_DIST)
 
 supporterhasshot (and supporterinrange supportershotclear)
 
-passclear (pathClear ballpoint supporterpoint 0.2)
+passclear (pathClear ballpoint supporterpoint CLEAR_DIST)
 
 supporterwellpositioned (and supporterhasshot passclear) 
 
 supporterfree (= 0 (numberOfRobotsInACircle supportercircle enemy))
 
-ballpassed (< passdiffdistance 0.2) 
+ballpassed (< passdiffdistance CLEAR_DIST) 
 
 shotongoal (bool false)
 
@@ -82,13 +91,18 @@ waitforpass (donothing supporter)
 meetpass (robotpointpointmovenoavoid supporter ballpoint ballpoint) 
 
 # TODO getoutofway
-getoutofway (donothing supporter)
+getoutofwaypoint (if_point (< (getYcoord supporterpoint) 0) theirBottomCorner theirTopCorner)
+getoutofway (robotpointpointmovenoavoid supporter getoutofwaypoint ballpoint)
 
 # TODO improveshootangle
-improveshootangle (donothing supporter)
+improveshootanglepoint (if_point (< (getYcoord supporterpoint) 0) (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)) (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)))
+ 
+improveshootangle (robotpointpointmove supporter improveshootanglepoint ballpoint)
 
 # TODO improvepassangle 
-improvepassangle (donothing supporter)
+improvepassanglepoint (if_point (< (getYcoord supporterpoint) 0) (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)) (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))) 
+
+improvepassangle (robotpointpointmove supporter improveshootanglepoint ballpoint)
 
 # Decision tree
 #support 
@@ -106,7 +120,7 @@ improvepassangle (donothing supporter)
 #			changeregion))
 #	getinrange)
 
-support (if_Action supporterinrange (if_Action ballpassed (if_Action shotongoal meetpass meetpass) (if_Action supporterfree (if_Action passclear (if_Action supportershotclear waitforpass waitforpass) waitforpass) changeregion)) getinrange)
+support (if_Action supporterinrange (if_Action ballpassed (if_Action shotongoal getoutofway meetpass) (if_Action supporterfree (if_Action passclear (if_Action supportershotclear waitforpass improveshootangle) improvepassangle) changeregion)) getinrange)
 
 # ATTACKER 
 # Geometry
@@ -123,12 +137,14 @@ dribbleawaypoint (rotatePointAroundAnotherPoint attackerpoint enemyattackercircl
 
 
 # booleans
-attackerhasshot (and ballinrange (pathClear ballpoint (theirGoalBestShot) 0.2))
+attackerhasshot (and ballinrange (pathClear ballpoint (theirGoalBestShot) CLEAR_DIST))
 
 attackerfree (= 0 (numberOfRobotsInACircle attackercircle enemy))
 
 # Actions
-shoot (robotpointkick attacker (theirGoalBestShot))
+shootTarget (if_point (pathClear attackerpoint (theirgoal) CLEAR_DIST) (theirgoal) (if_point (pathClear attackerpoint goaltop CLEAR_DIST) goaltop (if_point (pathClear attackerpoint goalbottom CLEAR_DIST) goalbottom (theirGoalBestShot))))
+shoot (robotpointkick attacker shootTarget) 
+
 pass (robotpointkick attacker supporterpoint)
 dribbleup (robotpointdribble attacker dribbleuppoint)
 dribbleaway (robotpointdribble attacker dribbleawaypoint)

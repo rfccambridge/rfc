@@ -1043,6 +1043,7 @@ namespace Robocup.Plays
 
             addFunction("ballCloseToTeam", "Team - Bool", "Is the ball close to team ~?", typeof(bool), new Type[] { typeof(TeamCondition) }, delegate(EvaluatorState state, object[] objects)
             {
+                double POSSESSION_DIST = Core.Constants.get<double>("plays", "POSSESSION_DIST");
                 TeamCondition condition = (TeamCondition)objects[0];
                 double closest = 1000;
 
@@ -1057,7 +1058,7 @@ namespace Robocup.Plays
                     if (teamdist < closest)
                         closest = teamdist;
                 }
-                return (closest < 0.1);
+                return (closest < POSSESSION_DIST);
             });
 
             addFunction("ballMoving", "Is the ball in motion?", "Is the ball in motion?", typeof(bool), new Type[] { }, delegate(EvaluatorState state, object[] objects)

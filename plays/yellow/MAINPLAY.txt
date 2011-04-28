@@ -12,17 +12,25 @@ topRightCorner (point 3.05 2.1)
 
 PI (double 3.1415)
 DANGER_ZONE (double 1)
+POSSESSION_DIST (const-double POSSESSION_DIST)
 ourgoalregion (circle (point -2 0) 1)
 
 numRobots (numourbots)
+nothing (nullAction)
 
 ballpoint (pointof ball)
+ballcircle (circle ballpoint POSSESSION_DIST)
 
-nothing (nullAction)
+
 
 # booleans
 ballcontended (and (ballCloseToTeam enemy) (ballCloseToTeam friendly))
 shouldclear (or (< (pointpointdistance ballpoint (ourgoal)) DANGER_ZONE) (> (numberOfRobotsInACircle ourgoalregion enemy) 1))
+
+balladvance (ballMovingTowardPointWithinAngle (theirgoal) (/ PI 2))
+ballretreat (ballMovingTowardPointWithinAngle (ourgoal) (/ PI 2))
+
+ballfree (and (= (numberOfRobotsInACircle ballcircle enemy) 0) (= (numberOfRobotsInACircle ballcircle friendly) 0))
 
 
 Conditions:
@@ -52,9 +60,9 @@ Actions:
 #(if_Action (= numRobots 5) (assignPlay DEFENSE_2vs0) nothing)
 #(if_Action (= numRobots 5) (assignPlay DEFENSE_3vs0) nothing)
 
-# ENSURE DECISION TREE MAKES SENSE
 
-# 5 robot decision tree
+
+# OLD DECISION TREE
 #(if_Action (= numRobots 5) 
 #	(if_Action ballcontended
 #		(if_Action shouldclear 
@@ -72,5 +80,25 @@ Actions:
 #
 #	nothing)
 
-(if_Action (= numRobots 5) (if_Action ballcontended (if_Action shouldclear (assignPlay CLEARBALL_5vs0) (assignPlay GETBALL_5vs0)) (if_Action (ballCloseToTeam friendly) (assignPlay OFFENSE_5vs0) (if_Action (ballCloseToTeam enemy) (assignPlay DEFENSE_5vs0) (if_Action (ballMovingTowardPointWithinAngle (theirgoal) (/ PI 2)) (assignPlay OFFENSE_5vs0) (if_Action (ballMovingTowardPointWithinAngle (ourgoal) (/ PI 2)) (assignPlay DEFENSE_5vs0) (assignPlay DEFENSE_5vs0)))))) nothing)
+
+# NEW DECISION TREE
+#(if_Action (= numRobots 5) 
+#	(if_Action (ballmoving)
+#		(if_Action balladvance
+#			(assignPlay OFFENSE_5vs0)
+#			(assignPlay DEFENSE_5vs0))
+#		(if_Action ballfree
+#			(assignPlay GETBALL_5vs0) 
+#			(if_Action ballcontended 
+#				(if_Action shouldclear
+#					(assignPlay CLEARBALL_5vs0) 
+#					(assignPlay OFFENSE_5vs0)) 
+#				(if_Action (ballCloseToTeam enemy)
+#						(assignPlay DEFENSE_5vs0) 
+#						(assignPlay OFFENSE_5vs0)))))
+#
+#	nothing)
+
+
+(if_Action (= numRobots 5) (if_Action (ballmoving) (if_Action balladvance (assignPlay OFFENSE_5vs0) (assignPlay DEFENSE_5vs0)) (if_Action ballfree (assignPlay GETBALL_5vs0)  (if_Action ballcontended  (if_Action shouldclear (assignPlay CLEARBALL_5vs0) (assignPlay OFFENSE_5vs0)) (if_Action (ballCloseToTeam enemy) (assignPlay DEFENSE_5vs0) (assignPlay OFFENSE_5vs0))))) nothing)
 
