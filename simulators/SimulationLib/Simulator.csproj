@@ -53,6 +53,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net, Version=1.0.0.280, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vision\SSLClient\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -79,6 +83,10 @@
       <Project>{A53931A0-3FC5-4F2F-90CE-D7768E0D2CEF}</Project>
       <Name>CoreRobotics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\strategy\Geometry\Geometry.csproj">
+      <Project>{988ED745-BF01-4C8F-95CD-10A5DC51E5EB}</Project>
+      <Name>Geometry</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\system\Core\Core.csproj">
       <Project>{501CE524-9C56-4C08-B04F-69A92318872A}</Project>
       <Name>Core</Name>
@@ -91,9 +99,9 @@
       <Project>{729B7FC5-FCC1-481C-8C0F-CD3C2855973C}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\vision\SSLClientWrapper\SSLClientWrapper.vcxproj">
-      <Project>{3D6BCAD3-A81A-4ADB-9B80-115920094F24}</Project>
-      <Name>SSLClientWrapper</Name>
+    <ProjectReference Include="..\..\vision\SSLClient\SSLVisionLib.csproj">
+      <Project>{8360F24F-CB7C-47E8-BB2F-E3E0B83BAAA0}</Project>
+      <Name>SSLVisionLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

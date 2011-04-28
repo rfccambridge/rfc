@@ -7,17 +7,18 @@ using MovementModeler = Robocup.CoreRobotics.MovementModeler;
 using Robocup.CoreRobotics;
 using Robocup.Utilities;
 using Robocup.MessageSystem;
+using Robocup.Geometry;
+using Robocup.SSLVisionLib;
 
 namespace Robocup.Simulation
 {
     public class PhysicsEngine : IPredictor
     {
-        // TODO 189: Your job is to characterize this for different kick strengths
-        const double KICKED_BALL_SPEED = 3.0;  //In m/s
+        const double KICKED_BALL_SPEED = 4.3;  //In m/s
 
         const double BALL_ROBOT_ELASTICITY = 0.5; //The fraction of the speed kept when bouncing off a robot
         const double BALL_WALL_ELASTICITY = 0.9; //The fraction of the speed kept when bouncing off a wall
-        const double BALL_FRICTION = 1.0; //The amount of speed lost per second by the ball
+        const double BALL_FRICTION = .76; //The amount of speed lost per second by the ball
 
         const double ROBOT_RADIUS = 0.08;
         const double ROBOT_FRONT_RADIUS = 0.055;
@@ -38,35 +39,54 @@ namespace Robocup.Simulation
         static double GOAL_WIDTH;
         static double REFEREE_ZONE_WIDTH;
 
+        //Running data-----------------------------------------------------------
         private bool running = false;
         private System.Timers.Timer mainTimer = new System.Timers.Timer();
         private int mainTimerSync = 0;
         private int counter = 0;
 
-		private int numYellow;
-		private int numBlue;
+        //Random-----------------------------------------------------------------
+        private Random myRand = new Random();
 
-        public int NumYellow { get { return numYellow; } }
-        public int NumBlue { get { return numBlue; } }
-
+        //Getting robot commands--------------------------------------------------
         private IMessageReceiver<RobotCommand> cmdReceiver;
 
+        //Vision-------------------------------------------------------------------
         private bool visionStarted = false;
-        SSLVision.RoboCupSSLServerManaged sslVisionServer;
+        SSLVisionServer sslVisionServer;
 
+        private bool noisyVision = false;
+        const double noisyVisionStdev = 0.004; //Standard deviation of gaussian noise in meters
+
+        //Every frame, with probability (noisyVisionBallLoseProb), generate a random gaussian distributed value
+        // with given mean and stdev. If the ball is closer to the surface of any robot than that value, lose the ball.
+        const double noisyVisionBallLoseProb = 0.3;
+        const double noisyVisionBallLoseMean = 0;
+        const double noisyVisionBallLoseStdev = 0.05;
+        const double noisyVisionBallUnloseRadius = 0.10; //Un-lose the ball when it goes this far away from every robot
+        private bool noisyVision_BallLost = false;
+       
+        //Refbox and scenarios----------------------------------------------------
         private bool refBoxStarted = false;
         private MulticastRefBoxSender refBoxSender = new MulticastRefBoxSender();
+        public Team LastTouched = Team.Blue;
         public IVirtualReferee Referee;
 
         private SimulatedScenario scenario;
         private Object updateScenarioLock = new Object();
+
+        //Status of field and teams------------------------------------
+        private int numYellow;
+        private int numBlue;
+
+        public int NumYellow { get { return numYellow; } }
+        public int NumBlue { get { return numBlue; } }
 
 		private BallInfo ball = null;
         private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
 
         private Dictionary<Team, Dictionary<int, MovementModeler>> movement_modelers = new Dictionary<Team, Dictionary<int, MovementModeler>>();
         private Dictionary<Team, Dictionary<int, WheelSpeeds>> speeds = new Dictionary<Team, Dictionary<int, WheelSpeeds>>();
-        // TODO 189: Your job is to maintain state about the level of charge on the robots
         private Dictionary<Team, Dictionary<int, bool>> break_beams = new Dictionary<Team, Dictionary<int, bool>>();
 
 		public PhysicsEngine()
@@ -152,8 +172,8 @@ namespace Robocup.Simulation
             if (visionStarted)
                 throw new ApplicationException("Vision already running.");
 
-            sslVisionServer= new SSLVision.RoboCupSSLServerManaged(port, host, "");
-            sslVisionServer.open();
+            sslVisionServer= new SSLVisionServer();
+            sslVisionServer.Connect(host, port);
 
             visionStarted = true;
         }
@@ -163,9 +183,14 @@ namespace Robocup.Simulation
             if (!visionStarted)
                 throw new ApplicationException("Vision not running.");
 
-            sslVisionServer.close();
+            sslVisionServer.Disconnect();
 
             visionStarted = false;
+        }
+
+        public void SetNoisyVision(bool b)
+        {
+            noisyVision = b;
         }
 
         public void StartReferee(string host, int port)
@@ -314,6 +339,8 @@ namespace Robocup.Simulation
 
                     if (collided)
                     {
+                        LastTouched = r.Team;
+
                         //Compute new position of ball
                         newBallLocation = robotLoc + (COLLISION_RADIUS + .005) * (ball.Position - robotLoc).normalize();
 
@@ -364,8 +391,8 @@ namespace Robocup.Simulation
             }
             
             // Synchronously (at least for now) send out a vision message
-            SSLVision.SSL_DetectionFrameManaged frame = constructSSLVisionFrame();
-            sslVisionServer.send(frame);
+            SSL_WrapperPacket packet = constructSSLVisionFrame();
+            sslVisionServer.Send(packet);
 
             Referee.RunRef(this);
             if (refBoxStarted)
@@ -399,33 +426,113 @@ namespace Robocup.Simulation
         	ball.LastSeen = new_info.LastSeen;
         }
 
-        private SSLVision.SSL_DetectionFrameManaged constructSSLVisionFrame()
+        private double getGaussianRandom()
         {
-                SSLVision.SSL_DetectionFrameManaged frame = new SSLVision.SSL_DetectionFrameManaged();
+            double u1 = myRand.NextDouble();
+            double u2 = myRand.NextDouble();
+            return Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
+        }
 
-                Vector2 ballPos = convertToSSLCoords(ball.Position);
-                frame.add_ball(1, (float)ballPos.X, (float)ballPos.Y);
+        private double applyVisionNoise(double d)
+        {
+            if (!noisyVision)
+                return d;
 
-                foreach (RobotInfo robot in robots[Team.Yellow])
+            return d + getGaussianRandom() * noisyVisionStdev;
+        }
+
+        private Vector2 applyVisionNoise(Vector2 v)
+        {
+            return new Vector2(applyVisionNoise(v.X), applyVisionNoise(v.Y)); 
+        }
+
+        private double minDistFromBallToRobot()
+        {
+            double minDist = Double.PositiveInfinity;
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+                foreach (RobotInfo info in robots[team])
                 {
-                    Vector2 pos = convertToSSLCoords(robot.Position);
-                    frame.add_robot_yellow(1, robot.ID, (float)pos.X, (float)pos.Y,
-                                         (float)robot.Orientation);
+                    double dist = (info.Position - ball.Position).magnitude();
+                    dist -= ROBOT_RADIUS;
+                    dist -= BALL_RADIUS;
+                    if (dist < minDist)
+                        minDist = dist;
                 }
-                foreach (RobotInfo robot in robots[Team.Blue])
-                {
-                    Vector2 pos = convertToSSLCoords(robot.Position);
-                    frame.add_robot_blue(1, robot.ID, (float)pos.X, (float)pos.Y,
-                                         (float)robot.Orientation);
-                }
+            return minDist;
+        }
 
-                // dummy-fill required fields
-                frame.set_frame_number(0);
-                frame.set_camera_id(0);
-                frame.set_t_capture(0);
-                frame.set_t_sent(0);
+        private bool checkVisionBallLoss()
+        {
+            if (!noisyVision)
+                return false;
 
-                return frame;
+            if (noisyVision_BallLost)
+            {
+                //See if we are far enough from robots to unlose the ball now
+                if (minDistFromBallToRobot() >= noisyVisionBallUnloseRadius)
+                    noisyVision_BallLost = false;                
+            }
+
+            //Lose the ball, maybe
+            if (!noisyVision_BallLost && myRand.NextDouble() < noisyVisionBallLoseProb)
+            {
+                double loseBallRadius = Math.Abs(noisyVisionBallLoseMean + noisyVisionBallLoseStdev * getGaussianRandom());
+                if (minDistFromBallToRobot() < loseBallRadius)
+                    noisyVision_BallLost = true;
+            }
+
+            return noisyVision_BallLost;
+        }
+
+        private SSL_WrapperPacket constructSSLVisionFrame()
+        {
+            SSL_WrapperPacket packet = new SSL_WrapperPacket();
+
+            SSL_DetectionFrame frame = new SSL_DetectionFrame();
+
+            if (!checkVisionBallLoss())
+            {
+                Vector2 ballPos = convertToSSLCoords(applyVisionNoise(ball.Position));
+                SSL_DetectionBall newBall = new SSL_DetectionBall();
+                newBall.confidence = 1;
+                newBall.x = (float)ballPos.X;
+                newBall.y = (float)ballPos.Y;
+                frame.balls.Add(newBall);
+            }
+            foreach (RobotInfo robot in robots[Team.Yellow])
+            {
+                Vector2 pos = convertToSSLCoords(applyVisionNoise(robot.Position));
+                SSL_DetectionRobot newBot = new SSL_DetectionRobot();
+                newBot.confidence = 1;
+                newBot.robot_id = (uint)robot.ID;
+                newBot.x = (float)pos.X;
+                newBot.y = (float)pos.Y;
+                newBot.orientation = (float)robot.Orientation;
+
+                frame.robots_yellow.Add(newBot);
+            }
+            foreach (RobotInfo robot in robots[Team.Blue])
+            {
+                Vector2 pos = convertToSSLCoords(applyVisionNoise(robot.Position));
+                SSL_DetectionRobot newBot = new SSL_DetectionRobot();
+                newBot.confidence = 1;
+                newBot.robot_id = (uint)robot.ID;
+                newBot.x = (float)pos.X;
+                newBot.y = (float)pos.Y;
+                newBot.orientation = (float)robot.Orientation;
+
+                frame.robots_blue.Add(newBot);
+            }
+
+            // dummy-fill required fields
+            frame.frame_number = 0;
+            frame.camera_id = 0;
+            frame.t_capture = 0;
+            frame.t_sent = 0;
+
+            packet.detection = frame;
+
+            return packet;
         }
 
         private Vector2 convertToSSLCoords(Vector2 pt)
@@ -458,7 +565,6 @@ namespace Robocup.Simulation
                     case RobotCommand.Command.MOVE:
                         this.speeds[team][command.ID] = command.Speeds;
                         break;
-                    // TODO 189: Your job is to capture START_CHARGING and START_VARIABLE_CHARGING commands
                     case RobotCommand.Command.KICK:
                         {
                             // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist                                                
@@ -477,6 +583,8 @@ namespace Robocup.Simulation
                             //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
                             //RobotInfo prev = robot;
                             //const double recoil = .02 / initial_ball_speed; ;
+                            LastTouched = robot.Team;
+                            
                             UpdateBall(new BallInfo(ball.Position, new Vector2(ballVx, ballVy)));
                             //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
                             break;
@@ -490,6 +598,9 @@ namespace Robocup.Simulation
 
                             const int BREAKBEAM_CHECK_PERIOD = 100; // ms
                             const double BREAKBEAM_TIMEOUT = 10; // s
+
+                            double varspeed = KICKED_BALL_SPEED;
+
 
                             if (!break_beams[team].ContainsKey(command.ID))
                             {
@@ -523,14 +634,42 @@ namespace Robocup.Simulation
                                     //                  " Distsq: " + kickerPosition.distanceSq(ballInfo.Position));
                                     if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS_SQ)
                                     {
-                                        double ballVx = (double)(KICKED_BALL_SPEED) * Math.Cos(robot.Orientation);
-                                        double ballVy = (double)(KICKED_BALL_SPEED) * Math.Sin(robot.Orientation);
+                                        
+                                        
+                                        switch (command.KickerStrength)
+                                        {
+
+                                            case 1:
+                                                varspeed = 0;
+                                                break;
+                                            case 2:
+                                                varspeed = 1.81;
+                                                break;
+                                            case 3:
+                                                varspeed = 2.88;
+                                                break;
+                                            case 4:
+                                                varspeed = 3.33;
+                                                break;
+                                            case 5:
+                                                varspeed = 4.25;
+                                                break;
+                                            default:
+                                                varspeed = 4.3;
+                                                break;
+
+                                        }
+                                        
+                                        double ballVx = (double)(varspeed) * Math.Cos(robot.Orientation);
+                                        double ballVy = (double)(varspeed) * Math.Sin(robot.Orientation);
                                         Vector2 newVelocity = new Vector2(ballVx, ballVy);
                                         Console.WriteLine("ORIENTATION: " + robot.Orientation + " X: " + ballVx + " Y: " + ballVy);
                                         //ballVx += (double)(r.NextDouble() * 2 - 1) * randomComponent;
                                         //ballVy += (double)(r.NextDouble() * 2 - 1) * randomComponent;
                                         //RobotInfo prev = robot;
                                         //const double recoil = .02 / initial_ball_speed; ;
+                                        LastTouched = robot.Team;
+                                        
                                         UpdateBall(new BallInfo(ball.Position + newVelocity / 100.0, newVelocity));
                                         //UpdateRobot(robot, new RobotInfo(prev.Position + (new Vector2(-ballVx * recoil, -ballVy * recoil)), prev.Orientation, prev.ID));
 

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Robocup.Core;
 using System.Drawing;
+using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.CoreRobotics
 {

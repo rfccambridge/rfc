@@ -49,7 +49,7 @@ namespace Robocup.MotionControl
             set { waypointprob = value; }
         }
 
-        private int maxextends = 4;
+        private int maxextends = 8;
         public int MaxExtends
         {
             get { return maxextends; }
@@ -101,10 +101,10 @@ namespace Robocup.MotionControl
         {
             G tree = new G();
             tree.AddNode(current, null);
-            double quality = 0;
+            //double quality = 0;
             double maxcost = 0;
             double optcost = cost(tree, current, goal);
-            double probfloor = 0.6;
+            //double probfloor = 0.6;
 
             while (tree.Size() < MaxTreeSize)
             {
@@ -129,7 +129,6 @@ namespace Robocup.MotionControl
                         extendTo = randomstate();
                     }
                      * */
-                     
                 }
 
                 extendFrom = tree.ClosestGoingTo(extendTo);
@@ -163,8 +162,17 @@ namespace Robocup.MotionControl
                 }
             }
             //didn't find a path,
+            Console.WriteLine("Didn't find RRT path " + tree.Size());
             lastTree = tree;
-            return GetPath(tree.ClosestGoingTo(goal), tree);
+
+            List<T> list = GetPath(tree.ClosestGoingTo(goal), tree);
+            if(list.Count <= 1)
+            {
+                list = new List<T>();
+                list.Add(current);
+                list.Add(goal);
+            }
+            return list;
         }
 
         private double cost(G tree, T start, T end)

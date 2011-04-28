@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Robocup.Geometry;
 
 namespace Robocup.Core
 {
-    [Serializable]
     public class VisionMessage
     {        
-        [Serializable]
         public class RobotData
         {
             private Team team;
@@ -96,6 +95,16 @@ namespace Robocup.Core
         public List<RobotData> Robots
         {
             get { return robots; }
-        }       
+        }
+
+        /// <summary>
+        /// Delays we can measure with certainty (that is, lower bounds on delay)
+        /// </summary>
+        private double delay;
+        public double Delay
+        {
+            get { return delay; }
+            set { delay = value; }
+        }
     }
 }

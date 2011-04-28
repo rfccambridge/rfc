@@ -4,6 +4,7 @@ using System.Text;
 
 using Robocup.Core;
 using Robocup.CoreRobotics;
+using Robocup.Geometry;
 
 using System.Drawing;
 
@@ -53,7 +54,7 @@ namespace Robocup.MotionControl
             if (start.distanceSq(end) < extendDistance * extendDistance)
                 return new ExtendResults<Vector2>(end, ExtendResultType.Destination);
             Vector2 next = (end - start).normalizeToLength(extendDistance) + start;
-            if (Blocked(next, obstacles))
+            if (SegmentBlocked(start, next, obstacles))
                 return new ExtendResults<Vector2>(next, ExtendResultType.Blocked);
             return new ExtendResults<Vector2>(next, ExtendResultType.Success);
         }
@@ -100,8 +101,37 @@ namespace Robocup.MotionControl
         {
             foreach (Obstacle o in obstacles)
             {
-                
                 if (o.position.distanceSq(point) < o.size * o.size)
+                    return true;
+            }
+            return false;
+        }
+
+        //Checks if any part of the line segment from (point) to (point+ray) intersects an obstacle.
+        static public bool SegmentBlocked(Vector2 point, Vector2 dest, List<Obstacle> obstacles)
+        {
+            Vector2 ray = dest - point;
+            if (ray.magnitudeSq() < 1e-16)
+                return Blocked(point + ray, obstacles);
+
+            Vector2 rayUnit = ray.normalizeToLength(1.0);
+            double rayLen = ray.magnitude();
+
+            foreach (Obstacle o in obstacles)
+            {
+                if (o.position.distanceSq(point) < o.size * o.size)
+                    return true;
+                if (o.position.distanceSq(dest) < o.size * o.size)
+                    return true;
+
+                //See if it intersects in the middle...
+                Vector2 pointToObs = o.position - point;
+                double parallelDist = pointToObs * rayUnit;
+                if (parallelDist <= 0 || parallelDist >= rayLen)
+                    continue;
+
+                double perpDist = Math.Abs(Vector2.cross(pointToObs, rayUnit));
+                if (perpDist < o.size)
                     return true;
             }
             return false;

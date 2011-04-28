@@ -1,27 +1,36 @@
 ﻿using System;
 using Robocup.Core;
+using Robocup.Geometry;
 using CSML;
 
 namespace Robocup.MotionControl
 {
-	
-	// Implements model-based feedback (TODO: cite doc with actual model)
+	// Implements model-based feedback
 	// Essential job is to calculate command based on current & desired (position, orientation, velocity, angular velocity)
 	public class ModelFeedback
 	{
+        //4x6 GainMatrix that converts error vector to command
+		public Matrix GAIN_MATRIX = null;
+
         // scaling factor applied to the matrix
         static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
-        double [] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS];
+        double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
+        private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
+        private double WAYPOINT_DIST;
 
-        private double SPEED_SCALING_FACTOR_ALL;
+        private double fixedSpeedHackProp;
 
 		public ModelFeedback()
 		{
 			LoadConstants();
+            this.fixedSpeedHackProp = 0;
 		}
 
-		//4x6 GainMatrix that converts error vector to command
-		public Matrix GainMatrix = null;
+        public void SetFixedSpeedHackProp(double prop)
+        {
+            fixedSpeedHackProp = prop;
+        }
+
 
 		public void LoadConstants()
 		{
@@ -32,11 +41,13 @@ namespace Robocup.MotionControl
                 SPEED_SCALING_FACTORS[i] = Constants.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
             }
 
-			GainMatrix = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));
-            GainMatrix *= Constants.get<double>("control", "GAIN_MATRIX_SCALE");
+			GAIN_MATRIX = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));
+            GAIN_MATRIX *= Constants.get<double>("control", "GAIN_MATRIX_SCALE");
 			
-			if(GainMatrix.ColumnCount != 6 || GainMatrix.RowCount != 4)
+			if(GAIN_MATRIX.ColumnCount != 6 || GAIN_MATRIX.RowCount != 4)
 				throw new ApplicationException("Invalid dimensoins of GAIN_MATRIX in control.txt!");
+
+            WAYPOINT_DIST = Constants.get<double>("motionplanning", "WAYPOINT_DIST");
 		}
 
 		/// <summary>
@@ -47,83 +58,66 @@ namespace Robocup.MotionControl
 		/// <returns></returns>
 		public WheelSpeeds ComputeWheelSpeeds(RobotInfo currentState, RobotInfo desiredState)
 		{
-
             //Smallest turn algorithm
-            //get angles between 0 and two pi
-            double thetaGoal = desiredState.Orientation;
-            double thetaCurr = currentState.Orientation;
+            double dTheta = desiredState.Orientation - currentState.Orientation;
 
-            /*Console.Write("\before ncurrent angle: ");
-            Console.WriteLine(thetaCurr);
-            Console.Write("desired angle: ");
-            Console.WriteLine(thetaGoal);
-             */
-
-            while (thetaCurr >= 2 * Math.PI) {
-                thetaCurr -= 2 * Math.PI;
-            }
-            while (thetaCurr < 0) {
-                thetaCurr += 2 * Math.PI;
-            }
-
-            while (thetaGoal >= 2 * Math.PI) {
-                thetaGoal -= 2 * Math.PI;
-            }
-            while (thetaGoal < 0) {
-                thetaGoal += 2 * Math.PI;
-            }
-
-            if (thetaGoal - thetaCurr >= Math.PI)
-                thetaGoal = thetaGoal - 2 * Math.PI;
-            else if (thetaGoal - thetaCurr <= -Math.PI)
-                thetaGoal = thetaGoal + 2 * Math.PI;
-
-
-            //Needed to change wheelspeed convention - from {} to {}
-            double[,] permutation = new double[4,4]{{0,0,0,1},{1,0,0,0},{0,0,1,0}, {0,0,0,1}};
-            Matrix permutationMatrix = new Matrix(permutation);
+            //Map dTheta to the equivalent angle in [-PI,PI]
+            dTheta = dTheta % (2 * Math.PI);
+            if (dTheta > Math.PI) dTheta -= 2 * Math.PI;
+            if (dTheta < -Math.PI) dTheta += 2 * Math.PI;
 
             double sTheta = Math.Sin(currentState.Orientation);
             double cTheta = Math.Cos(currentState.Orientation);
 
-            double[,] globalToLocal = new double[6, 6]{{cTheta, sTheta, 0,0,0,0},
-                                                        {-sTheta, cTheta,0,0,0,0},
-                                                        {0,0,1,0,0,0},
-                                                        {0,0,0,cTheta,sTheta,0},
-                                                        {0,0,0,-sTheta,cTheta,0},
-                                                        {0,0,0,0,0,1}};
+            //Convert to a reference frame centered at the robot, where wheels are diagonally oriented.
+            //When the robot is facing RIGHT, the wheels are numbered 1,2,3,4 COUNTERCLOCKWISE, beginning with the
+            //lower right wheel (the front-right wheel from the robot's perspective).
+            //Sending POSITIVE speeds to all wheels causes the robot to go COUNTERCLOCKWISE
+            double[,] globalToLocal = new double[6, 6]{{ cTheta, sTheta,   0,      0,      0,   0},
+                                                       {-sTheta, cTheta,   0,      0,      0,   0},
+                                                       {      0,      0,   1,      0,      0,   0},
+                                                       {      0,      0,   0, cTheta, sTheta,   0},
+                                                       {      0,      0,   0,-sTheta, cTheta,   0},
+                                                       {      0,      0,   0,      0,      0,   1}};
             Matrix globalToLocalMatrix = new Matrix(globalToLocal);
-            
+
+            //We do a hack here for now. For motion planners who actually like to set their waypoints denser or sparser
+            //than tangentbug, they can use fixedSpeedHackProp to artificially extend the desired waypoint out to the
+            //same distance that tangentbug would put it.
+            //Properly, we should alter this code to not do something like this. Maybe we can convert fixedSpeedHackProp
+            //into a "desired precision" variable, where setting the desired precision interpolates between just moving
+            //at full speed and actually using the gain matrix for precision placement.
+            Vector2 dPos = desiredState.Position - currentState.Position;
+            if(fixedSpeedHackProp > 0)
+            {
+                double magnitude = dPos.magnitude();
+                if (desiredState.Velocity != Vector2.ZERO)
+                { dPos = dPos.normalizeToLength(fixedSpeedHackProp * WAYPOINT_DIST + (1 - fixedSpeedHackProp) * magnitude); }
+            }
+
 			Matrix errorVector = new Matrix(6,1);
-			
-			errorVector[1] = new Complex(currentState.Position.X - desiredState.Position.X);
-			errorVector[2] = new Complex(currentState.Position.Y - desiredState.Position.Y);
-            errorVector[3] = new Complex(thetaCurr - thetaGoal); //currentState.Orientation - desiredState.Orientation);  //Hack to test stuf!!!!!!!!!!!
-            
-			errorVector[4] = new Complex(currentState.Velocity.X - desiredState.Velocity.X);
-			errorVector[5] = new Complex(currentState.Velocity.Y - desiredState.Velocity.Y);
-			errorVector[6] = new Complex(currentState.AngularVelocity - desiredState.AngularVelocity);
+            errorVector[1] = new Complex(dPos.X);
+            errorVector[2] = new Complex(dPos.Y);
+            errorVector[3] = new Complex(dTheta);
+			errorVector[4] = new Complex(desiredState.Velocity.X - currentState.Velocity.X);
+			errorVector[5] = new Complex(desiredState.Velocity.Y - currentState.Velocity.Y);
+			errorVector[6] = new Complex(desiredState.AngularVelocity - currentState.AngularVelocity);
 
             Matrix localError = globalToLocalMatrix * errorVector;
 
-            //if (currentState.Velocity.magnitudeSq() > 0.25)
-                //GainMatrix = GainMatrix;
+            //Multiply by the gain matrix, which specifies the wheel speeds that should be given in response to each
+            //error component.
+            Matrix commandVector = GAIN_MATRIX * localError;
 
-            //Matrix commandVector = GainMatrix * localError * 50; // 185
-            
-            Matrix commandVector = GainMatrix * localError;
-
-            //double[] _command = new double[4] { 0, 0, 0, 30 };
-            //Matrix commandVector = new Matrix(_command);
-            
-            //commandVector = permutationMatrix * commandVector; 
-
-            // We are doing scaling, and doing so per robot
+            //Scale the speeds, both globally and per-robot.
             commandVector = SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[currentState.ID] * commandVector;
 
-			WheelSpeeds command = new WheelSpeeds(-Convert.ToInt32(commandVector[4].Re), -Convert.ToInt32(commandVector[1].Re), 
-				-Convert.ToInt32(commandVector[2].Re), -Convert.ToInt32(commandVector[3].Re));
-            //Console.WriteLine(commandVector);
+            //Build and return the command
+            WheelSpeeds command = new WheelSpeeds(
+                Convert.ToInt32(commandVector[1].Re), 
+                Convert.ToInt32(commandVector[2].Re), 
+				Convert.ToInt32(commandVector[3].Re), 
+                Convert.ToInt32(commandVector[4].Re));
 
 			return command;
 		}

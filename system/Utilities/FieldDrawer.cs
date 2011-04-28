@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using Robocup.Core;
+using Robocup.Geometry;
 
 namespace Robocup.Utilities
 {
@@ -132,7 +133,7 @@ namespace Robocup.Utilities
         double[] _projectionMatrix = new double[16];
         int[] _viewport = new int[4];
 
-        const int NUM_VALUES_TO_AVG = 150;
+        const int NUM_VALUES_TO_AVG = 30;
         double interpretFreqAvg, interpretDurationAvg, controllerDurationAvg;
         int interpretFreqCnt = 0, interpretDurationCnt = 0, controllerDurationCnt = 0;        
 
@@ -343,32 +344,22 @@ namespace Robocup.Utilities
 
         public void UpdateInterpretFreq(double freq)
         {
-            if (interpretFreqCnt == 0)
-                interpretFreqAvg = freq;
-            else
-                interpretFreqAvg += freq;
-            interpretFreqCnt++;
+            if (interpretFreqCnt < NUM_VALUES_TO_AVG)
+                interpretFreqCnt++;
 
-            if (interpretFreqCnt == NUM_VALUES_TO_AVG)
-            {
-                _fieldDrawerForm.UpdateInterpretFreq(interpretFreqAvg / interpretFreqCnt);
-                interpretFreqCnt = 0;
-            }
+            double prop = 1.0 / interpretFreqCnt;
+            interpretFreqAvg = freq * prop + interpretFreqAvg * (1.0 - prop);
+            _fieldDrawerForm.UpdateInterpretFreq(interpretFreqAvg);
         }
         
         public void UpdateInterpretDuration(double duration)
         {
-            if (interpretDurationCnt == 0)
-                interpretDurationAvg = duration;
-            else
-                interpretDurationAvg += duration;
-            interpretDurationCnt++;
+            if (interpretDurationCnt < NUM_VALUES_TO_AVG)
+                interpretDurationCnt++;
 
-            if (interpretDurationCnt == NUM_VALUES_TO_AVG)
-            {
-                _fieldDrawerForm.UpdateInterpretDuration(interpretDurationAvg / interpretDurationCnt);
-                interpretDurationCnt = 0;
-            }
+            double prop = 1.0 / interpretDurationCnt;
+            interpretDurationAvg = duration * prop + interpretDurationAvg * (1.0 - prop);
+            _fieldDrawerForm.UpdateInterpretDuration(interpretDurationAvg);
         }
 
         public void UpdateLapDuration(double duration)
@@ -378,17 +369,12 @@ namespace Robocup.Utilities
         
         public void UpdateControllerDuration(double duration)
         {
-            if (controllerDurationCnt == 0)
-                controllerDurationAvg = duration;
-            else
-                controllerDurationAvg += duration;
-            controllerDurationCnt++;
+            if (controllerDurationCnt < NUM_VALUES_TO_AVG)
+                controllerDurationCnt++;
 
-            if (controllerDurationCnt == NUM_VALUES_TO_AVG)
-            {
-                _fieldDrawerForm.UpdateControllerDuration(controllerDurationAvg / controllerDurationCnt);
-                controllerDurationCnt = 0;
-            }
+            double prop = 1.0 / controllerDurationCnt;
+            controllerDurationAvg = duration * prop + controllerDurationAvg * (1.0 - prop);
+            _fieldDrawerForm.UpdateControllerDuration(controllerDurationAvg);
         }
 
         public void UpdatePlayName(Team team, int robotID, string name)
@@ -491,7 +477,8 @@ namespace Robocup.Utilities
 
             lock (_collectingStateLock)
             {
-                _bufferedState.Robots[team][robotID].Path = path;
+                if (_bufferedState.Robots[team].ContainsKey(robotID))
+                    _bufferedState.Robots[team][robotID].Path = path;
             }
         }
         
