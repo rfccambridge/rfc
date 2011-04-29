@@ -72,7 +72,7 @@ namespace Robocup.CoreRobotics
                         newMessage.Ball = new BallInfo(msg.Ball.Position.rotate(Math.PI));
                     foreach (VisionMessage.RobotData robotInfo in msg.Robots)
                         newMessage.Robots.Add(new VisionMessage.RobotData(robotInfo.ID, robotInfo.Team,
-                                                                            robotInfo.Position.rotate(Math.PI), Geometry.UsefulFunctions.angleCheck(robotInfo.Orientation + Math.PI)));
+                                                                            robotInfo.Position.rotate(Math.PI), Geometry.Angle.AngleModTwoPi(robotInfo.Orientation + Math.PI)));
                     msg = newMessage;
                 }
 

@@ -52,7 +52,7 @@ namespace Navigation
                     if ((position - o.position).magnitudeSq() > 0.00001) {//make sure you're not yourself
                         Vector2 botObst = o.position - position;
                         Vector2 botDest = destination - position;
-                        double angle_DestObst = UsefulFunctions.angleDifference(botObst.cartesianAngle(), botDest.cartesianAngle());
+                        double angle_DestObst = Angle.AngleDifference(botObst.cartesianAngle(), botDest.cartesianAngle());
                         double obstDistsq = position.distanceSq(o.position);
                         double destDistsq = position.distanceSq(destination);
                         //if the you're close enough to the obstacle it's within ninety degrees of planned direction and it's closer than the destination
@@ -119,7 +119,7 @@ namespace Navigation
                 {
                     Vector2 botObst = o.position - position;
                     Vector2 botDest = destination - position;
-                    double angle_DestObst = UsefulFunctions.angleDifference(botObst.cartesianAngle(), botDest.cartesianAngle());
+                    double angle_DestObst = Angle.AngleDifference(botObst.cartesianAngle(), botDest.cartesianAngle());
                     if (position.distanceSq(o.position) < o.size * o.size/5 &&
                         Math.Abs(angle_DestObst) < Math.PI / 2)
 

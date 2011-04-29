@@ -364,6 +364,21 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Returns the z-component of the crossproduct P2P1 x P2P3
+        /// </summary>
+        static public double crossproduct(Vector2 p1, Vector2 p2, Vector2 p3)
+        {
+            return (p1.X - p2.X) * (p3.Y - p2.Y) - (p3.X - p2.X) * (p1.Y - p2.Y);
+        }
+        /// <summary>
+        /// Returns the dotproduct of P2P1 and P2P3
+        /// </summary>
+        static public double dotproduct(Vector2 p1, Vector2 p2, Vector2 p3)
+        {
+            return (p1.X - p2.X) * (p3.X - p2.X) + (p1.Y - p2.Y) * (p3.Y - p2.Y);
+        }
+
+        /// <summary>
         /// Provides a string representation of this Vector2.
         /// </summary>
         public override string ToString()

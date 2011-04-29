@@ -102,7 +102,7 @@ namespace Robocup.CoreRobotics
 
             //xOut = desiredState.Position.X;
             //yOut = desiredState.Position.Y;
-            thetaCommand = UsefulFunctions.angleCheck(desiredState.Orientation);
+            thetaCommand = Angle.AngleModTwoPi(desiredState.Orientation);
 
             xCommand = xOut;
             yCommand = yOut;

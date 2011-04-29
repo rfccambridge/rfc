@@ -307,7 +307,7 @@ namespace Robocup.Geometry
         }
         static private int anglesign(Vector2 p1, Vector2 p2, Vector2 p3)
         {
-            double crossp = UsefulFunctions.crossproduct(p1, p2, p3);
+            double crossp = Vector2.crossproduct(p1, p2, p3);
             return Math.Sign(crossp);
         }
     }

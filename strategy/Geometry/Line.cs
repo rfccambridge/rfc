@@ -94,7 +94,7 @@ namespace Robocup.Geometry
         public double distance(Vector2 p)
         {
             double mag = p1.distance(p0);
-            double crossp = UsefulFunctions.crossproduct(p0, p1, p);
+            double crossp = Vector2.crossproduct(p0, p1, p);
             double dist = crossp / mag;
             return Math.Abs(dist);
         }
@@ -107,7 +107,7 @@ namespace Robocup.Geometry
         public double signedDistance(Vector2 p)
         {
             double mag = p1.distance(p0);
-            double crossp = UsefulFunctions.crossproduct(p1, p0, p);
+            double crossp = Vector2.crossproduct(p1, p0, p);
             double dist = crossp / mag;
             return dist;
         }
@@ -292,10 +292,10 @@ namespace Robocup.Geometry
         /// </summary>
         public double distance(Vector2 p)
         {
-            if (UsefulFunctions.dotproduct(l.P0, l.P1, p) < 0)
+            if (Vector2.dotproduct(l.P0, l.P1, p) < 0)
                 return l.P1.distance(p);
 
-            else if (UsefulFunctions.dotproduct(l.P1, l.P0, p) < 0)
+            else if (Vector2.dotproduct(l.P1, l.P0, p) < 0)
                 return l.P0.distance(p);
 
             return l.distance(p);

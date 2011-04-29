@@ -115,7 +115,7 @@ namespace Robocup.ControlForm
             
             
             double sqDistToGoal = curinfo.Position.distanceSq(_waypoints[_waypointIndex].Position);
-            double diffOrientation = Math.Abs(UsefulFunctions.angleDifference(curinfo.Orientation, _waypoints[_waypointIndex].Orientation));
+            double diffOrientation = Math.Abs(Angle.AngleDifference(curinfo.Orientation, _waypoints[_waypointIndex].Orientation));
 
             if (sqDistToGoal < MIN_GOAL_DIST * MIN_GOAL_DIST && diffOrientation < MIN_GOAL_DIFF_ORIENTATION)
             {

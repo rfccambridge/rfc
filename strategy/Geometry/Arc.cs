@@ -12,7 +12,7 @@ namespace Robocup.Geometry
     /// </summary>
     public class Arc : Geom
     {
-        private const double TWOPI = Math.PI * 2;
+        const double TWOPI = Geometry.Angle.TWOPI;
 
         private Vector2 center;
         private double radius;
