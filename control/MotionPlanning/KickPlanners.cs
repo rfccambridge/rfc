@@ -145,7 +145,7 @@ namespace Robocup.MotionControl
             // Find lateral and parallel distances
             // First find angle from ball to robot, if the vector from the target through the
             // ball has angle 0
-            double ballToRobotAngle = UsefulFunctions.angleDifference(targetToBall.cartesianAngle(),
+            double ballToRobotAngle = Angle.AngleDifference(targetToBall.cartesianAngle(),
                                       ballToRobot.cartesianAngle());
 
             double lateralDistance = distRobotToBall * Math.Sin(ballToRobotAngle);
@@ -161,7 +161,7 @@ namespace Robocup.MotionControl
 
             // check whether robot is in necessary distance and orientation range in point 1 to
             // switch to go to point 2
-            double diffOrientation = UsefulFunctions.angleDifference(desiredOrientation, thisrobot.Orientation);
+            double diffOrientation = Angle.AngleDifference(desiredOrientation, thisrobot.Orientation);
 
             //Console.WriteLine("diffOrientation: " + diffOrientation);
 

@@ -239,7 +239,7 @@ namespace Robocup.MotionControl
 
                 // get angle to obstacle
                 obstacleAngle = (obstPos-start).cartesianAngle();
-                angleDiff = UsefulFunctions.angleDifference(finalDirectionAngle, obstacleAngle);
+                angleDiff = Angle.AngleDifference(finalDirectionAngle, obstacleAngle);
 
                 // get amount around angle to avoid
                 // note- isn't perfect tangent
@@ -273,7 +273,7 @@ namespace Robocup.MotionControl
                     double dist_to_point = Math.Sqrt(dir_to_point.magnitudeSq());
 
                     angleAvoid = Math.Acos(dist_to_point / BOUNDARY_AVOID);
-                    angleDiff = UsefulFunctions.angleDifference(finalDirectionAngle, dir_to_point.cartesianAngle());
+                    angleDiff = Angle.AngleDifference(finalDirectionAngle, dir_to_point.cartesianAngle());
 
                     // remove this range of the possible angles
                     angle_range.remove(angleDiff - angleAvoid, angleDiff + angleAvoid);
@@ -400,7 +400,7 @@ namespace Robocup.MotionControl
             // project relativePosition onto pathVector
 
             double hypotenuse = Math.Sqrt(relativePosition.magnitudeSq());
-            double angleBetween = UsefulFunctions.angleDifference(pathVector.cartesianAngle(),
+            double angleBetween = Angle.AngleDifference(pathVector.cartesianAngle(),
                 relativePosition.cartesianAngle());
 
             // is it completely out of the way:
@@ -433,7 +433,7 @@ namespace Robocup.MotionControl
 
             // project relativePosition onto pathVector
             double hypotenuse = Math.Sqrt(relativePosition.magnitudeSq());
-            double angleBetween = UsefulFunctions.angleDifference(pathVector.cartesianAngle(), relativePosition.cartesianAngle());
+            double angleBetween = Angle.AngleDifference(pathVector.cartesianAngle(), relativePosition.cartesianAngle());
 
             return angleBetween;
         }
@@ -597,7 +597,7 @@ namespace Robocup.MotionControl
                 if (vec1.magnitudeSq() < 1e-16 || vec2.magnitudeSq() < 1e-16)
                     sharpness = 0;
                 else
-                    sharpness = Math.Abs(UsefulFunctions.angleDifference(vec1.cartesianAngle(), vec2.cartesianAngle()));
+                    sharpness = Math.Abs(Angle.AngleDifference(vec1.cartesianAngle(), vec2.cartesianAngle()));
                 sharpnessArr[i - 1] = sharpness;
                 indexArr[i - 1] = i;
             }

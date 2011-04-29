@@ -93,10 +93,10 @@ namespace Robocup.MotionControl
 
             Vector2 directionVector = desiredState.Position - currentState.Position;
 
-            double direction = UsefulFunctions.angleCheck(directionVector.cartesianAngle());
+            double direction = Angle.AngleModTwoPi(directionVector.cartesianAngle());
 
             double currVelocity = Math.Sqrt(currentState.Velocity.magnitudeSq());
-            double angleVelocityDirection = UsefulFunctions.angleDifference(directionVector.cartesianAngle(),
+            double angleVelocityDirection = Angle.AngleDifference(directionVector.cartesianAngle(),
                                                                             currentState.Velocity.cartesianAngle());
 
             double currVelocityForward = currVelocity * Math.Cos(angleVelocityDirection);
@@ -110,8 +110,8 @@ namespace Robocup.MotionControl
             double yCommand = yPID.Compute(currentState.Position.Y, desiredState.Position.Y, currentState.Velocity.Y, desiredState.Velocity.Y, yForward);
 
             //to ensure that orientations are between 0 and 2 pi.
-            double currentOrientation = UsefulFunctions.angleCheck(currentState.Orientation);
-            double desiredOrientation = UsefulFunctions.angleCheck(desiredState.Orientation);
+            double currentOrientation = Angle.AngleModTwoPi(currentState.Orientation);
+            double desiredOrientation = Angle.AngleModTwoPi(desiredState.Orientation);
             double angularVCommand = thetaPID.Compute(currentOrientation, desiredOrientation, currentState.AngularVelocity, desiredState.AngularVelocity, thetaForward);
 
             if (OnUpdateErrors != null)
@@ -127,7 +127,7 @@ namespace Robocup.MotionControl
             double robotLateral = -(-Math.Sin(currentOrientation) * xCommand + Math.Cos(currentOrientation) * yCommand);
 
             #region From Motion frame to Robot frame
-            double frameAngleDiff = UsefulFunctions.angleDifference(direction, currentOrientation);
+            double frameAngleDiff = Angle.AngleDifference(direction, currentOrientation);
 
             //change from the forward and lateral frame to the robot frame
             double robotFwd = -(Math.Cos(frameAngleDiff) * forwardCommand + Math.Sin(frameAngleDiff) * lateralCommand);

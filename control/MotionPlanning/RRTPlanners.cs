@@ -375,7 +375,7 @@ namespace Robocup.MotionControl
             itemsToLog.Add(nextWayPoint);            
             
             double wpDistanceSq = curinfo.Position.distanceSq(nextWayPoint.Position);
-            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(curinfo.Orientation, nextWayPoint.Orientation));
+            double angleDiff = Math.Abs(Angle.AngleDifference(curinfo.Orientation, nextWayPoint.Orientation));
 
             WheelSpeeds wheelSpeeds;
 

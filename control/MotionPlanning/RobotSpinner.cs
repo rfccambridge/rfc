@@ -47,7 +47,7 @@ namespace Robocup.MotionControl
             }
 
             // angleDifference is positive when current robot needs to turn CW, negative when need to go CCW
-            double angleDifference = UsefulFunctions.angleDifference(desiredOrientation, currentState.Orientation);
+            double angleDifference = Angle.AngleDifference(desiredOrientation, currentState.Orientation);
 
             Console.WriteLine("Angle difference " + angleDifference);
 
@@ -109,7 +109,7 @@ namespace Robocup.MotionControl
             }
 
             // angleDifference is positive when current robot needs to turn CW, negative when need to go CCW
-            double angleDifference = UsefulFunctions.angleDifference(desiredOrientation, currentState.Orientation);
+            double angleDifference = Angle.AngleDifference(desiredOrientation, currentState.Orientation);
 
             Console.WriteLine("Angle difference " + angleDifference);
 

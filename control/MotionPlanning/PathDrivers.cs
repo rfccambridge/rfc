@@ -364,7 +364,7 @@ namespace Robocup.MotionControl
             
             // Angle difference is the amount the goal is to the right of the current orientation
             double angle_to_goal = dir_to_goal.cartesianAngle();
-            double angle_diff = UsefulFunctions.angleDifference(angle_to_goal, currentState.Orientation);
+            double angle_diff = Angle.AngleDifference(angle_to_goal, currentState.Orientation);
             double sqDistToGoal = currentState.Position.distanceSq(desiredState.Position);
 
             Console.WriteLine("ORIENTATION " + currentState.Orientation);
@@ -477,7 +477,7 @@ namespace Robocup.MotionControl
 
             double absoluteGoalAngle = dir_to_goal.cartesianAngle();
 
-            double goal_angle_difference = UsefulFunctions.angleDifference(absoluteGoalAngle, currentForwardAngle+orientation);
+            double goal_angle_difference = Angle.AngleDifference(absoluteGoalAngle, currentForwardAngle+orientation);
 
             /*Console.WriteLine("ORIENTATION: " + orientation);
             Console.WriteLine("CURRENT FORWARD ANGLE: " + currentForwardAngle);
@@ -581,9 +581,9 @@ namespace Robocup.MotionControl
             // if goal is too far, reset
             double orientation = currentState.Orientation;
             double absoluteGoalAngle = dir_to_goal.cartesianAngle();
-            if (Math.Abs(UsefulFunctions.angleDifference(absoluteGoalAngle, currentForwardAngle + orientation)) > MIN_ANGLE_SWITCH)
+            if (Math.Abs(Angle.AngleDifference(absoluteGoalAngle, currentForwardAngle + orientation)) > MIN_ANGLE_SWITCH)
             {
-                currentForwardAngle = UsefulFunctions.angleDifference(orientation, absoluteGoalAngle);
+                currentForwardAngle = Angle.AngleDifference(orientation, absoluteGoalAngle);
             }
         }
 
@@ -596,7 +596,7 @@ namespace Robocup.MotionControl
         private WheelSpeeds stopSpeeds(RobotInfo currentState, RobotInfo desiredState)
         {
             // get angle difference between current and desired orientation
-            double diff = UsefulFunctions.angleDifference(currentState.Orientation, desiredState.Orientation);
+            double diff = Angle.AngleDifference(currentState.Orientation, desiredState.Orientation);
             // spin to face desired direction
             if (diff < -MAX_FINAL_ANGLE_DIFFERENCE)
             {
@@ -783,7 +783,7 @@ namespace Robocup.MotionControl
             // realign the "front" of the robot
             double absoluteGoalAngle = dir_to_goal.cartesianAngle();
 
-            currentForwardAngle = UsefulFunctions.angleDifference(orientation, absoluteGoalAngle);
+            currentForwardAngle = Angle.AngleDifference(orientation, absoluteGoalAngle);
 
             Console.WriteLine("ORIENTATION: " + orientation);
             Console.WriteLine("CURRENT FORWARD ANGLE: " + currentForwardAngle);
@@ -846,7 +846,7 @@ namespace Robocup.MotionControl
         private WheelSpeeds stopSpeeds(RobotInfo currentState, RobotInfo desiredState)
         {
             // get angle difference between current and desired orientation
-            double diff = UsefulFunctions.angleDifference(currentState.Orientation, desiredState.Orientation);
+            double diff = Angle.AngleDifference(currentState.Orientation, desiredState.Orientation);
             // spin to face desired direction
             if (diff < -MAX_FINAL_ANGLE_DIFFERENCE)
             {
@@ -1018,7 +1018,7 @@ namespace Robocup.MotionControl
             int id = currentState.ID;
             Vector2 dir_to_goal = (desiredState.Position - currentState.Position).normalize();
             double angle_to_goal = dir_to_goal.cartesianAngle();
-            double angle_diff = UsefulFunctions.angleDifference(angle_to_goal, currentState.Orientation);
+            double angle_diff = Angle.AngleDifference(angle_to_goal, currentState.Orientation);
             double sqDistToGoal = currentState.Position.distanceSq(desiredState.Position);
 
             Console.WriteLine("ORIENTATION " + currentState.Orientation);
@@ -1116,7 +1116,7 @@ namespace Robocup.MotionControl
 
             double absoluteGoalAngle = dir_to_goal.cartesianAngle();
 
-            double goal_angle_difference = UsefulFunctions.angleDifference(absoluteGoalAngle, currentForwardAngle + orientation);
+            double goal_angle_difference = Angle.AngleDifference(absoluteGoalAngle, currentForwardAngle + orientation);
 
             Console.WriteLine("ORIENTATION: " + orientation);
             Console.WriteLine("CURRENT FORWARD ANGLE: " + currentForwardAngle);
@@ -1217,9 +1217,9 @@ namespace Robocup.MotionControl
             // if goal is too far, reset
             double orientation = currentState.Orientation;
             double absoluteGoalAngle = dir_to_goal.cartesianAngle();
-            if (Math.Abs(UsefulFunctions.angleDifference(absoluteGoalAngle, currentForwardAngle + orientation)) > MIN_ANGLE_SWITCH)
+            if (Math.Abs(Angle.AngleDifference(absoluteGoalAngle, currentForwardAngle + orientation)) > MIN_ANGLE_SWITCH)
             {
-                currentForwardAngle = UsefulFunctions.angleDifference(orientation, absoluteGoalAngle);
+                currentForwardAngle = Angle.AngleDifference(orientation, absoluteGoalAngle);
             }
         }
 
@@ -1232,7 +1232,7 @@ namespace Robocup.MotionControl
         private WheelSpeeds stopSpeeds(RobotInfo currentState, RobotInfo desiredState)
         {
             // get angle difference between current and desired orientation
-            double diff = UsefulFunctions.angleDifference(currentState.Orientation, desiredState.Orientation);
+            double diff = Angle.AngleDifference(currentState.Orientation, desiredState.Orientation);
             // spin to face desired direction
             if (diff < -MAX_FINAL_ANGLE_DIFFERENCE)
             {
@@ -1309,7 +1309,7 @@ namespace Robocup.MotionControl
             RobotInfo nextWaypoint = new RobotInfo(pathWaypoint, desiredState.Orientation, curInfo.ID);
 
             double wpDistanceSq = curInfo.Position.distanceSq(nextWaypoint.Position);
-            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(curInfo.Orientation, nextWaypoint.Orientation));
+            double angleDiff = Math.Abs(Angle.AngleDifference(curInfo.Orientation, nextWaypoint.Orientation));
 
             WheelSpeeds wheelSpeeds;
 
@@ -1516,7 +1516,7 @@ namespace Robocup.MotionControl
 			RobotInfo nextWaypoint = path.findNearestWaypoint(curInfo);
 
 			double wpDistanceSq = curInfo.Position.distanceSq(nextWaypoint.Position);
-			double angleDiff = Math.Abs(UsefulFunctions.angleDifference(curInfo.Orientation, nextWaypoint.Orientation));
+			double angleDiff = Math.Abs(Angle.AngleDifference(curInfo.Orientation, nextWaypoint.Orientation));
 
 			WheelSpeeds wheelSpeeds;
 

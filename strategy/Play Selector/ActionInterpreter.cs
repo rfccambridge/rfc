@@ -154,7 +154,7 @@ namespace Robocup.Plays
             Vector2 robotToBall = ball - thisrobot.Position;
             Vector2 robotToTarget = target - thisrobot.Position;
 
-            double angleDiff = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), robotToTarget.cartesianAngle()));
+            double angleDiff = Math.Abs(Angle.AngleDifference(robotToBall.cartesianAngle(), robotToTarget.cartesianAngle()));
             bool nearLine = thisrobot.Position.distanceSq(destination) <= BUMP_DIST_TOLERANCE * BUMP_DIST_TOLERANCE 
                 && angleDiff <= BUMP_ANGLE_TOLERANCE;
 
@@ -276,10 +276,10 @@ namespace Robocup.Plays
 
             double distToKickPosition = Math.Sqrt(thisrobot.Position.distanceSq(kickPosition));            
             
-            double theta = Math.Abs(UsefulFunctions.angleDifference(robotToBall.cartesianAngle(), ballToTarget.cartesianAngle()));            
+            double theta = Math.Abs(Angle.AngleDifference(robotToBall.cartesianAngle(), ballToTarget.cartesianAngle()));            
             double lateralDistance = distRobotToBall * Math.Sin(theta);
 
-            double angleToKickAxis = Math.Abs(UsefulFunctions.angleDifference(robotToTarget.cartesianAngle(),
+            double angleToKickAxis = Math.Abs(Angle.AngleDifference(robotToTarget.cartesianAngle(),
                                                                               ballToTarget.cartesianAngle()));            
 
             // should we print all these annoying little details about kicking
@@ -297,7 +297,7 @@ namespace Robocup.Plays
             {
                 Console.WriteLine("Dist to KickPosition: {0:F3}", distToKickPosition);
                 Console.WriteLine("Orientation error: {0:F3}",
-                        Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation,
+                        Math.Abs(Angle.AngleDifference(thisrobot.Orientation,
                                                              kickOrientation)) * 180 / Math.PI);
                 Console.WriteLine("AngleToKickAxis: {0:F3}", angleToKickAxis);
                 Console.WriteLine("Lateral Distance: {0:F3}", lateralDistance);
@@ -312,7 +312,7 @@ namespace Robocup.Plays
                 distToKickPosition < MAX_DIST_TO_KICK_POSITION && 
 
                 // robot oriented towards the target
-                Math.Abs(UsefulFunctions.angleDifference(thisrobot.Orientation, 
+                Math.Abs(Angle.AngleDifference(thisrobot.Orientation, 
                                                          kickOrientation)) < KICK_ORIENTATION_ERROR &&
                 
                 // robot is on the opposite side of the ball from the target
