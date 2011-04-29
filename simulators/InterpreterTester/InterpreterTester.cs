@@ -113,9 +113,9 @@ namespace InterpreterTester
 
         public void LoadConstants()
         {
-            TACTIC_DIR = Constants.get<string>("default", "TACTIC_DIR");
-            OFFENSE_PLAY_DIR = Constants.get<string>("default", "INTERPRETER_TESTER_OFFENSE_PLAY_DIR");
-            DEFENSE_PLAY_DIR = Constants.get<string>("default", "INTERPRETER_TESTER_DEFENSE_PLAY_DIR");
+            TACTIC_DIR = ConstantsRaw.get<string>("default", "TACTIC_DIR");
+            OFFENSE_PLAY_DIR = ConstantsRaw.get<string>("default", "INTERPRETER_TESTER_OFFENSE_PLAY_DIR");
+            DEFENSE_PLAY_DIR = ConstantsRaw.get<string>("default", "INTERPRETER_TESTER_DEFENSE_PLAY_DIR");
         }
 
         private void loadPlays()

@@ -62,8 +62,8 @@ namespace Robocup.MotionControl
         }
 
         public void ReloadConstants() {
-            Constants.Load("motionplanning");
-            STOP_DISTANCE = Constants.get<double>("motionplanning", "STOP_DISTANCE");
+            ConstantsRaw.Load();
+            STOP_DISTANCE = ConstantsRaw.get<double>("motionplanning", "STOP_DISTANCE");
         }
     }
 
@@ -74,10 +74,10 @@ namespace Robocup.MotionControl
     public class TurnDriver : IPathDriver
     {
         //Constants
-        static int WHEEL_SPEED_STRAIGHT = Constants.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT");
-        static int WHEEL_SPEED_TURN = Constants.get<int>("motionplanning", "WHEEL_SPEED_TURN");
-        double MIN_ANGLE_DIFFERENCE = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFFERENCE");
-        double STOP_DISTANCE = Constants.get<double>("motionplanning", "STOP_DISTANCE");
+        static int WHEEL_SPEED_STRAIGHT = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT");
+        static int WHEEL_SPEED_TURN = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_TURN");
+        double MIN_ANGLE_DIFFERENCE = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_DIFFERENCE");
+        double STOP_DISTANCE = ConstantsRaw.get<double>("motionplanning", "STOP_DISTANCE");
 
         WheelSpeeds forwardSpeeds = new WheelSpeeds(WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT);
         WheelSpeeds CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
@@ -115,18 +115,18 @@ namespace Robocup.MotionControl
         {
             // Speed of a single wheel
 
-            WHEEL_SPEED_STRAIGHT = Constants.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT");
-            WHEEL_SPEED_TURN = Constants.get<int>("motionplanning", "WHEEL_SPEED_TURN");
+            WHEEL_SPEED_STRAIGHT = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT");
+            WHEEL_SPEED_TURN = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_TURN");
 
             forwardSpeeds = new WheelSpeeds(WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT);
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
             // Distance from goal at which the robot will stop
-            STOP_DISTANCE = Constants.get<double>("motionplanning", "STOP_DISTANCE");
+            STOP_DISTANCE = ConstantsRaw.get<double>("motionplanning", "STOP_DISTANCE");
 
             //Distance above which will turn
-            MIN_ANGLE_DIFFERENCE = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFFERENCE");
+            MIN_ANGLE_DIFFERENCE = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_DIFFERENCE");
             Console.WriteLine("RELOADING CONSTANTS!!! " + STOP_DISTANCE + " " + MIN_ANGLE_DIFFERENCE);
         }
 
@@ -205,7 +205,7 @@ namespace Robocup.MotionControl
         // CONSTANTS
         int ANGULAR_VEER;
 
-        static int NUM_ROBOTS = Constants.get<int>("motionplanning", "NUM_ROBOTS");
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("motionplanning", "NUM_ROBOTS");
 
         static int WHEEL_SPEED_STRAIGHT;
         static int WHEEL_SPEED_TURN;
@@ -259,35 +259,35 @@ namespace Robocup.MotionControl
         public void ReloadConstants()
         {
             // Reload constants file
-            Constants.Load("motionplanning");
+            ConstantsRaw.Load();
 
             // Either 0 or 1, represents whether to use the angular veer planner
-            ANGULAR_VEER = Constants.get<int>("motionplanning", "ANGULAR_VEER");
+            ANGULAR_VEER = ConstantsRaw.get<int>("motionplanning", "ANGULAR_VEER");
 
             // Speed of a single wheel
 
-            WHEEL_SPEED_STRAIGHT = Constants.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT");
-            WHEEL_SPEED_TURN = Constants.get<int>("motionplanning", "WHEEL_SPEED_TURN");
+            WHEEL_SPEED_STRAIGHT = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT");
+            WHEEL_SPEED_TURN = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_TURN");
 
             forwardSpeeds = new WheelSpeeds(WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT);
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
             // Distance from goal at which the robot will stop
-            STOP_DISTANCE = Constants.get<double>("motionplanning", "STOP_DISTANCE");
+            STOP_DISTANCE = ConstantsRaw.get<double>("motionplanning", "STOP_DISTANCE");
 
             //Distance above which will turn
-            MIN_ANGLE_SPIN = Constants.get<double>("motionplanning", "MIN_ANGLE_SPIN");
+            MIN_ANGLE_SPIN = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SPIN");
 
             // Distance above which, if already spinning, will keep turning
-            MIN_ANGLE_KEEP_SPINNING = Constants.get<double>("motionplanning", "MIN_ANGLE_KEEP_SPINNING");
+            MIN_ANGLE_KEEP_SPINNING = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_KEEP_SPINNING");
 
             //Maximum final angle difference tolerated
-            MAX_FINAL_ANGLE_DIFFERENCE = Constants.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
+            MAX_FINAL_ANGLE_DIFFERENCE = ConstantsRaw.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
 
-            DIST_SLOW_DOWN = Constants.get<double>("motionplanning", "DIST_SLOW_DOWN");
+            DIST_SLOW_DOWN = ConstantsRaw.get<double>("motionplanning", "DIST_SLOW_DOWN");
 
-            USE_INDIVIDUAL_WHEEL_SPEEDS = Constants.get<bool>("motionplanning", "USE_INDIVIDUAL_WHEEL_SPEEDS");
+            USE_INDIVIDUAL_WHEEL_SPEEDS = ConstantsRaw.get<bool>("motionplanning", "USE_INDIVIDUAL_WHEEL_SPEEDS");
 
             /* Wheel orientations
             double RF_ORIENTATION = Constants.get<double>("motionplanning", "RF_ORIENTATION");
@@ -296,10 +296,10 @@ namespace Robocup.MotionControl
             double RB_ORIENTATION = Constants.get<double>("motionplanning", "RB_ORIENTATION");*/
 
             // robot composition
-            ANGLE_AXIS_TO_WHEEL = Constants.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
-            WHEEL_RADIUS = Constants.get<double>("motionplanning", "WHEEL_RADIUS");
+            ANGLE_AXIS_TO_WHEEL = ConstantsRaw.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
+            WHEEL_RADIUS = ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
 
-            MIN_ANGLE_SWITCH = Constants.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
+            MIN_ANGLE_SWITCH = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
 
             // Reload PID constants
             loops.ReloadConstants();
@@ -457,7 +457,7 @@ namespace Robocup.MotionControl
             // if it is individual, get it for the robot
             if (USE_INDIVIDUAL_WHEEL_SPEEDS)
             {
-                straightSpeed = Constants.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT_" + id);
+                straightSpeed = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT_" + id);
             }
             else
             {
@@ -621,7 +621,7 @@ namespace Robocup.MotionControl
         // CONSTANTS
         int ANGULAR_VEER;
 
-        static int NUM_ROBOTS = Constants.get<int>("motionplanning", "NUM_ROBOTS");
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("motionplanning", "NUM_ROBOTS");
 
         static int WHEEL_SPEED_STRAIGHT;
         static int WHEEL_SPEED_TURN;
@@ -671,33 +671,33 @@ namespace Robocup.MotionControl
         public void ReloadConstants()
         {
             // Reload constants file
-            Constants.Load("motionplanning");
+            ConstantsRaw.Load();
 
             // Either 0 or 1, represents whether to use the angular veer planner
-            ANGULAR_VEER = Constants.get<int>("motionplanning", "ANGULAR_VEER");
+            ANGULAR_VEER = ConstantsRaw.get<int>("motionplanning", "ANGULAR_VEER");
 
             // Speed of a single wheel
 
-            WHEEL_SPEED_STRAIGHT = Constants.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT");
-            WHEEL_SPEED_TURN = Constants.get<int>("motionplanning", "WHEEL_SPEED_TURN");
+            WHEEL_SPEED_STRAIGHT = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_STRAIGHT");
+            WHEEL_SPEED_TURN = ConstantsRaw.get<int>("motionplanning", "WHEEL_SPEED_TURN");
 
             forwardSpeeds = new WheelSpeeds(WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT);
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
             // Distance from goal at which the robot will stop
-            STOP_DISTANCE = Constants.get<double>("motionplanning", "STOP_DISTANCE");
+            STOP_DISTANCE = ConstantsRaw.get<double>("motionplanning", "STOP_DISTANCE");
 
             //Distance above which will turn
-            MIN_ANGLE_SPIN = Constants.get<double>("motionplanning", "MIN_ANGLE_SPIN");
+            MIN_ANGLE_SPIN = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SPIN");
 
             // Distance above which, if already spinning, will keep turning
-            MIN_ANGLE_KEEP_SPINNING = Constants.get<double>("motionplanning", "MIN_ANGLE_KEEP_SPINNING");
+            MIN_ANGLE_KEEP_SPINNING = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_KEEP_SPINNING");
 
             //Maximum final angle difference tolerated
-            MAX_FINAL_ANGLE_DIFFERENCE = Constants.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
+            MAX_FINAL_ANGLE_DIFFERENCE = ConstantsRaw.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
 
-            DIST_SLOW_DOWN = Constants.get<double>("motionplanning", "DIST_SLOW_DOWN");
+            DIST_SLOW_DOWN = ConstantsRaw.get<double>("motionplanning", "DIST_SLOW_DOWN");
 
             /* Wheel orientations
             double RF_ORIENTATION = Constants.get<double>("motionplanning", "RF_ORIENTATION");
@@ -706,10 +706,10 @@ namespace Robocup.MotionControl
             double RB_ORIENTATION = Constants.get<double>("motionplanning", "RB_ORIENTATION");*/
 
             // robot composition
-            ANGLE_AXIS_TO_WHEEL = Constants.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
-            WHEEL_RADIUS = Constants.get<double>("motionplanning", "WHEEL_RADIUS");
+            ANGLE_AXIS_TO_WHEEL = ConstantsRaw.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
+            WHEEL_RADIUS = ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
 
-            MIN_ANGLE_SWITCH = Constants.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
+            MIN_ANGLE_SWITCH = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
 
             // Reload PID constants
             loops.ReloadConstants();
@@ -868,7 +868,7 @@ namespace Robocup.MotionControl
         // CONSTANTS
         int ANGULAR_VEER;
 
-        static int NUM_ROBOTS = Constants.get<int>("motionplanning", "NUM_ROBOTS");
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("motionplanning", "NUM_ROBOTS");
 
         static int WHEEL_SPEED_STRAIGHT;
         static int WHEEL_SPEED_TURN;
@@ -916,7 +916,7 @@ namespace Robocup.MotionControl
         public void ReloadConstants()
         {
             // Reload constants file
-            Constants.Load("motionplanning");
+            ConstantsRaw.Load();
 
             // Either 0 or 1, represents whether to use the angular veer planner
             //ANGULAR_VEER = Constants.get<int>("motionplanning", "ANGULAR_VEER");
@@ -924,26 +924,26 @@ namespace Robocup.MotionControl
 
             // Speed of a single wheel
 
-            WHEEL_SPEED_STRAIGHT = Constants.get<int>("motionplanning", "DEFAULT_WHEEL_SPEED_STRAIGHT");
-            WHEEL_SPEED_TURN = Constants.get<int>("motionplanning", "DEFAULT_WHEEL_SPEED_TURN");
+            WHEEL_SPEED_STRAIGHT = ConstantsRaw.get<int>("motionplanning", "DEFAULT_WHEEL_SPEED_STRAIGHT");
+            WHEEL_SPEED_TURN = ConstantsRaw.get<int>("motionplanning", "DEFAULT_WHEEL_SPEED_TURN");
 
             forwardSpeeds = new WheelSpeeds(WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT, WHEEL_SPEED_STRAIGHT);
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
             // Distance from goal at which the robot will stop
-            STOP_DISTANCE = Constants.get<double>("motionplanning", "DEFAULT_STOP_DISTANCE");
+            STOP_DISTANCE = ConstantsRaw.get<double>("motionplanning", "DEFAULT_STOP_DISTANCE");
 
             //Distance above which will turn
-            MIN_ANGLE_SPIN = Constants.get<double>("motionplanning", "MIN_ANGLE_SPIN");
+            MIN_ANGLE_SPIN = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SPIN");
 
             // Distance above which, if already spinning, will keep turning
-            MIN_ANGLE_KEEP_SPINNING = Constants.get<double>("motionplanning", "MIN_ANGLE_KEEP_SPINNING");
+            MIN_ANGLE_KEEP_SPINNING = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_KEEP_SPINNING");
 
             //Maximum final angle difference tolerated
-            MAX_FINAL_ANGLE_DIFFERENCE = Constants.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
+            MAX_FINAL_ANGLE_DIFFERENCE = ConstantsRaw.get<double>("motionplanning", "MAX_FINAL_ANGLE_DIFFERENCE");
 
-            DIST_SLOW_DOWN = Constants.get<double>("motionplanning", "DEFAULT_DIST_SLOW_DOWN");
+            DIST_SLOW_DOWN = ConstantsRaw.get<double>("motionplanning", "DEFAULT_DIST_SLOW_DOWN");
 
             /* Wheel orientations
             double RF_ORIENTATION = Constants.get<double>("motionplanning", "RF_ORIENTATION");
@@ -952,10 +952,10 @@ namespace Robocup.MotionControl
             double RB_ORIENTATION = Constants.get<double>("motionplanning", "RB_ORIENTATION");*/
 
             // robot composition
-            ANGLE_AXIS_TO_WHEEL = Constants.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
-            WHEEL_RADIUS = Constants.get<double>("motionplanning", "WHEEL_RADIUS");
+            ANGLE_AXIS_TO_WHEEL = ConstantsRaw.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL");
+            WHEEL_RADIUS = ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
 
-            MIN_ANGLE_SWITCH = Constants.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
+            MIN_ANGLE_SWITCH = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_SWITCH");
 
             // Reload PID constants
             loops.ReloadConstants();
@@ -1262,7 +1262,7 @@ namespace Robocup.MotionControl
         private Feedback[] shortFeedbackObjs;
         public Feedback GetShortFeedbackObj(int robotID) { return shortFeedbackObjs[robotID]; }
 
-        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");       
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");       
 
         private double MIN_DIST_TO_WP;
         private double MIN_ANGLE_DIFF_TO_WP;
@@ -1370,19 +1370,18 @@ namespace Robocup.MotionControl
 
         //reload all necessary constants from files, for now just PID reload
         public void ReloadConstants() {
-            Constants.Load(feedbackObjs[0].ConstantsFile);
-            Constants.Load(shortFeedbackObjs[0].ConstantsFile);
+            ConstantsRaw.Load();
 
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++) {
                 feedbackObjs[robotID].ReloadConstants();
                 shortFeedbackObjs[robotID].ReloadConstants();
             }
 
-            LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
+            LOG_EVERY_MSEC = ConstantsRaw.get<int>("control", "LOG_EVERY_MSEC");
             //PLANNER_WAYPOINT_DISTANCE = Constants.get<double>("motionplanning", "PLANNER_WAYPOINT_DISTANCE");
 
-            MIN_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_DIST_TO_WP");
-            MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
+            MIN_DIST_TO_WP = ConstantsRaw.get<double>("motionplanning", "MIN_DIST_TO_WP");
+            MIN_ANGLE_DIFF_TO_WP = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
 
             // TODO: What is _longRangeDriver? Doesn't compile!
             //_longRangeDriver.ReloadConstants();
@@ -1452,7 +1451,7 @@ namespace Robocup.MotionControl
     }
 
 	public class ModelFeedbackDriver : IPathDriver, ILogger {
-        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
 
 		private ModelFeedback[] feedbackObjs;
 		public ModelFeedback GetFeedbackObj(int robotID) { return feedbackObjs[robotID]; }
@@ -1485,9 +1484,9 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 feedbackObjs[robotID].LoadConstants();
 
-			LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
-            MIN_DIST_TO_WP = Constants.get<double>("motionplanning", "MIN_DIST_TO_WP");
-			MIN_ANGLE_DIFF_TO_WP = Constants.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
+			LOG_EVERY_MSEC = ConstantsRaw.get<int>("control", "LOG_EVERY_MSEC");
+            MIN_DIST_TO_WP = ConstantsRaw.get<double>("motionplanning", "MIN_DIST_TO_WP");
+			MIN_ANGLE_DIFF_TO_WP = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
 		}
 
 		public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
@@ -1620,7 +1619,7 @@ namespace Robocup.MotionControl
 }
     public class VelocityDriver : IPathDriver
     {
-        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
         private double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
         private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
         
@@ -1732,9 +1731,9 @@ namespace Robocup.MotionControl
 
 	    public void LoadConstants()
 	    {
-            SPEED_SCALING_FACTOR_ALL = Constants.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
+            SPEED_SCALING_FACTOR_ALL = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
             for (int i = 0; i < NUM_ROBOTS; i++)
-                SPEED_SCALING_FACTORS[i] = Constants.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
+                SPEED_SCALING_FACTORS[i] = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
 	    }
 
         public void ReloadConstants()

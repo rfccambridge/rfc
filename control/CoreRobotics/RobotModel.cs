@@ -120,7 +120,7 @@ namespace Robocup.CoreRobotics
 
         public override void LoadConstants()
         {
-            DEFAULT_VELOCITY = Constants.get<double>("control", "DEFAULT_VELOCITY");
+            DEFAULT_VELOCITY = ConstantsRaw.get<double>("control", "DEFAULT_VELOCITY");
         }
 
         public override void ComputeCommand(RobotInfo currentState, RobotInfo desiredState, out double xCommand, out double yCommand, out double thetaCommand)

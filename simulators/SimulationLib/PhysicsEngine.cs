@@ -134,12 +134,12 @@ namespace Robocup.Simulation
 
         public void LoadConstants()
         {
-            BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
+            BALL_MOVED_DIST = ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
 
-            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
-            GOAL_WIDTH = Constants.get<double>("plays", "GOAL_WIDTH");
-            REFEREE_ZONE_WIDTH = Constants.get<double>("plays", "REFEREE_ZONE_WIDTH");
+            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
+            GOAL_WIDTH = ConstantsRaw.get<double>("plays", "GOAL_WIDTH");
+            REFEREE_ZONE_WIDTH = ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
 
             // Calculate physics based on physical boundaries slightly larger than field
             FIELD_XMIN = -FIELD_WIDTH / 2 - REFEREE_ZONE_WIDTH;
@@ -252,7 +252,7 @@ namespace Robocup.Simulation
 
 			InitState();
 
-            double freq = Constants.get<double>("default", "SIM_ENGINE_FREQUENCY");
+            double freq = ConstantsRaw.get<double>("default", "SIM_ENGINE_FREQUENCY");
             double period = 1.0 / freq * 1000; // in ms
 
             mainTimer.Interval = period;

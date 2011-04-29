@@ -13,7 +13,7 @@ namespace Robocup.MotionControl
 		public Matrix GAIN_MATRIX = null;
 
         // scaling factor applied to the matrix
-        static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
+        static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
         double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
         private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
         private double WAYPOINT_DIST;
@@ -34,20 +34,20 @@ namespace Robocup.MotionControl
 
 		public void LoadConstants()
 		{
-            SPEED_SCALING_FACTOR_ALL = Constants.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
+            SPEED_SCALING_FACTOR_ALL = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
 
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
-                SPEED_SCALING_FACTORS[i] = Constants.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
+                SPEED_SCALING_FACTORS[i] = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
             }
 
-			GAIN_MATRIX = new Matrix(Constants.get<string>("control","GAIN_MATRIX"));
-            GAIN_MATRIX *= Constants.get<double>("control", "GAIN_MATRIX_SCALE");
+			GAIN_MATRIX = new Matrix(ConstantsRaw.get<string>("control","GAIN_MATRIX"));
+            GAIN_MATRIX *= ConstantsRaw.get<double>("control", "GAIN_MATRIX_SCALE");
 			
 			if(GAIN_MATRIX.ColumnCount != 6 || GAIN_MATRIX.RowCount != 4)
 				throw new ApplicationException("Invalid dimensoins of GAIN_MATRIX in control.txt!");
 
-            WAYPOINT_DIST = Constants.get<double>("motionplanning", "WAYPOINT_DIST");
+            WAYPOINT_DIST = ConstantsRaw.get<double>("motionplanning", "WAYPOINT_DIST");
 		}
 
 		/// <summary>

@@ -42,9 +42,9 @@ namespace Robocup.Simulation
 
         public virtual void LoadConstants()
         {
-            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
-            FREEKICK_DISTANCE = Constants.get<double>("plays", "FREEKICK_DISTANCE");
+            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
+            FREEKICK_DISTANCE = ConstantsRaw.get<double>("plays", "FREEKICK_DISTANCE");
         }
 
         public override string ToString()

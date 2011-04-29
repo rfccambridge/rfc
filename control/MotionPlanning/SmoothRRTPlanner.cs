@@ -62,12 +62,12 @@ namespace Robocup.MotionControl
 
         public static void LoadConstants()
         {
-            double FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-            double FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
-            double GOAL_WIDTH = Constants.get<double>("plays", "GOAL_WIDTH");
-            double REFEREE_ZONE_WIDTH = Constants.get<double>("plays", "REFEREE_ZONE_WIDTH");
+            double FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
+            double FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
+            double GOAL_WIDTH = ConstantsRaw.get<double>("plays", "GOAL_WIDTH");
+            double REFEREE_ZONE_WIDTH = ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
 
-            STEADY_STATE_SPEED = Constants.get<double>("motionplanning", "STEADY_STATE_SPEED");
+            STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
 
             // Calculate physics based on physical boundaries slightly larger than field
             FIELD_XMIN = -FIELD_WIDTH / 2 - REFEREE_ZONE_WIDTH;

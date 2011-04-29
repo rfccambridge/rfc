@@ -166,14 +166,14 @@ namespace Robocup.Utilities
 
         public FieldDrawer()
         {
-            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
-            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
+            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
 
-            REFEREE_ZONE_WIDTH = Constants.get<double>("plays", "REFEREE_ZONE_WIDTH");
-            CENTER_CIRCLE_RADIUS = Constants.get<double>("plays", "CENTER_CIRCLE_RADIUS");
+            REFEREE_ZONE_WIDTH = ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
+            CENTER_CIRCLE_RADIUS = ConstantsRaw.get<double>("plays", "CENTER_CIRCLE_RADIUS");
 
-            GOAL_HEIGHT = Constants.get<double>("plays", "GOAL_HEIGHT");
-            GOAL_WIDTH = Constants.get<double>("plays", "GOAL_WIDTH");
+            GOAL_HEIGHT = ConstantsRaw.get<double>("plays", "GOAL_HEIGHT");
+            GOAL_WIDTH = ConstantsRaw.get<double>("plays", "GOAL_WIDTH");
 
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);

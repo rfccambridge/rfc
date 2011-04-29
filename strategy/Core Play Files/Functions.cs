@@ -682,19 +682,19 @@ namespace Robocup.Plays
             });
             addFunction("const-double", "double constant", "The (double) constant ~", typeof(double), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
-                return Core.Constants.get<double>("plays", (string)objects[0]);
+                return Core.ConstantsRaw.get<double>("plays", (string)objects[0]);
             });
             addFunction("const-int", "int constant", "The (int) constant ~", typeof(int), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
-                return Core.Constants.get<int>("plays", (string)objects[0]);
+                return Core.ConstantsRaw.get<int>("plays", (string)objects[0]);
             });
             addFunction("const-bool", "bool constant", "The (bool) constant ~", typeof(bool), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
-                return Core.Constants.get<bool>("plays", (string)objects[0]);
+                return Core.ConstantsRaw.get<bool>("plays", (string)objects[0]);
             });
             addFunction("const-string", "string constant", "The (string) constant ~", typeof(string), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
-                return Core.Constants.get<string>("plays", (string)objects[0]);
+                return Core.ConstantsRaw.get<string>("plays", (string)objects[0]);
             });
 
 
@@ -759,18 +759,18 @@ namespace Robocup.Plays
 
             addFunction("ourgoal", "OurGoal", "Our goal position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                return new Vector2(-1 * Constants.get<double>("plays", "FIELD_WIDTH") / 2 - 0.08, 0);
+                return new Vector2(-1 * ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2 - 0.08, 0);
             });
 
             addFunction("theirgoal", "TheirGoal", "Their goal position", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                return new Vector2(Constants.get<double>("plays", "FIELD_WIDTH") / 2 + 0.08, 0);
+                return new Vector2(ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2 + 0.08, 0);
             });
 
             addFunction("theirGoalBestShot", "theirGoalBestShot", "Attempts to find a good location to shoot at", typeof(Vector2), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
-                double fieldWidth = Constants.get<double>("plays", "FIELD_WIDTH");
-                double goalHeight = Constants.get<double>("plays", "GOAL_HEIGHT");
+                double fieldWidth = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
+                double goalHeight = ConstantsRaw.get<double>("plays", "GOAL_HEIGHT");
 
                 double buffer = 0.01;
                 int numIncrements = 40;
@@ -924,7 +924,7 @@ namespace Robocup.Plays
             {
                 return new ActionDefinition(delegate(IActionInterpreter a)
                 {
-                    Constants.Load("plays");
+                    ConstantsRaw.Load();
                 });
             });
 

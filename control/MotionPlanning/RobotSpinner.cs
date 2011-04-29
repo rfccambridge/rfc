@@ -67,7 +67,7 @@ namespace Robocup.MotionControl
         
         public void ReloadConstants()
         {
-            DIRECT_SPIN_SPEED = Constants.get<int>("motionplanning", "DIRECT_SPIN_SPEED");
+            DIRECT_SPIN_SPEED = ConstantsRaw.get<int>("motionplanning", "DIRECT_SPIN_SPEED");
 
             CWSpeeds = new WheelSpeeds(DIRECT_SPIN_SPEED, -DIRECT_SPIN_SPEED, DIRECT_SPIN_SPEED, -DIRECT_SPIN_SPEED);
             CCWSpeeds = new WheelSpeeds(-DIRECT_SPIN_SPEED, DIRECT_SPIN_SPEED, -DIRECT_SPIN_SPEED, DIRECT_SPIN_SPEED);
@@ -132,7 +132,7 @@ namespace Robocup.MotionControl
 
 
         public void ReloadConstants() {
-            PID_SPINNER_FEED_FORWARD = Constants.get<int>("motionplanning", "PID_SPINNER_FEED_FORWARD");
+            PID_SPINNER_FEED_FORWARD = ConstantsRaw.get<int>("motionplanning", "PID_SPINNER_FEED_FORWARD");
 
             loops.ReloadConstants();
         }

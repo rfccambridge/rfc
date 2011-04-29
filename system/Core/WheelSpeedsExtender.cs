@@ -50,7 +50,7 @@ namespace Robocup.CoreRobotics
             //max = Math.Max(.10, max);
 
             // compute magnitude of wheelspeeds based on PD
-            double speed = Constants.get<double>("control", "MOVE_PID_MAX") ;// Math.Min(30.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
+            double speed = ConstantsRaw.get<double>("control", "MOVE_PID_MAX") ;// Math.Min(30.0, Math.Sqrt(desiredDirection.magnitudeSq()) * 3000.0);
             //speed -= Math.Sqrt((goal.Velocity - start.Velocity).magnitudeSq());
 
             //Console.WriteLine("doing speed1: " + speed + " lf: " + (speed * plf / max) + " rf: " + (speed * prf / max) + " lb: " + (speed * plb / max) + " rb: " + (speed * prb / max));
@@ -61,7 +61,7 @@ namespace Robocup.CoreRobotics
         static public WheelSpeeds GetWheelSpeedsTo(RobotInfo start, RobotInfo goal)
         {
             double vprop = Math.Sqrt(start.Velocity.distanceSq(goal.Velocity))/start.Position.distanceSq(goal.Position);
-            double dprop = Constants.get<double>("control", "MOVE_DTERM_PROP");
+            double dprop = ConstantsRaw.get<double>("control", "MOVE_DTERM_PROP");
             double iprop = goal.Velocity.magnitudeSq() / 10;
                 Vector2 lf = new Vector2(0.71, -0.71).rotate(start.Orientation);
                 Vector2 rf = new Vector2(0.71, 0.71).rotate(start.Orientation);
@@ -77,8 +77,8 @@ namespace Robocup.CoreRobotics
                 double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
 
                 // compute magnitude of wheelspeeds based on PD
-                double speed = Math.Min(Constants.get<double>("control", "MOVE_VTERM_MAX"),
-                    Math.Sqrt(deltaV.magnitudeSq()) * Constants.get<double>("control", "MOVE_VTERM_GAIN"));
+                double speed = Math.Min(ConstantsRaw.get<double>("control", "MOVE_VTERM_MAX"),
+                    Math.Sqrt(deltaV.magnitudeSq()) * ConstantsRaw.get<double>("control", "MOVE_VTERM_GAIN"));
 
                 vwheels = new WheelSpeeds((int)(speed * prf / max), (int)(speed * plf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             }
@@ -96,8 +96,8 @@ namespace Robocup.CoreRobotics
                 double max = Math.Max(Math.Max(Math.Abs(plf), Math.Abs(prf)), Math.Max(Math.Abs(plb), Math.Abs(prb)));
 
                 // compute magnitude of wheelspeeds based on PD
-                double speed = Math.Min(Constants.get<double>("control", "MOVE_PTERM_MAX"),
-                    Math.Sqrt(desiredDirection.magnitudeSq()) * Constants.get<double>("control", "MOVE_PTERM_GAIN"));
+                double speed = Math.Min(ConstantsRaw.get<double>("control", "MOVE_PTERM_MAX"),
+                    Math.Sqrt(desiredDirection.magnitudeSq()) * ConstantsRaw.get<double>("control", "MOVE_PTERM_GAIN"));
 
                 dwheels = new WheelSpeeds((int)(speed * prf / max), (int)(speed * plf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             }

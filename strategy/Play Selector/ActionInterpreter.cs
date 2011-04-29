@@ -41,23 +41,23 @@ namespace Robocup.Plays
 
         public void LoadConstants()
         {
-            KICK_POSITION_DIST = Constants.get<double>("kickplanning", "KICK_POSITION_DIST");
-            MAX_LATERAL_DIST = Constants.get<double>("kickplanning", "MAX_LATERAL_DIST");
+            KICK_POSITION_DIST = ConstantsRaw.get<double>("kickplanning", "KICK_POSITION_DIST");
+            MAX_LATERAL_DIST = ConstantsRaw.get<double>("kickplanning", "MAX_LATERAL_DIST");
                         
             // must be bigger than distance that defines the kicking position (KICK_POSITION_DIST),
             // to avoid going back to the kicking position after we started to approach the ball for
             // kicking
             MAX_DIST_TO_KICK_POSITION = 2 * KICK_POSITION_DIST;
 
-            CHARGE_DIST = Constants.get<double>("kickplanning", "CHARGE_DIST");
+            CHARGE_DIST = ConstantsRaw.get<double>("kickplanning", "CHARGE_DIST");
 
-            MAX_ANGLE_TO_KICK_AXIS = Math.PI / 180 * Constants.get<double>("kickplanning", "MAX_ANGLE_TO_KICK_AXIS");
-            KICK_ORIENTATION_ERROR = Math.PI / 180 * Constants.get<double>("kickplanning", "KICK_ORIENTATION_ERROR");
+            MAX_ANGLE_TO_KICK_AXIS = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "MAX_ANGLE_TO_KICK_AXIS");
+            KICK_ORIENTATION_ERROR = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "KICK_ORIENTATION_ERROR");
 
-            BUMP_ANGLE_TOLERANCE = Math.PI / 180 * Constants.get<double>("kickplanning", "BUMP_ANGLE_TOLERANCE");
-            BUMP_DIST_TOLERANCE = Constants.get<double>("kickplanning", "BUMP_DIST_TOLERANCE");
+            BUMP_ANGLE_TOLERANCE = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "BUMP_ANGLE_TOLERANCE");
+            BUMP_DIST_TOLERANCE = ConstantsRaw.get<double>("kickplanning", "BUMP_DIST_TOLERANCE");
 
-            DRIBBLE_DIST = Constants.get<double>("kickplanning", "DRIBBLE_DIST");
+            DRIBBLE_DIST = ConstantsRaw.get<double>("kickplanning", "DRIBBLE_DIST");
         }
 
         private RobotInfo getOurRobotFromID(int robotID)

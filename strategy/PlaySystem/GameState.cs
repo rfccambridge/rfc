@@ -132,8 +132,8 @@ namespace Robocup.PlaySystem
         public static void ReloadConstants()
         {
             // reload main constants
-            FIELD_WIDTH = Constants.get<double>("plays", "FIELD_WIDTH");
-            FIELD_HEIGHT = Constants.get<double>("plays", "FIELD_HEIGHT");
+            FIELD_WIDTH = ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
+            FIELD_HEIGHT = ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
 
             // divide by two to get other constants
             double half_width = FIELD_WIDTH / 2;
