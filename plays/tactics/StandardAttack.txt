@@ -103,16 +103,18 @@ getoutofway (robotpointpointmovenoavoid supporter getoutofwaypoint ballpoint)
 reachedMaxYPosThreshold (> (getYcoord supporterpoint) 0.7)
 reachedMaxYNegThreshold (< (getYcoord supporterpoint) -0.7)
 
-improveshootanglepoint (if_point (and ballpositive reachedMaxYNegThreshold)  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5))  (if_point (and ballpositive (not reachedMaxYNegThreshold))  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)) (if_point (and ballnegative reachedMaxYPosThreshold)  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))))
+newXcoord (if_double (> (getXcoord attackerpoint) 3) 2.0 2.6)
 
+improveshootanglepoint (if_point (and ballpositive reachedMaxYNegThreshold)  (point newXcoord (+ (getYcoord supporterpoint) 0.5))  (if_point (and ballpositive (not reachedMaxYNegThreshold))  (point newXcoord (- (getYcoord supporterpoint) 0.5)) (if_point (and ballnegative reachedMaxYPosThreshold)  (point newXcoord (- (getYcoord supporterpoint) 0.5))  (point newXcoord (+ (getYcoord supporterpoint) 0.5)))))
 
-	
 #improveshootanglepoint (if_point ballpositive (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)) (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))
  
 improveshootangle (robotpointpointmove supporter improveshootanglepoint ballpoint)
 
 # TODO improvepassangle 
-improvepassanglepoint (if_point (and ballpositive reachedMaxYNegThreshold)  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5))  (if_point (and ballpositive (not reachedMaxYNegThreshold))  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)) (if_point (and ballnegative reachedMaxYPosThreshold)  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))))
+#improvepassanglepoint (if_point (and ballpositive reachedMaxYNegThreshold)  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5))  (if_point (and ballpositive (not reachedMaxYNegThreshold))  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)) (if_point (and ballnegative reachedMaxYPosThreshold)  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))))
+
+improvepassanglepoint (if_point (and ballpositive reachedMaxYNegThreshold)  (point newXcoord (+ (getYcoord supporterpoint) 0.5))  (if_point (and ballpositive (not reachedMaxYNegThreshold))  (point newXcoord (- (getYcoord supporterpoint) 0.5)) (if_point (and ballnegative reachedMaxYPosThreshold)  (point newXcoord (- (getYcoord supporterpoint) 0.5))  (point newXcoord (+ (getYcoord supporterpoint) 0.5)))))
 
 improvepassangle (robotpointpointmove supporter improveshootanglepoint ballpoint)
 

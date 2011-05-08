@@ -21,14 +21,14 @@ blocktarget (closest enemy ballpoint loose)
 blocktargetpoint (pointof blocktarget)
 linetoblock (line ballpoint blocktargetpoint)
 
-#blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
+blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
 
 Tactics:
 StandardAttack attacker supporter closestenemy
 SmartGoalie
 TwoManWall (ourgoal) 0.9 True 0
-TwoManWall (ourgoal) 0.9 True 1
-#BlockPass blocker blocktarget
+#TwoManWall (ourgoal) 0.9 True 1
+BlockPass blocker blocktarget
 
 Conditions:
 
