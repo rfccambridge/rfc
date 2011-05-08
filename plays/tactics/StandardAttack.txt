@@ -103,8 +103,11 @@ getoutofway (robotpointpointmovenoavoid supporter getoutofwaypoint ballpoint)
 reachedMaxYPosThreshold (> (getYcoord supporterpoint) 0.7)
 reachedMaxYNegThreshold (< (getYcoord supporterpoint) -0.7)
 
-improveshootanglepoint (if_point (and ballpositive reachedMaxYNegThreshold)  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5))  (if_point (and ballpositive (not reachedMaxYNegThreshold))  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))
-(if_point (and ballnegative reachedMaxYPosThreshold)  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))))
+improveshootanglepoint (if_point (and ballpositive reachedMaxYNegThreshold)  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5))  (if_point (and ballpositive (not reachedMaxYNegThreshold))  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)) (if_point (and ballnegative reachedMaxYPosThreshold)  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))))
+
+
+	
+
 
 #improveshootanglepoint (if_point ballpositive (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)) (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))
  
