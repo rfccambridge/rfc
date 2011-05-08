@@ -1,0 +1,29 @@
+Metadata:
+type tactic
+name OurDumbGoalie
+
+Parameters:
+goaliebot robot
+
+Objects:
+GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
+
+ballpoint (pointof ball)
+ballgoalline (line ballpoint (ourgoal))
+
+endtopgoalpt (point GOALIE_X_POS 1.6)
+endbottomgoalpt (point GOALIE_X_POS -1.6)
+
+vertgoalline (line endtopgoalpt endbottomgoalpt)
+
+goaliept (linelineintersection ballgoalline vertgoalline)
+goaliebotpt (pointof goaliebot)
+goaltoppt (point GOALIE_X_POS 0.35)
+goalbotpt (point GOALIE_X_POS -0.35)
+
+# should the goalie try to kick the ball?
+goalieshouldkick (pointInGoal ballpoint)
+
+Conditions:
+Actions:
+(if_Action goalieshouldkick (robotpointkick goaliebot (theirgoal)) (if_Action (< (getYcoord goaliept) (getYcoord goalbotpt)) (robotpointpointmove goaliebot goalbotpt ballpoint) (if_Action (> (getYcoord goaliept) (getYcoord goaltoppt)) (robotpointpointmove goaliebot goaltoppt ballpoint) (robotpointpointmove goaliebot goaliept ballpoint))))

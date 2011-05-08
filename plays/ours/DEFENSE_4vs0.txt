@@ -1,0 +1,19 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_4vs0
+score 150
+
+Objects:
+goaliebot (closest friendly (ourgoal) loose)
+forwardbot (closest friendly (point 1.0 0.0) loose)
+
+
+Tactics:
+OurDumbGoalie goaliebot
+TwoManWall (ourgoal) 0.9 True 0
+TwoManWall (ourgoal) 0.9 True 1
+Forward forwardbot
+
+Conditions:
+
+Actions:

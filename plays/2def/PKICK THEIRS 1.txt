@@ -1,0 +1,13 @@
+Metadata:
+playtype PenaltyKick_Theirs
+score 100
+name Penalty_Their1
+
+Tactics:
+SmartGoalie
+
+Objects:
+
+Conditions:
+
+Actions:

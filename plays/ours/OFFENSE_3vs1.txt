@@ -1,0 +1,23 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_3vs1
+score 500
+
+Objects:
+ballpoint (pointof ball)
+
+enemy0 (closest enemy ballpoint loose)
+
+goaliebot (closest friendly (ourgoal) loose)
+strikerbot (closest friendly ballpoint loose)
+clearbot (closest friendly (point -1.0 0.0) loose)
+
+
+Tactics:
+OffSmartGoalie goaliebot enemy0
+OffClearBot clearbot
+DumbStriker strikerbot
+
+Conditions:
+
+Actions:

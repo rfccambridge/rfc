@@ -78,7 +78,7 @@ double GOALIE_X_POS_DELTA 0.10
 double PENALTY_OFFSET 1.0
 
 # maxmimum distance from ball to still have ball possession
-double POSSESSION_DIST 0.5 
+double POSSESSION_DIST 0.15
 
 # NEW PLAY SYSTEM
 

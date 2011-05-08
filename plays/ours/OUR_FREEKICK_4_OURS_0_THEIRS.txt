@@ -1,0 +1,23 @@
+Metadata:
+playtype SetPlay_Ours
+name O_FK_4x0
+score 400
+
+Objects:
+ballpoint (pointof ball)
+
+goaliebot (closest friendly (ourgoal) loose)
+strikerbot (closest friendly ballpoint loose)
+sideassistbot (closest friendly (theirgoal) loose)
+clearbot (closest friendly (point 1.0 0.0) loose)
+
+
+Tactics:
+OurDumbGoalie goaliebot
+DefClearBot clearbot
+SideAssistTac strikerbot sideassistbot
+DumbStriker strikerbot
+
+Conditions:
+
+Actions:

@@ -31,6 +31,7 @@ string TACTIC_DIR ../../plays/tactics
 
 #string PLAY_DIR ../../plays/ATTACK
 #string PLAY_DIR ../../plays/defense
+<<<<<<< HEAD
 #string PLAY_DIR_YELLOW ../../plays/refboxplays
 #string PLAY_DIR_BLUE ../../plays/refboxplaysBlue
 #string PLAY_DIR ../../plays/TECHNICAL_CHALLENGES
@@ -39,9 +40,17 @@ string TACTIC_DIR ../../plays/tactics
 string PLAY_DIR_YELLOW ../../plays/yellow
 string PLAY_DIR_BLUE ../../plays/neerfan
 #string PLAY_DIR_BLUE ../../plays/blue
+=======
+string PLAY_DIR_YELLOW ../../plays/ours
+#string PLAY_DIR_BLUE ../../plays/refboxplaysBlue
+string PLAY_DIR_BLUE ../../plays/refboxplays
+>>>>>>> 0186e3c8182c8687744d9d01b57e3b49bac363cc
 #string PLAY_DIR ../../plays/TECHNICAL_CHALLENGES
 #string PLAY_DIR ../../plays/NormalPlay
 #string PLAY_DIR_YELLOW ../../plays/temp
+#string PLAY_DIR_YELLOW ../../plays/2def
+#string PLAY_DIR_BLUE ../../plays/2off
+
 
 ## Basic Predictor constants
 double DELTA_DIST_SQ_MERGE .01

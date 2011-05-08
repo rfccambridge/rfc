@@ -1,0 +1,21 @@
+Metadata:
+playtype NormalPlay
+name main
+
+Objects:
+
+numRobots (numourbots)
+numTheir (numtheirbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+
+(if_Action (and (= numRobots 1) (= numTheir 0)) (assignPlay DEFENSE_1vs0) nothing)
+(if_Action (and (= numRobots 1) (> numTheir 0)) (assignPlay DEFENSE_1vs1) nothing)
+
+(if_Action (and (= numRobots 2) (= numTheir 0)) (assignPlay DEFENSE_2vs0) nothing)
+(if_Action (and (= numRobots 2) (> numTheir 0)) (assignPlay DEFENSE_2vs1) nothing)
+

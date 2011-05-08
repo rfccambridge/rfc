@@ -1,0 +1,59 @@
+Metadata:
+playtype NormalPlay
+name SIDE_OFFENSE_STATIONARY
+score 200
+
+Tactics:
+
+Objects:
+
+wayTop (point 0 1000.0)
+wayBottom (point 0 -1000.0)
+
+topCenter (point 0 2.1)
+bottomCenter (point 0 -2.1)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+BALL_KICK_DIST (const-double BALL_KICK_DIST)
+STANDBY_DISTANCE (const-double STANDBY_DISTANCE)
+GOAL_MINIMUM (const-double GOAL_MINIMUM)
+BALL_IN_RANGE (const-double BALL_IN_RANGE)
+SUPPORT_AVOID (const-double SUPPORT_AVOID)
+CLEAR_DIST (const-double CLEAR_DIST)
+SUPPORT_SETUP_PASS (const-double SUPPORT_SETUP_PASS)
+
+ballpoint (pointof ball)
+
+topbot (closest friendly topCenter loose)
+bottombot (closest friendly bottomCenter loose)
+toppoint (pointof topbot)
+bottompoint (pointof bottombot)
+
+ballY (getYcoord ballpoint)
+ballontop (> ballY 0.1)
+ballonbottom (not ballontop)
+ballinrange (< (pointpointdistance ballpoint (theirgoal)) BALL_IN_RANGE)
+
+goalTop (pointadd (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+goalMiddle (theirgoal)
+goalBottom (pointsubtract (theirgoal) (point 0 (/ (const-double GOAL_HEIGHT) 2)))
+
+
+
+receivertop (point 2.5 0.25)
+receiverbottom (point 2.5 0.25)
+
+# Where to kick to if you do have the ball. Shoot if possible, otherwise pass
+topgoaltarget (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle goalBottom)
+toptarget (if_point (and ballinrange (pathClear ballpoint topgoaltarget CLEAR_DIST)) topgoaltarget bottompoint)
+bottomgoaltarget (if_point (pathClear ballpoint goalMiddle CLEAR_DIST) goalMiddle goalTop)
+bottomtarget (if_point (and ballinrange (pathClear ballpoint bottomgoaltarget CLEAR_DIST)) bottomgoaltarget toppoint)
+
+Conditions:
+
+Actions:
+(if_Action ballontop (robotpointkick topbot toptarget) (robotpointpointmove topbot receivertop topCenter))
+(if_Action ballonbottom (robotpointkick bottombot bottomtarget) (robotpointpointmove bottombot receiverbottom bottomCenter))

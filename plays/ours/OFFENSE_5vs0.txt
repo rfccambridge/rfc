@@ -1,0 +1,25 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_5vs0
+score 500
+
+Objects:
+ballpoint (pointof ball)
+
+goaliebot (closest friendly (ourgoal) loose)
+strikerbot (closest friendly ballpoint loose)
+sideassistbot (closest friendly (theirgoal) loose)
+topbot (closest friendly (point 0.0 1.0) loose)
+botbot (closest friendly (point 0.0 -1.0) loose)
+
+
+Tactics:
+OurDumbGoalie goaliebot
+BotBot botbot 
+TopBot topbot 
+SideAssistTac strikerbot sideassistbot
+DumbStriker strikerbot
+
+Conditions:
+
+Actions:

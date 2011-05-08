@@ -1,0 +1,23 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_4vs0
+score 500
+
+Objects:
+ballpoint (pointof ball)
+
+goaliebot (closest friendly (ourgoal) loose)
+strikerbot (closest friendly ballpoint loose)
+sideassistbot (closest friendly (theirgoal) loose)
+clearbot (closest friendly (point -1.0 0.0) loose)
+
+
+Tactics:
+OurDumbGoalie goaliebot
+OffClearBot clearbot
+SideAssistTac strikerbot sideassistbot
+DumbStriker strikerbot
+
+Conditions:
+
+Actions:

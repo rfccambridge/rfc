@@ -1,0 +1,25 @@
+Metadata:
+playtype Kickoff_Ours_Setup
+score 200
+name O_KFF_STP_2x0
+
+Objects:
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+centerpoint (point -0.3 0)
+
+goaliebot (closest friendly (ourgoal) loose)
+centerbot (closest friendly center loose)
+
+Tactics:
+OurDumbGoalie goaliebot
+
+Conditions:
+Actions:
+(robotpointpointmove centerbot centerpoint (theirgoal))

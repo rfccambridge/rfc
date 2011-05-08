@@ -226,6 +226,30 @@ namespace Robocup.Plays
                             return Intersections.intersect(line, circle, (int)objects[2]);
                             //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
                         });
+            addFunction("existslinecircleintersection", "Line, Circle - Intersection",
+                        "The intersection of line ~ and circle ~ Does it exist?", typeof(bool),
+                        new Type[] { typeof(Line), typeof(Circle)},
+                        delegate(EvaluatorState state, object[] objects)
+                        {
+                            Line line = (Line)objects[0];
+                            Circle circle = (Circle)objects[1];
+                            try { Intersections.intersect(line, circle, 1); }
+                            catch (NoIntersectionException e) { return false; }
+                            return true;
+                            //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
+                        });
+
+            addFunction("pointdirectiondistance", "Point, Direction, Distance - Point",
+                                    "The point ~, translated in the direction of point ~ by distance ~", typeof(Vector2),
+                                    new Type[] { typeof(Vector2), typeof(Vector2), typeof(double) },
+
+                                    delegate(EvaluatorState state, object[] objects)
+                                    {
+                                        Line line = new Line((Vector2)objects[0], (Vector2)objects[1]);
+                                        Circle circle = new Circle((Vector2)objects[0], (double)objects[2]);
+                                        return Intersections.intersect(line, circle, 1);
+                                        //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
+                                    });
             addFunction("circlecircleintersection", "Circle, Circle - Intersection",
                         "The intersection of circles ~ and ~, number ~", typeof(Vector2),
                         new Type[] { typeof(Circle), typeof(Circle), typeof(int) },
@@ -478,7 +502,7 @@ namespace Robocup.Plays
                         new Type[] { typeof(Circle), typeof(TeamCondition) },
                         delegate(EvaluatorState state, object[] objects)
                         {
-                            int count = 0;
+                            double count = 0;
                             TeamCondition condition = (TeamCondition)objects[1];
                             List<RobotInfo> allinfos = new List<RobotInfo>();
                             if (condition.maybeOurs())
@@ -665,9 +689,29 @@ namespace Robocup.Plays
             {
                 return Math.Cos((double)objects[0]);
             });
+            addFunction("doubleArcSin", "double - ArcSin", "The arcsine of ~", typeof(double), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return Math.Asin((double)objects[0]);
+            });
+            addFunction("pi", "double - PI", "PI", typeof(double), new Type[] {}, delegate(EvaluatorState state, object[] objects)
+            {
+                //return Math.Asin((double)objects[0]);
+                return Math.PI;
+            });
             #endregion
 
             #region misc
+            addFunction("prioritize", "Prioritize", "Determines role assignment based on ball position", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
+            {
+                // Positive is closer to their goal
+                if (state.ballInfo.Position.X >= 0)
+                    return 0.0;
+                // 0 is for offense
+                else
+                    return 1.0;
+                // 1 is for defense
+
+            });
             addFunction("numourbots", " - # our robots", "The number of robots currently on our team", typeof(double), new Type[] { }, delegate(EvaluatorState state, object[] objects)
             {
                 return (double)state.OurTeamInfo.Length;
@@ -687,6 +731,10 @@ namespace Robocup.Plays
             addFunction("const-bool", "bool constant", "The (bool) constant ~", typeof(bool), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
                 return Core.Constants.get<bool>("plays", (string)objects[0]);
+            });
+            addFunction("veritas", "veritas", "veritas", typeof(bool), new Type[] { typeof(double) }, delegate(EvaluatorState state, object[] objects)
+            {
+                return true;
             });
             addFunction("const-string", "string constant", "The (string) constant ~", typeof(string), new Type[] { typeof(string) }, delegate(EvaluatorState state, object[] objects)
             {
@@ -845,7 +893,7 @@ namespace Robocup.Plays
                     a.Kick(robot.getID(), p);
                 }, robot.getID());
             });
-            addFunction("robotpointstrengthkick", "Robot, strength - Kick", "Have robot ~ kick the ball towards ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot),  typeof(Vector2), typeof(int) }, delegate(EvaluatorState state, object[] objects)
+            addFunction("robotpointstrengthkick", "Robot, Point, Strength - Kick", "Have robot ~ kick the ball towards ~ with strength ~", typeof(ActionDefinition), new Type[] { typeof(Robot),  typeof(Vector2), typeof(int) }, delegate(EvaluatorState state, object[] objects)
             {
                 Robot robot = (Robot)objects[0];
                 Vector2 p = (Vector2)objects[1];

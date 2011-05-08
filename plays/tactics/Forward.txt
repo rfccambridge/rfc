@@ -1,0 +1,32 @@
+Metadata:
+type tactic
+name Forward
+
+Parameters:
+robot robot
+
+Objects:
+
+# constants
+CLEAR_DIST (const-double CLEAR_DIST)
+FIELD_WIDTH (const-double FIELD_WIDTH)
+FIELD_HEIGHT (const-double FIELD_HEIGHT)
+
+ballpoint (pointof ball)
+robotpoint (pointof robot)
+standbypt (point 1.0 0.0)
+cir (circle ballpoint 0.3)
+
+uppoint (point 1 (+ (getYcoord robotpoint) 0.5))
+downpoint (point 1 (- (getYcoord robotpoint) 0.5))
+
+passclear (pathClear ballpoint robotpoint CLEAR_DIST)
+passupclear (pathClear ballpoint uppoint CLEAR_DIST)
+passdownclear (pathClear ballpoint downpoint CLEAR_DIST)
+
+freepoint (if_point (and (inField uppoint) passupclear) uppoint (if_point (and (inField downpoint) passdownclear) downpoint standbypt))
+
+
+
+Actions:
+(if_Action (and (> (getXcoord robotpoint) 0.5) passclear) (donothing robot) (robotpointpointmove robot freepoint ballpoint))

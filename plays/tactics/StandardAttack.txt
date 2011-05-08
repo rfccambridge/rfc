@@ -77,9 +77,9 @@ ballpassed (< passdiffdistance CLEAR_DIST)
 shotongoal (bool false)
 
 # Movement
-gotoregion1 (robotpointpointmovenoavoid supporter regionpoint1 ballpoint)
-gotoregion2 (robotpointpointmovenoavoid supporter regionpoint2 ballpoint)
-gotoregion3 (robotpointpointmovenoavoid supporter regionpoint3 ballpoint)
+gotoregion1 (robotpointpointmove supporter regionpoint1 ballpoint)
+gotoregion2 (robotpointpointmove supporter regionpoint2 ballpoint)
+gotoregion3 (robotpointpointmove supporter regionpoint3 ballpoint)
 
 # Actions
 getinrange (if_Action (< (getYcoord ballpoint) 0) gotoregion1 gotoregion3)
@@ -146,10 +146,12 @@ shootTarget (if_point (pathClear attackerpoint (theirgoal) CLEAR_DIST) (theirgoa
 shoot (robotpointkick attacker shootTarget) 
 
 pass (robotpointkick attacker supporterpoint)
-dribbleup (robotpointdribble attacker dribbleuppoint)
-dribbleaway (robotpointdribble attacker dribbleawaypoint)
+#dribbleup (robotpointdribble attacker dribbleuppoint)
+#dribbleaway (robotpointdribble attacker dribbleawaypoint)
+dribbleup (robotpointbump attacker dribbleuppoint)
+dribbleaway (robotpointbump attacker dribbleawaypoint)
 
-# Decision tree
+# OLD Decision tree
 #attack 
 #(if_Action attackerhasshot 
 #	shoot
@@ -161,7 +163,17 @@ dribbleaway (robotpointdribble attacker dribbleawaypoint)
 #				pass
 #				dribbleaway))))
 
-attack (if_Action attackerhasshot shoot (if_Action (and passclear supporterhasshot) pass (if_Action attackerfree dribbleup (if_Action passclear pass dribbleaway))))
+
+# NEW Decision tree
+#attack 
+#(if_Action attackerhasshot 
+#	shoot
+#	(if_Action passclear
+#		pass
+#		shoot))
+
+
+attack (if_Action attackerhasshot shoot (if_Action passclear pass shoot))
 
 Actions:
 attack

@@ -1,0 +1,35 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_3vs2
+score 400
+
+# This is actually vs 
+
+Objects:
+distance (double 0.5)
+ballpoint (pointof ball)
+
+# attackers
+attacker0 (closest enemy ballpoint loose)
+attacker1 (closest enemy ballpoint loose)
+
+# defenders
+goaliebot (closest friendly (ourgoal) loose)
+clearbot (closest friendly (point 1.0 0.0) loose)
+
+#point_defended1 (pointof attacker1)
+#perimeter1 (circle point_defended1 distance)
+#ballline1 (line ballpoint point_defended1)
+#defensept1 (linecircleintersection ballline1 perimeter1 -1)
+#defensebot1 (closest friendly defensept1 loose)
+
+
+Tactics:
+DefSmartGoalie goaliebot clearbot attacker0
+OneManWall (ourgoal) 1.5 True 0 clearbot
+#Mark defensebot1 defensept1 forwardbot
+DefClearBot clearbot
+
+Conditions:
+
+Actions:

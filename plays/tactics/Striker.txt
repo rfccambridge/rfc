@@ -1,19 +1,28 @@
-Metadata:
+Metadata: 
 type tactic
 name Striker
-
-Parameters:
 
 Objects:
 ballpoint (pointof ball)
 robot0 (closest friendly ballpoint loose)
 
 standbypoint (point -2 0)
-
+scoredistance (point 2.7 0)
+xgoal (getXcoord (theirgoal))
+uppergoalcorner (point xgoal (- (/ (const-double GOAL_HEIGHT) 2) .05))
+lowergoalcorner (point xgoal (+ (/ (- 0 (const-double GOAL_HEIGHT)) 2) .05))
+realgoal (pointadd (point .5 0) (theirgoal))
+#randnumber (+ 0 (rand))
+#randomhilow ((< randnumber .5) -1 1)   
 
 Actions:
-# check if we shouldn't go after the ball- that is, if it is
-# in the goal and there is another robot there
 
-(if_Action (not (and (pointInGoal ballpoint) (robotInGoal))) (robotpointkick robot0 (theirGoalBestShot)) (robotpointmove robot0 standbypoint))
 
+# check for obstacles between striker and goal. 
+#If obstacle, check if obstacle between striker and point .05 inside of left/right goal corner
+#If clear, shoot, else dribble.....
+
+
+
+
+(if_Action (and (not (and (pointInGoal ballpoint) (robotInGoal))) (pathClear (pointof robot0) (theirgoal) 0.1)) (robotpointkick robot0 realgoal)(if_Action (and (< (getYcoord (pointof robot0)) 0) (pathClear (pointof robot0) uppergoalcorner 0.1)) (robotpointkick robot0 uppergoalcorner) (if_Action (and (> (getYcoord (pointof robot0)) 0) (pathClear (pointof robot0) lowergoalcorner 0.1)) (robotpointkick robot0 lowergoalcorner) (robotpointkick robot0 (point xgoal .5 )))))

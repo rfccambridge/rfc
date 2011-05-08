@@ -1,0 +1,33 @@
+Metadata:
+playtype KickOff_Theirs
+name main
+score 1
+
+Objects:
+
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+
+numRobots (numourbots)
+numTheir (numtheirbots)
+
+nothing (nullAction)
+
+Conditions:
+
+Actions:
+(if_Action (= numRobots 1) (assignPlay TH_KOFF_1x0) nothing)
+
+(if_Action (= numRobots 2) (assignPlay TH_KOFF_2x0) nothing)
+
+(if_Action (= numRobots 3) (assignPlay TH_KOFF_3x0) nothing)
+
+(if_Action (= numRobots 4) (assignPlay TH_KOFF_4x0) nothing)
+
+#(if_Action (and (= numRobots 5) (< numTheir 3)) (assignPlay TH_KOFF_5x0) nothing)
+#(if_Action (and (= numRobots 5) (> numTheir 2)) (assignPlay TH_KOFF_5x3) nothing)
+
+(if_Action (= numRobots 5) (assignPlay TH_KOFF_5x0) nothing)
+

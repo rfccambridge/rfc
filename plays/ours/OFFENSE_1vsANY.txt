@@ -1,0 +1,18 @@
+Metadata:
+playtype NormalPlay
+name OFFENSE_1vsANY
+score 500
+
+Objects:
+ballpoint (pointof ball)
+
+strikerbot (closest friendly ballpoint loose)
+
+Tactics:
+DumbStriker strikerbot
+
+Conditions:
+
+Actions:
+
+

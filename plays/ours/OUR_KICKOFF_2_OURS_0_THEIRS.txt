@@ -1,0 +1,19 @@
+Metadata:
+playtype Kickoff_Ours
+score 200
+name O_KFF_2x0
+
+Objects:
+ballpoint (pointof ball)
+
+goaliebot (closest friendly (ourgoal) loose)
+strikerbot (closest friendly ballpoint loose)
+
+
+Tactics:
+OurDumbGoalie goaliebot
+DumbStriker strikerbot
+
+Conditions:
+
+Actions:

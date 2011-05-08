@@ -1,0 +1,24 @@
+Metadata:
+playtype Kickoff_Ours
+score 300
+name O_KFF_3x0
+
+Objects:
+ballpoint (pointof ball)
+
+goaliebot (closest friendly (ourgoal) loose)
+strikerbot (closest friendly ballpoint loose)
+sideassistbot (closest friendly (theirgoal) loose)
+
+
+
+Tactics:
+OurDumbGoalie goaliebot
+#SideAssistTac strikerbot sideassistbot
+DumbStriker strikerbot
+
+Conditions:
+
+Actions:
+# Alternative for sideassisttac
+(robotpointpointmove sideassistbot (point -0.25 1.0) (pointof ball))

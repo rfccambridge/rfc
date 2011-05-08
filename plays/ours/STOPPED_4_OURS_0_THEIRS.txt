@@ -1,0 +1,45 @@
+Metadata:
+playtype Stopped
+score 400
+name ST_4x0
+
+
+Objects:
+goaliebot (closest friendly (ourgoal) loose)
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+
+# distance from our goal that setup play is different
+#GOAL_CLOSE_CHANGE_SETUP (const-string GOAL_CLOSE_CHANGE_SETUP)
+
+ballpoint (pointof ball)
+ballcircle (circle ballpoint 0.63)
+ballgoalline (line ballpoint (ourgoal))
+
+#ballgoaldist (pointpointdistance ballpoint (ourgoal))
+
+# decide whether the ball is too close to the goal to have robots close to the ball
+#close_to_goal (< ballgoaldist GOAL_CLOSE_CHANGE_SETUP)
+
+wall1line (line ballpoint (ourgoal))
+wall1point (linecircleintersection wall1line ballcircle 1)
+
+#20 deg rotation
+wall2point (rotatePointAroundAnotherPoint ballpoint wall1point 0.349065)
+
+wall1bot (closest friendly wall1point loose)
+wall2bot (closest friendly wall2point loose)
+
+wall1bkp (point 1.0 0)
+wall2bkp (point 1.5 -1)
+
+Tactics:
+OurDumbGoalie goaliebot
+DefendPoint (ourgoal) 0.9 False
+
+Conditions:
+Actions:
+(if_Action (inField wall1point) (robotpointpointmove wall1bot wall1point ballpoint) (robotpointpointmove wall1bot wall1bkp ballpoint))
+(if_Action (inField wall2point) (robotpointpointmove wall2bot wall2point ballpoint) (robotpointpointmove wall2bot wall2bkp ballpoint))

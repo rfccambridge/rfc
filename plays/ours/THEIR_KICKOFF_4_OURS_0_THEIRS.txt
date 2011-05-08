@@ -1,0 +1,42 @@
+Metadata:
+playtype Kickoff_Theirs
+score 400
+name TH_KOFF_4x0
+
+Objects:
+goaliebot (closest friendly (ourgoal) loose)
+topLeftCorner (point -3.05 2.1)
+bottomLeftCorner (point -3.05 -2.1)
+bottomRightCorner (point 3.05 -2.1)
+topRightCorner (point 3.05 2.1)
+center (point 0 0)
+centertop (point 0 2.1)
+centerbottom (point 0 -2.1)
+
+centercircle (circle center 0.7)
+
+centerbot (closest friendly center loose)
+centerbotpt (pointof centerbot)
+
+topbot (closest friendly centertop loose)
+topbotpt (pointof topbot)
+
+bottombot (closest friendly centerbottom loose)
+bottompt (pointof bottombot)
+
+centergoalline (line center (ourgoal))
+
+toppt (point -0.3 1.5)
+topptfwd (point 0 1.5)
+botpt (point -0.3 -1.5)
+botptfwd (point 0 -1.5)
+centercirclept (linecircleintersection centergoalline centercircle 1)
+
+Tactics:
+OurDumbGoalie goaliebot
+
+Conditions:
+Actions:
+(robotpointpointmove centerbot centercirclept center)
+(robotpointpointmove topbot toppt topptfwd)
+(robotpointpointmove bottombot botpt botptfwd)

@@ -1,0 +1,12 @@
+Metadata:
+playtype NormalPlay
+name DEFENSE_1vsANY
+score 150
+
+Tactics:
+DumbGoalie
+
+Objects:
+
+Conditions:
+Actions:

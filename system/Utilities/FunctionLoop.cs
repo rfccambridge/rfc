@@ -121,7 +121,7 @@ namespace Robocup.Utilities
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    Console.WriteLine("{0} \n {1}", ex, ex.StackTrace);
                 }
                 finally
                 {
