@@ -10,6 +10,7 @@ regionpoint2 (point 2.4 0)
 regionpoint3 (point 2.4 0.6)
 ballpoint (pointof ball)
 
+<<<<<<< HEAD
 
 firstenemy (closest enemy ballpoint loose)
 
@@ -17,17 +18,32 @@ firstenemy (closest enemy ballpoint loose)
 blocktarget (closest enemy ballpoint loose)
 blocktargetpoint (pointof blocktarget)
 
+=======
+#Attacker should be teammate on ball
+>>>>>>> 5295a9b284a4afff9b6c8ea6cdff22f52b176bc7
 attacker (closest friendly ballpoint loose)
 supporter (closest friendly regionpoint2 loose)
 closestenemy (closest enemy (pointof attacker) loose)
 blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
 
 
+
+dummyenemy (closest enemy ballpoint loose)
+blocktarget (closest enemy ballpoint loose)
+blocktargetpoint (pointof blocktarget)
+blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
+
 Tactics:
+<<<<<<< HEAD
 SmartGoalie
 Sweep (ourgoal) 0.8 True 
 BlockPass blocker blocktarget
+=======
+>>>>>>> 5295a9b284a4afff9b6c8ea6cdff22f52b176bc7
 StandardAttack attacker supporter closestenemy
+SmartGoalie
+Sweep (ourgoal) 1 True 
+BlockPass blocker blocktarget
 
 Conditions:
 

@@ -9,3 +9,14 @@ C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\Interp
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\GenerateResource.write.1.tlog
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.exe
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\InterpreterTester.exe.config
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\InterpreterTester.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\InterpreterTester.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.InterpreterTester.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.PlayManager.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.Properties.Resources.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\GenerateResource.write.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.pdb

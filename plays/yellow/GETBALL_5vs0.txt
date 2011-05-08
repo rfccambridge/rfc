@@ -5,21 +5,40 @@ score 200
 
 Objects: 
 
+#Regions
 regionpoint1 (point 2.4 -0.6)
 regionpoint2 (point 2.4 0)
 regionpoint3 (point 2.4 0.6)
+region1 (circle regionpoint1 1)
+region2 (circle regionpoint2 1)
+region3 (circle regionpoint3 1)
+
 ballpoint (pointof ball)
+
+
+#stealer should be teammate on ball
+stealer (closest friendly ballpoint loose)
+stealerpoint (pointof stealer)
 
 # Assign roles to robots
 receiver (closest friendly regionpoint2 loose)
 receiverpoint (pointof receiver)
-stealer (closest friendly ballpoint loose)
-stealerpoint (pointof stealer)
+
 
 blocktarget (closest enemy ballpoint loose)
 blocktargetpoint (pointof blocktarget)
 linetoblock (line ballpoint blocktargetpoint)
 blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
+
+
+#From old GETBALL_5vs0.txt
+should_kick (< (pointpointdistance stealerpoint ballpoint) 0.4)
+
+#TODO: How to choose which region to move to?
+region1_free (and (> (numberOfRobotsInACircle region1 enemy) 1) (pathClear ballpoint receiverpoint 0.2))
+region2_free (and (> (numberOfRobotsInACircle region2 enemy) 1) (pathClear ballpoint receiverpoint 0.2))
+region3_free (and (> (numberOfRobotsInACircle region3 enemy) 1) (pathClear ballpoint receiverpoint 0.2))
+region_most_clear_point (if_point region1_free regionpoint1 (if_point region2_free regionpoint2 regionpoint3))
 
 Tactics:
 SmartGoalie
@@ -29,5 +48,8 @@ BlockPass blocker blocktarget
 Conditions:
 
 Actions:
-(robotpointpointmovenoavoid receiver regionpoint2 ballpoint)
-(robotpointpointmovenoavoid stealer ballpoint ballpoint)
+#(robotpointpointmovenoavoid receiver regionpoint2 ballpoint)
+#(robotpointpointmovenoavoid stealer ballpoint ballpoint)
+
+(robotpointpointmove receiver region_most_clear_point ballpoint)
+(if_Action should_kick (robotpointkick stealer receiverpoint)(robotpointpointmove stealer ballpoint ballpoint))

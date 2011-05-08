@@ -6,3 +6,11 @@ C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Core\obj\D
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Core\obj\Debug\GenerateResource.write.1.tlog
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Core\obj\Debug\Core.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Core\obj\Debug\Core.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Core.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Core.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\system\Core\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\system\Core\obj\Debug\Robocup.Core.DebugForm.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\system\Core\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\system\Core\obj\Debug\GenerateResource.write.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\system\Core\obj\Debug\Core.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\system\Core\obj\Debug\Core.pdb

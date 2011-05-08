@@ -7,6 +7,9 @@ Objects:
 
 ballpoint (pointof ball)
 
+# constants
+FIELD_HEIGHT (double 4.05)
+
 # Assign target robots
 marktarget (closest enemy (ourgoal) loose)
 marktargetpoint (pointof marktarget)
@@ -15,17 +18,25 @@ blocktargetpoint (pointof blocktarget)
 
 linetoblock (line ballpoint blocktargetpoint)
 
-# Assign robots
+# Assign robots (Stealer should be teammate on ball)
+stealer (closest friendly ballpoint loose)
 marker (closest friendly marktargetpoint loose)
 blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
+
+stealerpoint (pointof stealer)
+should_kick (< (pointpointdistance stealerpoint ballpoint) 0.2)
 
 Tactics:
 SmartGoalie
 Sweep (ourgoal) 0.8 True 
-Stealer
 Mark marker marktarget
 BlockPass blocker blocktarget
 
 Conditions:
 
 Actions:
+#Note: We have decided to make this "Stealer" an action rather than a tactic 
+#becuase this stealer's only job is to get to the ball instead of get the ball
+#AND set up for a pass to anotehr teammate. 
+
+(if_Action should_kick (robotpointkick stealer (theirgoal)) (robotpointpointmove stealer ballpoint ballpoint))
