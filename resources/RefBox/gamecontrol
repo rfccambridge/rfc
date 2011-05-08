@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 1304023704.800000 Game log for Thu Apr 28 16:48:24 2011
 
 1304023707.659000 	Pre-game	Halted	0.000000 Sending S: Stopping robots
@@ -28,3 +29,9 @@
 1304880092.269000 	First Half	Running	468.516000 Sending S: Stopping robots
 1304880126.730000 	First Half	Stopped	502.977000 Sending s: Starting robots
 >>>>>>> 5295a9b284a4afff9b6c8ea6cdff22f52b176bc7
+=======
+1304882916.053000 Game log for Sun May 08 15:28:36 2011
+
+1304882918.689000 	Pre-game	Halted	0.000000 Sending S: Stopping robots
+1304882930.452000 	Pre-game	Stopped	11.763000 Sending s: Starting robots
+>>>>>>> 2fbcd923d18e9f5a28532a25ec60b8a13a15c2b3

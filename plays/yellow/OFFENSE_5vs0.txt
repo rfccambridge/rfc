@@ -29,6 +29,8 @@ closestenemy (closest enemy (pointof attacker) loose)
 dummyenemy (closest enemy ballpoint loose)
 blocktarget (closest enemy ballpoint loose)
 blocktargetpoint (pointof blocktarget)
+linetoblock (line ballpoint blocktargetpoint)
+
 blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
 
 Tactics:
