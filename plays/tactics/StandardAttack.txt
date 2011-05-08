@@ -43,6 +43,11 @@ ballvelocity (velocityof ball)
 balldirection (getAngle ballvelocity)
 ballprojline (linedirection ballpoint balldirection)
 ballprojpoint (linetopoint ballprojline 0.5)
+ballpositive (< 0 (getYcoord ballpoint))
+ballnegative (> 0 (getYcoord ballpoint))
+
+
+
 
 # SUPPORTER 
 
@@ -95,12 +100,18 @@ getoutofwaypoint (if_point (< (getYcoord supporterpoint) 0) theirBottomCorner th
 getoutofway (robotpointpointmovenoavoid supporter getoutofwaypoint ballpoint)
 
 # TODO improveshootangle
-improveshootanglepoint (if_point (< (getYcoord supporterpoint) 0) (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)) (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)))
+reachedMaxYPosThreshold (> (getYcoord supporterpoint) 0.7)
+reachedMaxYNegThreshold (< (getYcoord supporterpoint) -0.7)
+
+improveshootanglepoint (if_point (and ballpositive reachedMaxYNegThreshold)  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5))  (if_point (and ballpositive (not reachedMaxYNegThreshold))  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))
+(if_point (and ballnegative reachedMaxYPosThreshold)  (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))  (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))))
+
+#improveshootanglepoint (if_point ballpositive (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)) (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))
  
 improveshootangle (robotpointpointmove supporter improveshootanglepoint ballpoint)
 
 # TODO improvepassangle 
-improvepassanglepoint (if_point (< (getYcoord supporterpoint) 0) (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)) (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5))) 
+improvepassanglepoint (if_point ballpositive (point (getXcoord supporterpoint) (- (getYcoord supporterpoint) 0.5)) (point (getXcoord supporterpoint) (+ (getYcoord supporterpoint) 0.5)))
 
 improvepassangle (robotpointpointmove supporter improveshootanglepoint ballpoint)
 
@@ -141,13 +152,15 @@ attackerhasshot (and ballinrange (pathClear ballpoint (theirGoalBestShot) CLEAR_
 
 attackerfree (= 0 (numberOfRobotsInACircle attackercircle enemy))
 
+
+
 # Actions
-shootTarget (if_point (pathClear attackerpoint (theirgoal) CLEAR_DIST) (theirgoal) (if_point (pathClear attackerpoint goaltop CLEAR_DIST) goaltop (if_point (pathClear attackerpoint goalbottom CLEAR_DIST) goalbottom (theirGoalBestShot))))
+shootTarget  (if_point (pathClear attackerpoint goaltop CLEAR_DIST) goaltop (if_point (pathClear attackerpoint goalbottom CLEAR_DIST) goalbottom (theirGoalBestShot)))
 shoot (robotpointkick attacker shootTarget) 
 
 pass (robotpointkick attacker supporterpoint)
-dribbleup (robotpointdribble attacker dribbleuppoint)
-dribbleaway (robotpointdribble attacker dribbleawaypoint)
+dribbleup (robotpointbump attacker dribbleuppoint)
+dribbleaway (robotpointbump attacker dribbleawaypoint)
 
 # Decision tree
 #attack 
@@ -160,6 +173,7 @@ dribbleaway (robotpointdribble attacker dribbleawaypoint)
 #			(if_Action passclear
 #				pass
 #				dribbleaway))))
+
 
 attack (if_Action attackerhasshot shoot (if_Action (and passclear supporterhasshot) pass (if_Action attackerfree dribbleup (if_Action passclear pass dribbleaway))))
 

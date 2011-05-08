@@ -17,15 +17,19 @@ ourBottomCorner (point -3.05 -2.1)
 
 ballpoint (pointof ball)
 
-# Assign roles to robots
+#Clearer should be teammate on ball
+clearer (closest friendly ballpoint loose)
+clearerpoint (pointof clearer)
+
+# Assign roles to other robots
 enemykicker (closest enemy ballpoint loose)
 enemykickerpoint (pointof enemykicker)
 marker (closest friendly enemykickerpoint loose)
 
-clearer (closest friendly ballpoint loose)
-clearerpoint (pointof clearer)
 
 clearpoint (if_point (pathClear ballpoint clearpoint1 CLEAR_DIST) clearpoint1 (if_point (pathClear ballpoint clearpoint2 CLEAR_DIST) clearpoint2 (if_point (pathClear ballpoint clearpoint3 CLEAR_DIST) clearpoint3 (if_point (pathClear ballpoint ourTopCorner CLEAR_DIST) ourTopCorner ourBottomCorner))))
+
+should_kick (< (pointpointdistance clearerpoint ballpoint) 0.4)
 
 
 blocktarget (closest enemy ballpoint loose)
@@ -43,4 +47,5 @@ Mark marker enemykicker
 Conditions:
 
 Actions:
-(robotpointkickvar clearer clearpoint 5)
+#(robotpointkickvar clearer clearpoint 5)
+(if_Action should_kick (robotpointkick clearer clearpoint) (robotpointpointmove clearer ballpoint ballpoint))

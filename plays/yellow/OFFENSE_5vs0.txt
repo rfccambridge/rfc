@@ -10,15 +10,22 @@ regionpoint2 (point 2.4 0)
 regionpoint3 (point 2.4 0.6)
 ballpoint (pointof ball)
 
+#Attacker should be teammate on ball
 attacker (closest friendly ballpoint loose)
 supporter (closest friendly regionpoint2 loose)
 closestenemy (closest enemy (pointof attacker) loose)
 
+
+dummyenemy (closest enemy ballpoint loose)
+blocktarget (closest enemy ballpoint loose)
+blocktargetpoint (pointof blocktarget)
+blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loose)
+
 Tactics:
-SmartGoalie
-Sweep (ourgoal) 0.8 True 
-Sweep (ourgoal) 1.5 True
 StandardAttack attacker supporter closestenemy
+SmartGoalie
+Sweep (ourgoal) 1 True 
+BlockPass blocker blocktarget
 
 Conditions:
 

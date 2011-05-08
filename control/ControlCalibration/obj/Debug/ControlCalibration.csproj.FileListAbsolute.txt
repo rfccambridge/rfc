@@ -7,3 +7,12 @@ C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\control\ControlCa
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\control\ControlCalibration\obj\Debug\GenerateResource.write.1.tlog
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\control\ControlCalibration\obj\Debug\ControlCalibration.exe
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\control\ControlCalibration\obj\Debug\ControlCalibration.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\ControlCalibration.exe.config
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\ControlCalibration.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\ControlCalibration.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\control\ControlCalibration\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\control\ControlCalibration\obj\Debug\Robocup.MotionControl.ModelCalibrator.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\control\ControlCalibration\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\control\ControlCalibration\obj\Debug\GenerateResource.write.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\control\ControlCalibration\obj\Debug\ControlCalibration.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\control\ControlCalibration\obj\Debug\ControlCalibration.pdb
