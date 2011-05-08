@@ -1,10 +1,10 @@
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\CorePlayFiles.dll
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\CorePlayFiles.pdb
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Core Play Files\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Core Play Files\obj\Debug\CorePlayFiles.dll
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Core Play Files\obj\Debug\CorePlayFiles.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\CorePlayFiles.dll
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\CorePlayFiles.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Core Play Files\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Core Play Files\obj\Debug\CorePlayFiles.dll
 C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Core Play Files\obj\Debug\CorePlayFiles.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\CorePlayFiles.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\CorePlayFiles.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Core Play Files\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Core Play Files\obj\Debug\CorePlayFiles.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Core Play Files\obj\Debug\CorePlayFiles.pdb

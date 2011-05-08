@@ -1,12 +1,3 @@
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Simulator.exe.config
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Simulator.exe
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Simulator.pdb
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\Robocup.Simulation.SimulatorForm.resources
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\GenerateResource.read.1.tlog
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\GenerateResource.write.1.tlog
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\Simulator.exe
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\Simulator.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Simulator.exe.config
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Simulator.exe
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Simulator.pdb
@@ -16,3 +7,12 @@ C:\Users\Tabare\Documents\Academics\000\rfc\simulators\SimulationLib\obj\Debug\G
 C:\Users\Tabare\Documents\Academics\000\rfc\simulators\SimulationLib\obj\Debug\GenerateResource.write.1.tlog
 C:\Users\Tabare\Documents\Academics\000\rfc\simulators\SimulationLib\obj\Debug\Simulator.exe
 C:\Users\Tabare\Documents\Academics\000\rfc\simulators\SimulationLib\obj\Debug\Simulator.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Simulator.exe.config
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Simulator.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Simulator.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\Robocup.Simulation.SimulatorForm.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\GenerateResource.write.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\Simulator.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\SimulationLib\obj\Debug\Simulator.pdb

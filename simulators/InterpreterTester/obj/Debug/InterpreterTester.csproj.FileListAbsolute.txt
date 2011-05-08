@@ -1,14 +1,3 @@
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\InterpreterTester.exe.config
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\InterpreterTester.exe
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\InterpreterTester.pdb
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.InterpreterTester.resources
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.PlayManager.resources
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.Properties.Resources.resources
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\GenerateResource.read.1.tlog
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\GenerateResource.write.1.tlog
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.exe
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\InterpreterTester.exe.config
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\InterpreterTester.exe
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\InterpreterTester.pdb
@@ -20,3 +9,14 @@ C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Deb
 C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\GenerateResource.write.1.tlog
 C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.exe
 C:\Users\Tabare\Documents\Academics\000\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\InterpreterTester.exe.config
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\InterpreterTester.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\InterpreterTester.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.InterpreterTester.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.PlayManager.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.Properties.Resources.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\GenerateResource.write.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\simulators\InterpreterTester\obj\Debug\InterpreterTester.pdb

@@ -1,11 +1,3 @@
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Utilities.dll
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Utilities.pdb
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\Robocup.Utilities.FieldDrawerForm.resources
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\GenerateResource.read.1.tlog
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\GenerateResource.write.1.tlog
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\Utilities.dll
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\Utilities.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Utilities.dll
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Utilities.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\system\Utilities\obj\Debug\ResolveAssemblyReference.cache
@@ -14,3 +6,11 @@ C:\Users\Tabare\Documents\Academics\000\rfc\system\Utilities\obj\Debug\GenerateR
 C:\Users\Tabare\Documents\Academics\000\rfc\system\Utilities\obj\Debug\GenerateResource.write.1.tlog
 C:\Users\Tabare\Documents\Academics\000\rfc\system\Utilities\obj\Debug\Utilities.dll
 C:\Users\Tabare\Documents\Academics\000\rfc\system\Utilities\obj\Debug\Utilities.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Utilities.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Utilities.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\Robocup.Utilities.FieldDrawerForm.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\GenerateResource.write.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\Utilities.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\Utilities\obj\Debug\Utilities.pdb

@@ -1,12 +1,3 @@
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\SerialControl.exe.config
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\SerialControl.exe
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\SerialControl.pdb
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\Robocup.SerialControl.RemoteControl.resources
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\GenerateResource.read.1.tlog
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\GenerateResource.write.1.tlog
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\SerialControl.exe
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\SerialControl.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\SerialControl.exe.config
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\SerialControl.exe
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\SerialControl.pdb
@@ -16,3 +7,12 @@ C:\Users\Tabare\Documents\Academics\000\rfc\system\SerialControl\obj\Debug\Gener
 C:\Users\Tabare\Documents\Academics\000\rfc\system\SerialControl\obj\Debug\GenerateResource.write.1.tlog
 C:\Users\Tabare\Documents\Academics\000\rfc\system\SerialControl\obj\Debug\SerialControl.exe
 C:\Users\Tabare\Documents\Academics\000\rfc\system\SerialControl\obj\Debug\SerialControl.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\SerialControl.exe.config
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\SerialControl.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\SerialControl.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\Robocup.SerialControl.RemoteControl.resources
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\GenerateResource.write.1.tlog
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\SerialControl.exe
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\SerialControl\obj\Debug\SerialControl.pdb

@@ -1,10 +1,10 @@
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Geometry.dll
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Geometry.pdb
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\Geometry.dll
-C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\Geometry.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Geometry.dll
 C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\Geometry.pdb
 C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Geometry\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Geometry\obj\Debug\Geometry.dll
 C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Geometry\obj\Debug\Geometry.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Geometry.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\Geometry.pdb
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\Geometry.dll
+C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Geometry\obj\Debug\Geometry.pdb
