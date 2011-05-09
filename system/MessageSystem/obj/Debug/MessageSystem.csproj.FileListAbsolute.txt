@@ -1,10 +1,10 @@
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\MessageSystem.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\MessageSystem.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\system\MessageSystem\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Tabare\Documents\Academics\000\rfc\system\MessageSystem\obj\Debug\MessageSystem.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\system\MessageSystem\obj\Debug\MessageSystem.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\MessageSystem.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\MessageSystem.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\MessageSystem\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\MessageSystem\obj\Debug\MessageSystem.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\system\MessageSystem\obj\Debug\MessageSystem.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\MessageSystem.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\MessageSystem.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\system\MessageSystem\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\system\MessageSystem\obj\Debug\MessageSystem.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\system\MessageSystem\obj\Debug\MessageSystem.pdb

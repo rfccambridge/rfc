@@ -1,14 +1,3 @@
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.exe.config
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.exe
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\CSML.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\CSML.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.Properties.Resources.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\GenerateResource.read.1.tlog
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\GenerateResource.write.1.tlog
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.exe
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.exe.config
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.exe
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.pdb
@@ -20,3 +9,14 @@ C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilt
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\GenerateResource.write.1.tlog
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.exe
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.exe.config
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\KalmanFilter.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\CSML.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\bin\Debug\CSML.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.Properties.Resources.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\GenerateResource.write.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\KalmanFilter\obj\Debug\KalmanFilter.pdb

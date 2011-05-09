@@ -1,10 +1,10 @@
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlaySelector.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlaySelector.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Selector\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Selector\obj\Debug\PlaySelector.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Selector\obj\Debug\PlaySelector.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\PlaySelector.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\PlaySelector.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Play Selector\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Play Selector\obj\Debug\PlaySelector.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Play Selector\obj\Debug\PlaySelector.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlaySelector.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlaySelector.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Selector\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Selector\obj\Debug\PlaySelector.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Selector\obj\Debug\PlaySelector.pdb

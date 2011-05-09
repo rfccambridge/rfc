@@ -1,14 +1,3 @@
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\NavigationRacer.exe.config
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\NavigationRacer.exe
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\NavigationRacer.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.FrmBatchTesting.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.Properties.Resources.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.RacerForm.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\GenerateResource.read.1.tlog
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\GenerateResource.write.1.tlog
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.exe
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\NavigationRacer.exe.config
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\NavigationRacer.exe
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\NavigationRacer.pdb
@@ -20,3 +9,14 @@ C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Navigati
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Navigation\NavigationRacer\obj\Debug\GenerateResource.write.1.tlog
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.exe
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\NavigationRacer.exe.config
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\NavigationRacer.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\NavigationRacer.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.FrmBatchTesting.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.Properties.Resources.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.RacerForm.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\GenerateResource.write.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Navigation\NavigationRacer\obj\Debug\NavigationRacer.pdb

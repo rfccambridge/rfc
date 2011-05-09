@@ -1,10 +1,10 @@
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\CSML.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\CSML.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\CSML\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\CSML\obj\Debug\CSML.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\vision\CSML\obj\Debug\CSML.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\CSML.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\CSML.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\CSML\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\CSML\obj\Debug\CSML.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\vision\CSML\obj\Debug\CSML.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\CSML.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\CSML.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\CSML\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\CSML\obj\Debug\CSML.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\vision\CSML\obj\Debug\CSML.pdb

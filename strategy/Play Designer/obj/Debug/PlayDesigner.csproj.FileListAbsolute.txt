@@ -1,17 +1,3 @@
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlayDesigner.exe.config
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlayDesigner.exe
-C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlayDesigner.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.DefinitionForm.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.MainForm.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.SelectExpressionForm.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.ValueForm.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.Properties.Resources.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.ShowExpressionsForm.resources
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\GenerateResource.read.1.tlog
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\GenerateResource.write.1.tlog
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\PlayDesigner.exe
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\PlayDesigner.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\PlayDesigner.exe.config
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\PlayDesigner.exe
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\bin\Debug\PlayDesigner.pdb
@@ -26,3 +12,17 @@ C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Play Des
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Play Designer\obj\Debug\GenerateResource.write.1.tlog
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Play Designer\obj\Debug\PlayDesigner.exe
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\Play Designer\obj\Debug\PlayDesigner.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlayDesigner.exe.config
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlayDesigner.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\bin\Debug\PlayDesigner.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.DefinitionForm.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.MainForm.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.SelectExpressionForm.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.ValueForm.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.Properties.Resources.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\Robocup.Plays.ShowExpressionsForm.resources
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\GenerateResource.write.1.tlog
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\PlayDesigner.exe
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\Play Designer\obj\Debug\PlayDesigner.pdb

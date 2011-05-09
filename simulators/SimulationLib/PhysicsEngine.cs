@@ -690,8 +690,8 @@ namespace Robocup.Simulation
                         }
                 }
             }
-        } 
-		
+        }
+       
         #region IPredictor
         public List<RobotInfo> GetRobots()
         {

@@ -16,20 +16,24 @@ ballpoint (pointof ball)
 ballcircle (circle ballpoint 0.63)
 
 
+atkpt (point 1.5 0)
 
 wall1line (line ballpoint (ourgoal))
+oppline (line ballpoint (theirgoal))
+
 wall1point (linecircleintersection wall1line ballcircle 1)
+opppoint (linecircleintersection oppline ballcircle 1)
 
 
 
-getterbot (closest friendly wall1point loose)
+wall1bot (closest friendly wall1point loose)
 
 supportbot (closest friendly center loose)
-supportbotpoint (pointof supportbot)
 
 
+#robot1point (pointof robot1)
 
 Conditions:
 Actions:
-(if_Action (inField wall1point) (robotpointpointmove getterbot ballpoint (theirgoal)) (robotpointpointmove getterbot center ballpoint))
-(if_Action (inField wall1point) (robotpointpointmove supportbot wall1point ballpoint) (robotpointpointmove supportbot center ballpoint))
+(if_Action (inField wall1point) (robotpointpointmove wall1bot (point (+ 0.3 (getXcoord wall1point)) (+ 0.3 (getYcoord wall1point))) ballpoint) (robotpointpointmove wall1bot atkpt ballpoint))
+(if_Action (inField opppoint) (robotpointpointmove supportbot opppoint ballpoint) (robotpointpointmove supportbot atkpt ballpoint))

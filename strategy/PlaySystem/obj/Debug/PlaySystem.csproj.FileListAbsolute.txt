@@ -1,24 +1,3 @@
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\PlaySystem.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\PlaySystem.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Core.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\CoreRobotics.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Geometry.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Utilities.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\MessageSystem.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\SSLClient.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\OpenTK.GLControl.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\OpenTK.Compatibility.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\OpenTK.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\protobuf-net.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\CoreRobotics.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Geometry.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Core.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Utilities.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\MessageSystem.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\SSLClient.pdb
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\obj\Debug\PlaySystem.dll
-C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\obj\Debug\PlaySystem.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\PlaySystem\bin\Debug\PlaySystem.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\PlaySystem\bin\Debug\PlaySystem.pdb
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\PlaySystem\bin\Debug\Core.dll
@@ -40,3 +19,24 @@ C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\PlaySyst
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\PlaySystem\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\PlaySystem\obj\Debug\PlaySystem.dll
 C:\Documents and Settings\Administrator\Desktop\gitrobocup\rfc\strategy\PlaySystem\obj\Debug\PlaySystem.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\PlaySystem.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\PlaySystem.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Core.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\CoreRobotics.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Geometry.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Utilities.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\MessageSystem.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\SSLClient.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\OpenTK.GLControl.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\OpenTK.Compatibility.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\OpenTK.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\protobuf-net.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\CoreRobotics.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Geometry.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Core.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\Utilities.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\MessageSystem.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\bin\Debug\SSLClient.pdb
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\obj\Debug\PlaySystem.dll
+C:\Users\Tabare\Documents\Academics\000\rfc\strategy\PlaySystem\obj\Debug\PlaySystem.pdb
