@@ -26,7 +26,8 @@ blocker (closest friendly (closestRobotToLinePosition linetoblock friendly) loos
 Tactics:
 StandardAttack attacker supporter closestenemy
 SmartGoalie
-Sweep (ourgoal) 1 True 
+TwoManWall (ourgoal) 0.9 True 0
+#TwoManWall (ourgoal) 0.9 True 1
 BlockPass blocker blocktarget
 
 Conditions:
