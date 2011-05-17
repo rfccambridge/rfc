@@ -1633,7 +1633,7 @@ namespace Robocup.MotionControl
         private const double ROTATION_ASSUMED_SPEED = 2.5; //In m/s
 
         //Conversion to wheel speed commands
-        private const double XY_BASIS_SCALE = 31.0; //Wheel speeds required for 1 m/s movement
+        private const double XY_BASIS_SCALE = 29.0; //Wheel speeds required for 1 m/s movement
         private const double R_BASIS_SCALE = 15.5;  //Wheel speeds required for 1 rev/s movement 
         
         //Max wheel speed change per second
@@ -1642,15 +1642,19 @@ namespace Robocup.MotionControl
         //How much should we weight in the direction we will need to head for the next waypoint?
         private const double NEXT_NEXT_PROP = 0.2;
 
+        private const double GOOD_ENOUGH_DIST = 0.005;
+        private const double GOOD_ENOUGH_ANGLE = 1.0 / 360.0;
+
         //Scaling for speed based on distance from goal
         private Pair<double,double>[] SCALE_BY_DISTANCE =
-        { new Pair<double,double>(0.00,0.00), 
-          new Pair<double,double>(0.05,0.17), 
-          new Pair<double,double>(0.10,0.33), 
-          new Pair<double,double>(0.15,0.50), 
-          new Pair<double,double>(0.20,0.66), 
-          new Pair<double,double>(0.25,0.83), 
-          new Pair<double,double>(0.30,1.00),
+        { new Pair<double,double>(0.00,0.01), 
+          new Pair<double,double>(0.05,0.16), 
+          new Pair<double,double>(0.10,0.31), 
+          new Pair<double,double>(0.15,0.46), 
+          new Pair<double,double>(0.20,0.61), 
+          new Pair<double,double>(0.25,0.76), 
+          new Pair<double,double>(0.30,0.91),
+          new Pair<double,double>(0.35,1.00),
           //new Pair<double,double>(0.6,1.20),
           //new Pair<double,double>(0.9,1.40),
           //new Pair<double,double>(1.2,1.60),
@@ -1769,6 +1773,7 @@ namespace Robocup.MotionControl
             for (int i = 0; i < path.Waypoints.Count - 1; i++)
                 distanceLeft += (path[i + 1].Position - path[i].Position).magnitude();
             distanceLeft += (desiredState.Position - path[path.Waypoints.Count - 1].Position).magnitude();
+            distanceLeft += (nextWaypoint.Position - curInfo.Position).magnitude();
 
             //Compute distance to nearest obstacle
             //Adjusted for whether we are going towards them or not.
@@ -1793,7 +1798,8 @@ namespace Robocup.MotionControl
 
             //Scale to desired speed
             double speed = BASE_SPEED * Math.Min(interp(SCALE_BY_DISTANCE, distanceLeft), interp(SCALE_BY_OBSTACLE_DISTANCE, obstacleDist));
-
+            if (distanceLeft <= GOOD_ENOUGH_DIST)
+                speed = 0;
             if(desiredVelocity.magnitudeSq() > 1e-12)
                 desiredVelocity = desiredVelocity.normalizeToLength(speed);
 
@@ -1826,6 +1832,8 @@ namespace Robocup.MotionControl
             double angularSpeed = dRev / timeLeft;
             if (angularSpeed > MAX_ANGLULAR_SPEED)
                 angularSpeed = MAX_ANGLULAR_SPEED;
+            if (dRev <= GOOD_ENOUGH_ANGLE)
+                angularSpeed = 0;
 
             double rb = R_BASIS_SCALE;
             WheelsInfo<double> rbasis = new WheelsInfo<double>(rb, rb, rb, rb);
