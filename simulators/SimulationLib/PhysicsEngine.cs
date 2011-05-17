@@ -20,11 +20,11 @@ namespace Robocup.Simulation
         const double BALL_WALL_ELASTICITY = 0.9; //The fraction of the speed kept when bouncing off a wall
         const double BALL_FRICTION = .76; //The amount of speed lost per second by the ball
 
-        const double ROBOT_RADIUS = 0.08;
-        const double ROBOT_FRONT_RADIUS = 0.055;
+        const double ROBOT_RADIUS = 0.09;
+        const double ROBOT_FRONT_RADIUS = 0.075;
         const double BALL_RADIUS = 0.02;
 
-        const double COLLISION_RADIUS = BALL_RADIUS + ROBOT_RADIUS;
+        const double BALL_COLLISION_RADIUS = BALL_RADIUS + ROBOT_RADIUS;
 
 		private bool _marking = false;
 		private Vector2 _markedPosition;
@@ -292,7 +292,7 @@ namespace Robocup.Simulation
                         continue;
                     Vector2 p1 = allRobots[i].Position;
                     Vector2 p2 = allRobots[j].Position;
-                    if (p1.distanceSq(p2) <= .2 * .2)
+                    if (p1.distanceSq(p2) <= (2 * ROBOT_RADIUS) * (2 * ROBOT_RADIUS))
                     {
                         Vector2 t1 = p1 + .01 * (p1 - p2).normalize();
                         Vector2 t2 = p2 + .01 * (p2 - p1).normalize();
@@ -326,7 +326,7 @@ namespace Robocup.Simulation
 
                     bool collided = false;
                     //Possible collision
-                    if (newBallLocation.distanceSq(robotLoc) <= COLLISION_RADIUS * COLLISION_RADIUS)
+                    if (newBallLocation.distanceSq(robotLoc) <= BALL_COLLISION_RADIUS * BALL_COLLISION_RADIUS)
                     {
                         //We have a virtual line (BALL_RADIUS+ROBOT_FRONT_RADIUS) in front of the robot
                         //Make sure the ball is on the robot-side of this line as well.
@@ -342,7 +342,7 @@ namespace Robocup.Simulation
                         LastTouched = r.Team;
 
                         //Compute new position of ball
-                        newBallLocation = robotLoc + (COLLISION_RADIUS + .005) * (ball.Position - robotLoc).normalize();
+                        newBallLocation = robotLoc + (BALL_COLLISION_RADIUS + .005) * (ball.Position - robotLoc).normalize();
 
                         //Compute new velocity of ball
                         Vector2 relVel = newBallVelocity - r.Velocity; //The relative velocity of the ball to the robot

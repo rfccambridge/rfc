@@ -1634,7 +1634,7 @@ namespace Robocup.MotionControl
 
         //Conversion to wheel speed commands
         private const double XY_BASIS_SCALE = 29.0; //Wheel speeds required for 1 m/s movement
-        private const double R_BASIS_SCALE = 15.5;  //Wheel speeds required for 1 rev/s movement 
+        private const double R_BASIS_SCALE = 14.5;  //Wheel speeds required for 1 rev/s movement 
         
         //Max wheel speed change per second
         private const double WHEEL_SPEED_ACCEL_MAX = 100;
@@ -1832,14 +1832,16 @@ namespace Robocup.MotionControl
             double angularSpeed = dRev / timeLeft;
             if (angularSpeed > MAX_ANGLULAR_SPEED)
                 angularSpeed = MAX_ANGLULAR_SPEED;
-            if (dRev <= GOOD_ENOUGH_ANGLE)
+            if (angularSpeed < -MAX_ANGLULAR_SPEED)
+                angularSpeed = -MAX_ANGLULAR_SPEED;
+            if (dRev >= -GOOD_ENOUGH_ANGLE && dRev <= GOOD_ENOUGH_ANGLE)
                 angularSpeed = 0;
 
             double rb = R_BASIS_SCALE;
             WheelsInfo<double> rbasis = new WheelsInfo<double>(rb, rb, rb, rb);
 
             //Add in rotational component
-            speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(rbasis, R_BASIS_SCALE * angularSpeed));
+            speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(rbasis, angularSpeed));
 
             //Scale as desired
             speeds = WheelsInfo<double>.Times(speeds, SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
@@ -1859,7 +1861,7 @@ namespace Robocup.MotionControl
                 Convert.ToInt32(speeds.lf),
                 Convert.ToInt32(speeds.lb),
                 Convert.ToInt32(speeds.rb));
-            Console.WriteLine(command + " " + distanceLeft + " " + speed + " " + desiredVelocity);
+            Console.WriteLine(command + " " + dRev + " " + angularSpeed + " " + timeLeft);
 
             return command;
         }
