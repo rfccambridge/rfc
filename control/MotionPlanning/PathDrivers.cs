@@ -1539,7 +1539,8 @@ namespace Robocup.MotionControl
                     feedbackObjs[id].SetFixedSpeedHackProp(hackProp);
                 }
 
-				wheelSpeeds = feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);				
+				wheelSpeeds = feedbackObjs[id].ComputeWheelSpeeds(curInfo, nextWaypoint);
+                Console.WriteLine(wheelSpeeds);
 			}
 			else
 			{
@@ -1623,54 +1624,55 @@ namespace Robocup.MotionControl
         private double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
         private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
 
-        private const double XY_BASIS_SCALE = 25.0;
-        private const double R_BASIS_SCALE = 3.0; 
-        private WheelsInfo<double> XBASIS;
-        private WheelsInfo<double> YBASIS;
-        private WheelsInfo<double> RBASIS;
-        private const double NEXT_NEXT_PROP = 0.35;
+        //Base desired speeds for movement
+        private const double BASE_SPEED = 1.0;          //In m/s
+        private const double MAX_ANGLULAR_SPEED = 0.5;  //In rev/s
 
-        private const double ACCEL_LIMIT_PER_FRAME = 0.6;
+        //When computing how fast to rotate so that we will be correct by the time
+        //we get to the destination, assume we will get there this fast
+        private const double ROTATION_ASSUMED_SPEED = 2.5; //In m/s
 
-        private Pair<double,double>[] SPEED_BY_DISTANCE =
-        { new Pair<double,double>(0.0,0.15), 
-          new Pair<double,double>(0.1,0.50), 
-          new Pair<double,double>(0.2,0.80), 
-          new Pair<double,double>(0.3,1.00),
-          new Pair<double,double>(0.6,1.12),
-          new Pair<double,double>(0.9,1.24),
-          new Pair<double,double>(1.2,1.34),
-          new Pair<double,double>(1.5,1.43),
-          new Pair<double,double>(1.8,1.51),
-          new Pair<double,double>(2.1,1.58),
-          new Pair<double,double>(2.4,1.64),
-          new Pair<double,double>(2.7,1.69),
-          new Pair<double,double>(3.0,1.72),
+        //Conversion to wheel speed commands
+        private const double XY_BASIS_SCALE = 31.0; //Wheel speeds required for 1 m/s movement
+        private const double R_BASIS_SCALE = 15.5;  //Wheel speeds required for 1 rev/s movement 
+        
+        //Max wheel speed change per second
+        private const double WHEEL_SPEED_ACCEL_MAX = 100;
+
+        //How much should we weight in the direction we will need to head for the next waypoint?
+        private const double NEXT_NEXT_PROP = 0.2;
+
+        //Scaling for speed based on distance from goal
+        private Pair<double,double>[] SCALE_BY_DISTANCE =
+        { new Pair<double,double>(0.00,0.00), 
+          new Pair<double,double>(0.05,0.17), 
+          new Pair<double,double>(0.10,0.33), 
+          new Pair<double,double>(0.15,0.50), 
+          new Pair<double,double>(0.20,0.66), 
+          new Pair<double,double>(0.25,0.83), 
+          new Pair<double,double>(0.30,1.00),
+          //new Pair<double,double>(0.6,1.20),
+          //new Pair<double,double>(0.9,1.40),
+          //new Pair<double,double>(1.2,1.60),
+          //new Pair<double,double>(1.5,1.80),
+          //new Pair<double,double>(1.8,1.80),
         };
 
-        private Pair<double,double>[] SPEED_BY_OBSTACLE_DISTANCE =
-        { new Pair<double,double>(0.0,0.50), 
-          new Pair<double,double>(0.2,0.75),
+        private Pair<double,double>[] SCALE_BY_OBSTACLE_DISTANCE =
+        { new Pair<double,double>(0.0,0.80), 
+          new Pair<double,double>(0.1,0.80), 
+          new Pair<double,double>(0.2,0.80), 
+          new Pair<double,double>(0.3,0.95),
           new Pair<double,double>(0.4,1.00),
-          new Pair<double,double>(0.6,1.13),
-          new Pair<double,double>(0.8,1.24),
-          new Pair<double,double>(1.0,1.34),
-          new Pair<double,double>(1.2,1.42),
-          new Pair<double,double>(1.4,1.50),
-          new Pair<double,double>(1.6,1.57),
-          new Pair<double,double>(1.8,1.63),
-          new Pair<double,double>(2.0,1.70),
-          new Pair<double,double>(2.2,1.77),
-          new Pair<double,double>(2.4,1.84),
-          new Pair<double,double>(2.6,1.91),
         };
 
         private Pair<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR =
         {
-            new Pair<double,double>(0.0,2.0),
-            new Pair<double,double>(0.3,1.8),
-            new Pair<double,double>(0.5,1.3),
-            new Pair<double,double>(1.0,1.0),
+            new Pair<double,double>(0.00,4.0),
+            new Pair<double,double>(0.25,2.5),
+            new Pair<double,double>(0.50,1.5),
+            new Pair<double,double>(0.75,1.1),
+            new Pair<double,double>(1.00,1.0),
         };
 
         private static double interp(Pair<double,double>[] pairs, double d)
@@ -1690,12 +1692,6 @@ namespace Robocup.MotionControl
 
         public VelocityDriver()
         {
-            double xyb = XY_BASIS_SCALE;
-            double rb = R_BASIS_SCALE;
-            XBASIS = new WheelsInfo<double>(xyb, -xyb, -xyb, xyb);
-            YBASIS = new WheelsInfo<double>(xyb, xyb, -xyb, -xyb);
-            RBASIS = new WheelsInfo<double>(rb, rb, rb, rb);
-
             LoadConstants();
         }
 
@@ -1763,6 +1759,11 @@ namespace Robocup.MotionControl
                 (nextNextWaypoint.Position - nextWaypoint.Position).normalize() :
                 null;
 
+            //Compute desired direction
+            Vector2 desiredVelocity = curToNext.rotate(-curInfo.Orientation); //In robot reference frame
+            if (nextToNextNext != null)
+                desiredVelocity += NEXT_NEXT_PROP * nextToNextNext.rotate(-curInfo.Orientation);
+
             //Compute distance left to go in the path
             double distanceLeft = 0.0;
             for (int i = 0; i < path.Waypoints.Count - 1; i++)
@@ -1790,10 +1791,50 @@ namespace Robocup.MotionControl
                 }
             }
 
-            //Compute desired velocity
-            Vector2 desiredVelocity = curToNext.rotate(-curInfo.Orientation); //In robot reference frame
-            if (path.Waypoints.Count > 1)
-                desiredVelocity += NEXT_NEXT_PROP * nextToNextNext.rotate(-curInfo.Orientation);
+            //Scale to desired speed
+            double speed = BASE_SPEED * Math.Min(interp(SCALE_BY_DISTANCE, distanceLeft), interp(SCALE_BY_OBSTACLE_DISTANCE, obstacleDist));
+
+            if(desiredVelocity.magnitudeSq() > 1e-12)
+                desiredVelocity = desiredVelocity.normalizeToLength(speed);
+
+
+            //Convert to wheel speeds
+            double xyb = XY_BASIS_SCALE;
+            WheelsInfo<double> xBasis = new WheelsInfo<double>(xyb, -xyb, -xyb, xyb);
+            WheelsInfo<double> yBasis = new WheelsInfo<double>(xyb, xyb, -xyb, -xyb);
+            WheelsInfo<double> speeds = WheelSpeeds.Add(
+                WheelsInfo<double>.Times(xBasis, desiredVelocity.X),
+                WheelsInfo<double>.Times(yBasis, desiredVelocity.Y));
+
+            //Smallest turn algorithm
+            double dTheta = desiredState.Orientation - curInfo.Orientation;
+
+            //Map dTheta to the equivalent angle in [-PI,PI]
+            dTheta = dTheta % (2 * Math.PI);
+            if (dTheta > Math.PI) dTheta -= 2 * Math.PI;
+            if (dTheta < -Math.PI) dTheta += 2 * Math.PI;
+
+            //Convert to revolutions
+            double dRev = dTheta / (2 * Math.PI);
+
+            //Figure out how long we will take to get there and spread the revolution out over that time
+            double timeLeft = distanceLeft / ROTATION_ASSUMED_SPEED;
+            if (timeLeft <= 1e-5)
+                timeLeft = 1e-5;
+
+            //Compute the speed we'd need to rotate at, in revs/sec, and cap it
+            double angularSpeed = dRev / timeLeft;
+            if (angularSpeed > MAX_ANGLULAR_SPEED)
+                angularSpeed = MAX_ANGLULAR_SPEED;
+
+            double rb = R_BASIS_SCALE;
+            WheelsInfo<double> rbasis = new WheelsInfo<double>(rb, rb, rb, rb);
+
+            //Add in rotational component
+            speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(rbasis, R_BASIS_SCALE * angularSpeed));
+
+            //Scale as desired
+            speeds = WheelsInfo<double>.Times(speeds, SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
 
             //Adjust velocity to cope with a maximum acceleration limit
             Vector2 currentVelocity = curInfo.Velocity;
@@ -1804,34 +1845,13 @@ namespace Robocup.MotionControl
             //    desiredVelocity = currentVelocity + dv;
             //}
 
-            //Scale to desired speed
-            double speed = Math.Min(interp(SPEED_BY_DISTANCE, distanceLeft), interp(SPEED_BY_OBSTACLE_DISTANCE, obstacleDist));
-            desiredVelocity *= speed;
-
-            //Convert to wheel speeds
-            WheelsInfo<double> speeds = WheelSpeeds.Add(
-                WheelsInfo<double>.Times(XBASIS, desiredVelocity.X),
-                WheelsInfo<double>.Times(YBASIS, desiredVelocity.Y));
-
-            //Smallest turn algorithm
-            double dTheta = desiredState.Orientation - curInfo.Orientation;
-
-            //Map dTheta to the equivalent angle in [-PI,PI]
-            dTheta = dTheta % (2 * Math.PI);
-            if (dTheta > Math.PI) dTheta -= 2 * Math.PI;
-            if (dTheta < -Math.PI) dTheta += 2 * Math.PI;
-            speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(RBASIS, R_BASIS_SCALE * dTheta));
-
-            //Add rotational
-            speeds = WheelsInfo<double>.Times(speeds, SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
-
             //Done!
             WheelSpeeds command = new WheelSpeeds(
                 Convert.ToInt32(speeds.rf),
                 Convert.ToInt32(speeds.lf),
                 Convert.ToInt32(speeds.lb),
                 Convert.ToInt32(speeds.rb));
-            Console.WriteLine(command);
+            Console.WriteLine(command + " " + distanceLeft + " " + speed + " " + desiredVelocity);
 
             return command;
         }
