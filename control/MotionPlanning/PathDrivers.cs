@@ -1627,6 +1627,7 @@ namespace Robocup.MotionControl
         //Base desired speeds for movement
         private const double BASE_SPEED = 1.0;          //In m/s
         private const double MAX_ANGLULAR_SPEED = 0.2;  //In rev/s
+        private const double MAX_ANGLULAR_LINEAR_SPEED = 0.3;  //In rev/s/radian
 
         //When computing how fast to rotate so that we will be correct by the time
         //we get to the destination, assume we will get there this fast
@@ -1640,7 +1641,7 @@ namespace Robocup.MotionControl
         private const double WHEEL_SPEED_ACCEL_MAX = 100;
 
         //How much should we weight in the direction we will need to head for the next waypoint?
-        private const double NEXT_NEXT_PROP = 0.2;
+        private const double NEXT_NEXT_PROP = 0.3;
 
         private const double GOOD_ENOUGH_DIST = 0.005;
         private const double GOOD_ENOUGH_ANGLE = 1.0 / 360.0;
@@ -1648,16 +1649,18 @@ namespace Robocup.MotionControl
         //Scaling for speed based on distance from goal
         private Pair<double,double>[] SCALE_BY_DISTANCE =
         { new Pair<double,double>(0.00,0.01), 
-          new Pair<double,double>(0.05,0.16), 
-          new Pair<double,double>(0.10,0.31), 
-          new Pair<double,double>(0.15,0.46), 
-          new Pair<double,double>(0.20,0.61), 
-          new Pair<double,double>(0.25,0.76), 
-          new Pair<double,double>(0.30,0.91),
-          new Pair<double,double>(0.35,1.00),
-          //new Pair<double,double>(0.6,1.20),
-          //new Pair<double,double>(0.9,1.40),
-          //new Pair<double,double>(1.2,1.60),
+          new Pair<double,double>(0.05,0.12), 
+          new Pair<double,double>(0.10,0.23), 
+          new Pair<double,double>(0.15,0.35), 
+          new Pair<double,double>(0.20,0.48), 
+          new Pair<double,double>(0.25,0.63), 
+          new Pair<double,double>(0.30,0.78),
+          new Pair<double,double>(0.35,0.93),
+          new Pair<double,double>(0.40,1.00),
+          new Pair<double,double>(0.65,1.20),
+          new Pair<double,double>(1.00,1.40),
+          new Pair<double,double>(1.30,1.60),
+          new Pair<double,double>(1.80,1.70),
           //new Pair<double,double>(1.5,1.80),
           //new Pair<double,double>(1.8,1.80),
         };
@@ -1668,6 +1671,11 @@ namespace Robocup.MotionControl
           new Pair<double,double>(0.2,0.80), 
           new Pair<double,double>(0.3,0.95),
           new Pair<double,double>(0.4,1.00),
+          new Pair<double,double>(0.6,1.20),
+          new Pair<double,double>(1.0,1.40),
+          new Pair<double,double>(1.3,1.60),
+          new Pair<double,double>(1.8,1.70),
+          //new Pair<double,double>(1.5,1.60),
         };
 
         private Pair<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR =
@@ -1830,10 +1838,11 @@ namespace Robocup.MotionControl
 
             //Compute the speed we'd need to rotate at, in revs/sec, and cap it
             double angularSpeed = dRev / timeLeft;
-            if (angularSpeed > MAX_ANGLULAR_SPEED)
-                angularSpeed = MAX_ANGLULAR_SPEED;
-            if (angularSpeed < -MAX_ANGLULAR_SPEED)
-                angularSpeed = -MAX_ANGLULAR_SPEED;
+            double maxAS = Math.Min(MAX_ANGLULAR_SPEED, Math.Abs(dRev) * MAX_ANGLULAR_LINEAR_SPEED * Math.PI * 2);
+            if (angularSpeed > maxAS)
+                angularSpeed = maxAS;
+            if (angularSpeed < -maxAS)
+                angularSpeed = -maxAS;
             if (dRev >= -GOOD_ENOUGH_ANGLE && dRev <= GOOD_ENOUGH_ANGLE)
                 angularSpeed = 0;
 
