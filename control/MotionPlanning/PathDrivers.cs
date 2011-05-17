@@ -1626,15 +1626,15 @@ namespace Robocup.MotionControl
 
         //Base desired speeds for movement
         private const double BASE_SPEED = 1.0;          //In m/s
-        private const double MAX_ANGLULAR_SPEED = 0.5;  //In rev/s
+        private const double MAX_ANGLULAR_SPEED = 0.2;  //In rev/s
 
         //When computing how fast to rotate so that we will be correct by the time
         //we get to the destination, assume we will get there this fast
         private const double ROTATION_ASSUMED_SPEED = 2.5; //In m/s
 
         //Conversion to wheel speed commands
-        private const double XY_BASIS_SCALE = 29.0; //Wheel speeds required for 1 m/s movement
-        private const double R_BASIS_SCALE = 14.5;  //Wheel speeds required for 1 rev/s movement 
+        private const double XY_BASIS_SCALE = 30.0; //Wheel speeds required for 1 m/s movement
+        private const double R_BASIS_SCALE = 16.6;  //Wheel speeds required for 1 rev/s movement 
         
         //Max wheel speed change per second
         private const double WHEEL_SPEED_ACCEL_MAX = 100;
