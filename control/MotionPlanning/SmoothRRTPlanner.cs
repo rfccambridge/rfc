@@ -14,13 +14,17 @@ namespace Robocup.MotionControl
         //Movement model
         const double TIME_STEP = 0.12; //Time step in secs, with velocity determines RRT extension length
         const double ROBOT_VELOCITY = 1.0; //Assume our robot can move this fast
-        const double MAX_ACCEL_PER_STEP = 0.42; //And that it can accelerate this fast.
+        const double MAX_ACCEL_PER_STEP = 0.48; //And that it can accelerate this fast.
+        const double MAX_OBSERVABLE_VELOCITY = 0.4; //Pretend that the current robot is moving at most this fast
 
         //RRT parameters
         const double MAX_TREE_SIZE = 200; //Max nodes in tree before we give up
         const double MAX_PATH_TRIES = 70; //Max number of attempts to extend paths before we give up
         const double CLOSE_ENOUGH_TO_GOAL = 0.001; //We're completely done when we get this close to the goal.
         const double DIST_FOR_SUCCESS = 1.2; //We're done for now when we get this much closer to the goal than we are
+
+        //Path extension
+        const double EXTRA_EXTENSION_ROTATE_ANGLE = 0.0 * Math.PI / 180.0;
 
         //Motion extrapolation
         const double ROBOT_MAX_TIME_EXTRAPOLATED = 0.7; //Extrapolate other robots' movements up to this amount of seconds.
@@ -225,8 +229,24 @@ namespace Robocup.MotionControl
             //Okay, just extend then
             targetDir /= magnitude;
             Vector2 newVel = node.info.Velocity + targetDir * MAX_ACCEL_PER_STEP;
-            if(newVel.magnitude() > ROBOT_VELOCITY)
+            double newVelMag = newVel.magnitude();
+            if(newVelMag > ROBOT_VELOCITY)
+            {
                 newVel = newVel.normalizeToLength(ROBOT_VELOCITY);
+                newVelMag = ROBOT_VELOCITY;
+            }
+
+            //Small hack - rotate the newVel towards the targetDir a little bit
+            if(newVelMag > 1e-6)
+            {
+                double angleDiff = UsefulFunctions.angleDifference(newVel.cartesianAngle(),targetDir.cartesianAngle());
+                if (angleDiff <= EXTRA_EXTENSION_ROTATE_ANGLE && angleDiff >= -EXTRA_EXTENSION_ROTATE_ANGLE)
+                    newVel = newVel.rotate(angleDiff);
+                else if (angleDiff < -EXTRA_EXTENSION_ROTATE_ANGLE)
+                    newVel = newVel.rotate(-EXTRA_EXTENSION_ROTATE_ANGLE);
+                else
+                    newVel = newVel.rotate(EXTRA_EXTENSION_ROTATE_ANGLE);
+            }
 
             return newVel * TIME_STEP;
         }
@@ -380,6 +400,9 @@ namespace Robocup.MotionControl
             { currentState = predictor.GetRobot(team, id); }
             catch (ApplicationException e)
             { return new List<Vector2>(); }
+            currentState = new RobotInfo(currentState);
+            if (currentState.Velocity.magnitude() > MAX_OBSERVABLE_VELOCITY)
+                currentState.Velocity = currentState.Velocity.normalizeToLength(MAX_OBSERVABLE_VELOCITY);
 
             BallInfo ball = predictor.GetBall();
             List<RobotInfo> robots = predictor.GetRobots();
