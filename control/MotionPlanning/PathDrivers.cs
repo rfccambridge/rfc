@@ -1623,6 +1623,9 @@ namespace Robocup.MotionControl
         static int NUM_ROBOTS = Constants.get<int>("default", "NUM_ROBOTS");
         private double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
         private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
+        
+        //State - track the previous wheel speed sent so we don't send something too different
+        private WheelsInfo<double>[] lastSpeeds = new WheelsInfo<double>[NUM_ROBOTS]; 
 
         //Base desired speeds for movement
         private const double BASE_SPEED = 1.0;          //In m/s
@@ -1637,8 +1640,8 @@ namespace Robocup.MotionControl
         private const double XY_BASIS_SCALE = 30.0; //Wheel speeds required for 1 m/s movement
         private const double R_BASIS_SCALE = 16.6;  //Wheel speeds required for 1 rev/s movement 
         
-        //Max wheel speed change per second
-        private const double WHEEL_SPEED_ACCEL_MAX = 100;
+        //Max wheel speed change per frame of control
+        private const double MAX_WHEEL_SPEED_CHANGE_PER_FRAME = 15;
 
         //How much should we weight in the direction we will need to head for the next waypoint?
         private const double NEXT_NEXT_PROP = 0.3;
@@ -1856,13 +1859,15 @@ namespace Robocup.MotionControl
             speeds = WheelsInfo<double>.Times(speeds, SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
 
             //Adjust velocity to cope with a maximum acceleration limit
-            Vector2 currentVelocity = curInfo.Velocity;
-            Vector2 dv = desiredVelocity - currentVelocity;
-            //if (dv.magnitude() > ACCEL_LIMIT_PER_FRAME)
-            //{
-            //    dv = dv.normalizeToLength(ACCEL_LIMIT_PER_FRAME);
-            //    desiredVelocity = currentVelocity + dv;
-            //}
+            WheelsInfo<double> old = lastSpeeds[id];
+            if (old != null)
+            {
+                WheelsInfo<double> diff = WheelsInfo<double>.Sub(speeds, old);
+                double diffMagnitude = Math.Sqrt((diff.rb * diff.rb + diff.rf * diff.rf + diff.lb * diff.lb + diff.lf * diff.lf) / 4);
+                if (diffMagnitude > MAX_WHEEL_SPEED_CHANGE_PER_FRAME)
+                    speeds = WheelsInfo<double>.Add(old, WheelsInfo<double>.Times(MAX_WHEEL_SPEED_CHANGE_PER_FRAME / diffMagnitude, diff));
+            }
+            lastSpeeds[id] = speeds;
 
             //Done!
             WheelSpeeds command = new WheelSpeeds(
@@ -1870,7 +1875,7 @@ namespace Robocup.MotionControl
                 Convert.ToInt32(speeds.lf),
                 Convert.ToInt32(speeds.lb),
                 Convert.ToInt32(speeds.rb));
-            Console.WriteLine(command + " " + dRev + " " + angularSpeed + " " + timeLeft);
+            Console.WriteLine(old + " " + command);
 
             return command;
         }

@@ -36,6 +36,10 @@ namespace Robocup.Core
         {
             return new WheelsInfo<double>(rhs.rf + lhs.rf, rhs.lf + lhs.lf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
         }
+        static public WheelsInfo<double> Sub(WheelsInfo<double> lhs, WheelsInfo<double> rhs)
+        {
+            return new WheelsInfo<double>(-rhs.rf + lhs.rf, -rhs.lf + lhs.lf, -rhs.lb + lhs.lb, -rhs.rb + lhs.rb);
+        }
         static public WheelsInfo<double> Times(double d, WheelsInfo<double> rhs)
         {
             return new WheelsInfo<double>(d*rhs.rf, d*rhs.lf, d*rhs.lb, d*rhs.rb);
