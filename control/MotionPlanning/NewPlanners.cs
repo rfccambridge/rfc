@@ -1075,7 +1075,7 @@ namespace Robocup.MotionControl
 
     public class SmoothedRRTModelFeedbackMotionPlanner : PlannerDriver
     {
-        static SmoothRRTPlanner pathplanner = new SmoothRRTPlanner();
+        static SmoothRRTPlanner pathplanner = new SmoothRRTPlanner(false);
         public static ModelFeedbackDriver pathdriver = new ModelFeedbackDriver();
 
         public SmoothedRRTModelFeedbackMotionPlanner()
@@ -1088,7 +1088,7 @@ namespace Robocup.MotionControl
 
     public class SmoothedRRTVelocityPlanner : PlannerDriver
     {
-        static SmoothRRTPlanner pathplanner = new SmoothRRTPlanner();
+        static SmoothRRTPlanner pathplanner = new SmoothRRTPlanner(true);
         public static VelocityDriver pathdriver = new VelocityDriver();
 
         public SmoothedRRTVelocityPlanner()

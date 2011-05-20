@@ -93,9 +93,11 @@ namespace Robocup.MotionControl
         }
 
 
-        public SmoothRRTPlanner()
-        {
+        private bool includeCurStateInPath;
 
+        public SmoothRRTPlanner(bool includeCurStateInPath)
+        {
+            this.includeCurStateInPath = includeCurStateInPath;
         }
 
         Vector2 GetRandomPoint(Vector2 desiredLoc, Vector2 currentLoc, double closestSoFar)
@@ -621,7 +623,8 @@ namespace Robocup.MotionControl
 
             //Overly simplistic conversion from planning on position vectors to RobotInfo that has orientation and velocity information
             //velocity at every waypoint just points to next one with constant speed
-            for (int i = 1; i < bestPath.Count; i++)
+            int pathStart = includeCurStateInPath ? 0 : 1;
+            for (int i = pathStart; i < bestPath.Count; i++)
             {
                 RobotInfo waypoint = new RobotInfo(bestPath[i], desiredState.Orientation, team, id);
                 if (i < bestPath.Count - 1)
@@ -632,7 +635,7 @@ namespace Robocup.MotionControl
                 robotPath.Add(waypoint);
             }
 
-            if (bestPath.Count <= 1)
+            if (robotPath.Count <= 0)
                 return new RobotPath(team, id);
 
             return new RobotPath(robotPath);

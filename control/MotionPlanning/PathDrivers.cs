@@ -1629,8 +1629,8 @@ namespace Robocup.MotionControl
 
         //Base desired speeds for movement
         private const double BASE_SPEED = 1.0;          //In m/s
-        private const double MAX_ANGLULAR_SPEED = 0.2;  //In rev/s
-        private const double MAX_ANGLULAR_LINEAR_SPEED = 0.3;  //In rev/s/radian
+        private const double MAX_ANGLULAR_SPEED = 0.5;  //In rev/s
+        private const double MAX_ANGLULAR_LINEAR_SPEED = 0.4;  //In rev/s/radian
 
         //When computing how fast to rotate so that we will be correct by the time
         //we get to the destination, assume we will get there this fast
@@ -1652,11 +1652,12 @@ namespace Robocup.MotionControl
         //Scaling for speed based on distance from goal
         private Pair<double,double>[] SCALE_BY_DISTANCE =
         { new Pair<double,double>(0.00,0.01), 
-          new Pair<double,double>(0.05,0.12), 
-          new Pair<double,double>(0.10,0.23), 
-          new Pair<double,double>(0.15,0.35), 
-          new Pair<double,double>(0.20,0.48), 
-          new Pair<double,double>(0.25,0.63), 
+          new Pair<double,double>(0.02,0.12), 
+          new Pair<double,double>(0.05,0.21), 
+          new Pair<double,double>(0.10,0.30), 
+          new Pair<double,double>(0.15,0.39), 
+          new Pair<double,double>(0.20,0.50), 
+          new Pair<double,double>(0.25,0.64), 
           new Pair<double,double>(0.30,0.78),
           new Pair<double,double>(0.35,0.93),
           new Pair<double,double>(0.40,1.00),
@@ -1764,16 +1765,38 @@ namespace Robocup.MotionControl
             //Retrieve next waypoints
             int idx;
             RobotInfo nextWaypoint = null;
-            RobotInfo nextNextWaypoint = null;
-            for(idx = 0; idx < path.Waypoints.Count; idx++)
+            int nextWaypointIdx = 0;
+
+            //Find the point we should head towards
+            for(idx = 1; idx < path.Waypoints.Count; idx++)
             {
-                if((path.Waypoints[idx].Position - curInfo.Position).magnitude() > 1e-5)
+                //Must be different from us
+                if(path.Waypoints[idx].Position.distanceSq(curInfo.Position) <= 1e-10)
+                    continue;
+
+                //End of the path? Then that's where we're going
+                if(idx == path.Waypoints.Count - 1)
                 {
                     nextWaypoint = path.Waypoints[idx];
+                    nextWaypointIdx = idx;
                     break;
                 }
+
+                //If we're too far along the path to this waypoint from the previous, then move to the next again.
+                double distAlongTimesDistSegment = (curInfo.Position - path.Waypoints[idx-1].Position) * (path.Waypoints[idx].Position - path.Waypoints[idx-1].Position);
+                double distSegmentSq = path.Waypoints[idx].Position.distanceSq(path.Waypoints[idx-1].Position);
+                if (distAlongTimesDistSegment >= 0.75 * distSegmentSq)
+                    continue;
+
+                //Otherwise, we stop here
+                nextWaypoint = path.Waypoints[idx];
+                nextWaypointIdx = idx;
+                break;
             }
-            for (idx++;  idx < path.Waypoints.Count; idx++)
+
+            //Find the next significantly different point after that
+            RobotInfo nextNextWaypoint = null;
+            for (idx++; idx < path.Waypoints.Count; idx++)
             {
                 if ((path.Waypoints[idx].Position - path.Waypoints[idx-1].Position).magnitude() > 1e-5)
                 {
@@ -1785,7 +1808,7 @@ namespace Robocup.MotionControl
                 return new WheelSpeeds();
 
             Vector2 curToNext = (nextWaypoint.Position - curInfo.Position).normalize();
-            Vector2 nextToNextNext = path.Waypoints.Count > 1 ? 
+            Vector2 nextToNextNext = nextNextWaypoint != null ? 
                 (nextNextWaypoint.Position - nextWaypoint.Position).normalize() :
                 null;
 
@@ -1796,10 +1819,10 @@ namespace Robocup.MotionControl
 
             //Compute distance left to go in the path
             double distanceLeft = 0.0;
-            for (int i = 0; i < path.Waypoints.Count - 1; i++)
+            distanceLeft += (nextWaypoint.Position - curInfo.Position).magnitude();
+            for (int i = nextWaypointIdx; i < path.Waypoints.Count - 1; i++)
                 distanceLeft += (path[i + 1].Position - path[i].Position).magnitude();
             distanceLeft += (desiredState.Position - path[path.Waypoints.Count - 1].Position).magnitude();
-            distanceLeft += (nextWaypoint.Position - curInfo.Position).magnitude();
 
             //Compute distance to nearest obstacle
             //Adjusted for whether we are going towards them or not.
