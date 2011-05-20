@@ -1830,9 +1830,9 @@ namespace Robocup.MotionControl
                 desiredVelocity = desiredVelocity.normalizeToLength(speed);
 
             //TODO(davidwu): test this correction
-            desiredVelocity = desiredVelocity + 2 * desiredVelocity.magnitude() * (desiredVelocity - curInfo.Velocity.rotate(-curInfo.Orientation));
-            if (desiredVelocity.magnitudeSq() > 1e-12)
-                desiredVelocity = desiredVelocity.normalizeToLength(speed);
+            //desiredVelocity = desiredVelocity + 2 * desiredVelocity.magnitude() * (desiredVelocity - curInfo.Velocity.rotate(-curInfo.Orientation));
+            //if (desiredVelocity.magnitudeSq() > 1e-12)
+             //   desiredVelocity = desiredVelocity.normalizeToLength(speed);
 
             //Convert to wheel speeds
             double xyb = XY_BASIS_SCALE;
