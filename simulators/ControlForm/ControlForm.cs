@@ -131,24 +131,36 @@ namespace Robocup.ControlForm {
         {
             Player player1 = new Player("Player1", Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
             Player player2 = new Player("Player2", Team.Blue, FieldHalf.Left, _fieldDrawer2, _predictor);
-            Player playerFollower = new PathFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
-        	Player playerMeasuringFollower = new MeasuringFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player playerKick = new KickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player playerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player yplayerFollower = new PathFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player bplayerFollower = new PathFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
+        	Player yplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player bplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player yplayerKick = new KickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player bplayerKick = new KickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player yplayerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player bplayerBeamKick = new BeamKickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
 
             lstPlayers.Items.Add(player1);
             lstPlayers.Items.Add(player2);
-            lstPlayers.Items.Add(playerFollower);
-        	lstPlayers.Items.Add(playerMeasuringFollower);
-            lstPlayers.Items.Add(playerKick);
-            lstPlayers.Items.Add(playerBeamKick);
+            lstPlayers.Items.Add(yplayerFollower);
+        	lstPlayers.Items.Add(yplayerMeasuringFollower);
+            lstPlayers.Items.Add(yplayerKick);
+            lstPlayers.Items.Add(yplayerBeamKick);
+            lstPlayers.Items.Add(bplayerFollower);
+            lstPlayers.Items.Add(bplayerMeasuringFollower);
+            lstPlayers.Items.Add(bplayerKick);
+            lstPlayers.Items.Add(bplayerBeamKick);
 
             // Determines the waypoints of which color will be given to each player 
             // Color list is defined in FieldDrawer form.
-            _waypointColors[playerFollower as WaypointPlayer] = Color.Cyan;
-			_waypointColors[playerMeasuringFollower as WaypointPlayer] = Color.Cyan;
-            _waypointColors[playerKick as WaypointPlayer] = Color.Red;
-            _waypointColors[playerBeamKick as WaypointPlayer] = Color.Red;            
+            _waypointColors[yplayerFollower as WaypointPlayer] = Color.Cyan;
+			_waypointColors[yplayerMeasuringFollower as WaypointPlayer] = Color.Cyan;
+            _waypointColors[yplayerKick as WaypointPlayer] = Color.Red;
+            _waypointColors[yplayerBeamKick as WaypointPlayer] = Color.Red;
+            _waypointColors[bplayerFollower as WaypointPlayer] = Color.Cyan;
+            _waypointColors[bplayerMeasuringFollower as WaypointPlayer] = Color.Cyan;
+            _waypointColors[bplayerKick as WaypointPlayer] = Color.Red;
+            _waypointColors[bplayerBeamKick as WaypointPlayer] = Color.Red;
         }        
 
         // A timer that periodically resets the Refbox command indicator to be able to see when no 
