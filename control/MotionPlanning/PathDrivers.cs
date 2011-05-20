@@ -1660,12 +1660,18 @@ namespace Robocup.MotionControl
           new Pair<double,double>(0.30,0.78),
           new Pair<double,double>(0.35,0.93),
           new Pair<double,double>(0.40,1.00),
-          new Pair<double,double>(0.65,1.20),
-          new Pair<double,double>(1.00,1.40),
-          new Pair<double,double>(1.30,1.60),
-          new Pair<double,double>(1.80,1.70),
-          //new Pair<double,double>(1.5,1.80),
-          //new Pair<double,double>(1.8,1.80),
+          new Pair<double,double>(0.50,1.05),
+          new Pair<double,double>(0.60,1.10),
+          new Pair<double,double>(0.70,1.15),
+          new Pair<double,double>(0.80,1.20),
+          new Pair<double,double>(0.90,1.25),
+          new Pair<double,double>(1.00,1.30),
+          new Pair<double,double>(1.10,1.35),
+          new Pair<double,double>(1.20,1.40),
+          new Pair<double,double>(1.30,1.45),
+          new Pair<double,double>(1.40,1.50),
+          new Pair<double,double>(1.60,1.60),
+          new Pair<double,double>(1.90,1.65),
         };
 
         private Pair<double,double>[] SCALE_BY_OBSTACLE_DISTANCE =
@@ -1674,18 +1680,27 @@ namespace Robocup.MotionControl
           new Pair<double,double>(0.2,0.80), 
           new Pair<double,double>(0.3,0.95),
           new Pair<double,double>(0.4,1.00),
-          new Pair<double,double>(0.6,1.20),
-          new Pair<double,double>(1.0,1.40),
-          new Pair<double,double>(1.3,1.60),
+          new Pair<double,double>(0.5,1.05),
+          new Pair<double,double>(0.6,1.10),
+          new Pair<double,double>(0.7,1.15),
+          new Pair<double,double>(0.8,1.20),
+          new Pair<double,double>(0.9,1.25),
+          new Pair<double,double>(1.0,1.30),
+          new Pair<double,double>(1.1,1.35),
+          new Pair<double,double>(1.2,1.40),
+          new Pair<double,double>(1.3,1.45),
+          new Pair<double,double>(1.4,1.50),
+          new Pair<double,double>(1.5,1.55),
+          new Pair<double,double>(1.6,1.60),
+          new Pair<double,double>(1.7,1.65),
           new Pair<double,double>(1.8,1.70),
-          //new Pair<double,double>(1.5,1.60),
         };
 
         private Pair<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR =
         {
-            new Pair<double,double>(0.00,4.0),
-            new Pair<double,double>(0.25,2.5),
-            new Pair<double,double>(0.50,1.5),
+            new Pair<double,double>(0.00,2.5),
+            new Pair<double,double>(0.25,2.2),
+            new Pair<double,double>(0.50,1.7),
             new Pair<double,double>(0.75,1.1),
             new Pair<double,double>(1.00,1.0),
         };
@@ -1814,6 +1829,10 @@ namespace Robocup.MotionControl
             if(desiredVelocity.magnitudeSq() > 1e-12)
                 desiredVelocity = desiredVelocity.normalizeToLength(speed);
 
+            //TODO(davidwu): test this correction
+            desiredVelocity = desiredVelocity + 2 * desiredVelocity.magnitude() * (desiredVelocity - curInfo.Velocity.rotate(-curInfo.Orientation));
+            if (desiredVelocity.magnitudeSq() > 1e-12)
+                desiredVelocity = desiredVelocity.normalizeToLength(speed);
 
             //Convert to wheel speeds
             double xyb = XY_BASIS_SCALE;
@@ -1875,7 +1894,6 @@ namespace Robocup.MotionControl
                 Convert.ToInt32(speeds.lf),
                 Convert.ToInt32(speeds.lb),
                 Convert.ToInt32(speeds.rb));
-            Console.WriteLine(old + " " + command);
 
             return command;
         }
