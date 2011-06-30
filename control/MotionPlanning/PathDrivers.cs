@@ -1649,6 +1649,10 @@ namespace Robocup.MotionControl
         private const double GOOD_ENOUGH_DIST = 0.005;
         private const double GOOD_ENOUGH_ANGLE = 1.0 / 360.0;
 
+        //How much should we correct for rotation throwing us off?
+        private const double PLANNED_ANG_SPEED_CORRECTION = 0.0;
+        private const double CURRENT_ANG_SPEED_CORRECTION = 0.15;
+
         //Scaling for speed based on distance from goal
         private Pair<double,double>[] SCALE_BY_DISTANCE =
         { new Pair<double,double>(0.00,0.01), 
@@ -1847,21 +1851,11 @@ namespace Robocup.MotionControl
 
             //Scale to desired speed
             double speed = BASE_SPEED * Math.Min(interp(SCALE_BY_DISTANCE, distanceLeft), interp(SCALE_BY_OBSTACLE_DISTANCE, obstacleDist));
-            if (distanceLeft <= GOOD_ENOUGH_DIST)
+            bool linearDone = distanceLeft <= GOOD_ENOUGH_DIST;
+            if (linearDone)
                 speed = 0;
             if(desiredVelocity.magnitudeSq() > 1e-12)
                 desiredVelocity = desiredVelocity.normalizeToLength(speed);
-
-            //TODO(davidwu): test this correction
-            //desiredVelocity = desiredVelocity + 2 * desiredVelocity.magnitude() * (desiredVelocity - curInfo.Velocity.rotate(-curInfo.Orientation));
-            //if (desiredVelocity.magnitudeSq() > 1e-12)
-             //   desiredVelocity = desiredVelocity.normalizeToLength(speed);
-
-            //Convert to wheel speeds
-            double xyb = XY_BASIS_SCALE;
-            WheelSpeeds xBasis = new WheelSpeeds(xyb, -xyb, -xyb, xyb);
-            WheelSpeeds yBasis = new WheelSpeeds(xyb, xyb, -xyb, -xyb);
-            WheelSpeeds speeds = xBasis * desiredVelocity.X + yBasis * desiredVelocity.Y;
 
             //Smallest turn algorithm
             double dTheta = desiredState.Orientation - curInfo.Orientation;
@@ -1880,25 +1874,49 @@ namespace Robocup.MotionControl
                 timeLeft = 1e-5;
 
             //Compute the speed we'd need to rotate at, in revs/sec, and cap it
-            double angularSpeed = dRev / timeLeft;
+            double angularVelocity = dRev / timeLeft;
             double maxAS = Math.Min(MAX_ANGLULAR_SPEED, Math.Abs(dRev) * MAX_ANGLULAR_LINEAR_SPEED * Math.PI * 2);
-            if (angularSpeed > maxAS)
-                angularSpeed = maxAS;
-            if (angularSpeed < -maxAS)
-                angularSpeed = -maxAS;
-            if (dRev >= -GOOD_ENOUGH_ANGLE && dRev <= GOOD_ENOUGH_ANGLE)
-                angularSpeed = 0;
+            if (angularVelocity > maxAS)
+                angularVelocity = maxAS;
+            if (angularVelocity < -maxAS)
+                angularVelocity = -maxAS;
+
+            bool angularDone = dRev >= -GOOD_ENOUGH_ANGLE && dRev <= GOOD_ENOUGH_ANGLE;
+            if(angularDone)
+                angularVelocity = 0;
 
             double rb = R_BASIS_SCALE;
             WheelSpeeds rbasis = new WheelSpeeds(rb, rb, rb, rb);
+            WheelSpeeds angularSpeeds = rbasis * angularVelocity;
 
-            //Add in rotational component
-            speeds = speeds + rbasis * angularSpeed;
+            //Adjust for rotational interaction
+            desiredVelocity = desiredVelocity.rotate(-angularVelocity * (2 * Math.PI) * PLANNED_ANG_SPEED_CORRECTION 
+                - curInfo.AngularVelocity * CURRENT_ANG_SPEED_CORRECTION);
+
+            //Convert linear desired velocity to wheel speeds
+            double xyb = XY_BASIS_SCALE;
+            WheelSpeeds xBasis = new WheelSpeeds(xyb, -xyb, -xyb, xyb);
+            WheelSpeeds yBasis = new WheelSpeeds(xyb, xyb, -xyb, -xyb);
+            WheelSpeeds linearSpeeds = xBasis * desiredVelocity.X + yBasis * desiredVelocity.Y;
+
+            WheelSpeeds speeds = linearSpeeds + angularSpeeds;
 
             //Scale as desired
             speeds = speeds * (SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
 
-            //Adjust velocity to cope with a maximum acceleration limit
+            //Make sure that if we're not done yet, we have some positive wheel speeds 
+            if (!angularDone || !linearDone)
+            {
+                //The largest the magnitude can be while rounding to zero is 1, which occurs when all entries
+                //are 0.5-eps
+                double magnitude = speeds.magnitude();
+                if (magnitude < 1.001 && magnitude > 0.001) //Guard against division by zero
+                {
+                    speeds = speeds * (1.001 / magnitude); //Scale to length 1.001
+                }
+            }
+
+            //Adjust speeds to cope with a maximum acceleration limit
             WheelSpeeds old = lastSpeeds[id];
             if (old != null)
             {
@@ -1907,8 +1925,8 @@ namespace Robocup.MotionControl
                 if (diffMagnitude > MAX_WHEEL_SPEED_CHANGE_PER_FRAME)
                     speeds = old + diff * (MAX_WHEEL_SPEED_CHANGE_PER_FRAME / diffMagnitude);
             }
-            lastSpeeds[id] = speeds;
 
+            lastSpeeds[id] = speeds;
             return speeds;
         }
     }

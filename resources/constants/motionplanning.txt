@@ -141,9 +141,9 @@ double MIN_ANGLE_DIFF_TO_WP 0.0
 double PLANNER_WAYPOINT_DISTANCE 0.4
 
 # PathFollowerPlayer
-double MIN_GOAL_DIST 0.06
-#ignore orientation: 100, usually 0.3
-double MIN_GOAL_DIFF_ORIENTATION 0.5
+double MIN_GOAL_DIST 0.03
+#ignore orientation: 100, usually 0.1
+double MIN_GOAL_DIFF_ORIENTATION 0.1
 
 # Used in ModelFeedback
 # in m

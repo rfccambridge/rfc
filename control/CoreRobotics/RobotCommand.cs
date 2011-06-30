@@ -91,6 +91,17 @@ namespace Robocup.CoreRobotics
             this.command = command;
         }
 
+        private int clampWheelSpeed(double speed)
+        {
+            const int MAXSPEED = 127;
+            int s = (int)Math.Round((double)speed);
+            if (s > MAXSPEED)
+                s = MAXSPEED;
+            if (s < -MAXSPEED)
+                s = -MAXSPEED;
+            return s;
+        }
+
         public byte[] ToPacket()
         {
             byte id = (byte)('0' + ID);
@@ -99,22 +110,11 @@ namespace Robocup.CoreRobotics
             switch (command)
             {
                 case Command.MOVE:
-                    const int MAXSPEED = 127;
 
-                    int lf = (int)Math.Round((double)Speeds.lf),
-                        rf = (int)Math.Round((double)Speeds.rf),
-                        lb = (int)Math.Round((double)Speeds.lb),
-                        rb = (int)Math.Round((double)Speeds.rb);
-
-                    rf = rf > MAXSPEED ? MAXSPEED : rf;
-                    lf = lf > MAXSPEED ? MAXSPEED : lf;
-                    lb = lb > MAXSPEED ? MAXSPEED : lb;
-                    rb = rb > MAXSPEED ? MAXSPEED : rb;
-
-                    rf = rf < -MAXSPEED ? -MAXSPEED : rf;
-                    lf = lf < -MAXSPEED ? -MAXSPEED : lf;
-                    lb = lb < -MAXSPEED ? -MAXSPEED : lb;
-                    rb = rb < -MAXSPEED ? -MAXSPEED : rb;
+                    int lf = clampWheelSpeed(Speeds.lf),
+                        rf = clampWheelSpeed(Speeds.rf),
+                        lb = clampWheelSpeed(Speeds.lb),
+                        rb = clampWheelSpeed(Speeds.rb);
 
                     // board bugs out if we send an unescaped slash
                     if (lb == '\\') lb++;
@@ -240,10 +240,15 @@ namespace Robocup.CoreRobotics
             switch (command)
             {
                 case Command.MOVE:
-                    buff[4] = (byte)(Speeds.rf < 0 ? (byte)Math.Abs(Speeds.rf) | 0x80 : (byte)Speeds.rf);
-                    buff[5] = (byte)(Speeds.lf < 0 ? (byte)Math.Abs(Speeds.lf) | 0x80 : (byte)Speeds.lf);
-                    buff[6] = (byte)(Speeds.lb < 0 ? (byte)Math.Abs(Speeds.lb) | 0x80 : (byte)Speeds.lb);
-                    buff[7] = (byte)(Speeds.rb < 0 ? (byte)Math.Abs(Speeds.rb) | 0x80 : (byte)Speeds.rb);
+                    int lf = clampWheelSpeed(Speeds.lf),
+                        rf = clampWheelSpeed(Speeds.rf),
+                        lb = clampWheelSpeed(Speeds.lb),
+                        rb = clampWheelSpeed(Speeds.rb);
+
+                    buff[4] = (byte)(Speeds.rf < 0 ? (byte)Math.Abs(rf) | 0x80 : (byte)rf);
+                    buff[5] = (byte)(Speeds.lf < 0 ? (byte)Math.Abs(lf) | 0x80 : (byte)lf);
+                    buff[6] = (byte)(Speeds.lb < 0 ? (byte)Math.Abs(lb) | 0x80 : (byte)lb);
+                    buff[7] = (byte)(Speeds.rb < 0 ? (byte)Math.Abs(rb) | 0x80 : (byte)rb);
                     break;
                 case Command.SET_PID:
                     buff[4] = P;
