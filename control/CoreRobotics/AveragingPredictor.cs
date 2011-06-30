@@ -185,6 +185,9 @@ namespace Robocup.CoreRobotics
                                 Vector2 d = newRobot.Position - robotsAtDtStart[newRobot.Team][oldRobotIdx].Position;
                                 oldRobot.Velocity = WEIGHT_OLD * oldRobot.Velocity + WEIGHT_NEW * d / dt;
 
+                                double r = newRobot.Orientation - robotsAtDtStart[newRobot.Team][oldRobotIdx].Orientation;
+                                oldRobot.AngularVelocity = WEIGHT_OLD * oldRobot.AngularVelocity + WEIGHT_NEW * r / dt;
+
                                 // Reset velocity dt interval
                                 velocityDtStart[newRobot.Team][oldRobotIdx] = time;
                                 robotsAtDtStart[newRobot.Team][oldRobotIdx] = new RobotInfo(oldRobot);
