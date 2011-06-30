@@ -209,6 +209,7 @@ namespace Robocup.ControlForm {
             
             int ind = waypoints.IndexOf(waypoint);
             waypoint.Position = e.Data.NewLocation;
+            waypoint.Orientation = e.Data.NewOrientation;
             
             #region Adjust velocities
             if(waypoints.Count > 1)

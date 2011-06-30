@@ -28,10 +28,12 @@ namespace Robocup.Utilities
     public class WaypointMovedInfo : WaypointInfo
     {
         public Vector2 NewLocation;
-        public WaypointMovedInfo(Object obj, Color color, Vector2 newLocation)
+        public double NewOrientation;
+        public WaypointMovedInfo(Object obj, Color color, Vector2 newLocation, double newOrientation)
             : base(obj, color)
         {
             NewLocation = newLocation;
+            NewOrientation = newOrientation;
         }
     }
 
@@ -60,12 +62,28 @@ namespace Robocup.Utilities
             public Color Color;
             public object Object;
 
+            public bool DoDrawOrientation;
+            public double Orientation;
+
             public Marker(Vector2 loc, Color col, Object obj)
             {
                 Location = loc;
                 Color = col;
                 Object = obj;
+
+                DoDrawOrientation = false;
+                Orientation = 0;
             }
+
+            public Marker(Vector2 loc, double orientation, Color col, Object obj)
+            {
+                Location = loc;
+                Color = col;
+                Object = obj;
+
+                DoDrawOrientation = true;
+                Orientation = orientation;
+            }                
         }
 
         private class Arrow
@@ -123,7 +141,11 @@ namespace Robocup.Utilities
         bool _collectingState = false;
         object _collectingStateLock = new object();
         bool _robotsAndBallUpdated = false;
-        Marker _draggedMarker;
+
+        //Marker drag and drop
+        Marker _draggedMarker; //The marker currently being dragged
+        bool _movedDraggedMarker; //Have we ever moved this marker since the start of the drag?
+
         double _glControlWidth;
         double _glControlHeight;
 
@@ -205,6 +227,7 @@ namespace Robocup.Utilities
         {
             Vector2 pt = controlToFieldCoords(loc);
             _draggedMarker = null;
+            _movedDraggedMarker = false;
             lock (_stateLock) {
                 foreach (Marker marker in _state.Markers.Values)
                     if (ptInsideMarker(marker, pt))
@@ -222,7 +245,17 @@ namespace Robocup.Utilities
                         WaypointRemoved(this, new EventArgs<WaypointInfo>(
                                                 new WaypointInfo(_draggedMarker.Object, _draggedMarker.Color)));
                 }
+
+                if (!_movedDraggedMarker)
+                {
+                    Console.WriteLine("yay");
+                    _draggedMarker.Orientation += Math.PI / 8;
+                    if (WaypointMoved != null)
+                        WaypointMoved(this, new EventArgs<WaypointMovedInfo>(
+                                                new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
+                }
                 _draggedMarker = null;
+                _movedDraggedMarker = false;
             }
         }
 
@@ -230,13 +263,14 @@ namespace Robocup.Utilities
         {
             if (_draggedMarker != null)
             {
+                _movedDraggedMarker = true;
                 Vector2 pt = controlToFieldCoords(loc);
                 lock (_collectingStateLock)
                 {
                     _draggedMarker.Location = pt;
                     if (WaypointMoved != null)
                         WaypointMoved(this, new EventArgs<WaypointMovedInfo>(
-                                                new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, pt)));
+                                                new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
                 }
             }
             _fieldDrawerForm.InvalidateGLControl();
@@ -419,7 +453,7 @@ namespace Robocup.Utilities
                 if (!_collectingState)
                     throw new ApplicationException("Not collecting state!");
                 int handle = _bufferedState.NextMarkerHandle;
-                _bufferedState.Markers.Add(handle, new Marker(location, color, obj));
+                _bufferedState.Markers.Add(handle, new Marker(location, 0, color, obj));
                 unchecked { _bufferedState.NextMarkerHandle++; }
                 return handle;
             }
@@ -581,13 +615,26 @@ namespace Robocup.Utilities
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Translate(marker.Location.X, marker.Location.Y, 0);
+            GL.Rotate(marker.Orientation * 180.0/Math.PI, 0, 0, 1.0);
             GL.Color3(marker.Color);
-            GL.Begin(BeginMode.Quads);
-            GL.Vertex2(-MARKER_SIZE, MARKER_SIZE);
-            GL.Vertex2(MARKER_SIZE, MARKER_SIZE);
-            GL.Vertex2(MARKER_SIZE, -MARKER_SIZE);
-            GL.Vertex2(-MARKER_SIZE, -MARKER_SIZE);
-            GL.End();
+
+            if (!marker.DoDrawOrientation)
+            {
+                GL.Begin(BeginMode.Quads);
+                GL.Vertex2(-MARKER_SIZE, MARKER_SIZE);
+                GL.Vertex2(MARKER_SIZE, MARKER_SIZE);
+                GL.Vertex2(MARKER_SIZE, -MARKER_SIZE);
+                GL.Vertex2(-MARKER_SIZE, -MARKER_SIZE);
+                GL.End();
+            }
+            else
+            {
+                GL.Begin(BeginMode.Triangles);
+                GL.Vertex2(MARKER_SIZE * 2, 0);
+                GL.Vertex2(-MARKER_SIZE * 2, MARKER_SIZE);
+                GL.Vertex2(-MARKER_SIZE * 2, -MARKER_SIZE);
+                GL.End();
+            }
         }
 
         private void drawPath(RobotPath path)
