@@ -248,7 +248,6 @@ namespace Robocup.Utilities
 
                 if (!_movedDraggedMarker)
                 {
-                    Console.WriteLine("yay");
                     _draggedMarker.Orientation += Math.PI / 8;
                     if (WaypointMoved != null)
                         WaypointMoved(this, new EventArgs<WaypointMovedInfo>(

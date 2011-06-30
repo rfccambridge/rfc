@@ -101,7 +101,7 @@ namespace Robocup.CoreRobotics
 
                 dwheels = new WheelSpeeds((int)(speed * prf / max), (int)(speed * plf / max), (int)(speed * plb / max), (int)(speed * prb / max));
             }
-            WheelSpeeds toRet = (WheelSpeeds)WheelsInfo<double>.Times(1/(dprop + vprop),(WheelsInfo<double>.Add(dprop * dwheels,vprop * vwheels)));
+            WheelSpeeds toRet = (WheelSpeeds)((1/(dprop + vprop)) * (dprop * dwheels + vprop * vwheels));
             Console.WriteLine("sending speeds: " + toRet.ToString());
             return toRet;
         }

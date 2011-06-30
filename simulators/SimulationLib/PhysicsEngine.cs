@@ -411,7 +411,8 @@ namespace Robocup.Simulation
 			{
 				robots[old_info.Team][index].Position = new_info.Position;
 				robots[old_info.Team][index].Velocity = new_info.Velocity;
-				robots[old_info.Team][index].Orientation = new_info.Orientation;
+                robots[old_info.Team][index].AngularVelocity = new_info.AngularVelocity;
+                robots[old_info.Team][index].Orientation = new_info.Orientation;
 			}
 			else
 			{

@@ -32,22 +32,6 @@ namespace Robocup.Core
             return rf.ToString() + "," + lf.ToString() + "," + lb.ToString() + "," + rb.ToString();
         }
 
-        static public WheelsInfo<double> Add(WheelsInfo<double> lhs, WheelsInfo<double> rhs)
-        {
-            return new WheelsInfo<double>(rhs.rf + lhs.rf, rhs.lf + lhs.lf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
-        }
-        static public WheelsInfo<double> Sub(WheelsInfo<double> lhs, WheelsInfo<double> rhs)
-        {
-            return new WheelsInfo<double>(-rhs.rf + lhs.rf, -rhs.lf + lhs.lf, -rhs.lb + lhs.lb, -rhs.rb + lhs.rb);
-        }
-        static public WheelsInfo<double> Times(double d, WheelsInfo<double> rhs)
-        {
-            return new WheelsInfo<double>(d*rhs.rf, d*rhs.lf, d*rhs.lb, d*rhs.rb);
-        }
-        static public WheelsInfo<double> Times(WheelsInfo<double> lhs, double d)
-        {
-            return new WheelsInfo<double>(lhs.rf * d, lhs.lf * d, lhs.lb * d, lhs.rb * d);
-        }
     }
     
     /// <summary>
@@ -55,9 +39,9 @@ namespace Robocup.Core
     /// 
     /// The convention for wheel speeds is that positive values contribute to the robot going counterclockwise.
     /// </summary>
-    public class WheelSpeeds : WheelsInfo<int>
+    public class WheelSpeeds : WheelsInfo<double>
     {
-        public WheelSpeeds(int rf, int lf, int lb, int rb)
+        public WheelSpeeds(double rf, double lf, double lb, double rb)
             : base(rf, lf, lb, rb)
         { }
 
@@ -72,23 +56,44 @@ namespace Robocup.Core
         {
             return new WheelSpeeds(rhs.rf + lhs.rf, rhs.lf + lhs.lf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
         }
+        static public WheelSpeeds operator -(WheelSpeeds lhs, WheelSpeeds rhs)
+        {
+            return new WheelSpeeds(lhs.rf - rhs.rf, lhs.lf - rhs.lf, lhs.lb - rhs.lb, lhs.rb - rhs.rb);
+        }
+        static public WheelSpeeds operator *(double d, WheelSpeeds ws)
+        {
+            return new WheelSpeeds(d * ws.rf, d * ws.lf, d * ws.lb, d * ws.rb);
+        }
+        static public WheelSpeeds operator *(WheelSpeeds ws, double d)
+        {
+            return new WheelSpeeds(d * ws.rf, d * ws.lf, d * ws.lb, d * ws.rb);
+        }
+        static public WheelSpeeds operator /(WheelSpeeds ws, double d)
+        {
+            return new WheelSpeeds(ws.rf / d, ws.lf / d, ws.lb / d, ws.rb / d);
+        }
 
-        static public WheelsInfo<double> operator *(double d, WheelSpeeds ws)
+        //Dot product
+        static public double operator *(WheelSpeeds lhs, WheelSpeeds rhs)
         {
-            return new WheelsInfo<double>(d * ws.rf, d * ws.lf, d * ws.lb, d * ws.rb);
+            return lhs.rf * rhs.rf + lhs.lf * rhs.lf + lhs.lb * rhs.lb + lhs.rb * rhs.rb;
         }
-        static public WheelsInfo<double> operator +(WheelsInfo<double> lhs, WheelSpeeds rhs)
+
+        public double magnitudeSq()
         {
-            return new WheelsInfo<double>(rhs.rf + lhs.rf, rhs.lf + lhs.lf, rhs.lb + lhs.lb, rhs.rb + lhs.rb);
+            return rf * rf + lf * lf + lb * lb + rb * rb;
         }
-        static public explicit operator WheelSpeeds(WheelsInfo<double> ws)
+
+        public double magnitude()
         {
-            //TODO(davidwu): This code is wrong for negative numbers.
-            return new WheelSpeeds((int)(ws.rf + .5), (int)(ws.lf + .5), (int)(ws.lb + .5), (int)(ws.rb + .5));
+            return Math.Sqrt(rf * rf + lf * lf + lb * lb + rb * rb);
         }
-        static public explicit operator WheelsInfo<double>(WheelSpeeds ws)
+
+        //Projection - returns the factor by which the other wheelspeeds should be scaled to produce
+        //the projection of this vector on to the other (as a 4-vector)
+        public double getProjectionFactor(WheelSpeeds other)
         {
-            return new WheelsInfo<double>(ws.rf, ws.lf, ws.lb, ws.rb);
+            return this * other / other.magnitudeSq();
         }
 
         public String toString()

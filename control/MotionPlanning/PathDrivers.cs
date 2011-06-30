@@ -1625,7 +1625,7 @@ namespace Robocup.MotionControl
         private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
         
         //State - track the previous wheel speed sent so we don't send something too different
-        private WheelsInfo<double>[] lastSpeeds = new WheelsInfo<double>[NUM_ROBOTS]; 
+        private WheelSpeeds[] lastSpeeds = new WheelSpeeds[NUM_ROBOTS]; 
 
         //Base desired speeds for movement
         private const double BASE_SPEED = 1.0;          //In m/s
@@ -1859,11 +1859,9 @@ namespace Robocup.MotionControl
 
             //Convert to wheel speeds
             double xyb = XY_BASIS_SCALE;
-            WheelsInfo<double> xBasis = new WheelsInfo<double>(xyb, -xyb, -xyb, xyb);
-            WheelsInfo<double> yBasis = new WheelsInfo<double>(xyb, xyb, -xyb, -xyb);
-            WheelsInfo<double> speeds = WheelSpeeds.Add(
-                WheelsInfo<double>.Times(xBasis, desiredVelocity.X),
-                WheelsInfo<double>.Times(yBasis, desiredVelocity.Y));
+            WheelSpeeds xBasis = new WheelSpeeds(xyb, -xyb, -xyb, xyb);
+            WheelSpeeds yBasis = new WheelSpeeds(xyb, xyb, -xyb, -xyb);
+            WheelSpeeds speeds = xBasis * desiredVelocity.X + yBasis * desiredVelocity.Y;
 
             //Smallest turn algorithm
             double dTheta = desiredState.Orientation - curInfo.Orientation;
@@ -1892,33 +1890,26 @@ namespace Robocup.MotionControl
                 angularSpeed = 0;
 
             double rb = R_BASIS_SCALE;
-            WheelsInfo<double> rbasis = new WheelsInfo<double>(rb, rb, rb, rb);
+            WheelSpeeds rbasis = new WheelSpeeds(rb, rb, rb, rb);
 
             //Add in rotational component
-            speeds = WheelsInfo<double>.Add(speeds, WheelsInfo<double>.Times(rbasis, angularSpeed));
+            speeds = speeds + rbasis * angularSpeed;
 
             //Scale as desired
-            speeds = WheelsInfo<double>.Times(speeds, SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
+            speeds = speeds * (SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
 
             //Adjust velocity to cope with a maximum acceleration limit
-            WheelsInfo<double> old = lastSpeeds[id];
+            WheelSpeeds old = lastSpeeds[id];
             if (old != null)
             {
-                WheelsInfo<double> diff = WheelsInfo<double>.Sub(speeds, old);
-                double diffMagnitude = Math.Sqrt((diff.rb * diff.rb + diff.rf * diff.rf + diff.lb * diff.lb + diff.lf * diff.lf) / 4);
+                WheelSpeeds diff = speeds - old;
+                double diffMagnitude = diff.magnitude() / 4;
                 if (diffMagnitude > MAX_WHEEL_SPEED_CHANGE_PER_FRAME)
-                    speeds = WheelsInfo<double>.Add(old, WheelsInfo<double>.Times(MAX_WHEEL_SPEED_CHANGE_PER_FRAME / diffMagnitude, diff));
+                    speeds = old + diff * (MAX_WHEEL_SPEED_CHANGE_PER_FRAME / diffMagnitude);
             }
             lastSpeeds[id] = speeds;
 
-            //Done!
-            WheelSpeeds command = new WheelSpeeds(
-                Convert.ToInt32(speeds.rf),
-                Convert.ToInt32(speeds.lf),
-                Convert.ToInt32(speeds.lb),
-                Convert.ToInt32(speeds.rb));
-
-            return command;
+            return speeds;
         }
     }
 

@@ -7,92 +7,75 @@ using Robocup.Geometry;
 namespace Robocup.CoreRobotics
 {
     /// <summary>
-    /// A class that models the movement of a robot.  Each object of this class will only be responsible for modeling one robot;
-    /// ie, it is not responsible for holding a different set of parameters for each robot.
+    /// A simple proportional model for the relationship between commanded wheel speeds for a robot and
+    /// actual rotation and translation velocity.
     /// </summary>
     public class MovementModeler
     {
-        static private Random r = new Random();
-        const double rr = 0.0783;
-        double velocityCoe = 127 * (2 * Math.Sqrt(2)) / 5; // assuming maximum velocity is 5m/s
-        double angVelocityCoe = 10 * (2 * Math.Sqrt(2)) / 5; 
-        public double changeConstlf = 8;//proportional constant. we set the change is proportional to the gap. 
+        const double robotToWheelRadius = 0.0783; //Distance from robot center to wheel center
+        const double wheelMSPerSpeed = 0.02952;   //Conversion from wheel speed [0,127] -> m/s
+
+        const double wheelSpeedPerMS = 1.0 / wheelMSPerSpeed; //Wheel speed corresponding to 1 m/s rotation of a single wheel
+        const double wheelSpeedPerRS = wheelSpeedPerMS * robotToWheelRadius; //Wheel speed corresponding to 1 rad/s robot rotation
+
+        //The wheel speeds corresponding to 1 m/s to the upper right
+        static WheelSpeeds urBasis = new WheelSpeeds(wheelSpeedPerMS, 0, -wheelSpeedPerMS, 0);
+        //The wheel speeds corresponding to 1 m/s to the upper left
+        static WheelSpeeds ulBasis = new WheelSpeeds(0, wheelSpeedPerMS, 0, -wheelSpeedPerMS);
+        //The wheel speeds correspoding to 1 rad/s rotation
+        static WheelSpeeds rotBasis = new WheelSpeeds(wheelSpeedPerRS, wheelSpeedPerRS, wheelSpeedPerRS, wheelSpeedPerRS);
+
+        //When changing from the current speed to a new commanded speed, every 1 / (this number of seconds),
+        //the difference between the actual wheel speed and the commanded will be multiplied by 1/e
+        public double changeConstlf = 8;
         public double changeConstlb = 8;
         public double changeConstrf = 8;
         public double changeConstrb = 8;
-
-        private double GetNewVelocity(double command, double actual, double dt, double changek)
+        
+        private double Accelerate(double command, double actual, double dt, double changek)
         {
             return actual + (command - actual) * (1 - Math.Exp(-changek * dt));
-            //return command;
         }
 
-        private WheelsInfo<double> GetNewWheel(WheelSpeeds command, WheelsInfo<double> actual, double dt)
+        /// <summary>
+        /// Compute new wheel speeds for the robot, given the commanded and the actual speeds, and the amount
+        /// of time passed since the command
+        /// </summary>
+        private WheelSpeeds GetNewWheelSpeeds(WheelSpeeds command, WheelSpeeds actual, double dt)
         {
-            WheelsInfo<double> newWheel = new WheelsInfo<double>();
-            newWheel.lb = GetNewVelocity(command.lb, actual.lb, dt, changeConstlb);
-            newWheel.rb = GetNewVelocity(command.rb, actual.rb, dt, changeConstrb);
-            newWheel.lf = GetNewVelocity(command.lf, actual.lf, dt, changeConstlf);
-            newWheel.rf = GetNewVelocity(command.rf, actual.rf, dt, changeConstrf);
-
-            return newWheel;
+            return new WheelSpeeds(
+                Accelerate(command.rf, actual.rf, dt, changeConstrf),
+                Accelerate(command.lf, actual.lf, dt, changeConstlf),
+                Accelerate(command.lb, actual.lb, dt, changeConstlb),
+                Accelerate(command.rb, actual.rb, dt, changeConstrb));
         }
 
-        public WheelsInfo<double> GetWheelSpeedsFromInfo(RobotInfo info)
+        /// <summary>
+        /// Given a robot info (velocities), compute what the current wheel speeds are
+        /// <summary>
+        public WheelSpeeds GetWheelSpeedsFromInfo(RobotInfo info)
         {
-            Vector2 orientationVector = new Vector2(Math.Cos(info.Orientation), Math.Sin(info.Orientation));
-            Vector2 lfv, rfv, rbv, lbv;
-            lfv = orientationVector.rotate(-Math.PI / 4);
-            rfv = orientationVector.rotate(Math.PI / 4);
-            rbv = lfv; lbv = rfv;
-
-            double lfprod = lfv * info.Velocity;
-            double rfprod = rfv * info.Velocity;
-            double wr = info.AngularVelocity * rr;
-
-            //From Current State to Wheel Velocity
-            // lfv is the unit vector pointing along the lf direction
-            // rfv is the unit vector pointing along the rf direction
-            // Velocity = vector sum ( lf + rf + lb + rb )
-            // rf + rb - lf - lb = wr
-            // lf + rb = Velocity * lfv = lfprod  (because vector lb, rf is perpendicular to lfv)
-            // lb + rf = Velocity * rfv = rfprod   
-
-            double lb, lf, rb, rf;
-            lb = rfprod / 2;
-            rf = rfprod / 2;
-            rb = (wr + lfprod) / 2;
-            lf = (lfprod - wr) / 2;
-
-            // from actual velocity to -127 to 127 scale
-            WheelsInfo<double> Wheel = new WheelsInfo<double>();
-            Wheel.lb = -lb * velocityCoe;
-            Wheel.rb = rb * velocityCoe;
-            Wheel.lf = -lf * velocityCoe;
-            Wheel.rf = rf * velocityCoe;
-
-            return Wheel;
+            //Compute robot-frame velocity in the basis (x,y) = (UL, UR) instead of (x,y) = (left,up)
+            Vector2 robotVel = info.Velocity.rotate(-info.Orientation - Math.PI / 4);
+            return robotVel.X * urBasis + robotVel.Y * ulBasis + info.AngularVelocity * rotBasis;
         }
 
-        public double GetAngFromWheel(WheelsInfo<double> Wheel)
+        public double GetAngularVelocityFromWheel(WheelSpeeds wheel)
         {
-            return (Wheel.lf + Wheel.lb + Wheel.rf + Wheel.rb) / (angVelocityCoe * rr);
+            //Project wheel speeds on to rotational basis
+            return wheel.getProjectionFactor(rotBasis);            
         }
 
-        public Vector2 GetVelocityFromWheel(WheelsInfo<double> Wheel, double orientation)
+        public Vector2 GetVelocityFromWheel(WheelSpeeds wheel, double orientation)
         {
-            Vector2 orientationVector = new Vector2(Math.Cos(orientation), Math.Sin(orientation));
-            Vector2 lfv, rfv, rbv, lbv;  // unit vector pointing to each wheel's direction
-            lfv = orientationVector.rotate(-Math.PI / 4);
-            rfv = orientationVector.rotate(Math.PI / 4);
-            rbv = lfv; lbv = rfv;
-
-            return 1 / velocityCoe * (-Wheel.lb * lbv + Wheel.rb * rbv + -Wheel.lf * lfv + Wheel.rf * rfv);
+            //Project wheel speeds on to each axis and add, to obtain the velocity in the robot frame's (UR,UL) basis.
+            Vector2 robotVel = new Vector2(wheel.getProjectionFactor(urBasis), wheel.getProjectionFactor(ulBasis));
+            return robotVel.rotate(Math.PI / 4 + orientation);
         }
 
-        public Pair<Vector2, double> GetInfoFromWheelSpeeds(WheelsInfo<double> Wheel, double orientation)
+        public Pair<Vector2, double> GetInfoFromWheel(WheelSpeeds Wheel, double orientation)
         {
-            double AngularVelocity = GetAngFromWheel(Wheel);
+            double AngularVelocity = GetAngularVelocityFromWheel(Wheel);
             Vector2 newVelocity = GetVelocityFromWheel(Wheel, orientation);
 
             return new Pair<Vector2, double>(newVelocity, AngularVelocity);
@@ -109,20 +92,15 @@ namespace Robocup.CoreRobotics
         /// <returns>Returns the state of the robot, extrapolated a time dt into the future.</returns>       
         public RobotInfo ModelWheelSpeeds(RobotInfo info, WheelSpeeds command, double dt)
         {
-            WheelsInfo<double> currentWheel = GetWheelSpeedsFromInfo(info);
-            WheelsInfo<double> newWheel = GetNewWheel(command, currentWheel, dt);
-
-            double newAngularVelocity = GetAngFromWheel(newWheel);
+            WheelSpeeds currentWheel = GetWheelSpeedsFromInfo(info);
+            WheelSpeeds newWheel = GetNewWheelSpeeds(command, currentWheel, dt);
+            double newAngularVelocity = GetAngularVelocityFromWheel(newWheel);
             double angle = info.Orientation + (info.AngularVelocity + newAngularVelocity) / 2 * dt;
 
-            Pair<Vector2, double> vwpair = GetInfoFromWheelSpeeds(newWheel, angle);
+            Pair<Vector2, double> vwpair = GetInfoFromWheel(newWheel, angle);
             Vector2 newVelocity = vwpair.First;
             Vector2 newPosition = info.Position + 0.5 * dt * (newVelocity + info.Velocity);
 
-            if ((newPosition - info.Position).magnitudeSq() > 1)
-            {
-                Console.WriteLine("CRAP");
-            }
             return new RobotInfo(newPosition, newVelocity, newAngularVelocity, angle, info.Team, info.ID);
         }
     }

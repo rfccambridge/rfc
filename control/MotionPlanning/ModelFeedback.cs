@@ -113,13 +113,11 @@ namespace Robocup.MotionControl
             commandVector = SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[currentState.ID] * commandVector;
 
             //Build and return the command
-            WheelSpeeds command = new WheelSpeeds(
-                Convert.ToInt32(commandVector[1].Re), 
-                Convert.ToInt32(commandVector[2].Re), 
-				Convert.ToInt32(commandVector[3].Re), 
-                Convert.ToInt32(commandVector[4].Re));
-
-			return command;
+            return new WheelSpeeds(
+                commandVector[1].Re, 
+                commandVector[2].Re, 
+				commandVector[3].Re, 
+                commandVector[4].Re);
 		}
 	}
 }

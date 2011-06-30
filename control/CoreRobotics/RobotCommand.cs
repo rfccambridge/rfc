@@ -101,12 +101,20 @@ namespace Robocup.CoreRobotics
                 case Command.MOVE:
                     const int MAXSPEED = 127;
 
-                    int lf = Speeds.lf, rf = Speeds.rf, lb = Speeds.lb, rb = Speeds.rb;
+                    int lf = (int)Math.Round((double)Speeds.lf),
+                        rf = (int)Math.Round((double)Speeds.rf),
+                        lb = (int)Math.Round((double)Speeds.lb),
+                        rb = (int)Math.Round((double)Speeds.rb);
 
                     rf = rf > MAXSPEED ? MAXSPEED : rf;
                     lf = lf > MAXSPEED ? MAXSPEED : lf;
                     lb = lb > MAXSPEED ? MAXSPEED : lb;
                     rb = rb > MAXSPEED ? MAXSPEED : rb;
+
+                    rf = rf < -MAXSPEED ? -MAXSPEED : rf;
+                    lf = lf < -MAXSPEED ? -MAXSPEED : lf;
+                    lb = lb < -MAXSPEED ? -MAXSPEED : lb;
+                    rb = rb < -MAXSPEED ? -MAXSPEED : rb;
 
                     // board bugs out if we send an unescaped slash
                     if (lb == '\\') lb++;

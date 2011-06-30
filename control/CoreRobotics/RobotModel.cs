@@ -49,16 +49,10 @@ namespace Robocup.CoreRobotics
             //wheel one is the front right wheel  wheel 2 is the front left wheel, 
             //and so on around the the robot counterclockwise
 
-            double _rf = -sing * lateral - cosg * forward + WHEEL_R * angularV;
-            double _lf = -sing * lateral + cosg * forward + WHEEL_R * angularV;
-            double _lb =  sing * lateral + cosg * forward + WHEEL_R * angularV;
-            double _rb =  sing * lateral - cosg * forward + WHEEL_R * angularV;
-
-            int lf, rf, lb, rb;
-            lf = (int)_lf;
-            rf = (int)_rf;
-            lb = (int)_lb;
-            rb = (int)_rb;
+            double rf = -sing * lateral - cosg * forward + WHEEL_R * angularV;
+            double lf = -sing * lateral + cosg * forward + WHEEL_R * angularV;
+            double lb =  sing * lateral + cosg * forward + WHEEL_R * angularV;
+            double rb =  sing * lateral - cosg * forward + WHEEL_R * angularV;
 
             //Note somewhere we need to check and ensure that wheel speeds being 
             //sent do not exceed maximum values allowed by the protocol (done in SerialRobots somewhere).
@@ -67,7 +61,6 @@ namespace Robocup.CoreRobotics
 
         public WheelSpeeds DriveInDirection(double speed, double dx, double dy)
         {
-
             // rf, lf, lb, rb  forward = all positive forward = + - - +
             double[] wheel_dx = new double[] { 0.71f, -0.71f, -0.74f, 0.74f };
             double[] wheel_dy = new double[] { 0.71f, 0.71f, -0.68f, -0.68f };
@@ -80,8 +73,8 @@ namespace Robocup.CoreRobotics
             for (int i = 0; i < 4; i++)
                 wheel_speeds[i] = speed * (dx * wheel_dx[i] + dy * wheel_dy[i]) / wheel_radius[i];
 
-            return new WheelSpeeds((int)wheel_speeds[0], (int)wheel_speeds[1],
-                                   (int)wheel_speeds[2], (int)wheel_speeds[3]);
+            return new WheelSpeeds(wheel_speeds[0], wheel_speeds[1],
+                                   wheel_speeds[2], wheel_speeds[3]);
         }
     }
 
