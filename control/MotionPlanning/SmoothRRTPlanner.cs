@@ -596,7 +596,7 @@ namespace Robocup.MotionControl
 
             //Overly simplistic conversion from planning on position vectors to RobotInfo that has orientation and velocity information
             //velocity at every waypoint just points to next one with constant speed
-            double STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
+            double STEADY_STATE_SPEED = Constants.Motion.STEADY_STATE_SPEED;
             int pathStart = includeCurStateInPath ? 0 : 1;
             for (int i = pathStart; i < bestPath.Count; i++)
             {

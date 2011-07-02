@@ -140,8 +140,6 @@ namespace Robocup.MotionControl
         double EXTRA_GOAL_DIST;
         double BOUNDARY_AVOID;
 
-    	double STEADY_STATE_SPEED;
-
         double previousAngle;
 
         Vector2 lastWaypoint;        
@@ -164,6 +162,8 @@ namespace Robocup.MotionControl
             {
                 return new RobotPath(team, id);
             }
+
+            double STEADY_STATE_SPEED = Constants.Motion.STEADY_STATE_SPEED;
 
             Vector2 start = currentState.Position;
             Vector2 end = desiredState.Position;
@@ -353,8 +353,6 @@ namespace Robocup.MotionControl
             WAYPOINT_DIST = ConstantsRaw.get<double>("motionplanning", "WAYPOINT_DIST");
             MIN_ABS_VAL_STICK = ConstantsRaw.get<double>("motionplanning", "MIN_ABS_VAL_STICK");
             EXTRA_GOAL_DIST = ConstantsRaw.get<double>("motionplanning", "EXTRA_GOAL_DIST");
-        	STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
-
             BOUNDARY_AVOID = ConstantsRaw.get<double>("motionplanning", "BOUNDARY_AVOID");
         }
 
@@ -446,7 +444,6 @@ namespace Robocup.MotionControl
 	public class BasicRRTMotionPlanner : IPathPlanner
 	{
 		double RRT_OBSTACLE_AVOID_DIST;
-		double STEADY_STATE_SPEED;
 
         private int numPathIterations = 8;
         private int numSmoothIterations = 5;
@@ -520,6 +517,7 @@ namespace Robocup.MotionControl
 			//Overly simplistic conversion from planning on position vectors to RobotInfo that has orientation and velocity information
 			//velocity at every waypoint just points to next one with constant speed
             //0th waypoint is current state - skip it, driver won't like it.
+            double STEADY_STATE_SPEED = Constants.Motion.STEADY_STATE_SPEED;
             for (int i = 1; i < bestPath.Count; i++)
 			{
                 RobotInfo waypoint = new RobotInfo(bestPath[i], desiredState.Orientation, team, id);
@@ -632,7 +630,6 @@ namespace Robocup.MotionControl
         public void ReloadConstants()
 		{
             RRT_OBSTACLE_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "RRT_OBSTACLE_AVOID_DIST");
-			STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
 		}
 	}
 

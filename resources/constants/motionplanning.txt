@@ -2,9 +2,11 @@
 
 #SHARED CONSTANTS----------------------------------------------------
 
+#Basic robot properties
 int MAX_SINGLE_WHEEL_SPEED 127
 double ANGLE_AXIS_TO_WHEEL 41 #in degrees
 double WHEEL_RADIUS 0.0782828 #distance from robot center to wheels
+double STEADY_STATE_SPEED 2.30 #basic speed used by some planners and drivers in m/s
 
 #wheel ORIENTATIONS
 #double RF_ORIENTATION 0.5236
@@ -12,11 +14,35 @@ double WHEEL_RADIUS 0.0782828 #distance from robot center to wheels
 #double LB_ORIENTATION 3.6652
 #double RB_ORIENTATION 5.7596
 
-#DumbTurnPlanner constants
+# Logging
+string LOG_FILE ../../resources/motionplanning_log.txt
+
+#ROBOT SPEED SCALING -------------------------------------------------
+
+#Applies to all robots
+double SPEED_SCALING_FACTOR_ALL 0.9
+
+#Applies to individual robots (in addition to the factor above)
+double SPEED_SCALING_FACTOR_0 1
+double SPEED_SCALING_FACTOR_1 1
+double SPEED_SCALING_FACTOR_2 1
+double SPEED_SCALING_FACTOR_3 1
+double SPEED_SCALING_FACTOR_4 1
+double SPEED_SCALING_FACTOR_5 1
+double SPEED_SCALING_FACTOR_6 1
+double SPEED_SCALING_FACTOR_7 1
+double SPEED_SCALING_FACTOR_8 1
+double SPEED_SCALING_FACTOR_9 1
+double SPEED_SCALING_FACTOR_10 1
+double SPEED_SCALING_FACTOR_11 1
+
+
+
+#DumbTurnPlanner constants -----------------------------------------
 
 double MIN_ANGLE_DIFFERENCE .55
 
-#DumbVeerFeedbackPlanner constants
+#DumbVeerFeedbackPlanner constants ---------------------------------
 
 #DECIDE WHETHER TO USE ANGULAR VEER PLANNER
 int ANGULAR_VEER 1
@@ -40,7 +66,7 @@ double MPS_STRAIGHT_SPEED 50
 
 double STOP_DISTANCE .01
 
-#FEEDBACKVEERMOTIONPLANNER PID CONSTANTS!
+#FEEDBACKVEERMOTIONPLANNER PID CONSTANTS!---------------------------------
 double VEER_P 12
 double VEER_I 0
 double VEER_D 12
@@ -57,7 +83,7 @@ double MAX_FINAL_ANGLE_DIFFERENCE .2
 
 double DIST_SLOW_DOWN .2
 
-#DumbVelocityPlanner
+#DumbVelocityPlanner--------------------------------------------
 double DumbVelocity 20
 
 double VELOCITY_VEER_P 15
@@ -66,7 +92,7 @@ double VELOCITY_VEER_D 7
 
 double VEER_CAP 0
 
-#Navigation
+#Navigation---------------------------------------------
 int USE_NAVIGATOR 0
 
 #Switch orientation method
@@ -75,14 +101,11 @@ double MIN_ANGLE_SWITCH .8
 double LOOK_AHEAD_DISTANCE .4
 double AVOID_ROBOT_DISTANCE .4
 
-#Obstacle Avoidance
+#Obstacle Avoidance---------------------------------
 double REPULSION_FACTOR .3
 double PERPINDICULAR_LENGTH .1
 
-#Shared between Planners
-double STEADY_STATE_SPEED 2.30
-
-#TangentBugPlanner
+#TangentBugPlanner---------------------------------
 double TBUG_AVOID_DIST .20
 double LOOK_AHEAD_DIST 0.3
 double WAYPOINT_DIST .3
@@ -90,7 +113,7 @@ double MIN_ABS_VAL_STICK .5
 double EXTRA_GOAL_DIST .12
 double BOUNDARY_AVOID .5
 
-#RRTPlanner
+#RRTPlanner---------------------------------
 double RRT_OBSTACLE_AVOID_DIST .20
 
 
@@ -108,8 +131,6 @@ double DEFAULT_D 0
 #3
 double DEFAULT_STOP_DISTANCE 0
 
-# Logging
-string LOG_FILE ../../resources/motionplanning_log.txt
 
 # IRobotSpinner
 int DIRECT_SPIN_SPEED 3

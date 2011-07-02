@@ -12,10 +12,6 @@ namespace Robocup.MotionControl
         //4x6 GainMatrix that converts error vector to command
 		public Matrix GAIN_MATRIX = null;
 
-        // scaling factor applied to the matrix
-        private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
-        double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
-        private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
         private double WAYPOINT_DIST;
 
         private double fixedSpeedHackProp;
@@ -34,13 +30,6 @@ namespace Robocup.MotionControl
 
 		public void LoadConstants()
 		{
-            SPEED_SCALING_FACTOR_ALL = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
-
-            for (int i = 0; i < NUM_ROBOTS; i++)
-            {
-                SPEED_SCALING_FACTORS[i] = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
-            }
-
 			GAIN_MATRIX = new Matrix(ConstantsRaw.get<string>("control","GAIN_MATRIX"));
             GAIN_MATRIX *= ConstantsRaw.get<double>("control", "GAIN_MATRIX_SCALE");
 			
@@ -110,7 +99,7 @@ namespace Robocup.MotionControl
             Matrix commandVector = GAIN_MATRIX * localError;
 
             //Scale the speeds, both globally and per-robot.
-            commandVector = SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[currentState.ID] * commandVector;
+            commandVector = Constants.Motion.SPEED_SCALING_FACTOR_ALL * Constants.Motion.SPEED_SCALING_FACTORS[currentState.ID] * commandVector;
 
             //Build and return the command
             return new WheelSpeeds(

@@ -1574,8 +1574,6 @@ namespace Robocup.MotionControl
     public class VelocityDriver : IPathDriver
     {
         static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
-        private double[] SPEED_SCALING_FACTORS = new double[NUM_ROBOTS]; //Per robot speed scaling
-        private double SPEED_SCALING_FACTOR_ALL; //Global speed scaling
         
         //State - track the previous wheel speed sent so we don't send something too different
         private WheelSpeeds[] lastSpeeds = new WheelSpeeds[NUM_ROBOTS]; 
@@ -1680,19 +1678,12 @@ namespace Robocup.MotionControl
 
         public VelocityDriver()
         {
-            LoadConstants();
-        }
 
-	    public void LoadConstants()
-	    {
-            SPEED_SCALING_FACTOR_ALL = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_ALL");
-            for (int i = 0; i < NUM_ROBOTS; i++)
-                SPEED_SCALING_FACTORS[i] = ConstantsRaw.get<double>("control", "SPEED_SCALING_FACTOR_" + i.ToString());
-	    }
+        }
 
         public void ReloadConstants()
         {
-            LoadConstants();
+
         }
 
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
@@ -1855,7 +1846,7 @@ namespace Robocup.MotionControl
             WheelSpeeds speeds = linearSpeeds + angularSpeeds;
 
             //Scale as desired
-            speeds = speeds * (SPEED_SCALING_FACTOR_ALL * SPEED_SCALING_FACTORS[id]);
+            speeds = speeds * (Constants.Motion.SPEED_SCALING_FACTOR_ALL * Constants.Motion.SPEED_SCALING_FACTORS[id]);
 
             //Make sure that if we're not done yet, we have some positive wheel speeds 
             if (!angularDone || !linearDone)

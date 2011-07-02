@@ -319,6 +319,18 @@ namespace Robocup.Core
             /// <summary> Distance from center of robot to wheels. </summary>
             static public double WHEEL_RADIUS { get { InitializeIfNeeded(); return _WHEEL_RADIUS; } } static volatile float _WHEEL_RADIUS;
 
+            /// <summary> Basic speed used by some planners and drivers, in m/s. </summary>
+            static public double STEADY_STATE_SPEED { get { InitializeIfNeeded(); return _STEADY_STATE_SPEED; } } static volatile float _STEADY_STATE_SPEED;
+
+            /// <summary> Distance from center of robot to wheels. </summary>
+            static public string LOG_FILE { get { InitializeIfNeeded(); return _LOG_FILE; } } static volatile string _LOG_FILE;
+
+            /// <summary> Global speed scaling for all robots. </summary>
+            static public double SPEED_SCALING_FACTOR_ALL { get { InitializeIfNeeded(); return _SPEED_SCALING_FACTOR_ALL; } } static volatile float _SPEED_SCALING_FACTOR_ALL;
+
+            /// <summary> Individual robot speed scaling. </summary>
+            static public double[] SPEED_SCALING_FACTORS { get { InitializeIfNeeded(); return _SPEED_SCALING_FACTORS; } } static volatile double[] _SPEED_SCALING_FACTORS;
+
             static public void Reload()
             {
                 _WHEEL_SPEED_MAX = ConstantsRaw.get<int>("motionplanning", "MAX_SINGLE_WHEEL_SPEED");
@@ -326,6 +338,16 @@ namespace Robocup.Core
 
                 _ANGLE_AXIS_TO_WHEEL = (float)((Math.PI/180.0) * ConstantsRaw.get<double>("motionplanning", "ANGLE_AXIS_TO_WHEEL"));
                 _WHEEL_RADIUS = (float)ConstantsRaw.get<double>("motionplanning", "WHEEL_RADIUS");
+
+                _STEADY_STATE_SPEED = (float)ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
+                _LOG_FILE = ConstantsRaw.get<string>("motionplanning", "LOG_FILE");
+
+                _SPEED_SCALING_FACTOR_ALL = (float)ConstantsRaw.get<double>("motionplanning", "SPEED_SCALING_FACTOR_ALL");
+                int numRobots = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
+                double[] factors = new double[numRobots];
+                for (int i = 0; i < numRobots; i++)
+                    factors[i] = ConstantsRaw.get<double>("motionplanning", "SPEED_SCALING_FACTOR_" + i.ToString());
+                _SPEED_SCALING_FACTORS = factors;
             }
         }
 

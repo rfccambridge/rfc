@@ -410,8 +410,6 @@ namespace Robocup.ControlForm
 
         private void FollowPaths()
         {
-            RobotCommand command;
-
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
                 RobotPath newPath;
@@ -437,7 +435,7 @@ namespace Robocup.ControlForm
                 }
 
                 //Send the wheel speeds
-                command = new RobotCommand(i, mpResults.wheel_speeds);
+                RobotCommand command = new RobotCommand(i, mpResults.wheel_speeds);
                 _cmdSender.Post(command);
             }
         }

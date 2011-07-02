@@ -46,7 +46,6 @@ namespace Robocup.ControlForm {
         Dictionary<Color, List<RobotInfo>> _waypoints = new Dictionary<Color, List<RobotInfo>>();
         Dictionary<WaypointPlayer, Color> _waypointColors = new Dictionary<WaypointPlayer, Color>();
         Dictionary<RobotInfo, int> _waypointMarkers = new Dictionary<RobotInfo, int>();
-        double STEADY_STATE_SPEED; // Needed for going through waypoints
 
         PIDForm _pidForm;
         DebugForm _debugForm;
@@ -58,7 +57,6 @@ namespace Robocup.ControlForm {
         List<Type> _logLineFormat;
         System.Timers.Timer _timer;
         bool _logging;
-        string LOG_FILE;
 
         public ControlForm()
         {
@@ -120,9 +118,6 @@ namespace Robocup.ControlForm {
 
         public void LoadConstants()
         {
-            LOG_FILE = ConstantsRaw.get<string>("motionplanning", "LOG_FILE");
-            STEADY_STATE_SPEED = ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
-
             if (_predictor != null)
                 _predictor.LoadConstants();
         }
@@ -237,7 +232,7 @@ namespace Robocup.ControlForm {
             List<RobotInfo> waypoints = _waypoints[color];
 
             #region Adjust velocities
-            double speed = STEADY_STATE_SPEED;
+            double speed = Constants.Motion.STEADY_STATE_SPEED;
             if (waypoints.Count > 0)
             {
                 Vector2 newLastVelocity = (waypoints[0].Position - waypoint.Position).normalizeToLength(speed);
@@ -701,7 +696,7 @@ namespace Robocup.ControlForm {
             }
             else
             {
-                _logReader.OpenLogFile(LOG_FILE, _logLineFormat);
+                _logReader.OpenLogFile(Constants.Motion.LOG_FILE, _logLineFormat);
                 btnLogOpenClose.Text = "Close log";
                 btnLogNext.Enabled = true;
                 btnStartStopLogging.Enabled = false;
