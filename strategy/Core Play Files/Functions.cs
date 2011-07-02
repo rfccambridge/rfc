@@ -223,8 +223,7 @@ namespace Robocup.Plays
                         {
                             Line line = (Line)objects[0];
                             Circle circle = (Circle)objects[1];
-                            return Intersections.intersection(line, circle, (int)objects[2]);
-                            //return new Vector2(new LineCircleIntersection(line, circle, (int)objects[2]));
+                            return LineCircleIntersectionDeprecated.Intersection(line, circle, (int)objects[2]);
                         });
             addFunction("circlecircleintersection", "Circle, Circle - Intersection",
                         "The intersection of circles ~ and ~, number ~", typeof(Vector2),

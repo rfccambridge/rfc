@@ -679,7 +679,7 @@ namespace Robocup.Plays
 
                     play.AddPlayObject(new DesignerExpression(Function.getFunction("linecircleintersection"),
                         clickedLines[0], clickedCircles[0],
-                        LineCircleIntersection.WhichIntersection(line, circle, clickPoint)));
+                        LineCircleIntersectionDeprecated.WhichIntersection(line, circle, clickPoint)));
                 }
                 repaint();
             }

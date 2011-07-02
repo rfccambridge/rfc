@@ -414,6 +414,104 @@ namespace Robocup.Geometry
             return 1;
         }
     }
+
+    /*
+     * This class reproduces the old behavior of LineCircleIntersection, prior to a geometry refactor.
+     * It is deprecated because the behavior for which intersection is chosen is undocumented and confusing.
+     * 
+     * TODO: convert everything to the new LineCircleIntersection!
+     */
+    static public class LineCircleIntersectionDeprecated
+    {
+        static public Vector2 Intersection(Line line, Circle circle, int whichintersection)
+        {
+            Vector2[] linepoints = {line.P0,line.P1};
+            if (whichintersection == 1)
+            {
+                Vector2 temp = linepoints[0];
+                linepoints[0] = linepoints[1];
+                linepoints[1] = temp;
+            }
+
+            double[] dists = new double[2];
+            Vector2[] points = getPoints(line, circle);
+            dists[0] = distalongline(points[0], linepoints);
+            dists[1] = distalongline(points[1], linepoints);
+
+            if (dists[0] > dists[1])
+                return points[0];
+            else
+                return points[1];
+        }
+        static public int WhichIntersection(Line line, Circle circle, Vector2 p)
+        {
+            Vector2[] linepoints = { line.P0, line.P1 };
+            Vector2[] points = getPoints(line, circle);
+            double dist = distalongline(p, linepoints);
+            double d0 = points[0].distanceSq(p);
+            double d1 = points[1].distanceSq(p);
+            Vector2 otherpoint = points[0];
+            if (d1 > d0)
+                otherpoint = points[1];
+            double dist2 = LineCircleIntersectionDeprecated.distalongline(otherpoint, linepoints);
+            if (dist > dist2)
+                return 0;
+            else
+                return 1;
+        }
+        private static double distalongline(Vector2 p, Vector2[] linepoints)
+        {
+            double d0 = p.distance(linepoints[0]);
+            double d1 = p.distance(linepoints[1]);
+            double d = linepoints[0].distance(linepoints[1]);
+            if (d1 - d0 >= d * .99)
+                return d0;
+            else
+                return -d0;
+        }
+        static private Vector2[] getPoints(Line line, Circle circle)
+        {
+            Vector2[] points = { line.P0, line.P1 };
+            Vector2 center = circle.Center;
+            points[0] = points[0] - center;
+            points[1] = points[1] - center;
+
+            double dx = points[1].X - points[0].X;
+            double dy = points[1].Y - points[0].Y;
+            double drs = dx * dx + dy * dy;
+            double dr = Math.Sqrt(drs);
+            double D = points[0].X * points[1].Y - points[1].X * points[0].Y;
+            double r = circle.Radius;
+            double det = r * r * dr * dr - D * D;
+            if (det < 0)
+            {
+                throw new NoIntersectionException("no intersection!");
+                //throw new Exception("There is no intersection of line " + line.getName() + " and circle " + circle.getName() + ".");
+            }
+
+            Vector2[] rtnpoints = new Vector2[2];
+
+            double ddx = Math.Sqrt(det) * sign(dy) * dx;
+            double ddy = Math.Sqrt(det) * Math.Abs(dy);
+            double x0 = dy * D;
+            double y0 = -dx * D;
+
+            rtnpoints[0] = new Vector2((x0 - ddx) / drs, (y0 - ddy) / drs);
+            rtnpoints[1] = new Vector2((x0 + ddx) / drs, (y0 + ddy) / drs);
+
+            rtnpoints[0] += center;
+            rtnpoints[1] += center;
+
+            return rtnpoints;
+        }
+        static private int sign(double f)
+        {
+            if (f < 0)
+                return -1;
+            return 1;
+        }
+    }
+
     static public class LineLineIntersection
     {
         static public Vector2 Intersection(Line line0, Line line1)
