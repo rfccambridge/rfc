@@ -331,7 +331,7 @@ namespace Robocup.MotionControl
             //Small hack - rotate the newVel towards the targetDir a little bit
             if(newVelMag > 1e-6)
             {
-                double angleDiff = UsefulFunctions.angleDifference(newVel.cartesianAngle(),targetDir.cartesianAngle());
+                double angleDiff = Angle.AngleDifference(newVel.cartesianAngle(),targetDir.cartesianAngle());
                 if (angleDiff <= EXTRA_EXTENSION_ROTATE_ANGLE && angleDiff >= -EXTRA_EXTENSION_ROTATE_ANGLE)
                     newVel = newVel.rotate(angleDiff);
                 else if (angleDiff < -EXTRA_EXTENSION_ROTATE_ANGLE)
