@@ -62,8 +62,8 @@ namespace Robocup.Simulation
         // with given mean and stdev. If the ball is closer to the surface of any robot than that value, lose the ball.
         const double noisyVisionBallLoseProb = 0.3;
         const double noisyVisionBallLoseMean = 0;
-        const double noisyVisionBallLoseStdev = 0.015;
-        const double noisyVisionBallUnloseRadius = 0.05; //Un-lose the ball when it goes this far away from every robot
+        const double noisyVisionBallLoseStdev = 0.05;
+        const double noisyVisionBallUnloseRadius = 0.10; //Un-lose the ball when it goes this far away from every robot
         private bool noisyVision_BallLost = false;
        
         //Refbox and scenarios----------------------------------------------------
@@ -476,7 +476,7 @@ namespace Robocup.Simulation
             //Lose the ball, maybe
             if (!noisyVision_BallLost && myRand.NextDouble() < noisyVisionBallLoseProb)
             {
-                double loseBallRadius = noisyVisionBallLoseMean + noisyVisionBallLoseStdev * getGaussianRandom();
+                double loseBallRadius = Math.Abs(noisyVisionBallLoseMean + noisyVisionBallLoseStdev * getGaussianRandom());
                 if (minDistFromBallToRobot() < loseBallRadius)
                     noisyVision_BallLost = true;
             }

@@ -24,6 +24,8 @@ namespace Robocup.ControlForm
         private double CONTROL_LOOP_FREQUENCY;
         private bool DRAW_PATH;
         private double BALL_AVOID_DIST;
+        private double CHARGE_DIST;
+        private double CHARGE_LOOP_PERIOD = 0.5; //seconds
 
         //Team for this controller
         private Team _team;
@@ -52,6 +54,9 @@ namespace Robocup.ControlForm
         //Loop for running for figuring out when dribblers should stop
         private FunctionLoop _dribbleLoop;
 
+        // Loop to precharge robots that are close enough to the ball
+        private FunctionLoop _chargeLoop;
+
         //Lock-protected dictionary indicating when dribbling should stop
         private object _dribblingLock = new Object();
         private Dictionary<int, double> _stopDribbleAtTime = new Dictionary<int, double>();
@@ -59,8 +64,6 @@ namespace Robocup.ControlForm
 	
         private List<int> _charging = new List<int>();
         private Dictionary<int, double> _lastCharge = new Dictionary<int, double>();
-
-
 
 
 		public Controller(
@@ -87,6 +90,7 @@ namespace Robocup.ControlForm
             //Initialize loops with the functions that they should call
             _controlLoop = new FunctionLoop(ControlLoop);
             _dribbleLoop = new FunctionLoop(DribbleLoop);
+            _chargeLoop = new FunctionLoop(ChargeLoop);
 
             LoadConstants();
 		}
@@ -97,6 +101,7 @@ namespace Robocup.ControlForm
             CONTROL_LOOP_FREQUENCY = Constants.get<double>("default", "CONTROL_LOOP_FREQUENCY");
             DRAW_PATH = Constants.get<bool>("drawing", "DRAW_PATH");
             BALL_AVOID_DIST = Constants.get<double>("motionplanning", "BALL_AVOID_DIST");
+            CHARGE_DIST = Constants.get<double>("kickplanning", "CHARGE_DIST");
 
             _planner.LoadConstants();
             _kickPlanner.LoadConstants();
@@ -130,6 +135,8 @@ namespace Robocup.ControlForm
             _controlLoop.Start();
             _dribbleLoop.SetPeriod(DRIBBLER_TIMER_PERIOD);
             _dribbleLoop.Start();
+            _chargeLoop.SetPeriod(CHARGE_LOOP_PERIOD);
+            _chargeLoop.Start();
         }
 
         public void StopControlling()
@@ -137,6 +144,7 @@ namespace Robocup.ControlForm
             Console.WriteLine("Stopped");
             _controlLoop.Stop();
             _dribbleLoop.Stop();
+            _chargeLoop.Stop();
 
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
@@ -354,6 +362,21 @@ namespace Robocup.ControlForm
             _cmdSender.Post(command);
         }
 
+        //CHARGE LOOP-----------------------------------------------------------------------
+        private void ChargeLoop()
+        {
+            List<RobotInfo> robots = _predictor.GetRobots();
+            BallInfo ball = _predictor.GetBall();
+
+            if (ball == null)
+                return;
+
+            foreach (RobotInfo robot in robots)
+            {
+                if (robot.Position.distance(ball.Position) <= CHARGE_DIST)
+                    Charge(robot.ID);
+            }
+        }
 
         //DRIBBLE LOOP-----------------------------------------------------------------------
 

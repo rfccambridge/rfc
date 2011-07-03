@@ -77,38 +77,45 @@ namespace Robocup.CoreRobotics
                 }
 
                 #region Update ball
-                if (msg.Ball != null)
+                lock (ballLock)
                 {
-                    lock (ballLock)
+                    // Ball can timeout for a signle camera (such as bots)
+                    if (msg.Ball == null)
                     {
-                        // If we see the ball for the fist time, just record it; otherwise update
-                        if (ball == null)
+                        if (ball == null ||
+                           (ball != null && (time - ball.LastSeen <= MAX_SECONDS_TO_KEEP_INFO)))
+                            ball = null;
+                    }
+                    // If we see the ball for the fist time, just record it; otherwise update
+                    else if (ball == null)
+                    {
+                        ball = new BallInfo(msg.Ball.Position, new Vector2(0, 0)); // Don't know velocity yet
+                        ballDtStart = time;
+                        ballAtDtStart = new BallInfo(ball);
+
+                        // We have just seen the ball                    
+                        ball.LastSeen = time;
+                    }
+                    else
+                    {
+                        BallInfo newBall = msg.Ball;
+
+                        // Update position
+                        ball.Position = new Vector2(WEIGHT_OLD * ball.Position + WEIGHT_NEW * newBall.Position);
+
+                        // Project velocity to compensate for delays that we are sure of
+                        ball.Position += ball.Velocity * msg.Delay;
+
+                        // Update velocity if a reasonable interval has passed
+                        double dt = time - ballDtStart;
+                        if (dt > VELOCITY_DT)
                         {
-                            ball = new BallInfo(msg.Ball.Position, new Vector2(0, 0)); // Don't know velocity yet
+                            Vector2 d = msg.Ball.Position - ballAtDtStart.Position;
+                            ball.Velocity = WEIGHT_OLD * ball.Velocity + WEIGHT_NEW * d / dt;
+
+                            // Reset velocity interval
                             ballDtStart = time;
                             ballAtDtStart = new BallInfo(ball);
-                        }
-                        else
-                        {
-                            BallInfo newBall = msg.Ball;
-
-                            // Update position
-                            ball.Position = new Vector2(WEIGHT_OLD * ball.Position + WEIGHT_NEW * newBall.Position);
-
-                            // Project velocity to compensate for delays that we are sure of
-                            ball.Position += ball.Velocity * msg.Delay;
-
-                            // Update velocity if a reasonable interval has passed
-                            double dt = time - ballDtStart;
-                            if (dt > VELOCITY_DT)
-                            {
-                                Vector2 d = msg.Ball.Position - ballAtDtStart.Position;
-                                ball.Velocity = WEIGHT_OLD * ball.Velocity + WEIGHT_NEW * d / dt;
-
-                                // Reset velocity interval
-                                ballDtStart = time;
-                                ballAtDtStart = new BallInfo(ball);
-                            }
                         }
 
                         // We have just seen the ball                    
@@ -198,13 +205,6 @@ namespace Robocup.CoreRobotics
                 BallInfo retBall;
                 lock (ballLock)
                 {
-                    double time = HighResTimer.SecondsSinceStart();
-
-                    // Reconsider our belief
-                    if (ball != null && time - ball.LastSeen > MAX_SECONDS_TO_KEEP_INFO)
-                    {
-                        ball = null;
-                    }
                     // Copy data for returning
                     retBall = (ball != null) ? new BallInfo(ball) : null;
                 }
@@ -264,6 +264,7 @@ namespace Robocup.CoreRobotics
         // "Constants"
         private static double DELTA_DIST_SQ_MERGE;
         private static double MAX_SECONDS_TO_KEEP_INFO;
+        private static double MAX_SECONDS_TO_KEEP_BALL;
         private static double VELOCITY_DT;
         private static double BALL_MOVED_DIST;
         private static double COMBINE_FREQUENCY;
@@ -284,6 +285,7 @@ namespace Robocup.CoreRobotics
         public void LoadConstants()
         {
             MAX_SECONDS_TO_KEEP_INFO = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
+            MAX_SECONDS_TO_KEEP_BALL = Constants.get<double>("default", "MAX_SECONDS_TO_KEEP_BALL");
             VELOCITY_DT = Constants.get<double>("default", "VELOCITY_DT");
             BALL_MOVED_DIST = Constants.get<double>("plays", "BALL_MOVED_DIST");
             DELTA_DIST_SQ_MERGE = Constants.get<double>("default", "DELTA_DIST_SQ_MERGE");
@@ -368,6 +370,7 @@ namespace Robocup.CoreRobotics
             // based on game state -- i.e. center of field during kick-off
         }
 
+        private BallInfo lastBall = null;
         // Return the average of info from all cameras weighed by the time since 
         // it was last updated
         private void combineBall()
@@ -410,6 +413,12 @@ namespace Robocup.CoreRobotics
                 avgVelocity /= sum;
                 avgLastSeen /= sum;
                 retBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
+                lastBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
+            }
+            // Predict the latest position with zero velocity if all cameras have timed out
+            else if (lastBall != null && (time - lastBall.LastSeen <= MAX_SECONDS_TO_KEEP_BALL))
+            {
+                retBall = new BallInfo(lastBall.Position, Vector2.ZERO, lastBall.LastSeen);
             }
 
             lock (ballLock)
