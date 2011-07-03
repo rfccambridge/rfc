@@ -127,16 +127,6 @@ namespace Robocup.ControlForm
 
             LoadConstants();
 
-            for (int i = 0; i < 10; i++)
-            {
-                bool value;
-                if (ConstantsRaw.nondestructiveGet("default", "ROBOT_HAS_KICKER_" + i, out value))
-                    TagSystem.AddTag(i, "kicker");
-                if (ConstantsRaw.nondestructiveGet("default", "ROBOT_IS_GOALIE_" + i, out value))
-                    TagSystem.AddTag(i, "goalie");
-            }
-
-
             _interpretLoop = new FunctionLoop(InterpretLoop);
         }
 

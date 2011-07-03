@@ -435,6 +435,35 @@ namespace Robocup.Core
             }
         }
 
+        static public class RobotInfo
+        {
+            /// <summary> Does this robot have a working kicker? </summary>
+            static public bool HAS_KICKER(int i) { InitializeIfNeeded(); return _HAS_KICKER[i]; } static volatile bool[] _HAS_KICKER;
+
+            /// <summary> Is this robot a goalie? </summary>
+            static public bool IS_GOALIE(int i) { InitializeIfNeeded(); return _IS_GOALIE[i]; } static volatile bool[] _IS_GOALIE;
+
+            static public void Reload()
+            {
+                int numRobots = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
+                bool[] hasKicker = new bool[numRobots];
+                bool[] isGoalie = new bool[numRobots];
+                for (int i = 0; i < numRobots; i++)
+                {
+                    hasKicker[i] = true;
+                    isGoalie[i] = false;
+
+                    bool value;
+                    if (ConstantsRaw.tryGet("default", "ROBOT_HAS_KICKER_" + i, out value))
+                        hasKicker[i] = value;
+                    if (ConstantsRaw.tryGet("default", "ROBOT_IS_GOALIE_" + i, out value))
+                        isGoalie[i] = value;
+                }
+                _HAS_KICKER = hasKicker;
+                _IS_GOALIE = isGoalie;
+            }
+        }
+
 
         //INITIALIZATION AND RELOAD MECHANISM---------------------------------------------------------
 
@@ -475,6 +504,7 @@ namespace Robocup.Core
                 Motion.Reload();
                 PlayFiles.Reload();
                 Predictor.Reload();
+                RobotInfo.Reload();
                 _is_reloading = false;
             }
         }
@@ -623,7 +653,7 @@ namespace Robocup.Core
         /// <param name="name">The name of the constant</param>
         /// <param name="val">The variable that will have the value loaded into</param>
         /// <returns>Whether or not the constant exists</returns>
-        static public bool nondestructiveGet<T>(string category, string name, out T val)
+        static public bool tryGet<T>(string category, string name, out T val)
         {
             lock (dictionaries)
             {

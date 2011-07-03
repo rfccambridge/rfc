@@ -315,7 +315,7 @@ namespace Robocup.MotionControl
         			obstacles.Add(new Obstacle(info.Position, .2));
         	}
         	//TODO goal hack
-        	if (!TagSystem.GetTags(id).Contains("goalie"))
+        	if (!Constants.RobotInfo.IS_GOALIE(id))
         	{
         		obstacles.Add(new Obstacle(new Vector2(Constants.Field.XMAX, 0), .7 + .1));
                 obstacles.Add(new Obstacle(new Vector2(Constants.Field.XMIN, 0), .7 + .1));

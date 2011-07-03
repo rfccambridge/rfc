@@ -77,6 +77,13 @@ bool ROBOT_HAS_KICKER_1 true
 bool ROBOT_HAS_KICKER_2 true
 bool ROBOT_HAS_KICKER_3 true
 bool ROBOT_HAS_KICKER_4 true
+bool ROBOT_HAS_KICKER_5 true
+bool ROBOT_HAS_KICKER_6 true
+bool ROBOT_HAS_KICKER_7 true
+bool ROBOT_HAS_KICKER_8 true
+bool ROBOT_HAS_KICKER_9 true
+bool ROBOT_HAS_KICKER_10 true
+bool ROBOT_HAS_KICKER_11 true
 
 bool ROBOT_IS_GOALIE_3 true
 
