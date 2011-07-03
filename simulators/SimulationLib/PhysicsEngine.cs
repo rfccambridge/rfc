@@ -599,7 +599,10 @@ namespace Robocup.Simulation
                                 timeoutTimer.Start();
                                 do
                                 {
-                                    // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist                        
+                                    // NOTE: In current setup, all robots are created, so this robot is guaranteed to exist 
+                                    //TODO(davidwu): This is false when a goal is scored, and the robot list is briefly cleared
+                                    //as the scenario is reloaded. This code is horrendous. Change this not to use new threads 
+                                    //to fix this problem.
                                     RobotInfo robot = robots[team].Find(new Predicate<RobotInfo>(delegate(RobotInfo bot)
                                     {
                                         return bot.ID == command.ID;

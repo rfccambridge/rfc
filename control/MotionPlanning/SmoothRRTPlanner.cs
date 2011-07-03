@@ -11,43 +11,69 @@ namespace Robocup.MotionControl
 {
     public class SmoothRRTPlanner : IPathPlanner
     {
-        //Movement model
-        const double TIME_STEP = 0.12; //Time step in secs, with velocity determines RRT extension length
-        const double ROBOT_VELOCITY = 1.0; //Assume our robot can move this fast
-        const double MAX_ACCEL_PER_STEP = 0.48; //And that it can accelerate this fast.
-        const double MAX_OBSERVABLE_VELOCITY = 0.4; //Pretend that the current robot is moving at most this fast
+        //Constants-------------------------------------
+        double TIME_STEP; //Time step in secs, with velocity determines RRT extension length
+        double ROBOT_VELOCITY; //Assume our robot can move this fast
+        double MAX_ACCEL_PER_STEP; //And that it can accelerate this fast.
+        double MAX_OBSERVABLE_VELOCITY; //Pretend that the current robot is moving at most this fast
 
         //RRT parameters
-        const double MAX_TREE_SIZE = 200; //Max nodes in tree before we give up
-        const double MAX_PATH_TRIES = 70; //Max number of attempts to extend paths before we give up
-        const double CLOSE_ENOUGH_TO_GOAL = 0.001; //We're completely done when we get this close to the goal.
-        const double DIST_FOR_SUCCESS = 1.2; //We're done for now when we get this much closer to the goal than we are
+        int MAX_TREE_SIZE; //Max nodes in tree before we give up
+        int MAX_PATH_TRIES; //Max number of attempts to extend paths before we give up
+        double CLOSE_ENOUGH_TO_GOAL; //We're completely done when we get this close to the goal.
+        double DIST_FOR_SUCCESS; //We're done for now when we get this much closer to the goal than we are
 
-        const double DODGE_OBS_DIST = 1.6;
+        double DODGE_OBS_DIST;
 
         //Path extension
-        const double EXTRA_EXTENSION_ROTATE_ANGLE = 2.0 * Math.PI / 180.0;
+        double EXTRA_EXTENSION_ROTATE_ANGLE;
 
         //Motion extrapolation
-        const double ROBOT_MAX_TIME_EXTRAPOLATED = 0.7; //Extrapolate other robots' movements up to this amount of seconds.
+        double ROBOT_MAX_TIME_EXTRAPOLATED; //Extrapolate other robots' movements up to this amount of seconds.
 
         //Collisions
-        const double RRT_ROBOT_AVOID_DIST = 0.185;  //Avoid robot distance
-        const double RRT_ROBOT_FAR_AVOID_DIST = 0.21; //Avoid robot distance when not close to goal
-        const double RRT_ROBOT_FAR_DIST = 0.35; //What is considered "far", for the purposes of robot avoidance? 
+        double ROBOT_AVOID_DIST;  //Avoid robot distance
+        double ROBOT_FAR_AVOID_DIST; //Avoid robot distance when not close to goal
+        double ROBOT_FAR_DIST; //What is considered "far", for the purposes of robot avoidance? 
 
         //Scoring
-        const double DIST_FROM_GOAL_SCORE = 0; //Penalty per m of distance from goal.
-        const double EXCESS_LEN_SCORE = 60; //Penalty for each m of path length >= the straightline distance
-        const double PER_BEND_SCORE = 1; //Bonus/Penalty per bend in the path based on bend sharpness
-        const double VELOCITY_AGREEMENT_SCORE = 30; //Bonus for agreeing with current velocity, per m/s velocity
-        const double OLDPATH_AGREEMENT_SCORE = 200; //Bonus for agreeing with the old path, per m/s velocity
-        const double OLDPATH_AGREEMENT_DIST = 0.5; //Score nothing for points that differ by this many meters from the old path
+        double DIST_FROM_GOAL_SCORE; //Penalty per m of distance from goal.
+        double EXCESS_LEN_SCORE; //Penalty for each m of path length >= the straightline distance
+        double PER_BEND_SCORE; //Bonus/Penalty per bend in the path based on bend sharpness
+        double VELOCITY_AGREEMENT_SCORE; //Bonus for agreeing with current velocity, per m/s velocity
+        double OLDPATH_AGREEMENT_SCORE; //Bonus for agreeing with the old path, per m/s velocity
+        double OLDPATH_AGREEMENT_DIST; //Score nothing for points that differ by this many meters from the old path
 
-        const double NUM_PATHS_TO_SCORE = 9; //How many paths do we generate and score?
+        int NUM_PATHS_TO_SCORE; //How many paths do we generate and score?
 
         public void ReloadConstants()
         {
+            TIME_STEP = ConstantsRaw.get<double>("motionplanning", "SRRT_TIME_STEP");
+            ROBOT_VELOCITY = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_VELOCITY");
+            MAX_ACCEL_PER_STEP = ConstantsRaw.get<double>("motionplanning", "SRRT_MAX_ACCEL_PER_STEP");
+            MAX_OBSERVABLE_VELOCITY = ConstantsRaw.get<double>("motionplanning", "SRRT_MAX_OBSERVABLE_VELOCITY");
+
+            MAX_TREE_SIZE = ConstantsRaw.get<int>("motionplanning", "SRRT_MAX_TREE_SIZE");
+            MAX_PATH_TRIES = ConstantsRaw.get<int>("motionplanning", "SRRT_MAX_PATH_TRIES");
+
+            CLOSE_ENOUGH_TO_GOAL = ConstantsRaw.get<double>("motionplanning", "SRRT_CLOSE_ENOUGH_TO_GOAL");
+            DIST_FOR_SUCCESS = ConstantsRaw.get<double>("motionplanning", "SRRT_DIST_FOR_SUCCESS");
+            DODGE_OBS_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_DODGE_OBS_DIST");
+            EXTRA_EXTENSION_ROTATE_ANGLE = (ConstantsRaw.get<double>("motionplanning", "SRRT_EXTRA_EXTENSION_ROTATE_ANGLE") * Math.PI / 180.0);
+            ROBOT_MAX_TIME_EXTRAPOLATED = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_MAX_TIME_EXTRAPOLATED");
+
+            ROBOT_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_AVOID_DIST");
+            ROBOT_FAR_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_FAR_AVOID_DIST");
+            ROBOT_FAR_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_FAR_DIST");
+
+            DIST_FROM_GOAL_SCORE = ConstantsRaw.get<double>("motionplanning", "SRRT_DIST_FROM_GOAL_SCORE");
+            EXCESS_LEN_SCORE = ConstantsRaw.get<double>("motionplanning", "SRRT_EXCESS_LEN_SCORE");
+            PER_BEND_SCORE = ConstantsRaw.get<double>("motionplanning", "SRRT_PER_BEND_SCORE");
+            VELOCITY_AGREEMENT_SCORE = ConstantsRaw.get<double>("motionplanning", "SRRT_VELOCITY_AGREEMENT_SCORE");
+            OLDPATH_AGREEMENT_SCORE = ConstantsRaw.get<double>("motionplanning", "SRRT_OLDPATH_AGREEMENT_SCORE");
+            OLDPATH_AGREEMENT_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_OLDPATH_AGREEMENT_DIST");
+
+            NUM_PATHS_TO_SCORE = ConstantsRaw.get<int>("motionplanning", "SRRT_NUM_PATHS_TO_SCORE");
         }
 
         //One node in the tree
@@ -71,6 +97,7 @@ namespace Robocup.MotionControl
         public SmoothRRTPlanner(bool includeCurStateInPath)
         {
             this.includeCurStateInPath = includeCurStateInPath;
+            ReloadConstants();
         }
 
         Vector2 GetRandomPoint(Vector2 desiredLoc, Vector2 currentLoc, double closestSoFar)
@@ -104,10 +131,10 @@ namespace Robocup.MotionControl
 
         double GetEffectiveAvoidDist(double goalDist)
         {
-            double avoidProp = (goalDist - RRT_ROBOT_AVOID_DIST) / (RRT_ROBOT_FAR_DIST - RRT_ROBOT_AVOID_DIST);
+            double avoidProp = (goalDist - ROBOT_AVOID_DIST) / (ROBOT_FAR_DIST - ROBOT_AVOID_DIST);
             if (avoidProp < 0) avoidProp = 0;
             if (avoidProp > 1) avoidProp = 1;
-            double avoidDist = RRT_ROBOT_AVOID_DIST + avoidProp * (RRT_ROBOT_FAR_AVOID_DIST - RRT_ROBOT_AVOID_DIST);
+            double avoidDist = ROBOT_AVOID_DIST + avoidProp * (ROBOT_FAR_AVOID_DIST - ROBOT_AVOID_DIST);
             return avoidDist;
         }
 

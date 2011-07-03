@@ -370,7 +370,6 @@ namespace Robocup.Core
 
                 TBug.Reload();
                 RRT.Reload();
-                SRRT.Reload();
             }
 
             /// <summary> Constants for TangentBug motion planner </summary>
@@ -402,17 +401,6 @@ namespace Robocup.Core
                 static public void Reload()
                 {
                     _OBSTACLE_AVOID_DIST = (float)ConstantsRaw.get<double>("motionplanning", "RRT_OBSTACLE_AVOID_DIST");
-                }
-            }
-
-            /// <summary> Constants for smooth RRT motion planner </summary>
-            static public class SRRT
-            {
-                //static public double OBSTACLE_AVOID_DIST { get { InitializeIfNeeded(); return _OBSTACLE_AVOID_DIST; } } static volatile float _OBSTACLE_AVOID_DIST;
-
-                static public void Reload()
-                {
-                    //_OBSTACLE_AVOID_DIST = (float)ConstantsRaw.get<double>("motionplanning", "RRT_OBSTACLE_AVOID_DIST");
                 }
             }
 
@@ -679,6 +667,9 @@ namespace Robocup.Core
                     int commentIndex = s.IndexOf('#');
                     if (commentIndex >= 0)
                         s = s.Remove(commentIndex);
+
+                    //Trim whitespace
+                    s = s.Trim();
 
                     if (s.Length == 0)
                         continue;

@@ -1539,87 +1539,38 @@ namespace Robocup.MotionControl
         private WheelSpeeds[] lastSpeeds = new WheelSpeeds[NUM_ROBOTS]; 
 
         //Base desired speeds for movement
-        private const double BASE_SPEED = 1.0;          //In m/s
-        private const double MAX_ANGLULAR_SPEED = 0.5;  //In rev/s
-        private const double MAX_ANGLULAR_LINEAR_SPEED = 0.4;  //In rev/s/radian
+        private double BASE_SPEED;          //In m/s
+        private double MAX_ANGLULAR_SPEED;  //In rev/s
+        private double MAX_ANGLULAR_LINEAR_SPEED;  //In rev/s/radian
 
         //When computing how fast to rotate so that we will be correct by the time
         //we get to the destination, assume we will get there this fast
-        private const double ROTATION_ASSUMED_SPEED = 2.5; //In m/s
+        private double ROTATION_ASSUMED_SPEED; //In m/s
 
         //Conversion to wheel speed commands
-        private const double XY_BASIS_SCALE = 30.0; //Wheel speeds required for 1 m/s movement
-        private const double R_BASIS_SCALE = 16.6;  //Wheel speeds required for 1 rev/s movement 
+        private double XY_BASIS_SCALE; //Wheel speeds required for 1 m/s movement
+        private double R_BASIS_SCALE;  //Wheel speeds required for 1 rev/s movement 
         
         //Max wheel speed change per frame of control
-        private const double MAX_WHEEL_SPEED_CHANGE_PER_FRAME = 15;
+        private double MAX_WHEEL_SPEED_CHANGE_PER_FRAME;
 
         //How much should we weight in the direction we will need to head for the next waypoint?
-        private const double NEXT_NEXT_PROP = 0.3;
+        private double NEXT_NEXT_PROP;
 
-        private const double GOOD_ENOUGH_DIST = 0.005;
-        private const double GOOD_ENOUGH_ANGLE = 1.0 / 360.0;
+        //If the linear and angular errors are less then this, we're done.
+        private double GOOD_ENOUGH_DIST;
+        private double GOOD_ENOUGH_ANGLE; //In revolutions
 
         //How much should we correct for rotation throwing us off?
-        private const double PLANNED_ANG_SPEED_CORRECTION = 0.0;
-        private const double CURRENT_ANG_SPEED_CORRECTION = 0.15;
+        private double PLANNED_ANG_SPEED_CORRECTION;
+        private double CURRENT_ANG_SPEED_CORRECTION;
 
         //Scaling for speed based on distance from goal
-        private Pair<double,double>[] SCALE_BY_DISTANCE =
-        { new Pair<double,double>(0.00,0.01), 
-          new Pair<double,double>(0.02,0.12), 
-          new Pair<double,double>(0.05,0.21), 
-          new Pair<double,double>(0.10,0.30), 
-          new Pair<double,double>(0.15,0.39), 
-          new Pair<double,double>(0.20,0.50), 
-          new Pair<double,double>(0.25,0.64), 
-          new Pair<double,double>(0.30,0.78),
-          new Pair<double,double>(0.35,0.93),
-          new Pair<double,double>(0.40,1.00),
-          new Pair<double,double>(0.50,1.05),
-          new Pair<double,double>(0.60,1.10),
-          new Pair<double,double>(0.70,1.15),
-          new Pair<double,double>(0.80,1.20),
-          new Pair<double,double>(0.90,1.25),
-          new Pair<double,double>(1.00,1.30),
-          new Pair<double,double>(1.10,1.35),
-          new Pair<double,double>(1.20,1.40),
-          new Pair<double,double>(1.30,1.45),
-          new Pair<double,double>(1.40,1.50),
-          new Pair<double,double>(1.60,1.60),
-          new Pair<double,double>(1.90,1.65),
-        };
-
-        private Pair<double,double>[] SCALE_BY_OBSTACLE_DISTANCE =
-        { new Pair<double,double>(0.0,0.80), 
-          new Pair<double,double>(0.1,0.80), 
-          new Pair<double,double>(0.2,0.80), 
-          new Pair<double,double>(0.3,0.95),
-          new Pair<double,double>(0.4,1.00),
-          new Pair<double,double>(0.5,1.05),
-          new Pair<double,double>(0.6,1.10),
-          new Pair<double,double>(0.7,1.15),
-          new Pair<double,double>(0.8,1.20),
-          new Pair<double,double>(0.9,1.25),
-          new Pair<double,double>(1.0,1.30),
-          new Pair<double,double>(1.1,1.35),
-          new Pair<double,double>(1.2,1.40),
-          new Pair<double,double>(1.3,1.45),
-          new Pair<double,double>(1.4,1.50),
-          new Pair<double,double>(1.5,1.55),
-          new Pair<double,double>(1.6,1.60),
-          new Pair<double,double>(1.7,1.65),
-          new Pair<double,double>(1.8,1.70),
-        };
-
-        private Pair<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR =
-        {
-            new Pair<double,double>(0.00,2.5),
-            new Pair<double,double>(0.25,2.2),
-            new Pair<double,double>(0.50,1.7),
-            new Pair<double,double>(0.75,1.1),
-            new Pair<double,double>(1.00,1.0),
-        };
+        private Pair<double, double>[] SCALE_BY_DISTANCE;
+        //Scaling for speed based on distance from obstacle
+        private Pair<double, double>[] SCALE_BY_OBSTACLE_DISTANCE;
+        //Scaling for distance from obstacle based on cosine of angle
+        private Pair<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR;
 
         private static double interp(Pair<double,double>[] pairs, double d)
         {
@@ -1638,12 +1589,45 @@ namespace Robocup.MotionControl
 
         public VelocityDriver()
         {
+            ReloadConstants();
+        }
 
+        private Pair<double, double>[] readDoublePairArray(string numPrefix, string prefix)
+        {
+            int numPairs = ConstantsRaw.get<int>("control",numPrefix);
+            Pair<double, double>[] pairs = new Pair<double, double>[numPairs];
+
+            for (int i = 0; i < numPairs; i++)
+            {
+                string str = ConstantsRaw.get<string>("control", prefix + i);
+                
+                //Remove spaces and split
+                str = str.Replace(" ", "");
+                string[] entries = str.Split(new char[] {','});
+                pairs[i] = new Pair<double,double>(Convert.ToDouble(entries[0]), Convert.ToDouble(entries[1]));
+            }
+
+            return pairs;
         }
 
         public void ReloadConstants()
         {
+            BASE_SPEED = ConstantsRaw.get<double>("control","VD_BASE_SPEED");
+            MAX_ANGLULAR_SPEED = ConstantsRaw.get<double>("control", "VD_MAX_ANGLULAR_SPEED");
+            MAX_ANGLULAR_LINEAR_SPEED = ConstantsRaw.get<double>("control", "VD_MAX_ANGLULAR_LINEAR_SPEED");
+            ROTATION_ASSUMED_SPEED = ConstantsRaw.get<double>("control", "VD_ROTATION_ASSUMED_SPEED");
+            XY_BASIS_SCALE = ConstantsRaw.get<double>("control", "VD_XY_BASIS_SCALE");
+            R_BASIS_SCALE = ConstantsRaw.get<double>("control", "VD_R_BASIS_SCALE");
+            MAX_WHEEL_SPEED_CHANGE_PER_FRAME = ConstantsRaw.get<double>("control", "VD_MAX_WHEEL_SPEED_CHANGE_PER_FRAME");
+            NEXT_NEXT_PROP = ConstantsRaw.get<double>("control", "VD_NEXT_NEXT_PROP");
+            GOOD_ENOUGH_DIST = ConstantsRaw.get<double>("control", "VD_GOOD_ENOUGH_DIST");
+            GOOD_ENOUGH_ANGLE = (1.0 / 360.0) * ConstantsRaw.get<double>("control", "VD_GOOD_ENOUGH_ANGLE");
+            PLANNED_ANG_SPEED_CORRECTION = ConstantsRaw.get<double>("control", "VD_PLANNED_ANG_SPEED_CORRECTION");
+            CURRENT_ANG_SPEED_CORRECTION = ConstantsRaw.get<double>("control", "VD_CURRENT_ANG_SPEED_CORRECTION");
 
+            SCALE_BY_DISTANCE = readDoublePairArray("VD_NUM_SCALE_BY_DISTANCE", "VD_SCALE_BY_DISTANCE_");
+            SCALE_BY_OBSTACLE_DISTANCE = readDoublePairArray("VD_NUM_SCALE_BY_OBSTACLE_DISTANCE", "VD_SCALE_BY_OBSTACLE_DISTANCE_");
+            AGREEMENT_EFFECTIVE_DISTANCE_FACTOR = readDoublePairArray("VD_NUM_AGREEMENT_EFFECTIVE_DISTANCE_FACTOR", "VD_AGREEMENT_EFFECTIVE_DISTANCE_FACTOR_");
         }
 
         public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
