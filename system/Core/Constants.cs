@@ -325,6 +325,9 @@ namespace Robocup.Core
             /// <summary> Distance from center of robot to wheels. </summary>
             static public string LOG_FILE { get { InitializeIfNeeded(); return _LOG_FILE; } } static volatile string _LOG_FILE;
 
+            /// <summary> Distance from center of robot to wheels. </summary>
+            static public int LOG_EVERY_MSEC { get { InitializeIfNeeded(); return _LOG_EVERY_MSEC; } } static volatile int _LOG_EVERY_MSEC;
+
             /// <summary> Global speed scaling for all robots. </summary>
             static public double SPEED_SCALING_FACTOR_ALL { get { InitializeIfNeeded(); return _SPEED_SCALING_FACTOR_ALL; } } static volatile float _SPEED_SCALING_FACTOR_ALL;
 
@@ -333,6 +336,13 @@ namespace Robocup.Core
 
             /// <summary> How far away should the controller ask the planners to stay away from the ball?. </summary>
             static public double BALL_AVOID_DIST { get { InitializeIfNeeded(); return _BALL_AVOID_DIST; } } static volatile float _BALL_AVOID_DIST;
+
+            /// <summary> If we're within this much of a destination and we're facing the right way, we're there. </summary>
+            static public double MIN_DIST_TO_WP { get { InitializeIfNeeded(); return _MIN_DIST_TO_WP; } } static volatile float _MIN_DIST_TO_WP;
+
+            /// <summary> If we're within this much of an orientation and we're in the right location, we're there. </summary>
+            static public double MIN_ANGLE_DIFF_TO_WP { get { InitializeIfNeeded(); return _MIN_ANGLE_DIFF_TO_WP; } } static volatile float _MIN_ANGLE_DIFF_TO_WP;
+            
 
             static public void Reload()
             {
@@ -344,7 +354,8 @@ namespace Robocup.Core
 
                 _STEADY_STATE_SPEED = (float)ConstantsRaw.get<double>("motionplanning", "STEADY_STATE_SPEED");
                 _LOG_FILE = ConstantsRaw.get<string>("motionplanning", "LOG_FILE");
-
+                _LOG_EVERY_MSEC = ConstantsRaw.get<int>("motionplanning", "LOG_EVERY_MSEC");
+                
                 _SPEED_SCALING_FACTOR_ALL = (float)ConstantsRaw.get<double>("motionplanning", "SPEED_SCALING_FACTOR_ALL");
                 int numRobots = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
                 double[] factors = new double[numRobots];
@@ -353,6 +364,9 @@ namespace Robocup.Core
                 _SPEED_SCALING_FACTORS = factors;
 
                 _BALL_AVOID_DIST = (float)ConstantsRaw.get<double>("motionplanning", "BALL_AVOID_DIST");
+
+                _MIN_DIST_TO_WP = (float)ConstantsRaw.get<double>("motionplanning", "MIN_DIST_TO_WP");
+                _MIN_ANGLE_DIFF_TO_WP = (float)ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
 
                 TBug.Reload();
                 RRT.Reload();

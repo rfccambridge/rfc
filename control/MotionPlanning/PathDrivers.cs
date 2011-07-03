@@ -1190,10 +1190,6 @@ namespace Robocup.MotionControl
         //Grabbing the constant now - won't change if constants are reloaded
         private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;     
 
-        private double MIN_DIST_TO_WP;
-        private double MIN_ANGLE_DIFF_TO_WP;
-        private int LOG_EVERY_MSEC;
-
         public double PLANNER_WAYPOINT_DISTANCE;
 
         public PositionFeedbackDriver() {
@@ -1239,6 +1235,8 @@ namespace Robocup.MotionControl
 
             WheelSpeeds wheelSpeeds;
 
+            double MIN_DIST_TO_WP = Constants.Motion.MIN_DIST_TO_WP;
+            double MIN_ANGLE_DIFF_TO_WP = Constants.Motion.MIN_ANGLE_DIFF_TO_WP;
             if (wpDistanceSq > MIN_DIST_TO_WP * MIN_DIST_TO_WP || angleDiff > MIN_ANGLE_DIFF_TO_WP)
             {
                 //If we are far enough from actual destination (carrot on a stick), 
@@ -1285,7 +1283,7 @@ namespace Robocup.MotionControl
 
             DateTime now = DateTime.Now;
             TimeSpan timeSinceLastLog = now.Subtract(_lastLogEntry);
-            if (_logging && timeSinceLastLog.TotalMilliseconds > LOG_EVERY_MSEC && id == _logRobotID) {
+            if (_logging && timeSinceLastLog.TotalMilliseconds > Constants.Motion.LOG_EVERY_MSEC && id == _logRobotID) {
                 _logWriter.LogItems(itemsToLog);
                 _lastLogEntry = now;
             }
@@ -1303,11 +1301,7 @@ namespace Robocup.MotionControl
                 shortFeedbackObjs[robotID].ReloadConstants();
             }
 
-            LOG_EVERY_MSEC = ConstantsRaw.get<int>("control", "LOG_EVERY_MSEC");
             //PLANNER_WAYPOINT_DISTANCE = Constants.get<double>("motionplanning", "PLANNER_WAYPOINT_DISTANCE");
-
-            MIN_DIST_TO_WP = ConstantsRaw.get<double>("motionplanning", "MIN_DIST_TO_WP");
-            MIN_ANGLE_DIFF_TO_WP = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
 
             // TODO: What is _longRangeDriver? Doesn't compile!
             //_longRangeDriver.ReloadConstants();
@@ -1384,11 +1378,6 @@ namespace Robocup.MotionControl
 		private ModelFeedback[] feedbackObjs;
 		public ModelFeedback GetFeedbackObj(int robotID) { return feedbackObjs[robotID]; }
 
-        private double MIN_DIST_TO_WP;
-		private double MIN_ANGLE_DIFF_TO_WP;
-	
-		private int LOG_EVERY_MSEC;
-
         bool useFixedSpeedHackProp;
 
 		public ModelFeedbackDriver()
@@ -1412,9 +1401,6 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 feedbackObjs[robotID].LoadConstants();
 
-			LOG_EVERY_MSEC = ConstantsRaw.get<int>("control", "LOG_EVERY_MSEC");
-            MIN_DIST_TO_WP = ConstantsRaw.get<double>("motionplanning", "MIN_DIST_TO_WP");
-			MIN_ANGLE_DIFF_TO_WP = ConstantsRaw.get<double>("motionplanning", "MIN_ANGLE_DIFF_TO_WP");
 		}
 
 		public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
@@ -1451,9 +1437,9 @@ namespace Robocup.MotionControl
 			//We should make sure the planner returns a plan with velocities set accordingly
 
             //Yay hacky hack hack
-            double minDistWp = useFixedSpeedHackProp ? 0.005 : MIN_DIST_TO_WP;
+            double minDistWp = useFixedSpeedHackProp ? 0.005 : Constants.Motion.MIN_DIST_TO_WP;
 
-            if (wpDistanceSq > minDistWp * minDistWp || angleDiff > MIN_ANGLE_DIFF_TO_WP)
+            if (wpDistanceSq > minDistWp * minDistWp || angleDiff > Constants.Motion.MIN_ANGLE_DIFF_TO_WP)
 			{
                 if (useFixedSpeedHackProp)
                 {
@@ -1488,7 +1474,7 @@ namespace Robocup.MotionControl
 
 			DateTime now = DateTime.Now;
 			TimeSpan timeSinceLastLog = now.Subtract(_lastLogEntry);
-			if (_logging && timeSinceLastLog.TotalMilliseconds > LOG_EVERY_MSEC && id == _logRobotID)
+            if (_logging && timeSinceLastLog.TotalMilliseconds > Constants.Motion.LOG_EVERY_MSEC && id == _logRobotID)
 			{
 				_logWriter.LogItems(itemsToLog);
 				_lastLogEntry = now;

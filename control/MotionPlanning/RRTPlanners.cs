@@ -240,8 +240,6 @@ namespace Robocup.MotionControl
 
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
         private const double MIN_ANGLE_DIFF_TO_WP = 0.01;
-        private int LOG_EVERY_MSEC;
-
     
 
         public CircleFeedbackMotionPlanner() {
@@ -394,7 +392,7 @@ namespace Robocup.MotionControl
 
             DateTime now = DateTime.Now;
             TimeSpan timeSinceLastLog = now.Subtract(_lastLogEntry);
-            if (_logging && timeSinceLastLog.TotalMilliseconds > LOG_EVERY_MSEC && path.ID == _logRobotID)
+            if (_logging && timeSinceLastLog.TotalMilliseconds > Constants.Motion.LOG_EVERY_MSEC && path.ID == _logRobotID)
             {
                 _logWriter.LogItems(itemsToLog);
                 _lastLogEntry = now;
@@ -413,7 +411,6 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
 
-            LOG_EVERY_MSEC = ConstantsRaw.get<int>("control", "LOG_EVERY_MSEC");
         }
 
         #region ILogger
@@ -490,7 +487,6 @@ namespace Robocup.MotionControl
         private static int PATH_RECALCULATE_INTERVAL = 1;
         private const double MIN_SQ_DIST_TO_WP = 0.0001;// within 1 cm
         private const double MIN_ANGLE_DIFF_TO_WP = 0.01;
-        private int LOG_EVERY_MSEC;
       
         public BugFeedbackMotionPlanner() {
 
@@ -673,7 +669,6 @@ namespace Robocup.MotionControl
             for (int robotID = 0; robotID < NUM_ROBOTS; robotID++)
                 _feedbackObjs[robotID].ReloadConstants();
 
-            LOG_EVERY_MSEC = Constants.get<int>("control", "LOG_EVERY_MSEC");
         }
 
         #region ILogger

@@ -12,6 +12,11 @@ double STEADY_STATE_SPEED 2.30 #basic speed used by some planners and drivers in
 #the ball?
 double BALL_AVOID_DIST 0.20 
 
+#What are the linear and the angular differences that we should consider "good enough"?
+#for determining whether we've reached our destination or not?
+double MIN_DIST_TO_WP 0.07
+double MIN_ANGLE_DIFF_TO_WP 0.0
+
 #wheel ORIENTATIONS
 #double RF_ORIENTATION 0.5236
 #double LF_ORIENTATION 2.618
@@ -20,6 +25,7 @@ double BALL_AVOID_DIST 0.20
 
 # Logging
 string LOG_FILE ../../resources/motionplanning_log.txt
+int LOG_EVERY_MSEC 100
 
 #ROBOT SPEED SCALING -------------------------------------------------
 
@@ -160,8 +166,7 @@ double PID_SPINNER_I 0
 double PID_SPINNER_D 10
 double PID_SPINNER_CAP 6
 
-double MIN_DIST_TO_WP 0.07
-double MIN_ANGLE_DIFF_TO_WP 0.0
+
 #0.10
 
 # this is actually the point at which we switch to control-short.txt
