@@ -19,6 +19,8 @@ namespace Robocup.MotionControl
 {
     // Implementations of IPathDrivers- given a path, follow it
 
+#if false
+
     /// <summary>
     /// Drive straight towards nearest path point using WheelSpeedsExtender
     /// Future generations should know that this does not work well- it uses ancient
@@ -83,33 +85,6 @@ namespace Robocup.MotionControl
         WheelSpeeds CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
         WheelSpeeds CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
-        // size of circle in radians
-        const double CIRCLE_SIZE = 2 * Math.PI;
-
-        /// <summary>
-        /// Send 
-        /// </summary>
-        /// <param name="angle_difference"></param>
-        /// <returns></returns>
-        private double getSmallestAngle(double angle_difference, double circle_size)
-        {
-
-            if (Math.Abs(angle_difference) > circle_size / 2)
-            {
-                // Turn in opposite direction than expected
-                if (angle_difference > 0)
-                {
-                    angle_difference = circle_size / 2 - angle_difference;
-                }
-                else
-                {
-                    angle_difference = circle_size + angle_difference;
-                }
-            }
-
-            return angle_difference;
-        }
-
         // Dummy methods- required for interface
         public void ReloadConstants()
         {
@@ -160,8 +135,6 @@ namespace Robocup.MotionControl
 
             double angle_diff = curAngle - angle_to_goal;
 
-
-
             //If close enough, return speeds of zero
             if (currentState.Position.distanceSq(desiredState.Position) <
                 STOP_DISTANCE * STOP_DISTANCE)
@@ -200,6 +173,7 @@ namespace Robocup.MotionControl
         }
     }
 
+#endif 
     public class FeedbackVeerDriver : IPathDriver
     {
         // CONSTANTS

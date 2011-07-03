@@ -331,6 +331,9 @@ namespace Robocup.Core
             /// <summary> Individual robot speed scaling. </summary>
             static public double[] SPEED_SCALING_FACTORS { get { InitializeIfNeeded(); return _SPEED_SCALING_FACTORS; } } static volatile double[] _SPEED_SCALING_FACTORS;
 
+            /// <summary> How far away should the controller ask the planners to stay away from the ball?. </summary>
+            static public double BALL_AVOID_DIST { get { InitializeIfNeeded(); return _BALL_AVOID_DIST; } } static volatile float _BALL_AVOID_DIST;
+
             static public void Reload()
             {
                 _WHEEL_SPEED_MAX = ConstantsRaw.get<int>("motionplanning", "MAX_SINGLE_WHEEL_SPEED");
@@ -348,7 +351,57 @@ namespace Robocup.Core
                 for (int i = 0; i < numRobots; i++)
                     factors[i] = ConstantsRaw.get<double>("motionplanning", "SPEED_SCALING_FACTOR_" + i.ToString());
                 _SPEED_SCALING_FACTORS = factors;
+
+                _BALL_AVOID_DIST = (float)ConstantsRaw.get<double>("motionplanning", "BALL_AVOID_DIST");
+
+                TBug.Reload();
+                RRT.Reload();
+                SRRT.Reload();
             }
+
+            /// <summary> Constants for TangentBug motion planner </summary>
+            static public class TBug
+            {
+                static public double LOOK_AHEAD_DIST { get { InitializeIfNeeded(); return _LOOK_AHEAD_DIST; } } static volatile float _LOOK_AHEAD_DIST;
+                static public double AVOID_DIST { get { InitializeIfNeeded(); return _AVOID_DIST; } } static volatile float _AVOID_DIST;
+                static public double WAYPOINT_DIST { get { InitializeIfNeeded(); return _WAYPOINT_DIST; } } static volatile float _WAYPOINT_DIST;
+                static public double MIN_ABS_VAL_STICK { get { InitializeIfNeeded(); return _MIN_ABS_VAL_STICK; } } static volatile float _MIN_ABS_VAL_STICK;
+                static public double EXTRA_GOAL_DIST { get { InitializeIfNeeded(); return _EXTRA_GOAL_DIST; } } static volatile float _EXTRA_GOAL_DIST;
+                static public double BOUNDARY_AVOID { get { InitializeIfNeeded(); return _BOUNDARY_AVOID; } } static volatile float _BOUNDARY_AVOID;
+
+                static public void Reload()
+                {
+                    _LOOK_AHEAD_DIST = (float)ConstantsRaw.get<double>("motionplanning", "TBUG_LOOK_AHEAD_DIST");
+                    _AVOID_DIST = (float)ConstantsRaw.get<double>("motionplanning", "TBUG_AVOID_DIST");
+                    _WAYPOINT_DIST = (float)ConstantsRaw.get<double>("motionplanning", "TBUG_WAYPOINT_DIST");
+                    _MIN_ABS_VAL_STICK = (float)ConstantsRaw.get<double>("motionplanning", "TBUG_MIN_ABS_VAL_STICK");
+                    _EXTRA_GOAL_DIST = (float)ConstantsRaw.get<double>("motionplanning", "TBUG_EXTRA_GOAL_DIST");
+                    _BOUNDARY_AVOID = (float)ConstantsRaw.get<double>("motionplanning", "TBUG_BOUNDARY_AVOID");
+                }
+            }
+
+            /// <summary> Constants for plain RRT motion planner </summary>
+            static public class RRT
+            {
+                static public double OBSTACLE_AVOID_DIST { get { InitializeIfNeeded(); return _OBSTACLE_AVOID_DIST; } } static volatile float _OBSTACLE_AVOID_DIST;
+
+                static public void Reload()
+                {
+                    _OBSTACLE_AVOID_DIST = (float)ConstantsRaw.get<double>("motionplanning", "RRT_OBSTACLE_AVOID_DIST");
+                }
+            }
+
+            /// <summary> Constants for smooth RRT motion planner </summary>
+            static public class SRRT
+            {
+                //static public double OBSTACLE_AVOID_DIST { get { InitializeIfNeeded(); return _OBSTACLE_AVOID_DIST; } } static volatile float _OBSTACLE_AVOID_DIST;
+
+                static public void Reload()
+                {
+                    //_OBSTACLE_AVOID_DIST = (float)ConstantsRaw.get<double>("motionplanning", "RRT_OBSTACLE_AVOID_DIST");
+                }
+            }
+
         }
 
         static public class PlayFiles

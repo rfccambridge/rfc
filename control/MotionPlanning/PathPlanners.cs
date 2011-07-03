@@ -14,6 +14,7 @@ using Robocup.Utilities;
 
 namespace Robocup.MotionControl
 {
+#if false
     public class DumbPathPlanner : IPathPlanner
     {
         public DumbPathPlanner() {
@@ -130,18 +131,10 @@ namespace Robocup.MotionControl
             PERPINDICULAR_LENGTH = ConstantsRaw.get<double>("motionplanning", "PERPINDICULAR_LENGTH");
         }
     }
-
+#endif
     public class TangentBugPlanner : IPathPlanner
     {
-        double LOOK_AHEAD_DIST;
-        double TBUG_AVOID_DIST;
-        double MIN_ABS_VAL_STICK;
-        public double WAYPOINT_DIST;
-        double EXTRA_GOAL_DIST;
-        double BOUNDARY_AVOID;
-
         double previousAngle;
-
         Vector2 lastWaypoint;        
 
         public TangentBugPlanner()
@@ -164,6 +157,12 @@ namespace Robocup.MotionControl
             }
 
             double STEADY_STATE_SPEED = Constants.Motion.STEADY_STATE_SPEED;
+            double LOOK_AHEAD_DIST = Constants.Motion.TBug.LOOK_AHEAD_DIST;
+            double AVOID_DIST = Constants.Motion.TBug.AVOID_DIST;
+            double MIN_ABS_VAL_STICK = Constants.Motion.TBug.MIN_ABS_VAL_STICK;
+            double WAYPOINT_DIST = Constants.Motion.TBug.WAYPOINT_DIST;
+            double EXTRA_GOAL_DIST = Constants.Motion.TBug.EXTRA_GOAL_DIST;
+            double BOUNDARY_AVOID = Constants.Motion.TBug.BOUNDARY_AVOID;
 
             Vector2 start = currentState.Position;
             Vector2 end = desiredState.Position;
@@ -187,7 +186,7 @@ namespace Robocup.MotionControl
             {
                 if (info.ID != id) {
                     obstaclePositions.Add(info.Position);
-                    obstacleSizes.Add(TBUG_AVOID_DIST);
+                    obstacleSizes.Add(AVOID_DIST);
                 }
                 //Console.WriteLine(info.ToString());
             }
@@ -307,7 +306,7 @@ namespace Robocup.MotionControl
             }
              */
 
-            finalDirection = rotateDegree(finalDirection, bestAngle);
+            finalDirection = finalDirection.rotate(bestAngle); 
 
             previousAngle = bestAngle;
 
@@ -346,94 +345,9 @@ namespace Robocup.MotionControl
 
         public void ReloadConstants()
         {
-            ConstantsRaw.Load();
 
-            LOOK_AHEAD_DIST = ConstantsRaw.get<double>("motionplanning", "LOOK_AHEAD_DIST");
-            TBUG_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "TBUG_AVOID_DIST");
-            WAYPOINT_DIST = ConstantsRaw.get<double>("motionplanning", "WAYPOINT_DIST");
-            MIN_ABS_VAL_STICK = ConstantsRaw.get<double>("motionplanning", "MIN_ABS_VAL_STICK");
-            EXTRA_GOAL_DIST = ConstantsRaw.get<double>("motionplanning", "EXTRA_GOAL_DIST");
-            BOUNDARY_AVOID = ConstantsRaw.get<double>("motionplanning", "BOUNDARY_AVOID");
         }
 
-        private bool isOutOfWay(Vector2 position, Vector2 start, Vector2 pathVector)
-        {
-
-            // get position relative to start
-            Vector2 relativePosition = position - start;
-
-            // project relativePosition onto pathVector
-
-            double hypotenuse = Math.Sqrt(relativePosition.magnitudeSq());
-            double angleBetween = Angle.AngleDifference(pathVector.cartesianAngle(),
-                relativePosition.cartesianAngle());
-
-            // is it completely out of the way:
-            if (Math.Abs(angleBetween) > Math.PI / 2)
-                return true;
-
-            Console.WriteLine("hypotenuse = " + hypotenuse + "; angleBetween = " + angleBetween);
-
-            double opposite = hypotenuse * Math.Sin(angleBetween);
-
-            //return whether the obstacle is far enough off path or is completely out of way
-            return (opposite > TBUG_AVOID_DIST);
-        }
-
-        /// <summary>
-        /// Return the angle between the position and a path between the start and end
-        /// positions, where positive represents a distance the position is to the left of
-        /// the path and negative represents a distance the position is to the right of the path
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        private double angleFrom(Vector2 position, Vector2 start, Vector2 end)
-        {
-            // get vector from start to end
-            Vector2 pathVector = end - start;
-
-            // get position relative to start
-            Vector2 relativePosition = position - start;
-
-            // project relativePosition onto pathVector
-            double hypotenuse = Math.Sqrt(relativePosition.magnitudeSq());
-            double angleBetween = Angle.AngleDifference(pathVector.cartesianAngle(), relativePosition.cartesianAngle());
-
-            return angleBetween;
-        }
-
-        /// <summary>
-        /// Given a vector and a bool as to whether clockwise, rotate vector
-        /// </summary>
-        /// <param name="v"></param>
-        /// <param name="CW"></param>
-        /// <returns></returns>
-        private Vector2 rotate90(Vector2 v, bool CW)
-        {
-            if (CW)
-            {
-                return new Vector2(v.Y, -v.X);
-            }
-            return new Vector2(-v.Y, v.X);
-        }
-        private Vector2 rotateDegree(Vector2 v, double degree)
-        {
-            return new Vector2(v.X * Math.Cos(degree) - v.Y * Math.Sin(degree), v.X * Math.Sin(degree) + v.Y * Math.Cos(degree));
-        }
-
-        private bool isGoodPath(List<Vector2> obstacles, Vector2 start, Vector2 pathVector)
-        {
-            foreach (Vector2 o in obstacles)
-            {
-                if (!isOutOfWay(o, start, pathVector))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
     }
 
 	/// <summary>
@@ -443,8 +357,6 @@ namespace Robocup.MotionControl
 	/// </summary>
 	public class BasicRRTMotionPlanner : IPathPlanner
 	{
-		double RRT_OBSTACLE_AVOID_DIST;
-
         private int numPathIterations = 8;
         private int numSmoothIterations = 5;
         private readonly bool doPathSmoothing;
@@ -464,10 +376,11 @@ namespace Robocup.MotionControl
 			List<Obstacle> obstacles = new List<Obstacle>();
 
             //Avoid all robots, except myself
+            double OBSTACLE_AVOID_DIST = Constants.Motion.RRT.OBSTACLE_AVOID_DIST;
 			foreach (RobotInfo info in predictor.GetRobots())
 			{
 				if (info.Team != team || info.ID != id)
-                    obstacles.Add(new Obstacle(info.Position, RRT_OBSTACLE_AVOID_DIST));
+                    obstacles.Add(new Obstacle(info.Position, OBSTACLE_AVOID_DIST));
 			}
 
             //If needed, avoid ball
@@ -629,7 +542,7 @@ namespace Robocup.MotionControl
 
         public void ReloadConstants()
 		{
-            RRT_OBSTACLE_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "RRT_OBSTACLE_AVOID_DIST");
+            
 		}
 	}
 

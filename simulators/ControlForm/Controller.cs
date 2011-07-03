@@ -25,7 +25,6 @@ namespace Robocup.ControlForm
         private const double DRIBBLER_TIMER_PERIOD = 0.5; //seconds
         private const double DRIBBLER_TIMEOUT = 6.0; // seconds
         private bool DRAW_PATH;
-        private double BALL_AVOID_DIST;
         private double CHARGE_DIST;
         private double CHARGE_LOOP_PERIOD = 0.5; //seconds
 
@@ -100,7 +99,6 @@ namespace Robocup.ControlForm
         public void LoadConstants()
         {
             DRAW_PATH = ConstantsRaw.get<bool>("drawing", "DRAW_PATH");
-            BALL_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "BALL_AVOID_DIST");
             CHARGE_DIST = ConstantsRaw.get<double>("kickplanning", "CHARGE_DIST");
 
             _planner.LoadConstants();
@@ -232,7 +230,7 @@ namespace Robocup.ControlForm
 
             int id = destination.ID;
 
-            double avoidBallDist = (avoidBall ? BALL_AVOID_DIST : 0f);
+            double avoidBallDist = (avoidBall ? Constants.Motion.BALL_AVOID_DIST : 0f);
             RobotPath oldPath;
             lock (_path_locks[id])
             {

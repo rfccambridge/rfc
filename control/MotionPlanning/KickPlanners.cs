@@ -27,7 +27,6 @@ namespace Robocup.MotionControl
 
         IMotionPlanner regularPlanner; //why is this and dumb planner both used!!!? WTF? they're both tangent bug's ???
         TangentBugFeedbackMotionPlanner dumbPlanner = new TangentBugFeedbackMotionPlanner();
-        DefaultMotionPlanner slowPlanner = new DefaultMotionPlanner();
 
         // Constants
         double DIST_BEHIND_BALL;
@@ -342,8 +341,7 @@ namespace Robocup.MotionControl
             CWSpeeds = new WheelSpeeds(WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN);
             CCWSpeeds = new WheelSpeeds(-WHEEL_SPEED_TURN, WHEEL_SPEED_TURN, -WHEEL_SPEED_TURN, WHEEL_SPEED_TURN);
 
-            regularPlanner.LoadConstants();
-            slowPlanner.LoadConstants();            
+            regularPlanner.LoadConstants();      
             spinplanner.ReloadConstants();
             loop.ReloadConstants();            
         }

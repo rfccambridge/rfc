@@ -8,6 +8,10 @@ double ANGLE_AXIS_TO_WHEEL 41 #in degrees
 double WHEEL_RADIUS 0.0782828 #distance from robot center to wheels
 double STEADY_STATE_SPEED 2.30 #basic speed used by some planners and drivers in m/s
 
+#How far away should the controller ask the planners to stay away from
+#the ball?
+double BALL_AVOID_DIST 0.20 
+
 #wheel ORIENTATIONS
 #double RF_ORIENTATION 0.5236
 #double LF_ORIENTATION 2.618
@@ -37,12 +41,39 @@ double SPEED_SCALING_FACTOR_10 1
 double SPEED_SCALING_FACTOR_11 1
 
 
+#TangentBugPlanner---------------------------------
+double TBUG_AVOID_DIST .20
+double TBUG_LOOK_AHEAD_DIST 0.3
+double TBUG_WAYPOINT_DIST .3
+double TBUG_MIN_ABS_VAL_STICK .5
+double TBUG_EXTRA_GOAL_DIST .12
+double TBUG_BOUNDARY_AVOID .5
 
-#DumbTurnPlanner constants -----------------------------------------
+#RRTPlanner---------------------------------
+double RRT_OBSTACLE_AVOID_DIST .20
+
+#PathFollowerPlayer-------------------------------
+double PFP_MIN_GOAL_DIST 0.03
+#ignore orientation: 100, usually 0.1
+double PFP_MIN_GOAL_DIFF_ORIENTATION 0.1
+
+
+
+
+
+
+
+
+#############################################################################
+#OLD-------------------------------------------------------------------------
+#Everything below is really old constants that we're probably never going to
+#seriously use again
+
+#TurnPlanner constants ------------------------------
 
 double MIN_ANGLE_DIFFERENCE .55
 
-#DumbVeerFeedbackPlanner constants ---------------------------------
+#DumbVeerFeedbackPlanner constants ------------------------
 
 #DECIDE WHETHER TO USE ANGULAR VEER PLANNER
 int ANGULAR_VEER 1
@@ -101,22 +132,9 @@ double MIN_ANGLE_SWITCH .8
 double LOOK_AHEAD_DISTANCE .4
 double AVOID_ROBOT_DISTANCE .4
 
-#Obstacle Avoidance---------------------------------
+#PointCharge ---------------------------------
 double REPULSION_FACTOR .3
 double PERPINDICULAR_LENGTH .1
-
-#TangentBugPlanner---------------------------------
-double TBUG_AVOID_DIST .20
-double LOOK_AHEAD_DIST 0.3
-double WAYPOINT_DIST .3
-double MIN_ABS_VAL_STICK .5
-double EXTRA_GOAL_DIST .12
-double BOUNDARY_AVOID .5
-
-#RRTPlanner---------------------------------
-double RRT_OBSTACLE_AVOID_DIST .20
-
-
 
 
 
@@ -149,11 +167,4 @@ double MIN_ANGLE_DIFF_TO_WP 0.0
 # this is actually the point at which we switch to control-short.txt
 double PLANNER_WAYPOINT_DISTANCE 0.4
 
-# PathFollowerPlayer
-double MIN_GOAL_DIST 0.03
-#ignore orientation: 100, usually 0.1
-double MIN_GOAL_DIFF_ORIENTATION 0.1
 
-# Used in ModelFeedback
-# in m
-double BALL_AVOID_DIST 0.20

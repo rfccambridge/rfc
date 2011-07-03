@@ -862,6 +862,7 @@ namespace Robocup.MotionControl
     }
 #endif
 
+#if false
     public class DumbTurnPlanner : PlannerDriver
     {
         static DumbPathPlanner pathplanner = new DumbPathPlanner();
@@ -893,28 +894,13 @@ namespace Robocup.MotionControl
 
         public PointChargeFeedbackVeerMotionPlanner() : base(pathplanner, pathdriver) { }
     }
-
-    public class BugExtendMotionPlanner : PlannerDriver
+    
+    public class BugNavigatorExtendMotionPlanner : PlannerDriver
     {
-        static TangentBugPlanner pathplanner = new TangentBugPlanner();
-        static ExtenderDriver pathdriver = new ExtenderDriver();
-
-        public BugExtendMotionPlanner() : base(pathplanner, pathdriver) { }
-    }
-
-    public class BugNavigatorExtendMotionPlanner : PlannerDriver {
         static BugNavigatorPlanner pathplanner = new BugNavigatorPlanner();
         static ExtenderDriver pathdriver = new ExtenderDriver();
 
         public BugNavigatorExtendMotionPlanner() : base(pathplanner, pathdriver) { }
-    }
-
-    public class TangentBugVeerMotionPlanner : PlannerDriver
-    {
-        static TangentBugPlanner pathplanner = new TangentBugPlanner();
-        static FeedbackVeerDriver pathdriver = new FeedbackVeerDriver();
-
-        public TangentBugVeerMotionPlanner() : base(pathplanner, pathdriver) { }
     }
 
     public class DumbExtenderPlanner : PlannerDriver
@@ -958,6 +944,25 @@ namespace Robocup.MotionControl
         public Feedback GetFeedbackObj(int robotID) { return pathdriver.GetFeedbackObj(robotID); }
     }
 
+    public class BugExtendMotionPlanner : PlannerDriver
+    {
+        static TangentBugPlanner pathplanner = new TangentBugPlanner();
+        static ExtenderDriver pathdriver = new ExtenderDriver();
+
+        public BugExtendMotionPlanner() : base(pathplanner, pathdriver) { }
+    }
+
+#endif
+
+    public class TangentBugVeerMotionPlanner : PlannerDriver
+    {
+        static TangentBugPlanner pathplanner = new TangentBugPlanner();
+        static FeedbackVeerDriver pathdriver = new FeedbackVeerDriver();
+
+        public TangentBugVeerMotionPlanner() : base(pathplanner, pathdriver) { }
+    }
+
+
     public class TangentBugFeedbackMotionPlanner : PlannerDriver, ILogger {
         static TangentBugPlanner pathplanner = new TangentBugPlanner();
         public static PositionFeedbackDriver pathdriver = new PositionFeedbackDriver();
@@ -976,10 +981,10 @@ namespace Robocup.MotionControl
             // distance of the planner
 
             // otherwise, the planner will go with PLANNER_WAYPOINT_DISTANCE in motionplanning.txt
-            if (pathdriver.PLANNER_WAYPOINT_DISTANCE < .8 * pathplanner.WAYPOINT_DIST)
-            {
-                pathdriver.PLANNER_WAYPOINT_DISTANCE = 0.8 * pathplanner.WAYPOINT_DIST;
-            }
+            //if (pathdriver.PLANNER_WAYPOINT_DISTANCE < .8 * pathplanner.WAYPOINT_DIST)
+            //{
+            //    pathdriver.PLANNER_WAYPOINT_DISTANCE = 0.8 * pathplanner.WAYPOINT_DIST;
+            //}
         }
 
 
