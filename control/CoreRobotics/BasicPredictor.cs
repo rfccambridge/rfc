@@ -19,13 +19,6 @@ namespace Robocup.CoreRobotics
             private readonly bool matchIDs, reassignIDs;
             /// <param name="matchIDs">whether or not to match robots based on IDs (if false, does it by positions, and reassigns IDs)</param>
 
-            private double DELTA_DIST_SQ_MERGE;
-            private double VELOCITY_DT;
-            private double VELOCITY_WEIGHT_OLD;
-            private double VELOCITY_WEIGHT_NEW;
-            private double POSITION_WEIGHT_OLD;
-            private double POSITION_WEIGHT_NEW;
-            private double MAX_SECONDS_TO_KEEP_INFO;
             private bool BLUE_HAS_PATTERN;
             private bool YELLOW_HAS_PATTERN;
 
@@ -38,17 +31,8 @@ namespace Robocup.CoreRobotics
             }
             public void LoadConstants()
             {
-                DELTA_DIST_SQ_MERGE = ConstantsRaw.get<double>("default", "DELTA_DIST_SQ_MERGE");
-                VELOCITY_DT = ConstantsRaw.get<double>("default", "VELOCITY_DT");
-                VELOCITY_WEIGHT_OLD = ConstantsRaw.get<double>("default", "VELOCITY_WEIGHT_OLD");
-                VELOCITY_WEIGHT_NEW = ConstantsRaw.get<double>("default", "VELOCITY_WEIGHT_NEW");
-                POSITION_WEIGHT_OLD = ConstantsRaw.get<double>("default", "POSITION_WEIGHT_OLD");
-                POSITION_WEIGHT_NEW = ConstantsRaw.get<double>("default", "POSITION_WEIGHT_NEW");
-                MAX_SECONDS_TO_KEEP_INFO = ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
-
                 BLUE_HAS_PATTERN = ConstantsRaw.get<bool>("configuration", "BLUE_HAS_PATTERN");
                 YELLOW_HAS_PATTERN = ConstantsRaw.get<bool>("configuration", "YELLOW_HAS_PATTERN");
-
             }
             private object object_lock = new object();
             private List<RobotInfo> lambdaInfo = new List<RobotInfo>(), omegaInfo = new List<RobotInfo>();
@@ -89,6 +73,14 @@ namespace Robocup.CoreRobotics
             }
             public void updateHalfInfos(List<RobotInfo> newInfos, string computerName)
             {
+                double VELOCITY_WEIGHT_OLD = Constants.Predictor.VELOCITY_WEIGHT_OLD;
+                double VELOCITY_WEIGHT_NEW = Constants.Predictor.VELOCITY_WEIGHT_NEW;
+                double POSITION_WEIGHT_OLD = Constants.Predictor.POSITION_WEIGHT_OLD;
+                double POSITION_WEIGHT_NEW = Constants.Predictor.POSITION_WEIGHT_NEW;
+                double DELTA_DIST_SQ_MERGE = Constants.Predictor.DELTA_DIST_SQ_MERGE;
+                double VELOCITY_DT = Constants.Predictor.VELOCITY_DT;
+                double MAX_SECONDS_TO_KEEP_INFO = Constants.Predictor.MAX_SECONDS_TO_KEEP_INFO;
+
                 lock (object_lock)
                 {
                     List<RobotInfo> origNewInfos = new List<RobotInfo>();
@@ -251,12 +243,6 @@ namespace Robocup.CoreRobotics
         // Should really be a generalized game state
         private PlayType playType;
 
-        private double MAX_SECONDS_TO_KEEP_INFO;
-        private double VELOCITY_DT;
-        private double BALL_POSITION_WEIGHT_OLD;
-        private double BALL_POSITION_WEIGHT_NEW;
-        private double BALL_MOVED_DIST;
-
         private FieldHalf FIELD_HALF;
         private Team OUR_TEAM;
         
@@ -278,12 +264,6 @@ namespace Robocup.CoreRobotics
         
         public void LoadConstants()
         {
-            MAX_SECONDS_TO_KEEP_INFO = ConstantsRaw.get<double>("default", "MAX_SECONDS_TO_KEEP_INFO");
-            VELOCITY_DT = ConstantsRaw.get<double>("default", "VELOCITY_DT");
-            BALL_POSITION_WEIGHT_OLD = ConstantsRaw.get<double>("default", "BALL_POSITION_WEIGHT_OLD");
-            BALL_POSITION_WEIGHT_NEW = ConstantsRaw.get<double>("default", "BALL_POSITION_WEIGHT_NEW");
-            BALL_MOVED_DIST = ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
-
             OUR_TEAM = (Team)Enum.Parse(typeof(Team), ConstantsRaw.get<string>("configuration", "OUR_TEAM"), true);
             FIELD_HALF = (FieldHalf)Enum.Parse(typeof(FieldHalf), ConstantsRaw.get<string>("plays", "FIELD_HALF"), true);
 
@@ -440,6 +420,7 @@ namespace Robocup.CoreRobotics
             }
 
             BallInfo ball = GetBall();
+            double BALL_MOVED_DIST = Constants.Plays.BALL_MOVED_DIST;
             bool ret = (ball != null && markedPosition == null) || (ball != null &&
                         markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
             return ret;
@@ -457,6 +438,11 @@ namespace Robocup.CoreRobotics
         double ballupdate = HighResTimer.SecondsSinceStart();
         public void updateBallInfo(BallInfo ballInfo)
         {
+            double MAX_SECONDS_TO_KEEP_INFO = Constants.Predictor.MAX_SECONDS_TO_KEEP_INFO;
+            double BALL_POSITION_WEIGHT_OLD = Constants.Predictor.BALL_POSITION_WEIGHT_OLD;
+            double BALL_POSITION_WEIGHT_NEW = Constants.Predictor.BALL_POSITION_WEIGHT_NEW;
+            double VELOCITY_DT = Constants.Predictor.VELOCITY_DT;
+
             double now = HighResTimer.SecondsSinceStart();
             double dt = now - ballupdate;
 

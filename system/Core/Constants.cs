@@ -517,6 +517,17 @@ namespace Robocup.Core
             }
         }
 
+        static public class Plays
+        {
+            /// <summary> Delta distance for deciding that ball has moved. </summary>
+            static public double BALL_MOVED_DIST { get { InitializeIfNeeded(); return _BALL_MOVED_DIST; } } static volatile float _BALL_MOVED_DIST;
+
+            static public void Reload()
+            {
+                _BALL_MOVED_DIST = (float)ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
+            }
+        }
+
 
         //INITIALIZATION AND RELOAD MECHANISM---------------------------------------------------------
 
@@ -558,6 +569,7 @@ namespace Robocup.Core
                 PlayFiles.Reload();
                 Predictor.Reload();
                 RobotInfo.Reload();
+                Plays.Reload();
                 _is_reloading = false;
             }
         }

@@ -256,9 +256,6 @@ namespace Robocup.CoreRobotics
         // For marking ball position
         private Vector2 markedPosition = null;
 
-        // "Constants"
-        private static double BALL_MOVED_DIST;
-
         public AveragingPredictor()
         {
             for (int i = 0; i < NUM_CAMERAS; i++)
@@ -274,8 +271,6 @@ namespace Robocup.CoreRobotics
 
         public void LoadConstants()
         {
-            BALL_MOVED_DIST = ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
-
             combineTimer.Interval = (1.0 / Constants.Time.COMBINE_FREQUENCY) * 1000; // Convert hz -> secs -> ms
         }
 
@@ -339,6 +334,7 @@ namespace Robocup.CoreRobotics
         public bool HasBallMoved()
         {
             BallInfo ball = GetBall();
+            double BALL_MOVED_DIST = Constants.Plays.BALL_MOVED_DIST;
             bool ret = (ball != null && markedPosition == null) || (ball != null &&
                         markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
             return ret;

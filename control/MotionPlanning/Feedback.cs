@@ -55,8 +55,6 @@ namespace Robocup.MotionControl
         private RobotModel model;
         private double DESIRED_SPEED;
 
-        const double wheelR = 0.0782828; //distance from the center of the robot to the wheels in meters
-
         public delegate void UpdateErrorsDelegate(double xError, double yError, double thetaError);
         public UpdateErrorsDelegate OnUpdateErrors;
         public string ConstantsFile { get { return constantsFile; } }
