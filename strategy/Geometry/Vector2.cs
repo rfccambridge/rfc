@@ -48,6 +48,16 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
+        /// Creates a new Vector2 of length 1 pointing at the given angle
+        /// </summary>
+        /// <param name="theta">the angle in radians</param>
+        public Vector2(double theta)
+        {
+            this.x = Math.Cos(theta);
+            this.y = Math.Sin(theta);
+        }
+
+        /// <summary>
         /// Constructs a vector that is a copy of another one
         /// </summary>
         /// <param name="copy">Original object</param>

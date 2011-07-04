@@ -216,13 +216,13 @@ namespace Robocup.Simulation
         public override void GoalScored()
         {
             _sceneIndex = (_sceneIndex + 1) % NUM_SCENES;
-            _engine.GetScenarioScene();
+            _engine.ResetScenarioScene();
         }
 
         public override void BallOut(Vector2 lastPosition)
         {
             //Restart from the same shootout position
-            _engine.GetScenarioScene();
+            _engine.ResetScenarioScene();
         }
     }
 }

@@ -20,6 +20,8 @@ namespace Robocup.Utilities
         private int sync;
         private System.Timers.Timer timer;
 
+        double desiredPeriod;
+
         private HighResTimer periodTimer;
         private HighResTimer loopTimer;
 
@@ -35,6 +37,8 @@ namespace Robocup.Utilities
             timer = new System.Timers.Timer();
             timer.AutoReset = true;
             timer.Elapsed += Elapsed;
+            desiredPeriod = 1.0;
+            timer.Interval = desiredPeriod * 1000;
 
             periodTimer = new HighResTimer();
             loopTimer = new HighResTimer();
@@ -79,10 +83,19 @@ namespace Robocup.Utilities
         }
 
         /// <summary>
+        /// Gets the period at which the loop has been set to fire, in seconds
+        /// </summary>
+        public double GetPeriod()
+        {
+            return desiredPeriod;
+        }
+
+        /// <summary>
         /// Sets the period at which the loop should fire, in seconds
         /// </summary>
         public void SetPeriod(double period)
         {
+            desiredPeriod = period;
             timer.Interval = period * 1000;
         }
 

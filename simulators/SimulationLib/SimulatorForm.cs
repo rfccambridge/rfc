@@ -133,7 +133,7 @@ namespace Robocup.Simulation
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            _physicsEngine.GetScenarioScene();
+            _physicsEngine.ResetScenarioScene();
         }
 
         private void SimulatorForm_FormClosing(object sender, FormClosingEventArgs e)
