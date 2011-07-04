@@ -21,14 +21,14 @@ namespace Robocup.MotionControl
         const int MAX_DEPTH = 16;        //But never split more than this many levels deep
 
         //The root node of the tree
-        private TwoDTreeMapNode<T> _root;
+        private TwoDTreeMapNode _root;
 
         //Construct a tree map for tracking points within the given bounds. The map should still work for points
         //outside of these bounds, but these bounds will be used to determine how to subdivide the tree, so they should be
         //generally chosen to encompass the entire 2D area you're interested in.
         public TwoDTreeMap(double xMin, double xMax, double yMin, double yMax)
         {
-            _root = new TwoDTreeMapNode<T>(null, null, xMin, xMax, yMin, yMax, 0);
+            _root = new TwoDTreeMapNode(null, null, xMin, xMax, yMin, yMax, 0);
         }
 
         //Return the number of points in the map.
@@ -74,7 +74,7 @@ namespace Robocup.MotionControl
 
 
         //All the work is done here
-        class TwoDTreeMapNode<T>
+        class TwoDTreeMapNode
         {
             //Data storage
             public int num;
@@ -82,10 +82,10 @@ namespace Robocup.MotionControl
             public List<T> objects;
 
             //Tree pointers
-            public TwoDTreeMapNode<T> left;
-            public TwoDTreeMapNode<T> right;
-            public TwoDTreeMapNode<T> parent;
-            public TwoDTreeMapNode<T> root;
+            public TwoDTreeMapNode left;
+            public TwoDTreeMapNode right;
+            public TwoDTreeMapNode parent;
+            public TwoDTreeMapNode root;
 
             //Cut
             public int cutDimension;
@@ -97,7 +97,7 @@ namespace Robocup.MotionControl
             public double yMin;
             public double yMax;
 
-            public TwoDTreeMapNode(TwoDTreeMapNode<T> root, TwoDTreeMapNode<T> parent, double xMin, double xMax, double yMin, double yMax, int cutDimension)
+            public TwoDTreeMapNode(TwoDTreeMapNode root, TwoDTreeMapNode parent, double xMin, double xMax, double yMin, double yMax, int cutDimension)
             {
                 num = 0;
                 vectors = new List<Vector2>(SPLIT_THRESHOLD + 1);
@@ -130,7 +130,7 @@ namespace Robocup.MotionControl
             }
 
             //Returns the child that contains this point.
-            public TwoDTreeMapNode<T> GetChild(Vector2 pt)
+            public TwoDTreeMapNode GetChild(Vector2 pt)
             {
                 if (IsLeaf())
                 {
@@ -162,7 +162,7 @@ namespace Robocup.MotionControl
             {
                 if (!IsLeaf())
                 {
-                    TwoDTreeMapNode<T> node = this;
+                    TwoDTreeMapNode node = this;
                     while (!node.IsLeaf())
                     {
                         node.num++;
@@ -180,8 +180,8 @@ namespace Robocup.MotionControl
                     if (cutDimension == 0)
                     {
                         double cut = GetCut(xMin, xMax);
-                        left = new TwoDTreeMapNode<T>(root, this, xMin, cut, yMin, yMax, 1);
-                        right = new TwoDTreeMapNode<T>(root, this, cut, xMax, yMin, yMax, 1);
+                        left = new TwoDTreeMapNode(root, this, xMin, cut, yMin, yMax, 1);
+                        right = new TwoDTreeMapNode(root, this, cut, xMax, yMin, yMax, 1);
 
                         for (int i = 0; i < vectors.Count; i++)
                         {
@@ -194,8 +194,8 @@ namespace Robocup.MotionControl
                     else
                     {
                         double cut = GetCut(yMin, yMax);
-                        left = new TwoDTreeMapNode<T>(root, this, xMin, xMax, yMin, cut, 0);
-                        right = new TwoDTreeMapNode<T>(root, this, xMin, xMax, cut, yMax, 0);
+                        left = new TwoDTreeMapNode(root, this, xMin, xMax, yMin, cut, 0);
+                        right = new TwoDTreeMapNode(root, this, xMin, xMax, cut, yMax, 0);
 
                         for (int i = 0; i < vectors.Count; i++)
                         {
@@ -252,8 +252,8 @@ namespace Robocup.MotionControl
                 //Not leaf node
                 double distanceSqFromLeft = left.DistanceSqFrom(vec);
                 double distanceSqFromRight = right.DistanceSqFrom(vec);
-                TwoDTreeMapNode<T> first;
-                TwoDTreeMapNode<T> second;
+                TwoDTreeMapNode first;
+                TwoDTreeMapNode second;
                 double firstDistSq;
                 double secondDistSq;
 
@@ -314,8 +314,8 @@ namespace Robocup.MotionControl
                 //Not a leaf
                 double distanceSqFromLeft = left.DistanceSqFrom(vec);
                 double distanceSqFromRight = right.DistanceSqFrom(vec);
-                TwoDTreeMapNode<T> first;
-                TwoDTreeMapNode<T> second;
+                TwoDTreeMapNode first;
+                TwoDTreeMapNode second;
                 double firstDistSq;
                 double secondDistSq;
 

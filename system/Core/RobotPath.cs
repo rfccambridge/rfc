@@ -14,8 +14,6 @@ namespace Robocup.Core {
         int _id;
         bool empty;
 
-        bool loopsAround = false;
-
         // Store final goal for planners that do not store it as a waypoint
         RobotInfo _finalState;
 

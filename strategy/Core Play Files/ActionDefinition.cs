@@ -8,7 +8,6 @@ namespace Robocup.Plays
     public delegate void Action(IActionInterpreter a);
     public class ActionDefinition
     {
-        private string Name;
         private Action action;
 
         // NEW: Allow actions to include a play assignment

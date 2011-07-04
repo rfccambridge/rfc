@@ -151,7 +151,7 @@ namespace Robocup.MotionControl
             {
                 currentState = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new RobotPath(team, id);
             }
@@ -395,7 +395,7 @@ namespace Robocup.MotionControl
             {
                 curinfo = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new RobotPath(team, id);
             }

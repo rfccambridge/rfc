@@ -41,7 +41,7 @@ namespace Robocup.MotionControl
             {
                 currentState = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new WheelSpeeds();
             }
@@ -103,7 +103,7 @@ namespace Robocup.MotionControl
             {
                 currentState = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new WheelSpeeds();
             }

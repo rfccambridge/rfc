@@ -490,7 +490,7 @@ namespace Robocup.MotionControl
             RobotInfo currentState;
             try
             { currentState = predictor.GetRobot(team, id); }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             { return new List<Vector2>(); }
             currentState = new RobotInfo(currentState);
             if (currentState.Velocity.magnitude() > MAX_OBSERVABLE_VELOCITY)
@@ -611,7 +611,7 @@ namespace Robocup.MotionControl
             {
                 curinfo = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new RobotPath(team, id);
             }

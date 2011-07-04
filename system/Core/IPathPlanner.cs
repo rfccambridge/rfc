@@ -94,7 +94,7 @@ namespace Robocup.CoreRobotics
             {
                 currentState = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new RobotPath(team, id);
             }

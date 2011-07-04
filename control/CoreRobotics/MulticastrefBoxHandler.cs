@@ -349,6 +349,7 @@ namespace Robocup.CoreRobotics
             packet.goals_blue = (byte)goals_blue;
             packet.cmd = command;
             packet.cmd_counter = cmd_counter;
+            //TODO(davidwu): Why are we not setting packet.time_remaining ?
 
             lock (lastPacketLock)
             {
@@ -399,7 +400,7 @@ namespace Robocup.CoreRobotics
                     _socket.Bind(_endPoint);
                     bound = true;
                 }
-                catch (SocketException e)
+                catch (SocketException)
                 {
                     Console.WriteLine("RefBoxListener failed to connect to port {0}!", Parameters.routerPorts[i]);
                 }

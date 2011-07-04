@@ -50,7 +50,7 @@ namespace Robocup.Plays
             {
                 robot = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return null;
             }

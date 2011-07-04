@@ -275,7 +275,7 @@ namespace Robocup.MotionControl
             {
                 currentState = predictor.GetRobot(path.Team, path.ID);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new WheelSpeeds();
             }
@@ -668,7 +668,7 @@ namespace Robocup.MotionControl
             {
                 currentState = predictor.GetRobot(path.Team, path.ID);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new WheelSpeeds();
             }
@@ -897,7 +897,7 @@ namespace Robocup.MotionControl
             {
                 currentState = predictor.GetRobot(path.Team, path.ID);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new WheelSpeeds();
             }
@@ -1222,7 +1222,7 @@ namespace Robocup.MotionControl
             {
                 curInfo = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e) 
+            catch (ApplicationException) 
             {
                 return new WheelSpeeds();
             }
@@ -1421,7 +1421,7 @@ namespace Robocup.MotionControl
 			{
 				curInfo = predictor.GetRobot(team, id);
 			}
-			catch (ApplicationException e)
+			catch (ApplicationException)
 			{
                 return new WheelSpeeds();
 			}
@@ -1649,7 +1649,7 @@ namespace Robocup.MotionControl
             {
                 curInfo = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new WheelSpeeds();
             }

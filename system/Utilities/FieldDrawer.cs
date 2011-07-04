@@ -6,6 +6,9 @@ using OpenTK.Graphics.OpenGL;
 using Robocup.Core;
 using Robocup.Geometry;
 
+//Disable warnings about deprecated objects (the GLU classes)
+#pragma warning disable 0612, 0618
+
 namespace Robocup.Utilities
 {
     public enum ArrowType
@@ -751,3 +754,5 @@ namespace Robocup.Utilities
 
     }
 }
+
+#pragma warning restore 0612, 0618

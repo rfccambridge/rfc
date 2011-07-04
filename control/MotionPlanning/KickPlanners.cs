@@ -112,7 +112,7 @@ namespace Robocup.MotionControl
             {
                 thisrobot = predictor.GetRobot(team, id);
             }
-            catch(ApplicationException e)
+            catch(ApplicationException)
             {
                 return new KickPlanningResults(new WheelSpeeds(), false);
             }
@@ -371,7 +371,7 @@ namespace Robocup.MotionControl
             {
                 thisrobot = predictor.GetRobot(team, id);
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 return new Vector2(0.0, 0.0); 
             }
