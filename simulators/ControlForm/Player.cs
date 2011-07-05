@@ -121,7 +121,7 @@ namespace Robocup.ControlForm
                     //planners[6] = new TwoWheeledMovement(_predictor, TwoWheeledMovement.WhichTwoWheels.FrontLeftBackRight);
                 }*/
 
-            _controller = new Controller(_team, _motionPlanner, _predictor, _fieldDrawer);            
+            _controller = new Controller(_team, _motionPlanner, _predictor, _refbox, _fieldDrawer);            
 
             _interpreter = new Interpreter(_team, _fieldHalf, _predictor, _controller, _fieldDrawer);            
 

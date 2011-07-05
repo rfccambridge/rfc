@@ -35,6 +35,7 @@ namespace Robocup.ControlForm
         private IMessageSender<RobotCommand> _cmdSender;
         private IPredictor _predictor;
         private FieldDrawer _fieldDrawer;
+        private IReferee _refbox;
 
         //Planners for motion and kicing
         private IMotionPlanner _planner;
@@ -71,10 +72,12 @@ namespace Robocup.ControlForm
 			Team team,
 			IMotionPlanner planner,
 			IPredictor predictor,
+            IReferee refbox,
 			FieldDrawer fieldDrawer)
 		{
 			_team = team;			
 			_predictor = predictor;
+            _refbox = refbox;
 			_fieldDrawer = fieldDrawer;
 
             _planner = planner;
@@ -317,7 +320,7 @@ namespace Robocup.ControlForm
             RobotCommand command;
 
             // Plan kick
-			KickPlanningResults kpResults = _kickPlanner.kick(_team, robotID, target, _predictor);
+			KickPlanningResults kpResults = _kickPlanner.kick(_team, robotID, target, _predictor, _refbox);
 
 			// If instructed, turn on break beam
 			if (kpResults.turnOnBreakBeam)

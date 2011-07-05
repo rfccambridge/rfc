@@ -100,9 +100,9 @@ namespace Robocup.MotionControl
             LoadConstants();
         }
 
-        public KickPlanningResults kick(Team team, int id, Vector2 target, IPredictor predictor) {
+        public KickPlanningResults kick(Team team, int id, Vector2 target, IPredictor predictor, IReferee refbox) {
             WheelSpeeds speeds = new WheelSpeeds();
-            
+
             // default break beam not on
             bool breakBeamOn = false;
 
