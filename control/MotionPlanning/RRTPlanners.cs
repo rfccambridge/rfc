@@ -303,8 +303,11 @@ namespace Robocup.MotionControl
             return closestWaypointIndex;
         }
 
-        public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius, RobotPath oldpath)
+        public RobotPath PlanMotion(RobotInfo desiredState, IPredictor predictor,
+            double avoidBallRadius, RobotPath oldpath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
         {
+            Team team = desiredState.Team;
+            int id = desiredState.ID;
         	List<Obstacle> obstacles = new List<Obstacle>();
         	foreach (RobotInfo info in predictor.GetRobots())
         	{

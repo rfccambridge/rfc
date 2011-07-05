@@ -134,10 +134,13 @@ namespace Robocup.Utilities
         //They will not change when constants are reloaded!
         double FIELD_WIDTH;
         double FIELD_HEIGHT;
-        double REFEREE_WIDTH;
+        double EXTENDED_FIELD_WIDTH;
+        double EXTENDED_FIELD_HEIGHT;
         double CENTER_CIRCLE_RADIUS;
         double GOAL_WIDTH;
         double GOAL_HEIGHT;
+        double DEFENSE_RECT_HEIGHT;
+        double DEFENSE_AREA_RADIUS;
         double FIELD_FULL_XMIN;
         double FIELD_FULL_XMAX;
         double FIELD_FULL_YMIN;
@@ -177,10 +180,13 @@ namespace Robocup.Utilities
         {
             FIELD_WIDTH = Constants.Field.WIDTH;
             FIELD_HEIGHT = Constants.Field.HEIGHT;
-            REFEREE_WIDTH = Constants.Field.REFEREE_WIDTH;
+            EXTENDED_FIELD_WIDTH = Constants.Field.EXTENDED_WIDTH;
+            EXTENDED_FIELD_HEIGHT = Constants.Field.EXTENDED_HEIGHT;
             CENTER_CIRCLE_RADIUS = Constants.Field.CENTER_CIRCLE_RADIUS;
             GOAL_HEIGHT = Constants.Field.GOAL_HEIGHT;
             GOAL_WIDTH = Constants.Field.GOAL_WIDTH;
+            DEFENSE_RECT_HEIGHT = Constants.Field.DEFENSE_RECT_HEIGHT;
+            DEFENSE_AREA_RADIUS = Constants.Field.DEFENSE_AREA_RADIUS;
             FIELD_FULL_XMIN = Constants.Field.FULL_XMIN;
             FIELD_FULL_XMAX = Constants.Field.FULL_XMAX;
             FIELD_FULL_YMIN = Constants.Field.FULL_YMIN;
@@ -195,7 +201,7 @@ namespace Robocup.Utilities
             _glControlWidth = w;
             _glControlHeight = h;
 
-            GL.ClearColor(Color.Green);
+            GL.ClearColor(Color.DarkGreen);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
@@ -533,9 +539,17 @@ namespace Robocup.Utilities
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            GL.Color3(Color.White);
+            // Extended Field border
+            GL.Color3(Color.ForestGreen);
+            GL.Begin(BeginMode.LineLoop);
+            GL.Vertex2(-EXTENDED_FIELD_WIDTH / 2, -EXTENDED_FIELD_HEIGHT / 2);
+            GL.Vertex2(EXTENDED_FIELD_WIDTH / 2, -EXTENDED_FIELD_HEIGHT / 2);
+            GL.Vertex2(EXTENDED_FIELD_WIDTH / 2, EXTENDED_FIELD_HEIGHT / 2);
+            GL.Vertex2(-EXTENDED_FIELD_WIDTH / 2, EXTENDED_FIELD_HEIGHT / 2);
+            GL.End();
 
             // Field border
+            GL.Color3(Color.White);
             GL.Begin(BeginMode.LineLoop);
             GL.Vertex2(-FIELD_WIDTH / 2, -FIELD_HEIGHT / 2);
             GL.Vertex2(FIELD_WIDTH / 2, -FIELD_HEIGHT / 2);
@@ -547,6 +561,10 @@ namespace Robocup.Utilities
             GL.Begin(BeginMode.Lines);
             GL.Vertex2(0, FIELD_HEIGHT / 2);
             GL.Vertex2(0, -FIELD_HEIGHT / 2);
+            GL.End();
+            GL.Begin(BeginMode.Lines);
+            GL.Vertex2(FIELD_WIDTH / 2, 0);
+            GL.Vertex2(FIELD_WIDTH / 2, 0);
             GL.End();
 
             // Center circle
@@ -570,6 +588,37 @@ namespace Robocup.Utilities
             GL.Vertex2(FIELD_WIDTH / 2 + GOAL_WIDTH, GOAL_HEIGHT / 2);
             GL.Vertex2(FIELD_WIDTH / 2 + GOAL_WIDTH, -GOAL_HEIGHT / 2);
             GL.Vertex2(FIELD_WIDTH / 2, -GOAL_HEIGHT / 2);
+            GL.End();
+
+            //Defense areas
+            GL.LoadIdentity();
+            GL.Translate(-FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT/2, 0);            
+            GL.Begin(BeginMode.LineLoop);
+            OpenTK.Graphics.Glu.PartialDisk(_centerCircleQuadric,0,DEFENSE_AREA_RADIUS,SLICES,1,0,90);
+            GL.End();
+            GL.LoadIdentity();
+            GL.Translate(-FIELD_WIDTH / 2, -DEFENSE_RECT_HEIGHT / 2, 0);
+            GL.Begin(BeginMode.LineLoop);
+            OpenTK.Graphics.Glu.PartialDisk(_centerCircleQuadric,0,DEFENSE_AREA_RADIUS,SLICES,1,90,90);
+            GL.End();
+            GL.LoadIdentity();
+            GL.Translate(FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT / 2, 0);
+            GL.Begin(BeginMode.LineLoop);
+            OpenTK.Graphics.Glu.PartialDisk(_centerCircleQuadric, 0, DEFENSE_AREA_RADIUS, SLICES, 1, 270, 90);
+            GL.End();
+            GL.LoadIdentity();
+            GL.Translate(FIELD_WIDTH / 2, -DEFENSE_RECT_HEIGHT / 2, 0);
+            GL.Begin(BeginMode.LineLoop);
+            OpenTK.Graphics.Glu.PartialDisk(_centerCircleQuadric, 0, DEFENSE_AREA_RADIUS, SLICES, 1, 180, 90);
+            GL.End();
+            GL.LoadIdentity();
+            GL.Begin(BeginMode.Lines);
+            GL.Vertex2(-FIELD_WIDTH / 2 + DEFENSE_AREA_RADIUS, -DEFENSE_RECT_HEIGHT / 2);
+            GL.Vertex2(-FIELD_WIDTH / 2 + DEFENSE_AREA_RADIUS, DEFENSE_RECT_HEIGHT / 2);
+            GL.End();
+            GL.Begin(BeginMode.Lines);
+            GL.Vertex2(FIELD_WIDTH / 2 - DEFENSE_AREA_RADIUS, -DEFENSE_RECT_HEIGHT / 2);
+            GL.Vertex2(FIELD_WIDTH / 2 - DEFENSE_AREA_RADIUS, DEFENSE_RECT_HEIGHT / 2);
             GL.End();
         }
 
@@ -722,10 +771,10 @@ namespace Robocup.Utilities
 
         private Vector2 controlToFieldCoords(Point loc)
         {
-            double viewWidth = 2 * REFEREE_WIDTH + FIELD_WIDTH;
-            double viewHeight = 2 * REFEREE_WIDTH + FIELD_HEIGHT;
-            double translateX = -FIELD_WIDTH / 2 - REFEREE_WIDTH;
-            double translateY = -FIELD_HEIGHT / 2 - REFEREE_WIDTH;
+            double viewWidth = FIELD_FULL_XMAX - FIELD_FULL_XMIN;
+            double viewHeight = FIELD_FULL_YMAX - FIELD_FULL_YMIN;
+            double translateX = FIELD_FULL_XMIN;
+            double translateY = FIELD_FULL_YMIN;
             return new Vector2((double)loc.X / _glControlWidth * viewWidth + translateX, 
                                (1 - (double)loc.Y / _glControlHeight) * viewHeight + translateY);
         }

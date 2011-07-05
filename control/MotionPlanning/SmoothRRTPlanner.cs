@@ -32,6 +32,7 @@ namespace Robocup.MotionControl
         double ROBOT_MAX_TIME_EXTRAPOLATED; //Extrapolate other robots' movements up to this amount of seconds.
 
         //Collisions
+        double ROBOT_RADIUS;      //Radius of single robot
         double ROBOT_AVOID_DIST;  //Avoid robot distance
         double ROBOT_FAR_AVOID_DIST; //Avoid robot distance when not close to goal
         double ROBOT_FAR_DIST; //What is considered "far", for the purposes of robot avoidance? 
@@ -43,6 +44,8 @@ namespace Robocup.MotionControl
         double VELOCITY_AGREEMENT_SCORE; //Bonus for agreeing with current velocity, per m/s velocity
         double OLDPATH_AGREEMENT_SCORE; //Bonus for agreeing with the old path, per m/s velocity
         double OLDPATH_AGREEMENT_DIST; //Score nothing for points that differ by this many meters from the old path
+
+        Rectangle LEGAL_RECTANGLE; //The basic rectangle determining what points in the field are legal to move to
 
         int NUM_PATHS_TO_SCORE; //How many paths do we generate and score?
 
@@ -62,6 +65,7 @@ namespace Robocup.MotionControl
             EXTRA_EXTENSION_ROTATE_ANGLE = (ConstantsRaw.get<double>("motionplanning", "SRRT_EXTRA_EXTENSION_ROTATE_ANGLE") * Math.PI / 180.0);
             ROBOT_MAX_TIME_EXTRAPOLATED = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_MAX_TIME_EXTRAPOLATED");
 
+            ROBOT_RADIUS = Constants.Basic.ROBOT_RADIUS;
             ROBOT_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_AVOID_DIST");
             ROBOT_FAR_AVOID_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_FAR_AVOID_DIST");
             ROBOT_FAR_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_ROBOT_FAR_DIST");
@@ -74,10 +78,12 @@ namespace Robocup.MotionControl
             OLDPATH_AGREEMENT_DIST = ConstantsRaw.get<double>("motionplanning", "SRRT_OLDPATH_AGREEMENT_DIST");
 
             NUM_PATHS_TO_SCORE = ConstantsRaw.get<int>("motionplanning", "SRRT_NUM_PATHS_TO_SCORE");
+
+            LEGAL_RECTANGLE = ExpandRectangle(Constants.FieldPts.EXTENDED_FIELD_RECT, -ROBOT_RADIUS);
         }
 
         //One node in the tree
-        class RRTNode
+        private class RRTNode
         {
             public RobotInfo info;
             public RRTNode parent;
@@ -100,7 +106,9 @@ namespace Robocup.MotionControl
             ReloadConstants();
         }
 
-        Vector2 GetRandomPoint(Vector2 desiredLoc, Vector2 currentLoc, double closestSoFar)
+        //Return a random point biased in a certain distribution between the current and the desired location,
+        //given the closest point the RRT has found so far to the desired location
+        private Vector2 GetRandomPoint(Vector2 desiredLoc, Vector2 currentLoc, double closestSoFar)
         {
             double factor = closestSoFar/4.0 + 0.18;
             double rand1 = RandGen.NextGaussian();
@@ -119,17 +127,16 @@ namespace Robocup.MotionControl
             return new Vector2(centerX + rand1 * factor, centerY + rand2 * factor);
         }
 
-        bool IsAllowedByAcceleration(RRTNode node, Vector2 nextVel)
-        {
-            return (nextVel - node.info.Velocity).magnitudeSq() <= MAX_ACCEL_PER_STEP * MAX_ACCEL_PER_STEP;
-        }
-
-        bool IntersectsObstacle(Vector2 p, Vector2 obsPos, double obsRadius, Vector2 rayUnit)
+        //Does the extension in the direction of the given unit ray from p intersect the given obstacle?
+        //Yes, if it geometrically intersects AND the direction is TOWARDS the obstacle
+        private bool IntersectsObstacle(Vector2 p, Vector2 obsPos, double obsRadius, Vector2 rayUnit)
         {
             return rayUnit * (obsPos - p) >= 0 && obsPos.distanceSq(p) < obsRadius * obsRadius;
         }
 
-        double GetEffectiveAvoidDist(double goalDist)
+        //Get the distance at which we should avoid other robots, given our current distance
+        //from the goal.
+        private double GetEffectiveRobotAvoidDist(double goalDist)
         {
             double avoidProp = (goalDist - ROBOT_AVOID_DIST) / (ROBOT_FAR_DIST - ROBOT_AVOID_DIST);
             if (avoidProp < 0) avoidProp = 0;
@@ -138,12 +145,16 @@ namespace Robocup.MotionControl
             return avoidDist;
         }
 
-        bool IntersectsObstacle(Vector2 src, Vector2 dest, Vector2 rayUnit, double rayLen, Vector2 obsPos, double obsRadius)
+        //Does the extension along the given ray from p intersect the given obstacle?
+        //Yes, if it geometrically intersects AND the direction is TOWARDS the obstacle
+        //Tests both the segment and the endpoints
+        private bool IntersectsObstacle(Vector2 src, Vector2 dest, Vector2 rayUnit, double rayLen, Vector2 obsPos, double obsRadius)
         {
             //We consider a step okay if it moves away from the obstacle, despite intersecting right now.
             if (rayUnit * (obsPos - src) <= 0)
                 return false;
 
+            //Test endpoints
             if (obsPos.distanceSq(src) < obsRadius * obsRadius)
                 return true;
             if (obsPos.distanceSq(dest) < obsRadius * obsRadius)
@@ -162,13 +173,16 @@ namespace Robocup.MotionControl
             return false;
         }
 
-        Vector2 GetFuturePos(Vector2 obsPos, Vector2 obsVel, double time)
+        //Get the future position of a robot, extrapolating based on its velocity
+        private Vector2 GetFuturePos(Vector2 obsPos, Vector2 obsVel, double time)
         {
             time = Math.Max(time, ROBOT_MAX_TIME_EXTRAPOLATED);
             return obsPos + obsVel * time;
         }
 
-        bool IsAllowedByObstacles(RobotInfo currentState, Vector2 src, Vector2 nextSegment, double curTime, BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal)
+        //Check if the given extension by nextSegment would be allowed by all the obstacles
+        private bool IsAllowedByObstacles(RobotInfo currentState, Vector2 src, Vector2 nextSegment, double curTime, 
+            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal, List<Geom> obstacles)
         {
             Vector2 dest = src + nextSegment;
             Vector2 ray = nextSegment;
@@ -176,10 +190,24 @@ namespace Robocup.MotionControl
                 return true;
 
             double goalDist = dest.distance(goal);
-            double avoidDist = GetEffectiveAvoidDist(goalDist);
+            double robotAvoidDist = GetEffectiveRobotAvoidDist(goalDist);
 
             Vector2 rayUnit = ray.normalizeToLength(1.0);
             double rayLen = ray.magnitude();
+
+            //Test if destination is in bounds
+            if (!LEGAL_RECTANGLE.contains(dest))
+            {
+                //If not in bounds, then we MUST be moving back inward to be legal
+                if (dest.X >= LEGAL_RECTANGLE.XMax && rayUnit.X > 0)
+                    return false;
+                if (dest.X <= LEGAL_RECTANGLE.XMin && rayUnit.X < 0)
+                    return false;
+                if (dest.Y >= LEGAL_RECTANGLE.YMax && rayUnit.Y > 0)
+                    return false;
+                if (dest.Y <= LEGAL_RECTANGLE.YMin && rayUnit.Y < 0)
+                    return false;
+            }
 
             //Time to extrapolate forth
             double time = Math.Max(curTime, ROBOT_MAX_TIME_EXTRAPOLATED);
@@ -194,13 +222,13 @@ namespace Robocup.MotionControl
                     //Extrapolate the robot's position into the future.
                     Vector2 obsPos = GetFuturePos(info.Position,info.Velocity,curTime);
 
-                    if (IntersectsObstacle(src, dest, rayUnit, rayLen, obsPos, avoidDist))
+                    if (IntersectsObstacle(src, dest, rayUnit, rayLen, obsPos, robotAvoidDist))
                     { return false; }
 
                     //It's also bad if the obstacle would collide with us next turn, by virtue of moving...
                     //But it's still okay if we're moving away from it.
                     Vector2 obsPosNext = obsPos + info.Velocity * TIME_STEP;
-                    if (IntersectsObstacle(dest, obsPosNext, avoidDist, rayUnit))
+                    if (IntersectsObstacle(dest, obsPosNext, robotAvoidDist, rayUnit))
                     { return false; }
                 }
             }
@@ -213,10 +241,38 @@ namespace Robocup.MotionControl
                 if (IntersectsObstacle(src, dest, rayUnit, rayLen, ball.Position, avoidBallRadius))
                 { return false; }
             }
+
+            //Test destination against all other obstacles
+            LineSegment seg = new LineSegment(src, dest);
+            foreach(Geom g in obstacles)
+            {
+                if(g is Circle)
+                {
+                    if((src - ((Circle)g).Center) * rayUnit <= 0 && GeomFuncs.intersects(seg,(Circle)g))
+                        return false;
+                }
+                else if(g is Rectangle)
+                {
+                    if (((Rectangle)g).contains(src))
+                    {
+                        if (((Rectangle)g).ShortestDirectionOut(src) * rayUnit <= 0)
+                            return false;
+                    }
+                    else
+                    {
+                        if (GeomFuncs.intersects(seg, (Rectangle)g))
+                            return false;
+                    }
+                }
+                else
+                    throw new Exception("Smooth RRT only supports circles and rectangles currently!");
+            }
+
             return true;
         }
 
-        Vector2 GetAdjustedTargetDir(Vector2 cur, Vector2 targetDir, Vector2 obsPos, Vector2 obsVel, double time, double avoidDist, double targetDist)
+        //Get the adjusted target direction using a tangentbug-like algorithm
+        private Vector2 GetAdjustedTargetDir(Vector2 cur, Vector2 targetDir, Vector2 obsPos, Vector2 obsVel, double time, double avoidDist, double targetDist)
         {
             double obsDist = obsPos.distance(cur);
             time += (obsDist / ROBOT_VELOCITY);
@@ -242,7 +298,7 @@ namespace Robocup.MotionControl
         }
 
         //Get the extended point, using the acceleration model
-        Vector2 GetAcceleratedExtension(RRTNode node, Vector2 target, BallInfo ball, List<RobotInfo> robots, Vector2 goal, double ballAvoidRadius, bool adjust)
+        private Vector2 GetAcceleratedExtension(RRTNode node, Vector2 target, BallInfo ball, List<RobotInfo> robots, Vector2 goal, double ballAvoidRadius, bool adjust)
         {
             Vector2 targetDir = target - node.info.Position;
             double magnitude = targetDir.magnitude();
@@ -280,7 +336,7 @@ namespace Robocup.MotionControl
 
             if (adjust)
             {
-                double avoidDist = GetEffectiveAvoidDist(node.info.Position.distance(goal));
+                double avoidDist = GetEffectiveRobotAvoidDist(node.info.Position.distance(goal));
 
                 //Extend taking obstacles into account, move the target if there's an obstacle in the way
                 double closestObsDistSq = 100000000;
@@ -344,12 +400,13 @@ namespace Robocup.MotionControl
         }
 
         //Check if extending according to nextSegment (the position offset vector) would hit obstacles.
-        RRTNode TryVsObstacles(RobotInfo currentState, RRTNode node, TwoDTreeMap<RRTNode> map, Vector2 nextSegment, 
-            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal)
+        private RRTNode TryVsObstacles(RobotInfo currentState, RRTNode node, TwoDTreeMap<RRTNode> map, Vector2 nextSegment, 
+            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal, List<Geom> obstacles)
         {
             Vector2 nextVel = nextSegment.normalizeToLength(ROBOT_VELOCITY);
 
-            if (!IsAllowedByObstacles(currentState, node.info.Position, nextSegment, node.time, ball, robots, avoidBallRadius, goal))
+            if (!IsAllowedByObstacles(currentState, node.info.Position, nextSegment, node.time, ball, 
+                robots, avoidBallRadius, goal, obstacles))
                 return null;
 
             RobotInfo newInfo = new RobotInfo(
@@ -377,7 +434,8 @@ namespace Robocup.MotionControl
         }
 
         //Get a path!
-        public List<Vector2> GetPathTo(RobotInfo currentState, Vector2 desiredPosition, List<RobotInfo> robots, BallInfo ball, double avoidBallRadius)
+        private List<Vector2> GetPathTo(RobotInfo currentState, Vector2 desiredPosition, List<RobotInfo> robots, 
+            BallInfo ball, double avoidBallRadius, List<Geom> obstacles)
         {
             double mapXMin = Math.Min(currentState.Position.X, desiredPosition.X) - 0.3;
             double mapYMin = Math.Min(currentState.Position.Y, desiredPosition.Y) - 0.3;
@@ -441,7 +499,8 @@ namespace Robocup.MotionControl
                 }
 
                 //Try to generate an extension to our target
-                Vector2 segment = GetAcceleratedExtension(activeNode, currentTarget, ball, robots, desiredPosition, avoidBallRadius, currentTarget == desiredPosition);
+                Vector2 segment = GetAcceleratedExtension(activeNode, currentTarget, ball, robots, desiredPosition, 
+                    avoidBallRadius, currentTarget == desiredPosition);
                 if (segment == null)
                 {
                     tryAgain = true;
@@ -449,7 +508,8 @@ namespace Robocup.MotionControl
                 }
 
                 //Make sure the extension doesn't hit obstacles
-                RRTNode newNode = TryVsObstacles(currentState, activeNode, map, segment, ball, robots, avoidBallRadius, desiredPosition);
+                RRTNode newNode = TryVsObstacles(currentState, activeNode, map, segment, ball, robots, 
+                    avoidBallRadius, desiredPosition, obstacles);
                 if (newNode == null)
                 {
                     tryAgain = true;
@@ -472,20 +532,27 @@ namespace Robocup.MotionControl
                 
             }
 
-            //If we didn't succeed, take the closest node anyways.
+            //If we didn't succeed, take the closest node anyways
             if (!(map.Size() < MAX_TREE_SIZE && tries < MAX_PATH_TRIES))
             {
                 successNode = map.NearestNeighbor(desiredPosition).Second;
+                List<Vector2> path = GetPathFrom(successNode);
+                return path;
             }
-
-            List<Vector2> path = GetPathFrom(successNode);
-            return path;
-
+            else
+            {
+                //If we did succeed, take the succeeding node and tack on the
+                //desired state if it's not there (such as because we got close enough and stopped early).
+                List<Vector2> path = GetPathFrom(successNode);
+                if (path.Count > 0 && path[path.Count - 1].distance(desiredPosition) > 0.001)
+                    path.Add(desiredPosition);
+                return path;
+            }
         }
 
         //Try a bunch of paths and take the best one
-        public List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState, 
-            double avoidBallRadius, RobotPath oldPath)
+        private List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState, 
+            double avoidBallRadius, RobotPath oldPath, List<Geom> obstacles)
         {
             RobotInfo currentState;
             try
@@ -525,7 +592,7 @@ namespace Robocup.MotionControl
 
             for (int i = 0; i < NUM_PATHS_TO_SCORE; i++)
             {
-                List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius);
+                List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius, obstacles);
                 double score = 0;
 
                 //Penalty based on distance from the goal, per meter
@@ -602,9 +669,13 @@ namespace Robocup.MotionControl
         }
 
 
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
-            RobotPath oldPath)
+        //Top level function
+        public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath, List<Geom> obstacles)
         {
+            Team team = desiredState.Team;
+            int id = desiredState.ID;
+
             //Try to find myself
             RobotInfo curinfo;
             try
@@ -616,7 +687,7 @@ namespace Robocup.MotionControl
                 return new RobotPath(team, id);
             }
 
-            List<Vector2> bestPath = GetBestPointPath(team, id, predictor, new RobotInfo(desiredState), avoidBallRadius, oldPath);
+            List<Vector2> bestPath = GetBestPointPath(team, id, predictor, new RobotInfo(desiredState), avoidBallRadius, oldPath, obstacles);
                         
             //Convert the path
             List<RobotInfo> robotPath = new List<RobotInfo>();
@@ -641,6 +712,46 @@ namespace Robocup.MotionControl
 
             return new RobotPath(robotPath);
         }
+
+        private Rectangle ExpandRectangle(Rectangle r, double d)
+        {
+            return new Rectangle(r.XMin - d, r.XMax + d, r.YMin - d, r.YMax + d);
+        }
+        private Circle ExpandCircle(Circle c, double d)
+        {
+            return new Circle(c.Center,c.Radius+d);
+        }
+
+        //Top level function
+        public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
+        {
+            //Build obstacle list
+            List<Geom> obstacles = new List<Geom>();
+            obstacles.Add(Constants.FieldPts.LEFT_GOAL_BOX);
+            obstacles.Add(Constants.FieldPts.RIGHT_GOAL_BOX);
+
+            if (leftAvoid == DefenseAreaAvoid.NORMAL)
+                obstacles.AddRange(Constants.FieldPts.LEFT_DEFENSE_AREA);
+            else if (leftAvoid == DefenseAreaAvoid.FULL)
+                obstacles.AddRange(Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA);
+            if (rightAvoid == DefenseAreaAvoid.NORMAL)
+                obstacles.AddRange(Constants.FieldPts.RIGHT_DEFENSE_AREA);
+            else if (rightAvoid == DefenseAreaAvoid.FULL)
+                obstacles.AddRange(Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA);
+
+            for (int i = 0; i < obstacles.Count; i++)
+            {
+                Geom g = obstacles[i];
+                if (g is Rectangle)
+                    obstacles[i] = ExpandRectangle((Rectangle)g, ROBOT_RADIUS);
+                if (g is Circle)
+                    obstacles[i] = ExpandCircle((Circle)g, ROBOT_RADIUS);
+            }
+            
+            return GetPath(desiredState, predictor, avoidBallRadius, oldPath, obstacles);
+        }
+
     }
 
 }

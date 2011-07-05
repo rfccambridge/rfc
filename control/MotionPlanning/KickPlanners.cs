@@ -253,17 +253,20 @@ namespace Robocup.MotionControl
             // go to the appropriate point
             if (goingToPoint1)
             {
-                RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, id);
-            	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS,
-                    null);
+                //TODO(davidwu): Need to use something for the DefenseAreaAvoid?
+                RobotInfo desiredState = new RobotInfo(p1, desiredOrientation, team, id);
+            	RobotPath path = dumbPlanner.PlanMotion(desiredState, predictor, BALL_AVOID_RADIUS, null, 
+                    DefenseAreaAvoid.NONE, DefenseAreaAvoid.NONE); 
             	speeds = dumbPlanner.FollowPath(path, predictor).wheel_speeds;
                 //why was regular Planner being used here? it seems inconsistent, sometimes using one instance of the bugNavigator and sometimes another.
                     //regularPlanner.PlanMotion(team, id, desiredState, predictor, BALL_AVOID_RADIUS).wheel_speeds;
             }
             else
             {
-                RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, id);
-            	RobotPath path = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0, null);
+                //TODO(davidwu): Need to use something for the DefenseAreaAvoid?
+                RobotInfo desiredState = new RobotInfo(p2, desiredOrientation, team, id);
+                RobotPath path = dumbPlanner.PlanMotion(desiredState, predictor, 0, null, 
+                    DefenseAreaAvoid.NONE, DefenseAreaAvoid.NONE);
 				speeds = dumbPlanner.FollowPath(path,predictor).wheel_speeds;// This is the "normal one"
                 //speeds = dumbPlanner.PlanMotion(team, id, desiredState, predictor, 0).wheel_speeds;
 

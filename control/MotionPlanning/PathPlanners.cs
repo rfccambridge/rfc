@@ -143,9 +143,11 @@ namespace Robocup.MotionControl
             previousAngle = 0;
         }
 
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
-            RobotPath oldPath)
+        public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
         {
+            Team team = desiredState.Team;
+            int id = desiredState.ID;
             RobotInfo currentState;
             try
             {
@@ -369,9 +371,12 @@ namespace Robocup.MotionControl
 			planner = new BasicRRTPlanner<Vector2, Vector2Tree>(Common.ExtendVV, Common.RandomStateV);
 		}
 
-		public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
-            RobotPath oldPath)
+		public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
 		{
+            Team team = desiredState.Team;
+            int id = desiredState.ID;
+
             //Build obstacles!-------------------------------
 			List<Obstacle> obstacles = new List<Obstacle>();
 

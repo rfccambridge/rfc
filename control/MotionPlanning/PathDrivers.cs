@@ -1714,7 +1714,7 @@ namespace Robocup.MotionControl
             distanceLeft += (nextWaypoint.Position - curInfo.Position).magnitude();
             for (int i = nextWaypointIdx; i < path.Waypoints.Count - 1; i++)
                 distanceLeft += (path[i + 1].Position - path[i].Position).magnitude();
-            distanceLeft += (desiredState.Position - path[path.Waypoints.Count - 1].Position).magnitude();
+            //distanceLeft += (desiredState.Position - path[path.Waypoints.Count - 1].Position).magnitude();
 
             //Compute distance to nearest obstacle
             //Adjusted for whether we are going towards them or not.

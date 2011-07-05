@@ -30,6 +30,8 @@ namespace Robocup.Utilities
         {
             this.glField = new OpenTK.GLControl();
             this.panGameStatus = new System.Windows.Forms.Panel();
+            this.lblControllerDuration = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.lblLapDuration = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.lblMarker = new System.Windows.Forms.Label();
@@ -43,8 +45,6 @@ namespace Robocup.Utilities
             this.label1 = new System.Windows.Forms.Label();
             this.lblTeam = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.lblControllerDuration = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.panGameStatus.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,16 +59,17 @@ namespace Robocup.Utilities
             this.glField.TabIndex = 0;
             this.glField.VSync = false;
             this.glField.Load += new System.EventHandler(this.glField_Load);
-            this.glField.Paint += new System.Windows.Forms.PaintEventHandler(this.glField_Paint);
-            this.glField.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glField_MouseMove);
             this.glField.DragDrop += new System.Windows.Forms.DragEventHandler(this.glField_DragDrop);
-            this.glField.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glField_MouseDown);
-            this.glField.Resize += new System.EventHandler(this.glField_Resize);
-            this.glField.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glField_MouseUp);
             this.glField.DragEnter += new System.Windows.Forms.DragEventHandler(this.glField_DragEnter);
+            this.glField.Paint += new System.Windows.Forms.PaintEventHandler(this.glField_Paint);
+            this.glField.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glField_MouseDown);
+            this.glField.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glField_MouseMove);
+            this.glField.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glField_MouseUp);
+            this.glField.Resize += new System.EventHandler(this.glField_Resize);
             // 
             // panGameStatus
             // 
+            this.panGameStatus.BackColor = System.Drawing.Color.Green;
             this.panGameStatus.Controls.Add(this.lblControllerDuration);
             this.panGameStatus.Controls.Add(this.label8);
             this.panGameStatus.Controls.Add(this.lblLapDuration);
@@ -89,6 +90,25 @@ namespace Robocup.Utilities
             this.panGameStatus.Name = "panGameStatus";
             this.panGameStatus.Size = new System.Drawing.Size(599, 140);
             this.panGameStatus.TabIndex = 8;
+            // 
+            // lblControllerDuration
+            // 
+            this.lblControllerDuration.AutoSize = true;
+            this.lblControllerDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblControllerDuration.Location = new System.Drawing.Point(119, 92);
+            this.lblControllerDuration.Name = "lblControllerDuration";
+            this.lblControllerDuration.Size = new System.Drawing.Size(32, 16);
+            this.lblControllerDuration.TabIndex = 16;
+            this.lblControllerDuration.Text = "<?>";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(12, 92);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(97, 13);
+            this.label8.TabIndex = 15;
+            this.label8.Text = "Controller Duration:";
             // 
             // lblLapDuration
             // 
@@ -217,25 +237,6 @@ namespace Robocup.Utilities
             this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 5;
             this.label5.Text = "PlayType:";
-            // 
-            // lblControllerDuration
-            // 
-            this.lblControllerDuration.AutoSize = true;
-            this.lblControllerDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblControllerDuration.Location = new System.Drawing.Point(119, 92);
-            this.lblControllerDuration.Name = "lblControllerDuration";
-            this.lblControllerDuration.Size = new System.Drawing.Size(32, 16);
-            this.lblControllerDuration.TabIndex = 16;
-            this.lblControllerDuration.Text = "<?>";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(12, 92);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(97, 13);
-            this.label8.TabIndex = 15;
-            this.label8.Text = "Controller Duration:";
             // 
             // FieldDrawerForm
             // 

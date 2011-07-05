@@ -44,11 +44,32 @@ namespace Robocup.Core
             /// <summary> Height of the in-bounds part of the field </summary>
             static public double HEIGHT { get { InitializeIfNeeded(); return _HEIGHT; } } static volatile float _HEIGHT;
 
+            /// <summary> Width of field including extra out-of-bounds zone for robot movement </summary>
+            static public double EXTENDED_WIDTH { get { InitializeIfNeeded(); return _EXTENDED_WIDTH; } } static volatile float _EXTENDED_WIDTH;
+
+            /// <summary> Height of field including extra out-of-bounds zone for robot movement  </summary>
+            static public double EXTENDED_HEIGHT { get { InitializeIfNeeded(); return _EXTENDED_HEIGHT; } } static volatile float _EXTENDED_HEIGHT;
+
             /// <summary> Width of field including ref zone </summary>
             static public double FULL_WIDTH { get { InitializeIfNeeded(); return _FULL_WIDTH; } } static volatile float _FULL_WIDTH;
 
             /// <summary> Height of field including ref zone </summary>
             static public double FULL_HEIGHT { get { InitializeIfNeeded(); return _FULL_HEIGHT; } } static volatile float _FULL_HEIGHT;
+
+            /// <summary> Width of the extra out-of-bounds zone for robot movement </summary>
+            static public double EXTENDED_BORDER_WIDTH { get { InitializeIfNeeded(); return _EXTENDED_BORDER_WIDTH; } } static volatile float _EXTENDED_BORDER_WIDTH;
+
+            /// <summary> Width of the referree zone </summary>
+            static public double REFEREE_WIDTH { get { InitializeIfNeeded(); return _REFEREE_WIDTH; } } static volatile float _REFEREE_WIDTH;
+
+            /// <summary> Height of the rectangular part of the defense area on each side </summary>
+            static public double DEFENSE_RECT_HEIGHT { get { InitializeIfNeeded(); return _DEFENSE_RECT_HEIGHT; } } static volatile float _DEFENSE_RECT_HEIGHT;
+
+            /// <summary> Radius and rectangular width of the defense area on each side </summary>
+            static public double DEFENSE_AREA_RADIUS { get { InitializeIfNeeded(); return _DEFENSE_AREA_RADIUS; } } static volatile float _DEFENSE_AREA_RADIUS;
+
+            /// <summary> Extended defense area radius that kicking-team robots must stay out of when positioning for free kick </summary>
+            static public double EXTENDED_DEFENSE_AREA_RADIUS { get { InitializeIfNeeded(); return _EXTENDED_DEFENSE_AREA_RADIUS; } } static volatile float _EXTENDED_DEFENSE_AREA_RADIUS;
 
             //BOUNDS----------------------------------------------------------
 
@@ -64,6 +85,17 @@ namespace Robocup.Core
             /// <summary> Y coord of the top boundary line </summary>
             static public double YMAX { get { InitializeIfNeeded(); return _YMAX; } } static volatile float _YMAX;
 
+            /// <summary> X coord of the left boundary including the extra out-of-bounds zone for robot movement </summary>
+            static public double EXTENDED_XMIN { get { InitializeIfNeeded(); return _EXTENDED_XMIN; } } static volatile float _EXTENDED_XMIN;
+
+            /// <summary> X coord of the right boundary including the extra out-of-bounds zone for robot movement </summary>
+            static public double EXTENDED_XMAX { get { InitializeIfNeeded(); return _EXTENDED_XMAX; } } static volatile float _EXTENDED_XMAX;
+
+            /// <summary> Y coord of the bottom boundary including the extra out-of-bounds zone for robot movement </summary>
+            static public double EXTENDED_YMIN { get { InitializeIfNeeded(); return _EXTENDED_YMIN; } } static volatile float _EXTENDED_YMIN;
+
+            /// <summary> Y coord of the top boundary including the extra out-of-bounds zone for robot movement </summary>
+            static public double EXTENDED_YMAX { get { InitializeIfNeeded(); return _EXTENDED_YMAX; } } static volatile float _EXTENDED_YMAX;
 
             /// <summary> X coord of the left boundary including the ref zone </summary>
             static public double FULL_XMIN { get { InitializeIfNeeded(); return _FULL_XMIN; } } static volatile float _FULL_XMIN;
@@ -76,9 +108,6 @@ namespace Robocup.Core
 
             /// <summary> Y coord of the top boundary including the ref zone </summary>
             static public double FULL_YMAX { get { InitializeIfNeeded(); return _FULL_YMAX; } } static volatile float _FULL_YMAX;
-
-            /// <summary> Width of the referree zone </summary>
-            static public double REFEREE_WIDTH { get { InitializeIfNeeded(); return _REFEREE_WIDTH; } } static volatile float _REFEREE_WIDTH;
 
             //GOAL--------------------------------------------------------------
 
@@ -111,18 +140,31 @@ namespace Robocup.Core
             {
                 _WIDTH = (float)ConstantsRaw.get<double>("plays", "FIELD_WIDTH");
                 _HEIGHT = (float)ConstantsRaw.get<double>("plays", "FIELD_HEIGHT");
+                _EXTENDED_BORDER_WIDTH = (float)ConstantsRaw.get<double>("plays", "EXTENDED_BORDER_WIDTH");
                 _REFEREE_WIDTH = (float)ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
                 _GOAL_WIDTH = (float)ConstantsRaw.get<double>("plays", "GOAL_WIDTH");
                 _GOAL_HEIGHT = (float)ConstantsRaw.get<double>("plays", "GOAL_HEIGHT");
                 _CENTER_CIRCLE_RADIUS = (float)ConstantsRaw.get<double>("plays", "CENTER_CIRCLE_RADIUS");
 
-                _FULL_WIDTH = _WIDTH + 2.0f * ((float)Math.Max(_REFEREE_WIDTH, _GOAL_WIDTH));
-                _FULL_HEIGHT = (float)Math.Max(_HEIGHT + 2.0f * _REFEREE_WIDTH, _GOAL_HEIGHT);
+                _DEFENSE_RECT_HEIGHT = (float)ConstantsRaw.get<double>("plays", "DEFENSE_RECT_HEIGHT");
+                _DEFENSE_AREA_RADIUS = (float)ConstantsRaw.get<double>("plays", "DEFENSE_AREA_RADIUS");
+                _EXTENDED_DEFENSE_AREA_RADIUS = (float)ConstantsRaw.get<double>("plays", "EXTENDED_DEFENSE_AREA_RADIUS");
+
+                _EXTENDED_WIDTH = _WIDTH + 2.0f * _EXTENDED_BORDER_WIDTH;
+                _EXTENDED_HEIGHT = _HEIGHT + 2.0f * _EXTENDED_BORDER_WIDTH;
+
+                _FULL_WIDTH = _WIDTH + 2.0f * ((float)Math.Max(_EXTENDED_BORDER_WIDTH + _REFEREE_WIDTH, _GOAL_WIDTH));
+                _FULL_HEIGHT = (float)Math.Max(_HEIGHT + 2.0f * (_EXTENDED_BORDER_WIDTH + _REFEREE_WIDTH), _GOAL_HEIGHT);
 
                 _XMIN = -_WIDTH / 2.0f;
                 _XMAX = _WIDTH / 2.0f;
                 _YMIN = -_HEIGHT / 2.0f;
                 _YMAX = _HEIGHT / 2.0f;
+
+                _EXTENDED_XMIN = -_EXTENDED_WIDTH / 2.0f;
+                _EXTENDED_XMAX = _EXTENDED_WIDTH / 2.0f;
+                _EXTENDED_YMIN = -_EXTENDED_HEIGHT / 2.0f;
+                _EXTENDED_YMAX = _EXTENDED_HEIGHT / 2.0f;
 
                 _FULL_XMIN = -_FULL_WIDTH / 2.0f;
                 _FULL_XMAX = _FULL_WIDTH / 2.0f;
@@ -215,6 +257,21 @@ namespace Robocup.Core
             /// <summary> Top point of their goal </summary>
             static public Vector2 THEIR_GOAL_TOP { get { InitializeIfNeeded(); return _THEIR_GOAL_TOP; } } static volatile Vector2 _THEIR_GOAL_TOP;
 
+            //EXTENDED BOUNDS---------------------------------------------------------
+
+            /// <summary> Top left corner of field including ref zone </summary>
+            static public Vector2 EXTENDED_TOP_LEFT { get { InitializeIfNeeded(); return _EXTENDED_TOP_LEFT; } } static volatile Vector2 _EXTENDED_TOP_LEFT;
+
+            /// <summary> Bottom left corner of field including ref zone </summary>
+            static public Vector2 EXTENDED_BOTTOM_LEFT { get { InitializeIfNeeded(); return _EXTENDED_BOTTOM_LEFT; } } static volatile Vector2 _EXTENDED_BOTTOM_LEFT;
+
+            /// <summary> Top right corner of field including ref zone </summary>
+            static public Vector2 EXTENDED_TOP_RIGHT { get { InitializeIfNeeded(); return _EXTENDED_TOP_RIGHT; } } static volatile Vector2 _EXTENDED_TOP_RIGHT;
+
+            /// <summary> Bottom right corner of field including ref zone </summary>
+            static public Vector2 EXTENDED_BOTTOM_RIGHT { get { InitializeIfNeeded(); return _EXTENDED_BOTTOM_RIGHT; } } static volatile Vector2 _EXTENDED_BOTTOM_RIGHT;
+
+
             //FULL BOUNDS---------------------------------------------------------
 
             /// <summary> Top left corner of field including ref zone </summary>
@@ -231,8 +288,45 @@ namespace Robocup.Core
 
             //LINES------------------------------------------------------------------------------
 
-            /// <summary> Bottom right corner of field including ref zone </summary>
+            /// <summary> Boundary lines of field </summary>
             static public IList<Line> BOUNDARY_LINES { get { InitializeIfNeeded(); return _BOUNDARY_LINES.AsReadOnly(); } } static volatile List<Line> _BOUNDARY_LINES;
+
+            /// <summary> Boundary lines of field including extended out-of-bounds zone for robot movement </summary>
+            static public IList<Line> EXTENDED_BOUNDARY_LINES { get { InitializeIfNeeded(); return _EXTENDED_BOUNDARY_LINES.AsReadOnly(); } } static volatile List<Line> _EXTENDED_BOUNDARY_LINES;
+
+            /// <summary> Boundary lines of field including ref zone </summary>
+            static public IList<Line> FULL_BOUNDARY_LINES { get { InitializeIfNeeded(); return _FULL_BOUNDARY_LINES.AsReadOnly(); } } static volatile List<Line> _FULL_BOUNDARY_LINES;
+
+            //RECTANGLES-------------------------------------------------------------------------
+
+            /// <summary> Boundary rectangle of field </summary>
+            static public Rectangle FIELD_RECT { get { InitializeIfNeeded(); return _FIELD_RECT; } } static volatile Rectangle _FIELD_RECT;
+
+            /// <summary> Boundary rectangle of field including extended out-of-bounds zone for robot movement </summary>
+            static public Rectangle EXTENDED_FIELD_RECT { get { InitializeIfNeeded(); return _EXTENDED_FIELD_RECT; } } static volatile Rectangle _EXTENDED_FIELD_RECT;
+
+            /// <summary> Boundary rectangle of field including ref zone </summary>
+            static public Rectangle FULL_FIELD_RECT { get { InitializeIfNeeded(); return _FULL_FIELD_RECT; } } static volatile Rectangle _FULL_FIELD_RECT;
+
+            /// <summary> Boundary rectangle of goal box </summary>
+            static public Rectangle LEFT_GOAL_BOX { get { InitializeIfNeeded(); return _LEFT_GOAL_BOX; } } static volatile Rectangle _LEFT_GOAL_BOX;
+
+            /// <summary> Boundary rectangle of goal box </summary>
+            static public Rectangle RIGHT_GOAL_BOX { get { InitializeIfNeeded(); return _RIGHT_GOAL_BOX; } } static volatile Rectangle _RIGHT_GOAL_BOX;
+
+            //OTHER------------------------------------------------------------------------------
+            /// <summary> A list of shapes that together compose the defense area  </summary>
+            static public IList<Geom> LEFT_DEFENSE_AREA { get { InitializeIfNeeded(); return _LEFT_DEFENSE_AREA; } } static volatile List<Geom> _LEFT_DEFENSE_AREA;
+
+            /// <summary> A list of shapes that together compose the defense area  </summary>
+            static public IList<Geom> RIGHT_DEFENSE_AREA { get { InitializeIfNeeded(); return _RIGHT_DEFENSE_AREA; } } static volatile List<Geom> _RIGHT_DEFENSE_AREA;
+            
+            /// <summary> A list of shapes that together compose the extended defense area  </summary>
+            static public IList<Geom> LEFT_EXTENDED_DEFENSE_AREA { get { InitializeIfNeeded(); return _LEFT_EXTENDED_DEFENSE_AREA; } } static volatile List<Geom> _LEFT_EXTENDED_DEFENSE_AREA;
+            
+            /// <summary> A list of shapes that together compose the defense area  </summary>
+            static public IList<Geom> RIGHT_EXTENDED_DEFENSE_AREA { get { InitializeIfNeeded(); return _RIGHT_EXTENDED_DEFENSE_AREA; } } static volatile List<Geom> _RIGHT_EXTENDED_DEFENSE_AREA;
+
 
             static public void Reload()
             {
@@ -266,19 +360,76 @@ namespace Robocup.Core
                 _THEIR_GOAL_BOTTOM = new Vector2(dx, -dyg);
                 _THEIR_GOAL_TOP = new Vector2(dx, dyg);
 
-                double refwidth = ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
-                _FULL_TOP_LEFT = new Vector2(-dx - refwidth, dy + refwidth);
-                _FULL_BOTTOM_LEFT = new Vector2(-dx - refwidth, -dy - refwidth);
-                _FULL_TOP_RIGHT = new Vector2(dx + refwidth, dy + refwidth);
-                _FULL_BOTTOM_RIGHT = new Vector2(dx + refwidth, -dy - refwidth);
+                double extwidth = ConstantsRaw.get<double>("plays", "EXTENDED_BORDER_WIDTH");
+                _EXTENDED_TOP_LEFT = new Vector2(-dx - extwidth, dy + extwidth);
+                _EXTENDED_BOTTOM_LEFT = new Vector2(-dx - extwidth, -dy - extwidth);
+                _EXTENDED_TOP_RIGHT = new Vector2(dx + extwidth, dy + extwidth);
+                _EXTENDED_BOTTOM_RIGHT = new Vector2(dx + extwidth, -dy - extwidth);
+
+                double refandextwidth = extwidth + ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
+                _FULL_TOP_LEFT = new Vector2(-dx - refandextwidth, dy + refandextwidth);
+                _FULL_BOTTOM_LEFT = new Vector2(-dx - refandextwidth, -dy - refandextwidth);
+                _FULL_TOP_RIGHT = new Vector2(dx + refandextwidth, dy + refandextwidth);
+                _FULL_BOTTOM_RIGHT = new Vector2(dx + refandextwidth, -dy - refandextwidth);
 
                 List<Line> boundaryLines = new List<Line>();
-                boundaryLines.Add(new Line(_FULL_TOP_RIGHT, _FULL_TOP_LEFT));
-                boundaryLines.Add(new Line(_FULL_TOP_LEFT, _FULL_BOTTOM_LEFT));
-                boundaryLines.Add(new Line(_FULL_BOTTOM_LEFT, _FULL_BOTTOM_RIGHT));
-                boundaryLines.Add(new Line(_FULL_BOTTOM_RIGHT, _FULL_TOP_RIGHT));
+                boundaryLines.Add(new Line(_TOP_RIGHT, _TOP_LEFT));
+                boundaryLines.Add(new Line(_TOP_LEFT, _BOTTOM_LEFT));
+                boundaryLines.Add(new Line(_BOTTOM_LEFT, _BOTTOM_RIGHT));
+                boundaryLines.Add(new Line(_BOTTOM_RIGHT, _TOP_RIGHT));
                 _BOUNDARY_LINES = boundaryLines;
-                
+
+                List<Line> extBoundaryLines = new List<Line>();
+                extBoundaryLines.Add(new Line(_EXTENDED_TOP_RIGHT, _EXTENDED_TOP_LEFT));
+                extBoundaryLines.Add(new Line(_EXTENDED_TOP_LEFT, _EXTENDED_BOTTOM_LEFT));
+                extBoundaryLines.Add(new Line(_EXTENDED_BOTTOM_LEFT, _EXTENDED_BOTTOM_RIGHT));
+                extBoundaryLines.Add(new Line(_EXTENDED_BOTTOM_RIGHT, _EXTENDED_TOP_RIGHT));
+                _EXTENDED_BOUNDARY_LINES = extBoundaryLines;
+
+                List<Line> fullBoundaryLines = new List<Line>();
+                fullBoundaryLines.Add(new Line(_FULL_TOP_RIGHT, _FULL_TOP_LEFT));
+                fullBoundaryLines.Add(new Line(_FULL_TOP_LEFT, _FULL_BOTTOM_LEFT));
+                fullBoundaryLines.Add(new Line(_FULL_BOTTOM_LEFT, _FULL_BOTTOM_RIGHT));
+                fullBoundaryLines.Add(new Line(_FULL_BOTTOM_RIGHT, _FULL_TOP_RIGHT));
+                _FULL_BOUNDARY_LINES = fullBoundaryLines;
+
+                _FIELD_RECT = new Rectangle(-dx, dx, -dy, dy);
+                _EXTENDED_FIELD_RECT = new Rectangle(-dx - extwidth, dx + extwidth, -dy - extwidth, dy + extwidth);
+                _FULL_FIELD_RECT = new Rectangle(-dx - refandextwidth, dx + refandextwidth, -dy - refandextwidth, dy + refandextwidth);
+
+                double gw = ConstantsRaw.get<double>("plays", "GOAL_WIDTH");
+                double gh = ConstantsRaw.get<double>("plays", "GOAL_HEIGHT");
+                _LEFT_GOAL_BOX = new Rectangle(-dx - gw, -dx, -gh / 2, gh / 2);
+                _RIGHT_GOAL_BOX = new Rectangle(dx, dx + gw, -gh / 2, gh / 2);
+
+                double drh = ConstantsRaw.get<double>("plays", "DEFENSE_RECT_HEIGHT");
+                double dr = ConstantsRaw.get<double>("plays", "DEFENSE_AREA_RADIUS");
+                double edr = ConstantsRaw.get<double>("plays", "EXTENDED_DEFENSE_AREA_RADIUS");
+
+                List<Geom> lda = new List<Geom>();
+                List<Geom> rda = new List<Geom>();
+                List<Geom> leda = new List<Geom>();
+                List<Geom> reda = new List<Geom>();
+                lda.Add(new Rectangle(-dx, -dx + dr, -drh / 2, drh / 2));
+                rda.Add(new Rectangle(dx - dr, dx, -drh / 2, drh / 2));
+                leda.Add(new Rectangle(-dx, -dx + edr, -drh / 2, drh / 2));
+                reda.Add(new Rectangle(dx - edr, dx, -drh / 2, drh / 2));
+
+                lda.Add(new Circle(-dx, -drh / 2, dr));
+                rda.Add(new Circle(dx, -drh / 2, dr));
+                leda.Add(new Circle(-dx, -drh / 2, edr));
+                reda.Add(new Circle(dx, -drh / 2, edr));
+
+                lda.Add(new Circle(-dx, drh / 2, dr));
+                rda.Add(new Circle(dx, drh / 2, dr));
+                leda.Add(new Circle(-dx, drh / 2, edr));
+                reda.Add(new Circle(dx, drh / 2, edr));
+
+                _LEFT_DEFENSE_AREA = lda;
+                _RIGHT_DEFENSE_AREA = rda;
+                _LEFT_EXTENDED_DEFENSE_AREA = leda;
+                _RIGHT_EXTENDED_DEFENSE_AREA = reda;
+
             }
         }
 

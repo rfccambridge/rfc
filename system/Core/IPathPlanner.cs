@@ -31,10 +31,10 @@ namespace Robocup.CoreRobotics
             _driver.ReloadConstants();
         }
 
-        public RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, 
-            double avoidBallRadius, RobotPath oldPath)
+        public RobotPath PlanMotion(RobotInfo desiredState, IPredictor predictor,
+            double avoidBallRadius, RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
         {
-            RobotPath path = _planner.GetPath(team, id, desiredState, predictor, avoidBallRadius, oldPath);
+            RobotPath path = _planner.GetPath(desiredState, predictor, avoidBallRadius, oldPath, leftAvoid, rightAvoid);
 
             // if path is empty, don't move
             if (path.isEmpty()) {
@@ -66,8 +66,8 @@ namespace Robocup.CoreRobotics
     /// </summary>
     public interface IPathPlanner
     {
-        RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
-            RobotPath oldPath);
+        RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+            RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid);
         void ReloadConstants();
     }
 
@@ -83,9 +83,11 @@ namespace Robocup.CoreRobotics
             _navigator = navigator;
         }
 
-        public RobotPath GetPath(Team team, int id, RobotInfo desiredState, IPredictor predictor, 
-            double avoidBallRadius, RobotPath oldPath) {
-
+        public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor,
+            double avoidBallRadius, RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
+        {
+            Team team = desiredState.Team;
+            int id = desiredState.ID;
             Team theirTeam = team == Team.Yellow ? Team.Blue : Team.Yellow;
 
             //Use navigator to get information

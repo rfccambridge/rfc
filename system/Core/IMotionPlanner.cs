@@ -7,6 +7,11 @@ using System.Drawing;
 namespace Robocup.CoreRobotics
 {
     /// <summary>
+    /// Used to specify whether or how the motion planner should stay out of the defense region around a goal.
+    /// </summary>
+    public enum DefenseAreaAvoid { NONE, NORMAL, FULL };
+
+    /// <summary>
     /// Contains wheel speeds to send to the robot
     /// </summary>
     public class MotionPlanningResults
@@ -20,8 +25,9 @@ namespace Robocup.CoreRobotics
 
     public interface IMotionPlanner
     {
-        RobotPath PlanMotion(Team team, int id, RobotInfo desiredState, IPredictor predictor, 
-            double avoidBallRadius, RobotPath oldPath);
+        RobotPath PlanMotion(RobotInfo desiredState, IPredictor predictor, 
+            double avoidBallRadius, RobotPath oldPath, 
+            DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid);
     	MotionPlanningResults FollowPath(RobotPath path, IPredictor predictor);
         void LoadConstants();
         

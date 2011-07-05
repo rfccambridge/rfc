@@ -245,7 +245,11 @@ namespace Robocup.ControlForm
             RobotPath newPath;
             try
             {
-                newPath = _planner.PlanMotion(_team, id, destination, _predictor, avoidBallDist, oldPath);
+                RobotInfo destinationCopy = new RobotInfo(destination);
+                destinationCopy.Team = _team;
+                destinationCopy.ID = id;
+                newPath = _planner.PlanMotion(destinationCopy, _predictor, avoidBallDist, oldPath, 
+                    DefenseAreaAvoid.NONE, DefenseAreaAvoid.NONE);
             }
             catch (Exception e)
             {
@@ -275,7 +279,7 @@ namespace Robocup.ControlForm
         
         public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation)
 		{
-            Move(new RobotInfo(destination, orientation, robotID), avoidBall);
+            Move(new RobotInfo(destination, orientation, _team, robotID), avoidBall);
 		}		
 
         public void Move(int robotID, bool avoidBall, Vector2 destination)
