@@ -195,7 +195,7 @@ namespace Robocup.Geometry
         private Line l;
 
         /// <summary>
-        /// Creates a line extending from p0 to p1
+        /// Creates a line segment extending from p0 to p1
         /// </summary>
         public LineSegment(Vector2 p0, Vector2 p1)
         {
@@ -203,7 +203,7 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
-        /// Creates a line extending from p0 in the desired direction in radians.
+        /// Creates a line segment extending from p0 in the desired direction in radians.
         /// </summary>
         public LineSegment(Vector2 p0, double direction)
         {
@@ -211,7 +211,7 @@ namespace Robocup.Geometry
         }
 
         /// <summary>
-        /// Creates a line extending from p0 in the desired direction in radians.
+        /// Creates a line segment defined by the same points as the given line
         /// </summary>
         public LineSegment(Line l)
         {

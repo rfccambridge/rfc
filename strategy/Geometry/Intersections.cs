@@ -32,6 +32,7 @@ namespace Robocup.Geometry
             {
                 if (g1 is Line)             return intersects((Line)g0, (Line)g1);
                 else if (g1 is LineSegment) return intersects((Line)g0, (LineSegment)g1);
+                else if (g1 is Rectangle)   return intersects((Line)g0, (Rectangle)g1);
                 else if (g1 is Circle)      return intersects((Line)g0, (Circle)g1);
                 else if (g1 is Arc)         return intersects((Line)g0, (Arc)g1);
             }
@@ -39,13 +40,23 @@ namespace Robocup.Geometry
             {
                 if (g1 is Line)             return intersects((LineSegment)g0, (Line)g1);
                 else if (g1 is LineSegment) return intersects((LineSegment)g0, (LineSegment)g1);
+                else if (g1 is Rectangle)   return intersects((LineSegment)g0, (Rectangle)g1);
                 else if (g1 is Circle)      return intersects((LineSegment)g0, (Circle)g1);
                 else if (g1 is Arc)         return intersects((LineSegment)g0, (Arc)g1);
+            }
+            else if (g0 is Rectangle)
+            {
+                if (g1 is Line)             return intersects((Rectangle)g0, (Line)g1);
+                else if (g1 is LineSegment) return intersects((Rectangle)g0, (LineSegment)g1);
+                else if (g1 is Rectangle)   return intersects((Rectangle)g0, (Rectangle)g1);
+                else if (g1 is Circle)      return intersects((Rectangle)g0, (Circle)g1);
+                else if (g1 is Arc)         return intersects((Rectangle)g0, (Arc)g1);
             }
             else if (g0 is Circle)
             {
                 if (g1 is Line)             return intersects((Circle)g0, (Line)g1);
                 else if (g1 is LineSegment) return intersects((Circle)g0, (LineSegment)g1);
+                else if (g1 is Rectangle)   return intersects((Circle)g0, (Rectangle)g1);
                 else if (g1 is Circle)      return intersects((Circle)g0, (Circle)g1);
                 else if (g1 is Arc)         return intersects((Circle)g0, (Arc)g1);
             }
@@ -53,6 +64,7 @@ namespace Robocup.Geometry
             {
                 if (g1 is Line)             return intersects((Arc)g0, (Line)g1);
                 else if (g1 is LineSegment) return intersects((Arc)g0, (LineSegment)g1);
+                else if (g1 is Rectangle)   return intersects((Arc)g0, (Rectangle)g1);
                 else if (g1 is Circle)      return intersects((Arc)g0, (Circle)g1);
                 else if (g1 is Arc)         return intersects((Arc)g0, (Arc)g1);
             }
@@ -74,6 +86,16 @@ namespace Robocup.Geometry
             return a0.signedDistance(a1.P0) * a0.signedDistance(a1.P1) <= 0;
         }
         static public bool intersects(LineSegment a0, Line a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(Line a0, Rectangle a1)
+        {
+            return intersects(a0, new LineSegment(a1.BL, a1.BR))
+                || intersects(a0, new LineSegment(a1.TL, a1.TR))
+                || intersects(a0, new LineSegment(a1.BL, a1.TL))
+                || intersects(a0, new LineSegment(a1.BR, a1.TR));
+        }
+        static public bool intersects(Rectangle a0, Line a1)
         { return intersects(a1, a0); }
 
         static public bool intersects(Line a0, Circle a1)
@@ -115,6 +137,16 @@ namespace Robocup.Geometry
                    a1.Line.signedDistance(a0.P0) * a1.Line.signedDistance(a0.P1) <= 0;
         }
 
+        static public bool intersects(LineSegment a0, Rectangle a1)
+        {
+            return intersects(a0, new LineSegment(a1.BL, a1.BR))
+                || intersects(a0, new LineSegment(a1.TL, a1.TR))
+                || intersects(a0, new LineSegment(a1.BL, a1.TL))
+                || intersects(a0, new LineSegment(a1.BR, a1.TR));
+        }
+        static public bool intersects(Rectangle a0, LineSegment a1)
+        { return intersects(a1, a0); }
+
         static public bool intersects(LineSegment a0, Circle a1)
         {
             //Test if the minimum distance of the center of the circle is closer than the radius
@@ -145,6 +177,40 @@ namespace Robocup.Geometry
             return false;
         }
         static public bool intersects(Arc a0, LineSegment a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(Rectangle a0, Rectangle a1)
+        {
+            return (a0.XMin <= a1.XMin ? a0.XMax >= a1.XMin : a1.XMax >= a0.XMax)
+                && (a0.YMin <= a1.YMin ? a0.YMax >= a1.YMin : a1.YMax >= a0.YMax);
+        }
+        static public bool intersects(Rectangle a0, Circle a1)
+        {
+            if (a1.Center.X <= a0.XMin)
+            {
+                if (a1.Center.Y <= a0.YMin) return a1.contains(a0.BL);
+                if (a1.Center.Y >= a0.YMax) return a1.contains(a0.TL);
+                return a1.Center.X + a1.Radius >= a0.XMin;
+            }
+            if (a1.Center.X >= a0.XMax)
+            {
+                if (a1.Center.Y <= a0.YMin) return a1.contains(a0.BR);
+                if (a1.Center.Y >= a0.YMax) return a1.contains(a0.TR);
+                return a1.Center.X - a1.Radius <= a0.XMax;
+            }
+
+            if (a1.Center.Y <= a0.YMin) return a1.Center.Y + a1.Radius >= a0.YMin;
+            if (a1.Center.Y >= a0.YMax) return a1.Center.Y - a1.Radius <= a0.YMax;
+            return true;
+        }
+        static public bool intersects(Circle a0, Rectangle a1)
+        { return intersects(a1, a0); }
+
+        static public bool intersects(Rectangle a0, Arc a1)
+        {
+            throw new NotImplementedException();
+        }
+        static public bool intersects(Arc a0, Rectangle a1)
         { return intersects(a1, a0); }
 
         static public bool intersects(Circle a0, Circle a1)

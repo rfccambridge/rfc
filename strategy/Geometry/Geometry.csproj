@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Circle.cs" />
     <Compile Include="Arc.cs" />
+    <Compile Include="Rectangle.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="Geom.cs" />
     <Compile Include="RobotShape.cs" />

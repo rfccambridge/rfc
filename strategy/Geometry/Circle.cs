@@ -18,6 +18,15 @@ namespace Robocup.Geometry
         /// <summary>
         /// Creates a circle with the given center and radius
         /// </summary>
+        public Circle(double xCenter, double yCenter, double radius)
+        {
+            this.center = new Vector2(xCenter,yCenter);
+            this.radius = radius;
+        }
+
+        /// <summary>
+        /// Creates a circle with the given center and radius
+        /// </summary>
         public Circle(Vector2 center, double radius)
         {
             this.center = center;
