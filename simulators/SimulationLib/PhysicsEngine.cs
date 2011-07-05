@@ -20,7 +20,8 @@ namespace Robocup.Simulation
         const double BREAKBEAM_TIMEOUT = 10; //Seconds
         const double DELAY_ADJUSTMENT = 0.01; //Add this much to dt to additionally compensate for any slowness 
 
-        static double[] KICK_SPEED = new double[RobotCommand.MAX_KICKER_STRENGTH+1] { 0, 0, 1.81, 2.88, 3.33, 4.25 };
+        //TODO this is still the old 0-5 scale. Change this to the new 0-25 scale and remeasure kick speeds to retune
+        static double[] KICK_SPEED = new double[RobotCommand.MAX_KICKER_STRENGTH/5+1] { 0, 0, 1.81, 2.88, 3.33, 4.25 };
 
 		private bool _marking = false;
 		private Vector2 _markedPosition;
@@ -466,6 +467,7 @@ namespace Robocup.Simulation
 
         private double getKickSpeed(int kickerStrength)
         {
+            kickerStrength /= 5;
             if(kickerStrength < 0)
                 kickerStrength = 0;
             if (kickerStrength >= KICK_SPEED.Length)
@@ -634,6 +636,7 @@ namespace Robocup.Simulation
                     //TODO: Make the simulator handle these differently/appropriately
                     case RobotCommand.Command.BREAKBEAM_KICK:
                     case RobotCommand.Command.FULL_BREAKBEAM_KICK:
+                    case RobotCommand.Command.MIN_BREAKBEAM_KICK:
                         break_beam_frames[team][command.ID] = (int)(BREAKBEAM_TIMEOUT / runLoop.GetPeriod());
                         kick_strengths[team][command.ID] = command.KickerStrength;
                         break;

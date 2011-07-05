@@ -236,7 +236,7 @@ namespace Robocup.Plays
         /// The main difference is that closeness to the ball is determined by a break-beam sensor on the robot itself and 
         /// that is, hopefully, much more accurate than vision distances.
         /// </summary>
-        public void BeamKick(int robotID, Vector2 target, int strength = 2)
+        public void BeamKick(int robotID, Vector2 target, int strength = RobotCommand.MAX_KICKER_STRENGTH)
         {
             RobotInfo thisrobot;
             Vector2 ball;
@@ -400,21 +400,6 @@ namespace Robocup.Plays
             }
             //HACK: commander.move(robotID, true, target, Math.Atan2(facing.Y - target.Y, facing.X - target.X));
         }
-
-
-        /// <summary>
-        /// Returns if this robot is close enough to the desired position and orientation
-        /// (such as to decide whether or not the robot is in position to kick the ball)
-        /// </summary>
-        /// 
-        /*
-        TODO (davidwu): And can we remove this code?
-        private bool closeEnough(RobotInfo robot, double x, double y, double orientation)
-        {
-            double anglediff = UsefulFunctions.angleDifference(orientation, robot.Orientation);
-            double dist = UsefulFunctions.distance(new Vector2(x, y), robot.Position);
-            return (Math.Abs(anglediff) <= angleTolerance) && (dist <= distanceTolerance);
-        }*/
     }
 
 
