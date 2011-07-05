@@ -74,7 +74,8 @@ namespace Robocup.SerialControl {
                   ",      ============= rotate anti-clockwise\r\n" +
                   ".      ============= rotate clockwise\r\n" +
                   "b      ============= enable break-beam\r\n" +
-                  "f      ============= full-strength break-beam\r\n" +
+                  "f      ============= full-strength bb kick\r\n" +
+                  "m      ============= min-strength bb kick\r\n" +
                   "c      ============= start charging kicker\r\n" +
                   "k      ============= stop charging kicker\r\n" +
                   "space  ============= fire kicker\r\n" +
@@ -305,6 +306,7 @@ namespace Robocup.SerialControl {
         private void RemoteControl_KeyDown(object sender, KeyEventArgs e) {
             if (_active) {
                 #region keyboard control
+                RobotCommand command;
                 switch (e.KeyCode) {
                     case Keys.Back:
                         stopEverything(_curRobot);
@@ -365,11 +367,16 @@ namespace Robocup.SerialControl {
                         sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
                                      _robotModels[_curRobot].DriveInDirection(_speed, -1.0, 1.0)));
                         break;
-                    case Keys.B: // b break-beam kick                        
+                    case Keys.B: // b break-beam kick
                         sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.BREAKBEAM_KICK));
                         break;
-                    case Keys.F: // f full break-beam kick                        
-                        RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                    case Keys.F: // f full break-beam kick
+                        command = new RobotCommand(_curRobot, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                        command.KickerStrength = (byte)udKickStrength.Value;
+                        sendCommand(command);
+                        break;
+                    case Keys.M: // m break-beam kick with a minimum charge to kick
+                        command = new RobotCommand(_curRobot, RobotCommand.Command.MIN_BREAKBEAM_KICK);
                         command.KickerStrength = (byte)udKickStrength.Value;
                         sendCommand(command);
                         break;
@@ -540,7 +547,7 @@ namespace Robocup.SerialControl {
 
         private void btnBreakBeamKick_Click(object sender, EventArgs e)
         {
-            RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+            RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.MIN_BREAKBEAM_KICK);
             command.KickerStrength = (byte)udKickStrength.Value;
             sendCommand(command);
         }

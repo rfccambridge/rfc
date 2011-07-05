@@ -572,6 +572,7 @@ namespace Robocup.Simulation
                         //TODO: Make the simulator handle these differently/appropriately
                     case RobotCommand.Command.BREAKBEAM_KICK:
                     case RobotCommand.Command.FULL_BREAKBEAM_KICK:
+                    case RobotCommand.Command.MIN_BREAKBEAM_KICK:
                         {
                             const double CENTER_TO_KICKER_DIST = 0.070; // m
                             const double KICKER_ACTIVITY_RADIUS_SQ = 0.04 * 0.04; // m
@@ -617,32 +618,22 @@ namespace Robocup.Simulation
                                     //                  " Distsq: " + kickerPosition.distanceSq(ballInfo.Position));
                                     if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS_SQ)
                                     {
-                                        
-                                        
-                                        switch (command.KickerStrength)
-                                        {
+                                        // XXX: SK: These are somehow arbitrary based on old data.
+                                        // We need to redo the characterization experiment and
+                                        // interpolate for values we don't know
+                                        if (command.KickerStrength <= 5)
+                                            varspeed = 0;
+                                        else if (command.KickerStrength <= 10)
+                                            varspeed = 1.81;
+                                        else if (command.KickerStrength <= 15)
+                                            varspeed = 2.88;
+                                        else if (command.KickerStrength <= 20)
+                                            varspeed = 3.33;
+                                        else if (command.KickerStrength <= 25)
+                                            varspeed = 4.25;
+                                        else
+                                            varspeed = 4.3;
 
-                                            case 1:
-                                                varspeed = 0;
-                                                break;
-                                            case 2:
-                                                varspeed = 1.81;
-                                                break;
-                                            case 3:
-                                                varspeed = 2.88;
-                                                break;
-                                            case 4:
-                                                varspeed = 3.33;
-                                                break;
-                                            case 5:
-                                                varspeed = 4.25;
-                                                break;
-                                            default:
-                                                varspeed = 4.3;
-                                                break;
-
-                                        }
-                                        
                                         double ballVx = (double)(varspeed) * Math.Cos(robot.Orientation);
                                         double ballVy = (double)(varspeed) * Math.Sin(robot.Orientation);
                                         Vector2 newVelocity = new Vector2(ballVx, ballVy);

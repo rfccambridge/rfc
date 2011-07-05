@@ -687,7 +687,7 @@ namespace Robocup.SerialControl
             this.btnBreakBeamKick.Name = "btnBreakBeamKick";
             this.btnBreakBeamKick.Size = new System.Drawing.Size(120, 23);
             this.btnBreakBeamKick.TabIndex = 3;
-            this.btnBreakBeamKick.Text = "Break Beam Kick";
+            this.btnBreakBeamKick.Text = "Min Break Beam Kick";
             this.btnBreakBeamKick.UseVisualStyleBackColor = true;
             this.btnBreakBeamKick.Click += new System.EventHandler(this.btnBreakBeamKick_Click);
             // 

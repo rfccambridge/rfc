@@ -297,7 +297,7 @@ namespace Robocup.ControlForm
 
         public void BreakBeam(int robotID, int strength)
         {
-            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+            RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.MIN_BREAKBEAM_KICK);
             command.KickerStrength = (byte)strength;
             _cmdSender.Post(command);
         }

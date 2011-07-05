@@ -9,19 +9,20 @@ namespace Robocup.CoreRobotics
     public class RobotCommand : Robocup.MessageSystem.IByteSerializable<RobotCommand> {
         public enum Command
         {
-            MOVE,
-            KICK,            
-            START_CHARGING,
-            START_VARIABLE_CHARGING,
-            STOP_CHARGING,
-            BREAKBEAM_KICK,
-            FULL_BREAKBEAM_KICK,
-            START_DRIBBLER,
-            STOP_DRIBBLER,
-            DISCHARGE,
-            RESET,
-            SET_PID,
-            SET_CFG_FLAGS
+            MOVE,                       // Send wheelspeeds for 4 wheels
+            KICK,                       // Charge & plunge, regardless of break-beam
+            START_CHARGING,             // Start charging to full capacitor voltage (XXX: deprecated)
+            START_VARIABLE_CHARGING,    // Start charging to a set target voltage
+            STOP_CHARGING,              // Stop charging and maintain charge
+            BREAKBEAM_KICK,             // Charge to full voltage & plunge whenever beam broken (XXX: deprecated)
+            FULL_BREAKBEAM_KICK,        // Charge to target voltage & plunge whenever targetV reached and beam broken
+            MIN_BREAKBEAM_KICK,         // Charge to target voltage & plunge whenever V > minV and beam broken
+            START_DRIBBLER,             // Start the dribbler with a set speed
+            STOP_DRIBBLER,              // Stop the dribbler
+            DISCHARGE,                  // Discharge capacitors without plunging
+            RESET,                      // Reset brushless board PIC
+            SET_PID,                    // Set PID constants for single-speed control (TOOD: check if deprecated?)
+            SET_CFG_FLAGS               // Set configuration flags
         };
 
         static CRCTool _crcTool;
@@ -29,9 +30,11 @@ namespace Robocup.CoreRobotics
         static Dictionary<Command, byte> _commandToI;
 
         public static byte DribblerSpeed = 5;
+        // Equal to capacitor voltage we charge to / 10
         public byte KickerStrength = MAX_KICKER_STRENGTH;
+        public byte MinKickerStrength = 10; // XXX: SK: This should be calibrated
 
-        public const int MAX_KICKER_STRENGTH = 5;
+        public const int MAX_KICKER_STRENGTH = 25;
         public const int MIN_KICKER_STRENGTH = 1;
 
         public WheelSpeeds Speeds;
@@ -105,7 +108,7 @@ namespace Robocup.CoreRobotics
         public byte[] ToPacket()
         {
             byte id = (byte)('0' + ID);
-            byte chksum, source, port, arg; // source: w for brushless board, v for kicker board
+            byte chksum, source, port, arg0, arg1; // source: w for brushless board, v for kicker board
 
             switch (command)
             {
@@ -144,28 +147,38 @@ namespace Robocup.CoreRobotics
                     return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, BoardID, Flags,
                                       (byte)'\\', (byte)'E'};
                 case Command.START_DRIBBLER:
-                    source = (byte)'v'; port = (byte)'d'; arg = (byte)('0' + (byte)DribblerSpeed);
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
+                    source = (byte)'v'; port = (byte)'d'; arg0 = (byte)('0' + (byte)DribblerSpeed);
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0,
                                       (byte)'\\', (byte)'E'};
                 case Command.STOP_DRIBBLER:
-                    source = (byte)'v'; port = (byte)'d'; arg = (byte)'0';
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
+                    source = (byte)'v'; port = (byte)'d'; arg0 = (byte)'0';
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0,
                                       (byte)'\\', (byte)'E'};
                 case Command.START_VARIABLE_CHARGING:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'v'; arg = (byte)('0' + (byte) KickerStrength);
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
+                    source = (byte)'v'; port = (byte)'v'; arg0 = (byte)KickerStrength;
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0,
                                       (byte)'\\', (byte)'E'};
                 case Command.FULL_BREAKBEAM_KICK:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'f'; arg = (byte)('0' + (byte) KickerStrength);
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg,
+                    source = (byte)'v'; port = (byte)'f'; arg0 = (byte) KickerStrength;
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0,
+                                      (byte)'\\', (byte)'E'};
+                case Command.MIN_BREAKBEAM_KICK:
+                    if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
+                    if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
+                    if (MinKickerStrength > MAX_KICKER_STRENGTH) MinKickerStrength = MAX_KICKER_STRENGTH;
+                    if (MinKickerStrength < MIN_KICKER_STRENGTH) MinKickerStrength = MIN_KICKER_STRENGTH;
+                    source = (byte)'v'; port = (byte)'m';
+                    arg0 = (byte)KickerStrength; arg1 = (byte) MinKickerStrength;
+                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0, arg1 });
+                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0, arg1,
                                       (byte)'\\', (byte)'E'};
                 case Command.KICK:              source = (byte)'v'; port = (byte)'k'; break;
                 case Command.START_CHARGING:    source = (byte)'v'; port = (byte)'c'; break;
@@ -225,6 +238,10 @@ namespace Robocup.CoreRobotics
                 case Command.START_VARIABLE_CHARGING:
                     KickerStrength = buff[4];
                     break;
+                case Command.MIN_BREAKBEAM_KICK:
+                    KickerStrength = buff[4];
+                    MinKickerStrength = buff[5];
+                    break;
                 case Command.START_DRIBBLER:
                     DribblerSpeed = buff[4];
                     break;
@@ -262,6 +279,10 @@ namespace Robocup.CoreRobotics
                 case Command.FULL_BREAKBEAM_KICK:
                 case Command.START_VARIABLE_CHARGING:
                     buff[4] = KickerStrength;
+                    break;
+                case Command.MIN_BREAKBEAM_KICK:
+                    buff[4] = KickerStrength;
+                    buff[5] = MinKickerStrength;
                     break;
                 case Command.START_DRIBBLER:
                     buff[4] = DribblerSpeed;
