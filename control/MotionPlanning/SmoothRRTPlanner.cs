@@ -748,7 +748,18 @@ namespace Robocup.MotionControl
                 if (g is Circle)
                     obstacles[i] = ExpandCircle((Circle)g, ROBOT_RADIUS);
             }
-            
+
+            //Error reporting
+            for (int i = 0; i < obstacles.Count; i++)
+            {
+                Geom g = obstacles[i];
+                if (g is Rectangle && ((Rectangle)g).contains(desiredState.Position))
+                    Console.WriteLine("Warning: SmoothRRTPlanner desired state inside obstacle!");
+                else if (g is Circle && ((Circle)g).contains(desiredState.Position))
+                    Console.WriteLine("Warning: SmoothRRTPlanner desired state inside obstacle!");
+            }
+
+
             return GetPath(desiredState, predictor, avoidBallRadius, oldPath, obstacles);
         }
 
