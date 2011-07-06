@@ -52,6 +52,7 @@ namespace Robocup.ControlForm {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.cmbFieldHalf = new System.Windows.Forms.ComboBox();
+            this.reloadConstantsButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -87,9 +88,9 @@ namespace Robocup.ControlForm {
             // 
             // btnLogNext
             // 
-            this.btnLogNext.Location = new System.Drawing.Point(7, 89);
+            this.btnLogNext.Location = new System.Drawing.Point(58, 41);
             this.btnLogNext.Name = "btnLogNext";
-            this.btnLogNext.Size = new System.Drawing.Size(75, 23);
+            this.btnLogNext.Size = new System.Drawing.Size(72, 23);
             this.btnLogNext.TabIndex = 13;
             this.btnLogNext.Text = "Next Entry";
             this.btnLogNext.UseVisualStyleBackColor = true;
@@ -97,9 +98,9 @@ namespace Robocup.ControlForm {
             // 
             // btnLogOpenClose
             // 
-            this.btnLogOpenClose.Location = new System.Drawing.Point(7, 65);
+            this.btnLogOpenClose.Location = new System.Drawing.Point(6, 41);
             this.btnLogOpenClose.Name = "btnLogOpenClose";
-            this.btnLogOpenClose.Size = new System.Drawing.Size(75, 23);
+            this.btnLogOpenClose.Size = new System.Drawing.Size(46, 23);
             this.btnLogOpenClose.TabIndex = 15;
             this.btnLogOpenClose.Text = "Open log";
             this.btnLogOpenClose.UseVisualStyleBackColor = true;
@@ -112,9 +113,9 @@ namespace Robocup.ControlForm {
             this.groupBox1.Controls.Add(this.btnLogNext);
             this.groupBox1.Controls.Add(this.btnStartStopLogging);
             this.groupBox1.Controls.Add(this.btnLogOpenClose);
-            this.groupBox1.Location = new System.Drawing.Point(275, 13);
+            this.groupBox1.Location = new System.Drawing.Point(243, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(91, 120);
+            this.groupBox1.Size = new System.Drawing.Size(140, 67);
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Logging";
@@ -138,9 +139,9 @@ namespace Robocup.ControlForm {
             // 
             // btnStartStopLogging
             // 
-            this.btnStartStopLogging.Location = new System.Drawing.Point(8, 41);
+            this.btnStartStopLogging.Location = new System.Drawing.Point(87, 15);
             this.btnStartStopLogging.Name = "btnStartStopLogging";
-            this.btnStartStopLogging.Size = new System.Drawing.Size(75, 23);
+            this.btnStartStopLogging.Size = new System.Drawing.Size(43, 20);
             this.btnStartStopLogging.TabIndex = 14;
             this.btnStartStopLogging.Text = "Start log";
             this.btnStartStopLogging.UseVisualStyleBackColor = true;
@@ -350,11 +351,22 @@ namespace Robocup.ControlForm {
             this.cmbFieldHalf.TabIndex = 61;
             this.cmbFieldHalf.SelectedIndexChanged += new System.EventHandler(this.cmbFieldHalf_SelectedIndexChanged);
             // 
+            // reloadConstantsButton
+            // 
+            this.reloadConstantsButton.Location = new System.Drawing.Point(251, 96);
+            this.reloadConstantsButton.Name = "reloadConstantsButton";
+            this.reloadConstantsButton.Size = new System.Drawing.Size(107, 23);
+            this.reloadConstantsButton.TabIndex = 18;
+            this.reloadConstantsButton.Text = "Reload Constants";
+            this.reloadConstantsButton.UseVisualStyleBackColor = true;
+            this.reloadConstantsButton.Click += new System.EventHandler(this.button1_Click);
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(395, 476);
+            this.Controls.Add(this.reloadConstantsButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnStopPlayer);
             this.Controls.Add(this.lstPlayers);
@@ -417,5 +429,6 @@ namespace Robocup.ControlForm {
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox cmbFieldHalf;
+        private System.Windows.Forms.Button reloadConstantsButton;
     }
 }

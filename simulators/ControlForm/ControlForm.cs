@@ -358,28 +358,33 @@ namespace Robocup.ControlForm {
             return false;
         }
 
+        private bool reloadConstants()
+        {
+            if (_selectedPlayer.Running)
+            {
+                MessageBox.Show("System running. Need to stop system to reload contants.");
+                return false;
+            }
+
+            ConstantsRaw.Load();
+            Constants.Reload();
+
+            LoadConstants();
+
+            foreach (Player player in lstPlayers.Items)
+                player.LoadConstants();
+
+            reloadPlays();
+
+            Console.WriteLine("Constants and plays reloaded.");
+            return true;
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == (Keys.Control | Keys.R))
             {
-                if (_selectedPlayer.Running)
-                {
-                    MessageBox.Show("System running. Need to stop system to reload contants.");
-                    return false;
-                }
-
-                ConstantsRaw.Load();
-                Constants.Reload();
-
-                LoadConstants();
-
-                foreach (Player player in lstPlayers.Items)
-                    player.LoadConstants();
-
-                reloadPlays();
-
-                Console.WriteLine("Constants and plays reloaded.");
-                return true;
+                return reloadConstants();
             }
             else if (keyData == (Keys.Control | Keys.S))
             {
@@ -807,6 +812,11 @@ namespace Robocup.ControlForm {
                 Application.Exit();
             });
             shutdownThread.Start();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            reloadConstants();
         }
     }
 }
