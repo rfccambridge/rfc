@@ -223,6 +223,23 @@ namespace Robocup.ControlForm
             }
 		}
 
+        private int getGoalieId(Team team)
+        {
+            Vector2 goal = (team == _team) ? Constants.FieldPts.LEFT : Constants.FieldPts.RIGHT;
+            double closestDist = double.PositiveInfinity;
+            int closestId = -1;
+            foreach (RobotInfo r in _predictor.GetRobots(team))
+            {
+                double dist = r.Position.distance(goal);
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    closestId = r.ID;
+                }
+            }
+            return closestId;
+        }
+
         public void Move(RobotInfo destination, bool avoidBall)
         {
             if (double.IsNaN(destination.Position.X) || double.IsNaN(destination.Position.Y))
@@ -244,15 +261,21 @@ namespace Robocup.ControlForm
             if (destination == null)
                 return;
 
+            int goalieId = getGoalieId(destination.Team);
+            Console.WriteLine(goalieId);
+
             //Plan a path
             RobotPath newPath;
             try
             {
+                DefenseAreaAvoid leftAvoid = (id == goalieId) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
+                DefenseAreaAvoid rightAvoid = (_refbox.GetCurrentPlayType() == PlayType.SetPlay_Theirs) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
+
                 RobotInfo destinationCopy = new RobotInfo(destination);
                 destinationCopy.Team = _team;
                 destinationCopy.ID = id;
-                newPath = _planner.PlanMotion(destinationCopy, _predictor, avoidBallDist, oldPath, 
-                    DefenseAreaAvoid.NONE, DefenseAreaAvoid.NONE);
+                newPath = _planner.PlanMotion(destinationCopy, _predictor, avoidBallDist, oldPath,
+                    leftAvoid, rightAvoid);
             }
             catch (Exception e)
             {

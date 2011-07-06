@@ -71,7 +71,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoordinateFlippers.cs" />
     <Compile Include="InterpreterPlay.cs" />
     <Compile Include="PlayComparer.cs" />
     <Compile Include="ActionInterpreter.cs" />

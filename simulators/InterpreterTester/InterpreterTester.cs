@@ -125,13 +125,13 @@ namespace InterpreterTester
 
             // Player 1 plays
             Dictionary<InterpreterPlay, string> offensePlays = PlayUtils.loadPlays(OFFENSE_PLAY_DIR, tacticBook);
-            interpreter = new Interpreter(OUR_TEAM, OUR_FIELD_HALF, this, this, null);
+            interpreter = new Interpreter(OUR_TEAM, this, this, null);
             interpreter.LoadPlays(new List<InterpreterPlay>(offensePlays.Keys));
 
             // Player 2 plays
             Dictionary<InterpreterPlay, string> defensePlays = PlayUtils.loadPlays(DEFENSE_PLAY_DIR, tacticBook);
             // TODO: Part of fixing InterpreterTester: Flipping should not be necessary, although that depends on the implementation fo this  predictor
-            defensiveinterpreter = new Interpreter(THEIR_TEAM, THEIR_FIELD_HALF, this, this, null);
+            defensiveinterpreter = new Interpreter(THEIR_TEAM, this, this, null);
             defensiveinterpreter.LoadPlays(new List<InterpreterPlay>(defensePlays.Keys));
 
             // Play manager stuff

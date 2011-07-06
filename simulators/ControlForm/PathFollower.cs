@@ -91,7 +91,7 @@ namespace Robocup.ControlForm
                 return;
 
             // TODO: figure out how to handle missing robots
-            RobotInfo curinfo;
+            RobotInfo curinfo = null;
             try
             {
                  curinfo = _predictor.GetRobot(_team, _robotID);

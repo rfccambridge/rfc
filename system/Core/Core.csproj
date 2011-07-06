@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="CoordinateFlippers.cs" />
     <Compile Include="DebugConsole.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -124,16 +124,16 @@ namespace Robocup.ControlForm {
 
         private void createPlayers()
         {
-            Player player1 = new Player("Player1", Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player player2 = new Player("Player2", Team.Blue, FieldHalf.Left, _fieldDrawer2, _predictor);
-            Player yplayerFollower = new PathFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player bplayerFollower = new PathFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
-        	Player yplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player bplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player yplayerKick = new KickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player bplayerKick = new KickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player yplayerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Right, _fieldDrawer, _predictor);
-            Player bplayerBeamKick = new BeamKickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player player1 = new Player("Player1", Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
+            Player player2 = new Player("Player2", Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
+            Player yplayerFollower = new PathFollowerPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
+            Player bplayerFollower = new PathFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
+            Player yplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
+            Player bplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
+            Player yplayerKick = new KickPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
+            Player bplayerKick = new KickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
+            Player yplayerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
+            Player bplayerBeamKick = new BeamKickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
 
             lstPlayers.Items.Add(player1);
             lstPlayers.Items.Add(player2);

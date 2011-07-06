@@ -18,7 +18,7 @@ namespace Robocup.ControlForm
 
         // These are created outside and handed to a Player (refbox should be in this list after
         // the refbox refactoring project)
-        protected IPredictor _predictor;
+        protected FlippablePredictor _predictor;
         protected FieldDrawer _fieldDrawer;
 
         // These are created inside the player
@@ -46,7 +46,7 @@ namespace Robocup.ControlForm
                 if (Running)
                     throw new ApplicationException("Cannot change field half while running.");
                 _fieldHalf = value;
-                _interpreter.FieldHalf = _fieldHalf;
+                _predictor.setFlip(_fieldHalf == FieldHalf.Right);
             }
         }
 
@@ -64,7 +64,8 @@ namespace Robocup.ControlForm
             _team = team;
             _fieldHalf = fieldHalf;
             _fieldDrawer = fieldDrawer;
-            _predictor = predictor;
+            _predictor = new FlippablePredictor(predictor);
+            _predictor.setFlip(_fieldHalf == FieldHalf.Right);
             
             //TODO: Change the PlayTypes to Yellow/Blue instead of Ours/Theirs. Then it would
             //      be possible to (1) to hide usage of MulticastRefBoxListener inside RefBoxState
@@ -123,7 +124,7 @@ namespace Robocup.ControlForm
 
             _controller = new Controller(_team, _motionPlanner, _predictor, _refbox, _fieldDrawer);            
 
-            _interpreter = new Interpreter(_team, _fieldHalf, _predictor, _controller, _fieldDrawer);            
+            _interpreter = new Interpreter(_team, _predictor, _controller, _fieldDrawer);            
 
             LoadConstants();
 
@@ -161,7 +162,7 @@ namespace Robocup.ControlForm
 
         public void RegisterPredictor(IPredictor predictor)
         {
-            _predictor = predictor;
+            _predictor = new FlippablePredictor(predictor);
         }
 
         // Unfortunately, RefBox needs to be created inside the player because it depends on team.

@@ -18,63 +18,18 @@ namespace Robocup.Plays
         private IPredictor predictor;
         private List<InterpreterPlay> plays = new List<InterpreterPlay>();
         private Team team;
-        private FieldHalf fieldHalf;
         private FieldDrawer fieldDrawer;
 
         // new play system- retain a game state and a play assigner
         private GameState state;
         private PlayAssigner playAssigner;
 
-        public FieldHalf FieldHalf
-        {
-            get { return fieldHalf; }
-            set
-            {
-                if (running)
-                    throw new ApplicationException("Cannot change field half while running.");                
-
-                if (fieldHalf != value) 
-                {
-                    if (value == FieldHalf.Right)
-                    {
-                        //if we have to flip the coordinates, wrap the predictor/actioninterpreter
-                        actioninterpreter = new FlipActionInterpreter(actioninterpreter);
-                        predictor = new FlipPredictor(predictor);
-                    }
-                    else
-                    {
-                        FlipActionInterpreter flipAI = actioninterpreter as FlipActionInterpreter;
-                        FlipPredictor flipPredictor = predictor as FlipPredictor;
-                        actioninterpreter = flipAI.ActionInterpreter;
-                        predictor = flipPredictor.Predictor;
-                    }
-
-                    // New PlaySystem code
-                    // switch the actioninterpreter and the predictor in the game state
-                    state.setActionInterpreter(actioninterpreter);
-                    state.setPredictor(predictor);
-                }
-                fieldHalf = value;
-            }
-        }
-
-        public Interpreter(Team ourTeam, FieldHalf fieldHalf, IPredictor predictor, IActionInterpreter actioninterpreter, FieldDrawer drawer)
+        public Interpreter(Team ourTeam, IPredictor predictor, IActionInterpreter actioninterpreter, FieldDrawer drawer)
         {
             team = ourTeam;            
             fieldDrawer = drawer;            
-            this.fieldHalf = fieldHalf;
-
-            if (fieldHalf == FieldHalf.Right)
-            {
-                //if we have to flip the coordinates, wrap the predictor/actioninterpreter
-                this.actioninterpreter = new FlipActionInterpreter(actioninterpreter);
-                this.predictor = new FlipPredictor(predictor);
-            }
-            else
-            {
-                this.actioninterpreter = actioninterpreter;
-                this.predictor = predictor;
-            }
+            this.actioninterpreter = actioninterpreter;
+            this.predictor = predictor;
 
             // new play system: set up the game state
             state = new GameState(this.predictor, this.actioninterpreter, ourTeam);
@@ -82,8 +37,8 @@ namespace Robocup.Plays
 
             selector = new PlaySelector();
         }
-        public Interpreter(Team team, FieldHalf fieldHalf, IPredictor predictor, IController commander, FieldDrawer fieldDrawer)
-            : this(team, fieldHalf, predictor, new ActionInterpreter(team, commander, predictor), fieldDrawer) { }
+        public Interpreter(Team team, IPredictor predictor, IController commander, FieldDrawer fieldDrawer)
+            : this(team, predictor, new ActionInterpreter(team, commander, predictor), fieldDrawer) { }
 
         volatile bool running = false;
         object run_lock = new object();
