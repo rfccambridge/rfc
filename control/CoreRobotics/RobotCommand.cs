@@ -32,7 +32,7 @@ namespace Robocup.CoreRobotics
         public static byte DribblerSpeed = 5;
         // Equal to capacitor voltage we charge to / 10
         public byte KickerStrength = MAX_KICKER_STRENGTH;
-        public byte MinKickerStrength = 10; // XXX: SK: This should be calibrated
+        public byte MinKickerStrength = 8; // XXX: SK: This should be calibrated
 
         public const int MAX_KICKER_STRENGTH = 25;
         public const int MIN_KICKER_STRENGTH = 1;

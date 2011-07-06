@@ -26,7 +26,7 @@ namespace Robocup.ControlForm
         private const double DRIBBLER_TIMEOUT = 6.0; // seconds
         private bool DRAW_PATH;
         private double CHARGE_DIST;
-        private double CHARGE_LOOP_PERIOD = 0.5; //seconds
+        private double CHARGE_LOOP_PERIOD = 0.33; //seconds
 
         //Team for this controller
         private Team _team;
@@ -328,6 +328,7 @@ namespace Robocup.ControlForm
         {
             RobotCommand command = new RobotCommand(robotID, RobotCommand.Command.MIN_BREAKBEAM_KICK);
             command.KickerStrength = (byte)strength;
+            command.MinKickerStrength = (byte)strength;
             _cmdSender.Post(command);
         }
 
@@ -400,8 +401,8 @@ namespace Robocup.ControlForm
 
             foreach (RobotInfo robot in robots)
             {
-                if (robot.Position.distance(ball.Position) <= CHARGE_DIST)
-                    Charge(robot.ID);
+                //if (robot.Position.distance(ball.Position) <= CHARGE_DIST)
+                Charge(robot.ID, RobotCommand.MAX_KICKER_STRENGTH);
             }
         }
 

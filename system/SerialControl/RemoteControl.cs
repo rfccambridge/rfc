@@ -549,6 +549,7 @@ namespace Robocup.SerialControl {
         {
             RobotCommand command = new RobotCommand(_curRobot, RobotCommand.Command.MIN_BREAKBEAM_KICK);
             command.KickerStrength = (byte)udKickStrength.Value;
+            command.MinKickerStrength = (byte)udKickStrength.Value;
             sendCommand(command);
         }
 
@@ -602,6 +603,7 @@ namespace Robocup.SerialControl {
 
         private void btnConnectJoystick_Click(object sender, EventArgs e)
         {
+            /*
             if (!_joystickConnected)
             {
                 string[] sticks = _joystickInterface.FindJoysticks();
@@ -624,7 +626,7 @@ namespace Robocup.SerialControl {
                 lblJoystickStatus.BackColor = Color.Red;
                 btnConnectJoystick.Text = "Connect Joystick";
                 _joystickConnected = false;
-            }
+            }*/
         }
 
         private void joystickTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
