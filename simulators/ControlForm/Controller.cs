@@ -262,7 +262,6 @@ namespace Robocup.ControlForm
                 return;
 
             int goalieId = getGoalieId(destination.Team);
-            Console.WriteLine(goalieId);
 
             //Plan a path
             RobotPath newPath;
