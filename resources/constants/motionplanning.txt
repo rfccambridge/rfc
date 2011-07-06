@@ -30,7 +30,7 @@ int LOG_EVERY_MSEC 100
 #ROBOT SPEED SCALING -------------------------------------------------
 
 #Applies to all robots
-double SPEED_SCALING_FACTOR_ALL 0.9
+double SPEED_SCALING_FACTOR_ALL 1.0
 
 #Applies to individual robots (in addition to the factor above)
 double SPEED_SCALING_FACTOR_0 1
