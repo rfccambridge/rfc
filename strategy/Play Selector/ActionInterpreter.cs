@@ -19,7 +19,9 @@ namespace Robocup.Plays
         private double MAX_LATERAL_DIST; // m        
         private double MAX_DIST_TO_KICK_POSITION; // m 
         private double MAX_ANGLE_TO_KICK_AXIS; // rad
-        private double KICK_ORIENTATION_ERROR; // rad        
+        private double KICK_ORIENTATION_ERROR; // rad
+        private double MAX_LATERAL_SPEED; //m/s
+        private double MAX_ANGULAR_SPEED; //rad/s
 
         private double BUMP_ANGLE_TOLERANCE;  //rad
         private double BUMP_DIST_TOLERANCE;   //m
@@ -41,8 +43,8 @@ namespace Robocup.Plays
 
         public void LoadConstants()
         {
-            KICK_POSITION_DIST = ConstantsRaw.get<double>("kickplanning", "KICK_POSITION_DIST");
-            MAX_LATERAL_DIST = ConstantsRaw.get<double>("kickplanning", "MAX_LATERAL_DIST");
+            KICK_POSITION_DIST = ConstantsRaw.get<double>("kickplanning", "AIKICK_POSITION_DIST");
+            MAX_LATERAL_DIST = ConstantsRaw.get<double>("kickplanning", "AIKICK_MAX_LATERAL_DIST");
                         
             // must be bigger than distance that defines the kicking position (KICK_POSITION_DIST),
             // to avoid going back to the kicking position after we started to approach the ball for
@@ -51,13 +53,15 @@ namespace Robocup.Plays
 
             CHARGE_DIST = ConstantsRaw.get<double>("kickplanning", "CHARGE_DIST");
 
-            MAX_ANGLE_TO_KICK_AXIS = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "MAX_ANGLE_TO_KICK_AXIS");
-            KICK_ORIENTATION_ERROR = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "KICK_ORIENTATION_ERROR");
+            MAX_ANGLE_TO_KICK_AXIS = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "AIKICK_MAX_ANGLE_TO_KICK_AXIS");
+            KICK_ORIENTATION_ERROR = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "AIKICK_ORIENTATION_ERROR");
+            MAX_LATERAL_SPEED = ConstantsRaw.get<double>("kickplanning", "AIKICK_MAX_LATERAL_SPEED");
+            MAX_ANGULAR_SPEED = ConstantsRaw.get<double>("kickplanning", "AIKICK_MAX_ANGULAR_SPEED");
 
-            BUMP_ANGLE_TOLERANCE = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "BUMP_ANGLE_TOLERANCE");
-            BUMP_DIST_TOLERANCE = ConstantsRaw.get<double>("kickplanning", "BUMP_DIST_TOLERANCE");
+            BUMP_ANGLE_TOLERANCE = Math.PI / 180 * ConstantsRaw.get<double>("kickplanning", "AIBUMP_ANGLE_TOLERANCE");
+            BUMP_DIST_TOLERANCE = ConstantsRaw.get<double>("kickplanning", "AIBUMP_DIST_TOLERANCE");
 
-            DRIBBLE_DIST = ConstantsRaw.get<double>("kickplanning", "DRIBBLE_DIST");
+            DRIBBLE_DIST = ConstantsRaw.get<double>("kickplanning", "AIDRIBBLE_DIST");
         }
 
         private RobotInfo getOurRobotFromID(int robotID)
@@ -272,20 +276,17 @@ namespace Robocup.Plays
             Vector2 ballToTarget = (target - ball);
             Vector2 robotToBall = (ball - thisrobot.Position);
             Vector2 robotToTarget = (target - thisrobot.Position);
-            double distRobotToBall = Math.Sqrt(thisrobot.Position.distanceSq(ball));
-
-            double distToKickPosition = Math.Sqrt(thisrobot.Position.distanceSq(kickPosition));            
-            
-            double theta = Math.Abs(Angle.AngleDifference(robotToBall.cartesianAngle(), ballToTarget.cartesianAngle()));            
-            double lateralDistance = distRobotToBall * Math.Sin(theta);
-
+            double distToKickPosition = thisrobot.Position.distance(kickPosition);            
+            double lateralDistance = robotToBall.perpendicularComponent(ballToTarget).magnitude();
             double angleToKickAxis = Math.Abs(Angle.AngleDifference(robotToTarget.cartesianAngle(),
-                                                                              ballToTarget.cartesianAngle()));            
+                                                                              ballToTarget.cartesianAngle()));
+
+            double lateralSpeed = thisrobot.Velocity.perpendicularComponent(ballToTarget).magnitude();
 
             // should we print all these annoying little details about kicking
             bool VERBOSE = false;
 
-            if (thisrobot.Position.distanceSq(kickPosition) < CHARGE_DIST * CHARGE_DIST)
+            if (distToKickPosition < CHARGE_DIST)
             {
                 if (VERBOSE)
                     Console.WriteLine("Close to the ball. CHARGING!");
@@ -322,7 +323,12 @@ namespace Robocup.Plays
                 robotToTarget.magnitudeSq() > ballToTarget.magnitudeSq() &&
 
                 // robot is collinear with ball and with target
-                lateralDistance < MAX_LATERAL_DIST 
+                lateralDistance < MAX_LATERAL_DIST &&
+
+                // robot not moving too quickly laterally and not rotating too fast
+                lateralSpeed <= MAX_LATERAL_SPEED &&
+
+                thisrobot.AngularVelocity <= MAX_ANGULAR_SPEED
 
                 ) 
             {

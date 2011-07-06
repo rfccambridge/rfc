@@ -1,3 +1,33 @@
+
+#Used in a few places
+double CHARGE_DIST 4
+
+# Used in ActionInterpreter (distances in m, angles in degrees)
+
+# Kick constants
+#double AIKICK_POSITION_DIST 0.12
+#double AIKICK_MAX_LATERAL_DIST 0.03
+#double AIKICK_MAX_ANGLE_TO_KICK_AXIS 4 #deg
+#double AIKICK_ORIENTATION_ERROR 6      #deg
+#double AIKICK_MAX_LATERAL_SPEED 0.2   #m/s
+#double AIKICK_MAX_ANGULAR_SPEED 0.3    #rad/s
+
+#More accurate kick constants
+double AIKICK_POSITION_DIST 0.12
+double AIKICK_MAX_LATERAL_DIST 0.015
+double AIKICK_MAX_ANGLE_TO_KICK_AXIS 3 #deg
+double AIKICK_ORIENTATION_ERROR 3      #deg
+double AIKICK_MAX_LATERAL_SPEED 0.15   #m/s
+double AIKICK_MAX_ANGULAR_SPEED 0.2    #rad/s
+
+# Bump constants
+double AIBUMP_ANGLE_TOLERANCE 27
+double AIBUMP_DIST_TOLERANCE 0.2
+
+# Dribble constants
+double AIDRIBBLE_DIST 0.085
+
+
 # This contains constants for the IKickPlanner implementations
 # These are specialized planners designed to kick the ball, used
 # in the ActionInterpreter class
@@ -42,21 +72,7 @@ int SATURATION_LIMIT 4
 
 double BALL_AVOID_RADIUS 0
 
-# Used in ActionInterpreter (distances in m, angles in degrees)
 
-# Kick constants
-double KICK_POSITION_DIST 0.12
-double MAX_LATERAL_DIST 0.03
-double MAX_ANGLE_TO_KICK_AXIS 4
-double KICK_ORIENTATION_ERROR 6
-double CHARGE_DIST 4
-
-# Bump constants
-double BUMP_ANGLE_TOLERANCE 27
-double BUMP_DIST_TOLERANCE 0.2
-
-# Dribble constants
-double DRIBBLE_DIST 0.085
 
 
 
