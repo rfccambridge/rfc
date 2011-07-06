@@ -722,23 +722,46 @@ namespace Robocup.MotionControl
             return new Circle(c.Center,c.Radius+d);
         }
 
+        //Eeeewwwww TODO replace this
+        private Rectangle ExpandLeft(Rectangle r)
+        {
+            return new Rectangle(r.XMax + (r.XMin - r.XMax) * 2, r.XMax, r.YMin, r.YMax);
+        }
+        //Eeeewwwww TODO replace this
+        private Rectangle ExpandRight(Rectangle r)
+        {
+            return new Rectangle(r.XMin, r.XMin + (r.XMax - r.XMin) * 2, r.YMin, r.YMax);
+        }
+
         //Top level function
         public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
             RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
         {
             //Build obstacle list
             List<Geom> obstacles = new List<Geom>();
-            obstacles.Add(Constants.FieldPts.LEFT_GOAL_BOX);
-            obstacles.Add(Constants.FieldPts.RIGHT_GOAL_BOX);
+            obstacles.Add(ExpandLeft(Constants.FieldPts.LEFT_GOAL_BOX));
+            obstacles.Add(ExpandRight(Constants.FieldPts.RIGHT_GOAL_BOX));
 
+            IList<Geom> range = new List<Geom>();
             if (leftAvoid == DefenseAreaAvoid.NORMAL)
-                obstacles.AddRange(Constants.FieldPts.LEFT_DEFENSE_AREA);
+                range = Constants.FieldPts.LEFT_DEFENSE_AREA;
             else if (leftAvoid == DefenseAreaAvoid.FULL)
-                obstacles.AddRange(Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA);
+                range = Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA;
+
+            for(int i = 0; i<range.Count; i++)
+                if(range[i] is Rectangle)
+                    range[i] = ExpandLeft((Rectangle)range[i]);
+            obstacles.AddRange(range);
+
+            range = new List<Geom>();
             if (rightAvoid == DefenseAreaAvoid.NORMAL)
-                obstacles.AddRange(Constants.FieldPts.RIGHT_DEFENSE_AREA);
+                range = Constants.FieldPts.RIGHT_DEFENSE_AREA;
             else if (rightAvoid == DefenseAreaAvoid.FULL)
-                obstacles.AddRange(Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA);
+                range = Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA;
+            for (int i = 0; i < range.Count; i++)
+                if (range[i] is Rectangle)
+                    range[i] = ExpandRight((Rectangle)range[i]);
+            obstacles.AddRange(range);
 
             for (int i = 0; i < obstacles.Count; i++)
             {
