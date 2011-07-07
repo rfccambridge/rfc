@@ -4,7 +4,7 @@ name O_FK_5x0
 score 500
 
 Tactics:
-DumbGoalie
+DumbGoalie False
 Striker
 TwoManWall (ourgoal) 0.9 True 0
 TwoManWall (ourgoal) 0.9 True 1

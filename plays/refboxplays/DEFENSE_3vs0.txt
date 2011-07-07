@@ -4,7 +4,7 @@ name DEFENSE_3vs0
 score 300
 
 Tactics:
-DumbGoalie
+DumbGoalie True
 TwoManWall (ourgoal) 0.9 True 0
 TwoManWall (ourgoal) 0.9 True 1
 

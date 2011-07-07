@@ -3,6 +3,7 @@ type tactic
 name SmartGoalie
 
 Parameters:
+should_kick bool
 
 Objects:
 goaliebot (closest friendly (ourgoal) loose)
@@ -35,7 +36,7 @@ attackerline (linedirection attackerpt attackerorient)
 attackerverticalpt (linelineintersection attackerline vertgoalline)
 
 # should the goalie try to kick the ball?
-goalieshouldkick (pointInGoal ballpoint)
+goalieshouldkick (and should_kick (pointInGoal ballpoint))
 
 kickaction (robotpointkick goaliebot (theirgoal))
 attackeraction (robotpointpointmove goaliebot attackerverticalpt attackerpt)

@@ -4,7 +4,7 @@ score 300
 name ST_3x0
 
 Tactics:
-DumbGoalie
+DumbGoalie False
 DefendPoint (ourgoal) 0.9 False
 
 Objects:

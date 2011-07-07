@@ -4,7 +4,7 @@ score 500
 name TH_KOFF_5x0
 
 Tactics:
-DumbGoalie
+DumbGoalie False
 
 Objects:
 

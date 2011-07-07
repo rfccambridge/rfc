@@ -4,7 +4,7 @@ score 500
 name Penalty_Their5
 
 Tactics:
-SmartGoalie
+SmartGoalie False
 
 Objects:
 

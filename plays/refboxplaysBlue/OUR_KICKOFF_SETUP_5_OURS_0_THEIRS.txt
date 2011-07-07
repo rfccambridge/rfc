@@ -4,7 +4,7 @@ score 500
 name O_KFF_STP_5x0
 
 Tactics:
-DumbGoalie
+DumbGoalie False
 
 Objects:
 topLeftCorner (point -3.05 2.1)
