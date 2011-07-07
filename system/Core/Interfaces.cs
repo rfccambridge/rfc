@@ -190,6 +190,10 @@ namespace Robocup.Core {
         /// </summary>
         void Move(RobotInfo robotID, bool avoidBall);
 
+        void Move(RobotInfo robotID, bool avoidBall, double speedScale);
+        void Move(int robotID, bool avoidBall, Vector2 dest, double orientation, double speedScale);
+
+
         void Charge(int robotID);
         void Charge(int robotID, int strength);
         void BreakBeam(int robotID, int strength);        

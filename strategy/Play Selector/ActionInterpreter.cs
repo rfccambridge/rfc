@@ -340,7 +340,8 @@ namespace Robocup.Plays
                         robotID,
                         false, // don't avoid the ball, we are kicking it
                         waypoint,
-                        kickOrientation);
+                        kickOrientation,
+                        0.5);
             }
             else
             {

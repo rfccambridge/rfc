@@ -42,6 +42,7 @@ namespace Robocup.ControlForm
 		private IKickPlanner _kickPlanner;
 
         private RobotPath[] _paths_to_follow;
+        private double[] _speed_scale_to_follow;
         private RobotPath[] _last_successful_path;
         private Object[] _path_locks;
 
@@ -86,6 +87,7 @@ namespace Robocup.ControlForm
             _last_successful_path = new RobotPath[NUM_ROBOTS];
 
             _paths_to_follow = new RobotPath[NUM_ROBOTS];
+            _speed_scale_to_follow = new double[NUM_ROBOTS];
             _path_locks = new Object[NUM_ROBOTS];
 
             for (int i = 0; i < NUM_ROBOTS; i++)
@@ -147,21 +149,26 @@ namespace Robocup.ControlForm
             _dribbleLoop.Stop();
             _chargeLoop.Stop();
 
-            for (int i = 0; i < NUM_ROBOTS; i++)
+            //Try 3 times, with a tiny delay in between each try, to ensure that it's picked up.
+            for (int tries = 0; tries < 3; tries++)
             {
-                lock (_path_locks[i])
+                Thread.Sleep(10);
+                for (int i = 0; i < NUM_ROBOTS; i++)
                 {
-                    _last_successful_path[i] = null;
-                    _paths_to_follow[i] = null;
+                    lock (_path_locks[i])
+                    {
+                        _last_successful_path[i] = null;
+                        _paths_to_follow[i] = null;
+                    }
+
+                    //Stop all robots from moving and dribbling
+                    RobotCommand command = new RobotCommand(i, new WheelSpeeds());
+                    _cmdSender.Post(command);
+                    RobotCommand command2 = new RobotCommand(i, RobotCommand.Command.STOP_DRIBBLER);
+                    _cmdSender.Post(command2);
+
+                    //TODO (davidwu) also stop charging and discharge?
                 }
-
-                //Stop all robots from moving and dribbling
-                RobotCommand command = new RobotCommand(i, new WheelSpeeds());
-                _cmdSender.Post(command);
-                RobotCommand command2 = new RobotCommand(i, RobotCommand.Command.STOP_DRIBBLER);
-                _cmdSender.Post(command2);
-
-                //TODO (davidwu) also stop charging and discharge?
             }
         }
 
@@ -242,6 +249,11 @@ namespace Robocup.ControlForm
 
         public void Move(RobotInfo destination, bool avoidBall)
         {
+            Move(destination, avoidBall, 1.0);
+        }
+
+        public void Move(RobotInfo destination, bool avoidBall, double speedScale)
+        {
             if (double.IsNaN(destination.Position.X) || double.IsNaN(destination.Position.Y))
             {
                 Console.WriteLine("invalid destination");
@@ -287,6 +299,7 @@ namespace Robocup.ControlForm
                 if (newPath != null)
                     _last_successful_path[id] = newPath;
                 _paths_to_follow[id] = newPath;
+                _speed_scale_to_follow[id] = speedScale;
             }
 
             #region Drawing
@@ -305,7 +318,12 @@ namespace Robocup.ControlForm
         public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation)
 		{
             Move(new RobotInfo(destination, orientation, _team, robotID), avoidBall);
-		}		
+		}
+
+        public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation, double speedScale)
+        {
+            Move(new RobotInfo(destination, orientation, _team, robotID), avoidBall, speedScale);
+        }
 
         public void Move(int robotID, bool avoidBall, Vector2 destination)
 		{
@@ -441,10 +459,12 @@ namespace Robocup.ControlForm
             for (int i = 0; i < NUM_ROBOTS; i++)
             {
                 RobotPath newPath;
+                double speedScale;
                 //Retrieve commands given to the controller for the robot
                 lock (_path_locks[i])
                 {
                     newPath = _paths_to_follow[i];
+                    speedScale = _speed_scale_to_follow[i];
                 }
 
                 if (newPath == null || newPath.isEmpty())
@@ -463,7 +483,7 @@ namespace Robocup.ControlForm
                 }
 
                 //Send the wheel speeds
-                RobotCommand command = new RobotCommand(i, mpResults.wheel_speeds);
+                RobotCommand command = new RobotCommand(i, mpResults.wheel_speeds * speedScale);
                 _cmdSender.Post(command);
             }
         }

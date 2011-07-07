@@ -33,7 +33,7 @@ namespace Robocup.Utilities
         public FunctionLoop(LoopFunction fn)
         {
             loopFn = fn;
-            sync = 0;
+            sync = 1; //Begin with the compareexchange set, so any loop does nothing
             timer = new System.Timers.Timer();
             timer.AutoReset = true;
             timer.Elapsed += Elapsed;
@@ -51,6 +51,9 @@ namespace Robocup.Utilities
         {
             lock (isRunningLock)
             {
+                //Drop the compareexchange to allow looping
+                sync = 0;
+
                 if (isRunning)
                     throw new Exception("Loop for " + loopFn.Method.Name + " already started!");
 
@@ -71,6 +74,9 @@ namespace Robocup.Utilities
                     throw new Exception("Loop for " + loopFn.Method.Name + " already started!");
                 timer.Stop();
                 isRunning = false;
+
+                //Grab the compareexchange to make sure any continuing loop dies.
+                while (Interlocked.CompareExchange(ref sync, 1, 0) == 0) { }
             }
         }
 

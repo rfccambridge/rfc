@@ -25,7 +25,7 @@ double VD_GOOD_ENOUGH_ANGLE 1.0 #in degrees
 
 #How much should we correct for rotation throwing us off?
 double VD_PLANNED_ANG_SPEED_CORRECTION 0.0
-double VD_CURRENT_ANG_SPEED_CORRECTION 0.15
+double VD_CURRENT_ANG_SPEED_CORRECTION 0.11
 
 #Scaling for speed based on distance from goal
 int VD_NUM_SCALE_BY_DISTANCE 22

@@ -562,6 +562,18 @@ namespace InterpreterTester
             RobotInfo r = infos[newid];
             Move(robotID, avoidBall, dest, (double)Math.Atan2(ballinfo.Position.Y - r.Position.Y, change * (ballinfo.Position.X - r.Position.X)));
         }
+
+        public void Move(RobotInfo info, bool avoidBall, double speedScale)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void Move(int robotID, bool avoidBall, Vector2 destination, double orientation, double speedScale)
+        {
+            throw new NotImplementedException();
+        }
+
         const double distThreshold = .005;
         //Navigation.Current.CurrentNavigator navigator = new Navigation.Current.CurrentNavigator(),
         //    othernavigator = new Navigation.Current.CurrentNavigator();
