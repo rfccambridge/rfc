@@ -4,7 +4,7 @@ score 300
 name Penalty_Their3
 
 Tactics:
-SmartGoalie
+SmartGoalie False
 
 Objects:
 

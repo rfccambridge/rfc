@@ -4,7 +4,7 @@ name DEFENSE_1vs0
 score 150
 
 Tactics:
-SmartGoalie
+SmartGoalie True
 
 Objects:
 

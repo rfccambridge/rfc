@@ -4,7 +4,7 @@ score 100
 name Penalty_Their1
 
 Tactics:
-SmartGoalie
+SmartGoalie False
 
 Objects:
 

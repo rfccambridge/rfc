@@ -4,7 +4,7 @@ name DEFENSE_2vs0
 score 200
 
 Tactics:
-DumbGoalie
+DumbGoalie True
 DefendPoint (ourgoal) 0.9 True
 
 Objects:

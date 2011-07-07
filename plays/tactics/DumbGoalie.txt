@@ -3,6 +3,7 @@ type tactic
 name DumbGoalie
 
 Parameters:
+should_kick bool
 
 Objects:
 GOALIE_X_POS (- (const-double GOALIE_X_POS_DELTA) (/ (const-double FIELD_WIDTH) 2))
@@ -22,7 +23,7 @@ goaltoppt (point GOALIE_X_POS 0.35)
 goalbotpt (point GOALIE_X_POS -0.35)
 
 # should the goalie try to kick the ball?
-goalieshouldkick (pointInGoal ballpoint)
+goalieshouldkick (and should_kick (pointInGoal ballpoint))
 
 Conditions:
 Actions:

@@ -4,7 +4,7 @@ score 400
 name TH_KOFF_4x0
 
 Tactics:
-DumbGoalie
+DumbGoalie False
 
 Objects:
 

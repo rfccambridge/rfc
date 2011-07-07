@@ -4,7 +4,7 @@ score 300
 name O_KFF_3x0
 
 Tactics:
-DumbGoalie
+DumbGoalie False
 Striker
 
 Objects:
