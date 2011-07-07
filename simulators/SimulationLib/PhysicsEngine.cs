@@ -622,6 +622,11 @@ namespace Robocup.Simulation
                 // *not* make much sense.
                 Team team = command.ID < 5 ? Team.Yellow : Team.Blue;
 
+                if (command.command == RobotCommand.Command.START_VARIABLE_CHARGING)
+                    Console.WriteLine("Charge : " + command.KickerStrength);
+                if (command.command == RobotCommand.Command.MIN_BREAKBEAM_KICK)
+                    Console.WriteLine("Kick : " + command.KickerStrength + " " + command.MinKickerStrength);
+
                 switch (command.command)
                 {
                     case RobotCommand.Command.MOVE:
