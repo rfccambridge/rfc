@@ -48,14 +48,6 @@ namespace Robocup.CoreRobotics
             return _ballInfo;
         }
 
-        public void SetBallMark() {
-            throw new NotImplementedException();
-        }
-
-        public void ClearBallMark() {
-            throw new NotImplementedException();
-        }
-
         public bool HasBallMoved() {
             throw new NotImplementedException();
         }

@@ -253,9 +253,6 @@ namespace Robocup.CoreRobotics
         private System.Timers.Timer combineTimer = new System.Timers.Timer();
         private int combineTimerSync = 0;
 
-        // For marking ball position
-        private Vector2 markedPosition = null;
-
         public AveragingPredictor()
         {
             for (int i = 0; i < NUM_CAMERAS; i++)
@@ -314,32 +311,6 @@ namespace Robocup.CoreRobotics
             }
             return robot;
         }
-
-        public void SetBallMark()
-        {
-            BallInfo ball = GetBall();
-            if (ball == null)
-            {
-                //throw new ApplicationException("Cannot mark ball position because no ball is seen.");
-                return;
-            }
-            markedPosition = ball != null ? new Vector2(ball.Position) : null;
-        }
-
-        public void ClearBallMark()
-        {
-            markedPosition = null;
-        }
-
-        public bool HasBallMoved()
-        {
-            BallInfo ball = GetBall();
-            double BALL_MOVED_DIST = Constants.Plays.BALL_MOVED_DIST;
-            bool ret = (ball != null && markedPosition == null) || (ball != null &&
-                        markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
-            return ret;
-        }
-
         public void SetPlayType(PlayType newPlayType)
         {
             // Do nothing: this method is for assumed ball: returning clever values for the ball

@@ -20,7 +20,6 @@ namespace Robocup.PlaySystem
         // state freezing variables
         List<RobotInfo> robots;
         BallInfo ballinfo;
-        bool hasBallMoved;
 
         /// <summary>
         /// Given a predictor whose state will be occasionally frozen
@@ -39,7 +38,6 @@ namespace Robocup.PlaySystem
         public void freezeState() {
             robots = _predictor.GetRobots();
             ballinfo = _predictor.GetBall();
-            hasBallMoved = _predictor.HasBallMoved();
         }
 
         /// <summary>
@@ -98,25 +96,9 @@ namespace Robocup.PlaySystem
 
         // wrapper methods
 
-        public void SetBallMark()
-        {
-            _predictor.SetBallMark();
-        }
-
-        public void ClearBallMark()
-        {
-            _predictor.ClearBallMark();
-        }
-
         public void LoadConstants()
         {
             _predictor.LoadConstants();
-        }
-
-        public bool HasBallMoved()
-        {
-            // return from the last time the state was frozen
-            return hasBallMoved;
         }
 
         public void SetPlayType(PlayType newPlayType)

@@ -73,21 +73,6 @@ namespace Robocup.Core
             return ball;
         }
 
-        public void SetBallMark() 
-        {
-            predictor.SetBallMark();
-        }
-
-        public void ClearBallMark() 
-        {
-            predictor.ClearBallMark();
-        }
-
-        public bool HasBallMoved() 
-        {
-            return predictor.HasBallMoved();
-        }
-
         public void SetPlayType(PlayType newPlayType) 
         {
             predictor.SetPlayType(newPlayType);

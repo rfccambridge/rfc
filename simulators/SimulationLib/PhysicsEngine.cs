@@ -23,9 +23,6 @@ namespace Robocup.Simulation
         //TODO this is still the old 0-5 scale. Change this to the new 0-25 scale and remeasure kick speeds to retune
         static double[] KICK_SPEED = new double[] { 0, 1.81, 2.88, 3.33, 4.25 };
 
-		private bool _marking = false;
-		private Vector2 _markedPosition;
-
         //Running data-----------------------------------------------------------
         FunctionLoop runLoop;
 
@@ -680,35 +677,6 @@ namespace Robocup.Simulation
         public BallInfo GetBall()
         {
             return ball;
-        }
-
-        public void SetBallMark()
-        {
-            if(ball != null)
-                _markedPosition = ball.Position;
-
-            _marking = true;
-        }
-
-        public void ClearBallMark()
-        {
-            _markedPosition = null;
-            _marking = false;
-        }
-
-        public bool HasBallMoved()
-        {
-            if (!_marking)
-                return false;
-
-            if (_markedPosition == null)
-                return false;
-
-            if (ball == null)
-                return false;
-
-            double BALL_MOVED_DIST = Constants.Plays.BALL_MOVED_DIST;
-            return _markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST;
         }
 
         public void SetPlayType(PlayType newPlayType)

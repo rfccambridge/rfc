@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Robocup.Geometry;
 using Robocup.Core;
 
 namespace Robocup.CoreRobotics
@@ -16,7 +17,8 @@ namespace Robocup.CoreRobotics
 
         private int lastCmdCounter;
 
-        private bool predictor_marking = false;
+        bool predictor_marking = false;
+        private Vector2 markedPosition = null;
 
         public RefBoxState(Team team, IPredictor predictor)
         {          
@@ -52,22 +54,55 @@ namespace Robocup.CoreRobotics
             return _refboxListener.IsReceiving();
         }
 
-        private void predictorSetBallMark()
-        {
-            _predictor.SetBallMark();
-            predictor_marking = true;
-        }
-
-        private void predictorClearBallMark()
-        {
-            _predictor.ClearBallMark();
-            predictor_marking = false;
-        }
-
         public Score GetScore()
         {
             return _refboxListener.GetScore();
         }
+
+        private void setBallMark()
+        {
+            predictor_marking = true;
+            BallInfo ball = _predictor.GetBall();
+            if (ball == null)
+                return;
+            markedPosition = ball.Position;
+        }
+
+        private void clearBallMark()
+        {
+            predictor_marking = false;
+            markedPosition = null;
+        }
+
+        //A free kick has occured when the ball has moved a sufficient distance (indicating that it was
+        //bumped by some robot, and it leaves contact with that robot). Returns true if this is the case,
+        //so that we know to resume play.
+        private bool shouldResumeNormalPlay()
+        {
+            BallInfo ball = _predictor.GetBall();
+
+            //Check if ball moved sufficient distance
+            double BALL_MOVED_DIST = Constants.Plays.BALL_MOVED_DIST;
+            bool hasBallMoved = (ball != null && (markedPosition == null ||
+                              markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST));
+            if (!hasBallMoved)
+                return false;
+
+            List<RobotInfo> allrobots = _predictor.GetRobots();
+            double mindistsq = double.PositiveInfinity;
+            for (int i = 0; i < allrobots.Count; i++)
+            {
+                if (allrobots[i] == null || ball == null)
+                    continue;
+                double distsq = allrobots[i].Position.distanceSq(ball.Position);
+                if (distsq < mindistsq)
+                    mindistsq = distsq;
+            }
+
+            //TODO: Hardcoded .108: The approximate distance from robot to ball that suffices to conclude ball has been kicked
+            return mindistsq > .108 * .108;
+        }
+
 
         public PlayType GetCurrentPlayType()
         {
@@ -75,9 +110,10 @@ namespace Robocup.CoreRobotics
             if (_refboxListener == null)
                 return PlayType.Stopped;
 
-            if (predictor_marking && _predictor.HasBallMoved()) {
+            if (predictor_marking && shouldResumeNormalPlay())
+            {
                     playsToRun = PlayType.NormalPlay;                    
-                    predictorClearBallMark();
+                    clearBallMark();
             }
             if (lastCmdCounter < _refboxListener.GetCmdCounter())
             {
@@ -88,11 +124,11 @@ namespace Robocup.CoreRobotics
                     case MulticastRefBoxListener.HALT:
                         // stop bots completely
                         playsToRun = PlayType.Halt;
-                        predictorClearBallMark();
+                        clearBallMark();
                         break;
                     case MulticastRefBoxListener.START:
                         playsToRun = PlayType.NormalPlay;
-                        predictorClearBallMark();
+                        clearBallMark();
                         break;
                     case MulticastRefBoxListener.CANCEL:
                     case MulticastRefBoxListener.STOP:
@@ -100,7 +136,7 @@ namespace Robocup.CoreRobotics
                     case MulticastRefBoxListener.TIMEOUT_YELLOW:
                         //go to stopped/waiting state
                         playsToRun = PlayType.Stopped;
-                        predictorClearBallMark();
+                        clearBallMark();
                         break;
                     case MulticastRefBoxListener.TIMEOUT_END_BLUE:
                     case MulticastRefBoxListener.TIMEOUT_END_YELLOW:
@@ -109,14 +145,14 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.PenaltyKick_Ours;
                         if (playsToRun == PlayType.KickOff_Ours_Setup)
                             playsToRun = PlayType.KickOff_Ours;
-                        predictorSetBallMark();
+                        setBallMark();
                         break;
                     case MulticastRefBoxListener.KICKOFF_BLUE:
                         if (_ourTeam == Team.Yellow)
                             playsToRun = PlayType.KickOff_Theirs;
                         else
                             playsToRun = PlayType.KickOff_Ours_Setup;
-                        predictorSetBallMark();
+                        setBallMark();
                         break;
                     case MulticastRefBoxListener.INDIRECT_BLUE:
                     case MulticastRefBoxListener.DIRECT_BLUE:
@@ -124,14 +160,14 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.SetPlay_Theirs;
                         else
                             playsToRun = PlayType.SetPlay_Ours;
-                        predictorSetBallMark();
+                        setBallMark();
                         break;
                     case MulticastRefBoxListener.KICKOFF_YELLOW:
                         if (_ourTeam == Team.Blue)
                             playsToRun = PlayType.KickOff_Theirs;
                         else
                             playsToRun = PlayType.KickOff_Ours_Setup;
-                        predictorSetBallMark();
+                        setBallMark();
                         break;
                     case MulticastRefBoxListener.INDIRECT_YELLOW:
                     case MulticastRefBoxListener.DIRECT_YELLOW:
@@ -139,7 +175,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.SetPlay_Theirs;
                         else
                             playsToRun = PlayType.SetPlay_Ours;
-                        predictorSetBallMark();
+                        setBallMark();
                         break;
                     case MulticastRefBoxListener.PENALTY_BLUE:
                         // handle penalty
@@ -147,7 +183,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.PenaltyKick_Theirs;
                         else
                             playsToRun = PlayType.PenaltyKick_Ours_Setup;
-                        predictorClearBallMark();
+                        clearBallMark();
                         break;
                     case MulticastRefBoxListener.PENALTY_YELLOW:
                         // penalty kick
@@ -156,7 +192,7 @@ namespace Robocup.CoreRobotics
                             playsToRun = PlayType.PenaltyKick_Theirs;
                         else
                             playsToRun = PlayType.PenaltyKick_Ours_Setup;
-                        predictorClearBallMark();
+                        clearBallMark();
                         break;
                 }
             }

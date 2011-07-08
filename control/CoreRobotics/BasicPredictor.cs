@@ -251,15 +251,11 @@ namespace Robocup.CoreRobotics
         private BallInfo BALL_POS_KICKOFF;
         private BallInfo BALL_POS_PENALTY;        
         
-        // Mark is currently set          
-        Vector2 markedPosition;
 
         public BasicPredictor()
         {
             LoadConstants();
-
             playType = PlayType.Stopped;
-            markedPosition = new Vector2(0.0, 0.0);
         }
         
         public void LoadConstants()
@@ -400,30 +396,6 @@ namespace Robocup.CoreRobotics
                     " found on team " + team.ToString());
             }
             return robot;
-        }
-
-        public void SetBallMark()
-        {
-            markedPosition = ballInfo != null ? new Vector2(ballInfo.Position) : null;
-        }
-
-        public void ClearBallMark()
-        {
-            markedPosition = null;
-        }
-
-        public bool HasBallMoved()
-        {
-            if (ballInfo == null)
-            {
-                throw new ApplicationException("BasicPredictor.hasBallMoved: internal ball is null!");
-            }
-
-            BallInfo ball = GetBall();
-            double BALL_MOVED_DIST = Constants.Plays.BALL_MOVED_DIST;
-            bool ret = (ball != null && markedPosition == null) || (ball != null &&
-                        markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
-            return ret;
         }
 
         public void SetPlayType(PlayType newPlayType)
