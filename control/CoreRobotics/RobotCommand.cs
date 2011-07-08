@@ -34,7 +34,7 @@ namespace Robocup.CoreRobotics
         public byte KickerStrength = MAX_KICKER_STRENGTH;
         public byte MinKickerStrength = 8; // XXX: SK: This should be calibrated
 
-        public const int MAX_KICKER_STRENGTH = 25;
+        public const int MAX_KICKER_STRENGTH = 18;
         public const int MIN_KICKER_STRENGTH = 1;
 
         public WheelSpeeds Speeds;

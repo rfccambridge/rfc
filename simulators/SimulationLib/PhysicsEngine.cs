@@ -21,7 +21,7 @@ namespace Robocup.Simulation
         const double DELAY_ADJUSTMENT = 0.01; //Add this much to dt to additionally compensate for any slowness 
 
         //TODO this is still the old 0-5 scale. Change this to the new 0-25 scale and remeasure kick speeds to retune
-        static double[] KICK_SPEED = new double[RobotCommand.MAX_KICKER_STRENGTH/5+1] { 0, 0, 1.81, 2.88, 3.33, 4.25 };
+        static double[] KICK_SPEED = new double[] { 0, 1.81, 2.88, 3.33, 4.25 };
 
 		private bool _marking = false;
 		private Vector2 _markedPosition;
