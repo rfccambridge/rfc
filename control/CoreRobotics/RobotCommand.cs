@@ -29,7 +29,7 @@ namespace Robocup.CoreRobotics
         static Command[] _iToCommand;
         static Dictionary<Command, byte> _commandToI;
 
-        public static byte DribblerSpeed = 5;
+        public static byte DribblerSpeed = 10;
         // Equal to capacitor voltage we charge to / 10
         public byte KickerStrength = MAX_KICKER_STRENGTH;
         public byte MinKickerStrength = 8; // XXX: SK: This should be calibrated

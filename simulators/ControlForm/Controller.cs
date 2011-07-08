@@ -56,6 +56,7 @@ namespace Robocup.ControlForm
 
         //Loop for running for figuring out when dribblers should stop
         private FunctionLoop _dribbleLoop;
+        private FunctionLoop _dribbleLoop2;
 
         // Loop to precharge robots that are close enough to the ball
         private FunctionLoop _chargeLoop;
@@ -96,6 +97,7 @@ namespace Robocup.ControlForm
             //Initialize loops with the functions that they should call
             _controlLoop = new FunctionLoop(ControlLoop);
             _dribbleLoop = new FunctionLoop(DribbleLoop);
+            _dribbleLoop2 = new FunctionLoop(DribbleLoop2);
             _chargeLoop = new FunctionLoop(ChargeLoop);
 
             LoadConstants();
@@ -138,6 +140,8 @@ namespace Robocup.ControlForm
             _controlLoop.Start();
             _dribbleLoop.SetPeriod(DRIBBLER_TIMER_PERIOD);
             _dribbleLoop.Start();
+            _dribbleLoop2.SetPeriod(0.33);
+            _dribbleLoop2.Start();
             _chargeLoop.SetPeriod(CHARGE_LOOP_PERIOD);
             _chargeLoop.Start();
         }
@@ -147,6 +151,7 @@ namespace Robocup.ControlForm
             Console.WriteLine("Stopped");
             _controlLoop.Stop();
             _dribbleLoop.Stop();
+            _dribbleLoop2.Stop();
             _chargeLoop.Stop();
 
             //Try 3 times, with a tiny delay in between each try, to ensure that it's picked up.
@@ -434,13 +439,32 @@ namespace Robocup.ControlForm
                 for (int i = 0; i < NUM_ROBOTS; i++)
                 {
                     if (!_stopDribbleAtTime.ContainsKey(i))
-                        continue;
+                    continue;
 
                     if(time > _stopDribbleAtTime[i])
                     {
                         RobotCommand command = new RobotCommand(i, RobotCommand.Command.STOP_DRIBBLER);
                         _cmdSender.Post(command);
                     }
+                }
+            }
+        }
+
+        private void DribbleLoop2()
+        {
+            for (int i = 0; i < NUM_ROBOTS; i++)
+            {
+                RobotInfo robot;
+                try
+                {
+                    robot = _predictor.GetRobot(_team, i);
+                }
+                catch (Exception)
+                { continue; }
+                BallInfo ball = _predictor.GetBall();
+                if (robot != null && robot.Position != null && ball != null && robot.Position.distance(ball.Position) < 0.4)
+                {
+                    StartDribbling(i, 2);
                 }
             }
         }
