@@ -96,6 +96,11 @@ namespace Robocup.Core
             return this * other / other.magnitudeSq();
         }
 
+        public WheelSpeeds getRounded()
+        {
+            return new WheelSpeeds(Math.Round(rf), Math.Round(lf), Math.Round(lb), Math.Round(rb));
+        }
+
         public String toString()
         {
             return "WheelSpeeds <rf>: " + rf + " <lf>: " + lf + " <lb>: " + lb + " <rb>: " + rb;

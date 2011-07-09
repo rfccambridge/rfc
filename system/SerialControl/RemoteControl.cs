@@ -60,11 +60,15 @@ namespace Robocup.SerialControl {
         private WheelSpeedFunctions.IWheelSpeedFunction _wheelSpeedFunction;
         private double _lastSerialData = 0;
 
+        private Dictionary<Keys, bool> IsKeyPressed = new Dictionary<Keys,bool>();
+
         private HighResTimer _receiveDurationTimer = new HighResTimer();
         private double _receiveDuration = 0.0;
         private object _receiveDurationLock = new Object();
 
         private System.Timers.Timer _guiTimer = new System.Timers.Timer(1000);
+
+        private object _controlLock = new Object();
 
         public RemoteControl() {           
             InitializeComponent();
@@ -139,33 +143,35 @@ namespace Robocup.SerialControl {
 
         private void sendCommand(RobotCommand command)
         {
-            if (_active)
+            lock (_controlLock)
             {
-                if (_cmdOutComPort)
+                if (_active)
                 {
-                    byte[] packet = command.ToPacket();
-                    _comPort.Write(packet, 0, packet.Length);
-                }
-                else if (_cmdOutRemoteHost)
-                {
-                    _cmdSender.Post(command);                    
-                }
+                    if (_cmdOutComPort)
+                    {
+                        byte[] packet = command.ToPacket();
+                        _comPort.Write(packet, 0, packet.Length);
+                    }
+                    else if (_cmdOutRemoteHost)
+                    {
+                        _cmdSender.Post(command);
+                    }
 
-                string status = command.command.ToString();
-                if (command.command == RobotCommand.Command.MOVE)
-                    status += ": " + command.Speeds.ToString();
-                updateLabel(lblSentCommand, status);
-                lock (_lastCommandTimeLock)
-                {
-                    _lastCommandTime = DateTime.Now;
+                    string status = command.command.ToString();
+                    if (command.command == RobotCommand.Command.MOVE)
+                        status += ": " + command.Speeds.ToString();
+                    updateLabel(lblSentCommand, status);
+                    lock (_lastCommandTimeLock)
+                    {
+                        _lastCommandTime = DateTime.Now;
+                    }
                 }
             }
         }        
 
         private void stopEverything(int robotID)
         {
-            sendCommand(new RobotCommand(robotID, RobotCommand.Command.MOVE,
-                          new WheelSpeeds(0, 0, 0, 0)));
+            clearMovement();
             sendCommand(new RobotCommand(robotID, RobotCommand.Command.STOP_CHARGING));
             sendCommand(new RobotCommand(robotID, RobotCommand.Command.STOP_DRIBBLER));
             sendCommand(new RobotCommand(robotID, RobotCommand.Command.KICK)); // to discharge
@@ -306,124 +312,112 @@ namespace Robocup.SerialControl {
         private void RemoteControl_KeyDown(object sender, KeyEventArgs e) {
             if (_active) {
                 #region keyboard control
-                RobotCommand command;
-                switch (e.KeyCode) {
-                    case Keys.Back:
-                        stopEverything(_curRobot);
-                        break;
-                    case Keys.Left: // left move left in x
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     new WheelSpeeds(_speed, _speed, -_speed, -_speed)));
-                        break;
-                    case Keys.Right: // right move right in x
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     new WheelSpeeds(-_speed, -_speed, _speed, _speed)));
-                        break;
-                    case Keys.Up: // up move forward in y
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     new WheelSpeeds(_speed, -_speed, -_speed, _speed)));
-                        break;
-                    case Keys.Down: // down move backward in y
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     new WheelSpeeds(-_speed, _speed, _speed, -_speed)));
-                        break;
-                    case Keys.Oemcomma: // , rotate anti-clockwise
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     new WheelSpeeds(_speed, _speed, _speed, _speed)));
-                        break;
-                    case Keys.OemPeriod: // . rotate clockwise
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     new WheelSpeeds(-_speed, -_speed, -_speed, -_speed)));
-                        break;
-                    case Keys.NumPad8: // up arrow (8) drive forwards
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     _robotModels[_curRobot].DriveInDirection(_speed, 1.0, 0)));
-                        break;
-                    case Keys.NumPad2: // down arrow (2) drive backwards
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     _robotModels[_curRobot].DriveInDirection(_speed, -1.0, 0)));
-                        break;
-                    case Keys.NumPad4: // left arrow (4) drive left
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     _robotModels[_curRobot].DriveInDirection(_speed, 0.0, 1.0)));
-                        break;
-                    case Keys.NumPad6: // right arrow (6) drive right
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     _robotModels[_curRobot].DriveInDirection(_speed, 0.0, -1.0)));                        
-                        break;
-                    case Keys.NumPad7: // numpad 7 positive x, positive y
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     _robotModels[_curRobot].DriveInDirection(_speed, 1.0, 1.0)));
-                        break;
-                    case Keys.NumPad3: // numpad 3 negative x, negative y
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     _robotModels[_curRobot].DriveInDirection(_speed, -1.0, -1.0)));
-                        break;
-                    case Keys.NumPad9: // numpad 9 positive x, negative  y
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     _robotModels[_curRobot].DriveInDirection(_speed, 1.0, -1.0)));
-                        break;
-                    case Keys.NumPad1: // numpad 1 negative x, positive y
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     _robotModels[_curRobot].DriveInDirection(_speed, -1.0, 1.0)));
-                        break;
-                    case Keys.B: // b break-beam kick
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.BREAKBEAM_KICK));
-                        break;
-                    case Keys.F: // f full break-beam kick
-                        command = new RobotCommand(_curRobot, RobotCommand.Command.FULL_BREAKBEAM_KICK);
-                        command.KickerStrength = (byte)udKickStrength.Value;
-                        sendCommand(command);
-                        break;
-                    case Keys.M: // m break-beam kick with a minimum charge to kick
-                        command = new RobotCommand(_curRobot, RobotCommand.Command.MIN_BREAKBEAM_KICK);
-                        command.KickerStrength = (byte)udKickStrength.Value;
-                        sendCommand(command);
-                        break;
-                    case Keys.C: // c charge kicker
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_CHARGING));
-                        break;
-                    case Keys.K: // k stop charging
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.STOP_CHARGING));
-                        break;
-                    case Keys.Space: // space fire kicker
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.KICK));
-                        break;                    
-                    case Keys.D: // d dribbler on
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_DRIBBLER));
-                        break;
-                    case Keys.P: // p stop   
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     new WheelSpeeds(0,0,0,0)));
-                        break;
-                    case Keys.R: // r reset boards
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.RESET));
-                        break;
-                    case Keys.Oemplus: // = increase speed
-                        _speed += 1;
-                        lblSpeed.Text = _speed.ToString();
-                        break;                        
-                    case Keys.OemMinus: // - decrease speed
-                        _speed -= 1;
-                        lblSpeed.Text = _speed.ToString();
-                        break;
-                    case Keys.D0: // digit key robot ids
-                    case Keys.D1:
-                    case Keys.D2:
-                    case Keys.D3:
-                    case Keys.D4:
-                    case Keys.D5:
-                    case Keys.D6:
-                    case Keys.D7:
-                    case Keys.D8:
-                    case Keys.D9:
-                        _curRobot = e.KeyValue - 48;  // 48 is value for Keys.D0
-                        lblID.Text = _curRobot.ToString();
-                        break;
-                    default:
-                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                     new WheelSpeeds(0, 0, 0, 0)));
-                        break;
+                lock (_controlLock)
+                    {
+                    bool newlyPressed = IsKeyPressed.ContainsKey(e.KeyCode) && IsKeyPressed[e.KeyCode];
+                    IsKeyPressed[e.KeyCode] = true;
+                    RobotCommand command;
+                    switch (e.KeyCode)
+                    {
+                        case Keys.Back:
+                            stopEverything(_curRobot);
+                            break;
+                        case Keys.Left: // left move left in x
+                        case Keys.Right: // right move right in x
+                        case Keys.Up: // up move forward in y
+                        case Keys.Down: // down move backward in y
+                        case Keys.Oemcomma: // , rotate anti-clockwise
+                        case Keys.OemPeriod: // . rotate clockwise
+                            updateMovement(true);
+                            break;
+                        case Keys.NumPad8: // up arrow (8) drive forwards
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
+                                         _robotModels[_curRobot].DriveInDirection(_speed, 1.0, 0)));
+                            break;
+                        case Keys.NumPad2: // down arrow (2) drive backwards
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
+                                         _robotModels[_curRobot].DriveInDirection(_speed, -1.0, 0)));
+                            break;
+                        case Keys.NumPad4: // left arrow (4) drive left
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
+                                         _robotModels[_curRobot].DriveInDirection(_speed, 0.0, 1.0)));
+                            break;
+                        case Keys.NumPad6: // right arrow (6) drive right
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
+                                         _robotModels[_curRobot].DriveInDirection(_speed, 0.0, -1.0)));
+                            break;
+                        case Keys.NumPad7: // numpad 7 positive x, positive y
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
+                                         _robotModels[_curRobot].DriveInDirection(_speed, 1.0, 1.0)));
+                            break;
+                        case Keys.NumPad3: // numpad 3 negative x, negative y
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
+                                         _robotModels[_curRobot].DriveInDirection(_speed, -1.0, -1.0)));
+                            break;
+                        case Keys.NumPad9: // numpad 9 positive x, negative  y
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
+                                         _robotModels[_curRobot].DriveInDirection(_speed, 1.0, -1.0)));
+                            break;
+                        case Keys.NumPad1: // numpad 1 negative x, positive y
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
+                                         _robotModels[_curRobot].DriveInDirection(_speed, -1.0, 1.0)));
+                            break;
+                        case Keys.B: // b break-beam kick
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.BREAKBEAM_KICK));
+                            break;
+                        case Keys.F: // f full break-beam kick
+                            command = new RobotCommand(_curRobot, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                            command.KickerStrength = (byte)udKickStrength.Value;
+                            sendCommand(command);
+                            break;
+                        case Keys.M: // m break-beam kick with a minimum charge to kick
+                            command = new RobotCommand(_curRobot, RobotCommand.Command.MIN_BREAKBEAM_KICK);
+                            command.KickerStrength = (byte)udKickStrength.Value;
+                            sendCommand(command);
+                            break;
+                        case Keys.C: // c charge kicker
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_CHARGING));
+                            break;
+                        case Keys.K: // k stop charging
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.STOP_CHARGING));
+                            break;
+                        case Keys.Space: // space fire kicker
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.KICK));
+                            break;
+                        case Keys.D: // d dribbler on
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.START_DRIBBLER));
+                            break;
+                        case Keys.P: // p stop   
+                            clearMovement();
+                            break;
+                        case Keys.R: // r reset boards
+                            sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.RESET));
+                            break;
+                        case Keys.Oemplus: // = increase speed
+                            _speed += 1;
+                            lblSpeed.Text = _speed.ToString();
+                            break;
+                        case Keys.OemMinus: // - decrease speed
+                            _speed -= 1;
+                            lblSpeed.Text = _speed.ToString();
+                            break;
+                        case Keys.D0: // digit key robot ids
+                        case Keys.D1:
+                        case Keys.D2:
+                        case Keys.D3:
+                        case Keys.D4:
+                        case Keys.D5:
+                        case Keys.D6:
+                        case Keys.D7:
+                        case Keys.D8:
+                        case Keys.D9:
+                            _curRobot = e.KeyValue - 48;  // 48 is value for Keys.D0
+                            lblID.Text = _curRobot.ToString();
+                            break;
+                        default:
+                            clearMovement();
+                            break;
+                    }
                 }
                 #endregion
             }
@@ -431,15 +425,91 @@ namespace Robocup.SerialControl {
         
         private void RemoteControl_KeyUp(object sender, KeyEventArgs e) {
             if (_active) {
-                sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                    new WheelSpeeds(0, 0, 0, 0)));
-                Thread thread = new System.Threading.Thread(delegate()
+                lock (_controlLock)
                 {
-                    System.Threading.Thread.Sleep(100);
-                    sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE,
-                                 new WheelSpeeds(0, 0, 0, 0)));
-                });
-                thread.Start();
+                    IsKeyPressed[e.KeyCode] = false;
+                    switch (e.KeyCode)
+                    {
+                        case Keys.Left: // left move left in x
+                        case Keys.Right: // right move right in x
+                        case Keys.Up: // up move forward in y
+                        case Keys.Down: // down move backward in y
+                        case Keys.Oemcomma: // , rotate anti-clockwise
+                        case Keys.OemPeriod: // . rotate clockwise
+                            updateMovement(true);
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void clearMovement()
+        {
+            lock (_controlLock)
+            {
+                IsKeyPressed[Keys.Left] = false;
+                IsKeyPressed[Keys.Right] = false;
+                IsKeyPressed[Keys.Up] = false;
+                IsKeyPressed[Keys.Down] = false;
+                IsKeyPressed[Keys.Oemcomma] = false;
+                IsKeyPressed[Keys.OemPeriod] = false;
+                sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE, new WheelSpeeds()));
+            }
+        }
+
+        private bool updateMovement(bool sendZero)
+        {
+            lock (_controlLock)
+            {
+                int xComponent = 0;
+                int yComponent = 0;
+                int rotComponent = 0;
+
+                if (IsKeyPressed.ContainsKey(Keys.Left) && IsKeyPressed[Keys.Left])
+                    xComponent--;
+                if (IsKeyPressed.ContainsKey(Keys.Right) && IsKeyPressed[Keys.Right])
+                    xComponent++;
+                if (IsKeyPressed.ContainsKey(Keys.Down) && IsKeyPressed[Keys.Down])
+                    yComponent--;
+                if (IsKeyPressed.ContainsKey(Keys.Up) && IsKeyPressed[Keys.Up])
+                    yComponent++;
+                if (IsKeyPressed.ContainsKey(Keys.Oemcomma) && IsKeyPressed[Keys.Oemcomma])
+                    rotComponent++;
+                if (IsKeyPressed.ContainsKey(Keys.OemPeriod) && IsKeyPressed[Keys.OemPeriod])
+                    rotComponent--;
+
+                int num = 0;
+                WheelSpeeds speeds = new WheelSpeeds();
+
+                if (xComponent != 0)
+                {
+                    speeds += new WheelSpeeds(-_speed, -_speed, _speed, _speed) * xComponent;
+                    num++;
+                }
+                if (yComponent != 0)
+                {
+                    speeds += new WheelSpeeds(_speed, -_speed, -_speed, _speed) * yComponent;
+                    num++;
+                }
+                if (rotComponent != 0)
+                {
+                    speeds += new WheelSpeeds(_speed, _speed, _speed, _speed) * rotComponent;
+                    num++;
+                }
+
+                if (num == 0)
+                {
+                    if (sendZero)
+                        sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE, new WheelSpeeds()));
+                    return true;
+                }
+                else
+                {
+                    speeds = speeds / (double)Math.Sqrt(num);
+                    speeds = speeds.getRounded();
+                    sendCommand(new RobotCommand(_curRobot, RobotCommand.Command.MOVE, speeds));
+                    return false;
+                }
             }
         }
 
