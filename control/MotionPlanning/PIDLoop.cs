@@ -66,7 +66,7 @@ namespace Robocup.MotionControl
             D = ConstantsRaw.get<double>(category, constype + "_D");
 
             cap = 0;
-            if (ConstantsRaw.isDefined(constype + "_CAP")) {
+            if (ConstantsRaw.isCategoryDefined(constype + "_CAP")) {
                 cap = ConstantsRaw.get<double>(category, constype + "_CAP");
             }
         }

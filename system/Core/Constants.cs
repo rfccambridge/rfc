@@ -903,12 +903,11 @@ namespace Robocup.Core
         }
 
         /// <summary>
-        /// Gets whether or not the specified constant has been defined
+        /// Gets whether or not the specified category has been defined
         /// </summary>
         /// <param name="name">The name of the constant</param>
         /// <returns>Whether or not the constant exists</returns>
-        //TODO(davidwu): This is wrong. It checks whether a category is defined, not whether a constant is defined!
-        static public bool isDefined(string name)
+        static public bool isCategoryDefined(string name)
         {
             lock (dictionaries)
             {

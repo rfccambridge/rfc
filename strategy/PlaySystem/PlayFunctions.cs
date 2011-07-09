@@ -12,6 +12,11 @@ namespace Robocup.PlaySystem
     // functions in the appropriate format for the PlaySelector system, these are straightforward C#
     // methods, though many are ported from Functions.cs.
     /// </summary>
+
+    //TODO(davidwu): Almost all of these functions do things that are manually duplicated and coded everywhere else, including
+    //in places like the controller, which don't have access to a GameState. Almost alls of these function should be generalized
+    //to not depend on a GameState, but rather be static utility functions, and take in the necessary info as arguments
+    //(such as a list of robots). Then we can get rid of a lot of duplicated code everywhere.    
     public class PlayFunctions
     {
         GameState state;
@@ -110,8 +115,6 @@ namespace Robocup.PlaySystem
             return (projpoint.Y < point.Y);
         }
 
-        //TODO(davidwu): This function and others of its sort deserve to be somewhere else, because this calculation
-        //and similar ones are reproduced all over the place.
         /// <summary>
         /// Is a point in the boundaries of the soccer field
         /// </summary>

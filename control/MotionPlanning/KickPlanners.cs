@@ -14,6 +14,7 @@ using Robocup.Utilities;
 
 namespace Robocup.MotionControl
 {
+#if false
     /// <summary>
     /// Head towards a point behind the ball (relative to the target), once you are there,
     /// use a very slow version of FeedbackVeerDriver to move forward to hit the ball
@@ -390,5 +391,5 @@ namespace Robocup.MotionControl
             return p2 + (p2 - p1).normalizeToLength(distance);
         }
     }
-
+#endif
 }

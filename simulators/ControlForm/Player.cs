@@ -222,11 +222,6 @@ namespace Robocup.ControlForm
             try
             {
                 _fieldDrawer.UpdateRobotsAndBall(robots, ball);
-                //RobotPath[] paths = ((Controller)_controller).GetLastPaths(); //TODO(davidwu): This cast is not ideal...
-                //for (int i = 0; i < paths.Length; i++)
-                //    if (paths[i] != null)
-                //        _fieldDrawer.DrawPath(paths[i]);
-
                 PlayType playType = _refbox.GetCurrentPlayType();
                 _fieldDrawer.UpdatePlayType(playType);
 

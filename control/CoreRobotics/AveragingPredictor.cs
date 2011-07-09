@@ -260,6 +260,11 @@ namespace Robocup.CoreRobotics
                 fieldStates[i] = new FieldState();
             }
 
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+            {
+                robots.Add(team, new List<RobotInfo>());
+            }
+
             LoadConstants();
 
             combineTimer.Elapsed += combineTimer_Elapsed;

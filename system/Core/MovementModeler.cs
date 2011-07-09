@@ -6,6 +6,14 @@ using Robocup.Geometry;
 
 namespace Robocup.CoreRobotics
 {
+    //TODO(davidwu): This should take into account Constants.Motion.ANGLE_AXIS_TO_WHEEL
+
+    //TODO(davidwu): the wheel speed code here should be merged with 
+    //public WheelSpeeds Convert(double forward, double lateral, double angularV)
+    //and 
+    //public WheelSpeeds DriveInDirection(double speed, double dx, double dy)
+    //in RobotModel.cs
+
     /// <summary>
     /// A simple proportional model for the relationship between commanded wheel speeds for a robot and
     /// actual rotation and translation velocity.

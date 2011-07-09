@@ -7,8 +7,10 @@ using Robocup.Geometry;
 
 namespace Robocup.CoreRobotics
 {
-
-
+    //TODO(davidwu): Can we please get rid of this code? Then we can get rid of the void SetPlayType(PlayType newPlayType)
+    //function in IPredictor, which is inappropriate for the interface (IPredictor should not be mutable from its users, it
+    //should only depend on outside input from vision).
+    //Also, if we eliminate this, we can remove stuff like "string FIELD_HALF Left" from the constants in plays.txt
     /// <summary>
     /// A basic implementation of IPredictor that just remembers the last values that it saw.
     /// </summary>

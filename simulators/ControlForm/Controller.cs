@@ -22,6 +22,7 @@ namespace Robocup.ControlForm
         //Grabbing the constant now - won't change if constants are reloaded
         private static int NUM_ROBOTS = Constants.Basic.NUM_ROBOTS;
 
+        //TODO constant-ify these constants
         private const double DRIBBLER_TIMER_PERIOD = 0.5; //seconds
         private const double DRIBBLER_TIMEOUT = 6.0; // seconds
         private bool DRAW_PATH;
@@ -39,7 +40,7 @@ namespace Robocup.ControlForm
 
         //Planners for motion and kicing
         private IMotionPlanner _planner;
-		private IKickPlanner _kickPlanner;
+		//private IKickPlanner _kickPlanner;
 
         private RobotPath[] _paths_to_follow;
         private double[] _speed_scale_to_follow;
@@ -83,7 +84,7 @@ namespace Robocup.ControlForm
 			_fieldDrawer = fieldDrawer;
 
             _planner = planner;
-			_kickPlanner = new FeedbackVeerKickPlanner(new TangentBugFeedbackMotionPlanner());
+			//_kickPlanner = new FeedbackVeerKickPlanner(new TangentBugFeedbackMotionPlanner());
 
             _last_successful_path = new RobotPath[NUM_ROBOTS];
 
@@ -109,7 +110,7 @@ namespace Robocup.ControlForm
             CHARGE_DIST = ConstantsRaw.get<double>("kickplanning", "CHARGE_DIST");
 
             _planner.LoadConstants();
-            _kickPlanner.LoadConstants();
+            //_kickPlanner.LoadConstants();
         }
 
         //CONNECTION TO SEND ROBOT COMMANDS-----------------------------------------------------------
@@ -363,6 +364,9 @@ namespace Robocup.ControlForm
 		/// <param name="target"></param>
 		public void Kick(int robotID, Vector2 target)
 		{
+            throw new Exception("KICK is currently disabled - use ActionInterpeter.Kick");
+
+            /*
             RobotCommand command;
 
             // Plan kick
@@ -377,6 +381,7 @@ namespace Robocup.ControlForm
 
             command = new RobotCommand(robotID, kpResults.wheel_speeds);
             _cmdSender.Post(command);
+             * */
 		}
 
 		public void Stop(int robotID)
