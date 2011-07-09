@@ -100,7 +100,8 @@ namespace Robocup.CoreRobotics
             }
 
             //TODO: Hardcoded .108: The approximate distance from robot to ball that suffices to conclude ball has been kicked
-            return mindistsq > .108 * .108;
+            double _BALL_ROBOT_FREEKICK_DIST = Constants.Plays.BALL_ROBOT_FREEKICK_DIST;
+            return mindistsq > _BALL_ROBOT_FREEKICK_DIST * _BALL_ROBOT_FREEKICK_DIST;
         }
 
 

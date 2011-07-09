@@ -675,9 +675,14 @@ namespace Robocup.Core
             /// <summary> Delta distance for deciding that ball has moved. </summary>
             static public double BALL_MOVED_DIST { get { InitializeIfNeeded(); return _BALL_MOVED_DIST; } } static volatile float _BALL_MOVED_DIST;
 
+            /// <summary> Delta distance for deciding that ball has moved. </summary>
+            static public double BALL_ROBOT_FREEKICK_DIST { get { InitializeIfNeeded(); return _BALL_ROBOT_FREEKICK_DIST; } } static volatile float _BALL_ROBOT_FREEKICK_DIST;
+            
+
             static public void Reload()
             {
                 _BALL_MOVED_DIST = (float)ConstantsRaw.get<double>("plays", "BALL_MOVED_DIST");
+                _BALL_ROBOT_FREEKICK_DIST = (float)ConstantsRaw.get<double>("plays", "BALL_ROBOT_FREEKICK_DIST");
             }
         }
 

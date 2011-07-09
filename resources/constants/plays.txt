@@ -47,6 +47,9 @@ bool IS_OUR_GOAL_LEFT true
 # delta distance for deciding that ball has moved
 double BALL_MOVED_DIST 0.02
 
+# ball-robot distance for deciding freekick has happened
+double BALL_ROBOT_FREEKICK_DIST 0.135
+
 # Predefined ball positions when in refbox game state
 bool ASSUME_BALL false
 
