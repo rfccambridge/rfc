@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.Drawing;
+using Robocup.CorePlayFiles;
 using Robocup.Core;
-
+using System.Threading;
 
 namespace Robocup.Plays
 {
@@ -31,6 +32,12 @@ namespace Robocup.Plays
     class PlayEvaluator
     {
         EvaluatorState state;
+
+        public PlayEvaluator() {
+            Console.WriteLine("Starting Stats computer thread.");
+            new Thread(Stats.RunStatsComputer);
+        }
+
         public EvaluatorState State
         {
             get { return state; }
@@ -45,6 +52,7 @@ namespace Robocup.Plays
             get { return state.Tick; }
         }
         InterpreterPlay curplay;
+        uint counter = 0;
         /// <summary>
         /// Updates the conditions, and the tick will be increased by one.
         /// </summary>
@@ -52,6 +60,7 @@ namespace Robocup.Plays
         {
             synchronizedTick++;
             state = new EvaluatorState(ourteaminfo, theirteaminfo, ballinfo, ourgoals, theirgoals, synchronizedTick);
+            Stats.ComputeStats(state);
         }
         private void clearAssignments()
         {

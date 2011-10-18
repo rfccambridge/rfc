@@ -5,26 +5,62 @@ using System.Text;
 using Robocup.Plays;
 using Robocup.Core;
 using System.Diagnostics;
+using Robocup.Geometry;
+using System.Threading;
 
 namespace Robocup.CorePlayFiles
 {
-    class Stats
+    public class Stats
     {
+        static Queue<EvaluatorState> statsQueue = new Queue<EvaluatorState>();
+
         static private Dictionary<string, double> metricMap = new Dictionary<string, double>();
 
         /* Which was the last team that had possession? Never null. */
-        static private Nullable<Team> lastValidPossession;
+        static private Nullable<Team> lastValidPossession = Team.Blue;
         
         /* What was the last state of the ball? Could be null. */
         static private Nullable<Team> lastPossession;
 
+        static public void RunStatsComputer() {
+            int backOff = 0;
+            while (true)
+            {
+                if (statsQueue.Count == 0)
+                {
+                    Thread.Sleep(backOff);
+                    backOff = backOff + 1;
+                }
+                else
+                {
+                    backOff = backOff / 2;
+                    EvaluatorState state = statsQueue.Dequeue();
+                    computePossessionStats(state);
+                }
+            }
+        }
+
+        static int counter = 0;
+        /**
+         * Main publicly available API call.
+         * Takes an EvaluatorState and computes all relevant stats.
+         */
         static public void ComputeStats(EvaluatorState state)
         {
-            computePossessionStats(state);
+            statsQueue.Enqueue(state);
+            counter = counter + 1;
+            if (counter % 100 == 0)
+                PrintStats();
         }
 
         static private void computePossessionStats(EvaluatorState state)
         {
+            if ((state.OurTeamInfo.Length == 0) || (state.TheirTeamInfo.Length == 0))
+            {
+                Stats.Incr("insufficient-data-to-calculate-stats");
+                return;
+            }
+
             Nullable<Team> possession = computeCurrentPossession(state.OurTeamInfo, state.TheirTeamInfo, state.ballInfo);
             Debug.Assert(lastValidPossession != null);
  
@@ -58,6 +94,10 @@ namespace Robocup.CorePlayFiles
                 }
                 Incr("yellow-possession");
             }
+            else if (possession == null)
+            {
+                Stats.Incr("limbo");
+            }
 
             if (possession != null)
                 lastValidPossession = possession;
@@ -65,9 +105,38 @@ namespace Robocup.CorePlayFiles
             lastPossession = possession;
         }
 
-        static private Nullable<Team> computeCurrentPossession(InterpreterRobotInfo[] ourteaminfo, InterpreterRobotInfo[] theirteaminfo, BallInfo ballinfo)
+        static private RobotInfo getClosestRobot(InterpreterRobotInfo[] teamInfo, Vector2 ballPosition)
         {
-            return null;
+            double minDistance = Double.PositiveInfinity;
+            RobotInfo closestRobot = teamInfo[0];
+
+            for (int i = 0; i < teamInfo.Length; i++)
+            {
+                InterpreterRobotInfo robot = teamInfo[i];
+                double distance = robot.Position.distance(ballPosition);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestRobot = robot;
+                }
+            }
+
+            return closestRobot;
+        }
+
+        static private Nullable<Team> computeCurrentPossession(InterpreterRobotInfo[] ourTeamInfo, InterpreterRobotInfo[] theirTeamInfo, BallInfo ballinfo)
+        {
+            Vector2 ballPosition = ballinfo.Position;
+            RobotInfo closestRobot;
+            RobotInfo ourClosestRobot = getClosestRobot(ourTeamInfo, ballPosition);
+            RobotInfo theirClosestRobot = getClosestRobot(theirTeamInfo, ballPosition);
+            if (ourClosestRobot.Position.distance(ballPosition) > theirClosestRobot.Position.distance(ballPosition))
+                closestRobot = ourClosestRobot;
+            else
+                closestRobot = theirClosestRobot;
+            if (closestRobot.Position.distance(ballPosition) > (Constants.Basic.ROBOT_RADIUS + 0.10))
+                return null;
+            return closestRobot.Team;
         }
         
         /**
@@ -77,22 +146,13 @@ namespace Robocup.CorePlayFiles
          */
         static public void Incr(string metricName, double value)
         {
-            if (metricMap.ContainsKey(metricName))
+            lock (metricMap)
             {
-                lock (metricMap)
-                {
-                    double currentValue = metricMap[metricName];
-                    metricMap.Remove(metricName);
-                    double newValue = currentValue + value;
-                    metricMap.Add(metricName, newValue);
-                }
-            }
-            else
-            {
-                lock (metricMap)
-                {
+                if (metricMap.ContainsKey(metricName))
+                    metricMap[metricName] += value;
+                else
                     metricMap.Add(metricName, 1.0);
-                }
+
             }
         }
 
@@ -109,6 +169,15 @@ namespace Robocup.CorePlayFiles
         static public void Decr(string metricName)
         {
             Incr(metricName, -1.0);
+        }
+
+        static public void PrintStats()
+        {
+            Console.WriteLine("====== STATS ======");
+            foreach(KeyValuePair<String,Double> entry in metricMap) 
+            {
+                Console.WriteLine(entry.Key + ": " + entry.Value);
+            }
         }
 
         /**
