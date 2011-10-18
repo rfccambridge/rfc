@@ -149,26 +149,26 @@ namespace Robocup.CoreRobotics
                 case Command.START_DRIBBLER:
                     source = (byte)'v'; port = (byte)'d'; arg0 = (byte)('0' + (byte)DribblerSpeed);
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0,
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0,
                                       (byte)'\\', (byte)'E'};
                 case Command.STOP_DRIBBLER:
                     source = (byte)'v'; port = (byte)'d'; arg0 = (byte)'0';
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0,
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0,
                                       (byte)'\\', (byte)'E'};
                 case Command.START_VARIABLE_CHARGING:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
                     source = (byte)'v'; port = (byte)'v'; arg0 = (byte)KickerStrength;
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0,
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0,
                                       (byte)'\\', (byte)'E'};
                 case Command.FULL_BREAKBEAM_KICK:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
                     source = (byte)'v'; port = (byte)'f'; arg0 = (byte) KickerStrength;
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0,
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0,
                                       (byte)'\\', (byte)'E'};
                 case Command.MIN_BREAKBEAM_KICK:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
@@ -178,7 +178,7 @@ namespace Robocup.CoreRobotics
                     source = (byte)'v'; port = (byte)'m';
                     arg0 = (byte)KickerStrength; arg1 = (byte) MinKickerStrength;
                     chksum = Checksum.Compute(new byte[] { id, source, port, arg0, arg1 });
-                    return new byte[] {(byte)'\\', (byte)'H', /*chksum,*/ id, source, port, arg0, arg1,
+                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0, arg1,
                                       (byte)'\\', (byte)'E'};
                 case Command.KICK:              source = (byte)'v'; port = (byte)'k'; break;
                 case Command.START_CHARGING:    source = (byte)'v'; port = (byte)'c'; break;
@@ -192,7 +192,7 @@ namespace Robocup.CoreRobotics
 
             // simplest commands fall through to here
             chksum = Checksum.Compute(new byte[] { id, source, port });
-            return new byte[] { (byte)'\\', (byte)'H', /*chksum,*/ id, source, port, (byte)'\\', (byte)'E' };
+            return new byte[] { (byte)'\\', (byte)'H', chksum, id, source, port, (byte)'\\', (byte)'E' };
         }        
 
         #region IByteSerializable<RobotCommand> Members

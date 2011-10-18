@@ -43,7 +43,7 @@ namespace Robocup.SerialControl {
         private object _lastCommandTimeLock = new object();
         private SerialPort _comPort;
         private SerialInput _serialInput = new SerialInput();
-        private StreamWriter _dataInWriter;
+        private StreamWriter _dataInWriter = null;
         private KeyboardHook _keyboardHook = new KeyboardHook();
         private JoystickInterface.JoystickWrapper _joystickInterface;
         private System.Timers.Timer _joystickTimer = new System.Timers.Timer(100);

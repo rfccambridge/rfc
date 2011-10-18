@@ -123,13 +123,13 @@ namespace Robocup.SerialControl
         /// </summary>
         void serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            const int HEADER_LEN = 1; // chksum (\\H is not counted, it doesn't end up in data variable)
+            const int HEADER_LEN = 2; // chksum, address (\\H is not counted, it doesn't end up in data variable)
             const int FOOTER_LEN = 2; // '\\', 'E'
             const int NUM_SUBPKTS = 1;
             const int SUBPKT_SIZE = 8;
             const int PAYLOAD_SIZE = NUM_SUBPKTS * SUBPKT_SIZE;
 
-            byte[] data = new byte[PAYLOAD_SIZE + 1];
+            byte[] data = new byte[PAYLOAD_SIZE + HEADER_LEN];
             byte[] payload = new byte[PAYLOAD_SIZE];
 
             try
@@ -137,17 +137,16 @@ namespace Robocup.SerialControl
                 while (serialport.BytesToRead >= HEADER_LEN + PAYLOAD_SIZE + FOOTER_LEN)
                 {
                     string s = serialport.ReadTo("\\H"); // TODO: shouldn't use this                    
-                    serialport.Read(data, 0, PAYLOAD_SIZE+1);                    
+                    serialport.Read(data, 0, PAYLOAD_SIZE+HEADER_LEN);                    
 
                     Console.Write(pktsReceived + ": ");
                     for (int i = 0; i < data.Length; i++)
                     {
                         Console.Write(data[i] + " ");
-                        if (i > 0)
-                            payload[i-1] = data[i];
+                        if (i > HEADER_LEN-1)
+                            payload[i-HEADER_LEN] = data[i];
                     }
                     Console.WriteLine();
-                    
                     pktsReceived++;                 
 
                     // verify chksum
