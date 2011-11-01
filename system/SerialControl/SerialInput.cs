@@ -8,89 +8,95 @@ using Robocup.Utilities;
 
 namespace Robocup.SerialControl
 {
-    class SerialInput
+    public enum BoardType { Brushlees, Auxiliary };
+    public enum MessageType { EncoderSpew, CapVoltage, BatteryVoltage };
+
+    /// <summary>
+    /// Protocol for received data:
+    /// First five bytes are a header.
+    /// (numgroups) groups follow, each of which is (group_size) bytes large
+    /// In current implementation, group_size == 8
+    /// EncoderSpew:
+    /// bytes 1,2 - High and Low part of encoder packet
+    /// byte 3 - Duty cycle high
+    /// byte 4 - Duty cycle low
+    /// byte 5 - Wheel command
+    /// bytes 6,7,8 - empty (pkt stats not sent anymore)
+    /// CapVoltage:
+    /// bytes 1,2 - High and Low part of encoder votlage
+    /// the rest - empty
+    /// </summary>
+    public class SerialInputMessage
     {
-        public class SerialInputMessage
+        public static readonly int SUBPKT_SIZE = 8;
+
+        public SerialInputMessage(char botID, char boardID, byte[] payload, int start_ind)
         {
-            private int encoder;
-            public int Encoder
-            {
-                get { return encoder; }
-                set { encoder = value; }
-            }
+            RobotID = botID - '0';
+            BoardType = boardID == 'v' ? BoardType.Auxiliary : BoardType.Brushlees;
+            if (BoardType == BoardType.Brushlees)
+                MessageType = MessageType.EncoderSpew;
+            else
+                MessageType = MessageType.CapVoltage; // Battery votlage niy
 
-            private int error;
-            public int Error
+            switch (MessageType)
             {
-                get { return error; }
-                set { error = value; }
-            }
-
-            private int wheelcommand;
-            public int WheelCommand
-            {
-                get { return wheelcommand; }
-                set { wheelcommand = value; }
-            }
-
-            private int duty;
-            public int Duty
-            {
-                get { return duty; }
-                set { duty = value; }
-            }
-
-            private int extra;
-            public int Extra
-            {
-                get { return extra; }
-                set { extra = value; }
-            }
-
-            private int extra2;
-            public int Extra2
-            {
-                get { return extra2; }
-                set { extra2 = value; }
-            }
-
-            private int pktsReceived;
-            public int PktsReceived
-            {
-                get { return pktsReceived; }
-                set { pktsReceived = value; }
-            }
-
-            private int pktsAccepted;
-            public int PktsAccepted
-            {
-                get { return pktsAccepted; }
-                set { pktsAccepted = value; }
-            }
-
-            private int pktsMismatched;
-            public int PktsMismatched
-            {
-                get { return pktsMismatched; }
-                set { pktsMismatched = value; }
-            }
-
-
-            static public string ToStringHeader()
-            {
-                return "enc\tduty\tcmd\trcv\tacc\tmism";
-            }
-            public override string ToString()
-            {
-                return encoder + "\t" + duty + "\t" + wheelcommand + "\t" + 
-                    pktsReceived + "\t" + pktsAccepted + "\t" + pktsMismatched;
+                case MessageType.EncoderSpew:
+                    Encoder = (Int16)(((UInt16)(payload[start_ind]) << 8) + //Hi
+                                                    (UInt16)(payload[start_ind + 1])); //Lo
+                    Duty = (int)(((Int16)payload[start_ind + 2] << 8) +
+                                   ((Int16)payload[start_ind + 3]));
+                    WheelCommand = (sbyte)payload[start_ind + 4];
+                    PktsReceived = (byte)payload[start_ind + 5];
+                    PktsAccepted = (byte)payload[start_ind + 6];
+                    PktsMismatched = (byte)payload[start_ind + 7];
+                    break;
+                case MessageType.CapVoltage:
+                    CapVoltage = (Int16)(((UInt16)(payload[start_ind]) << 8) + //Hi
+                                                    (UInt16)(payload[start_ind + 1])); //Lo
+                    CapVoltage -= 300;
+                    break;
             }
         }
 
-        public event Action<SerialInputMessage[]> ValueReceived;        
+        public int RobotID { get; private set; }
+        public BoardType BoardType { get; private set; }
+        public MessageType MessageType { get; private set; }
+
+        public int Encoder { get; private set; }
+        public int Error { get; private set; }
+        public int WheelCommand { get; private set; }
+        public int Duty { get; private set; }
+        public int Extra { get; private set; }
+        public int Extra2 { get; private set; }
+        public int PktsReceived { get; private set; }
+        public int PktsAccepted { get; private set; }
+        public int PktsMismatched { get; private set; }
+
+        public int CapVoltage { get; private set; }
+
+        static public string ToStringHeader()
+        {
+            return "enc\tduty\tcmd\trcv\tacc\tmism";
+        }
+        public override string ToString()
+        {
+            return Encoder + "\t" + Duty + "\t" + WheelCommand + "\t" +
+                PktsReceived + "\t" + PktsAccepted + "\t" + PktsMismatched;
+        }
+    }
+
+    class SerialInput
+    {
+        public event Action<SerialInputMessage[]> ValueReceived;
         SerialPort serialport = null;
         bool stopReceiving;
         uint pktsAccepted, pktsMismatched, pktsReceived;
+
+        public static readonly int HEADER_LEN = 3; // chksum, botID, address (\\H is not counted, it doesn't end up in data variable)
+        public static readonly int FOOTER_LEN = 2; // '\\', 'E'
+        public static readonly int NUM_SUBPKTS = 1;
+        public static readonly int PAYLOAD_SIZE = NUM_SUBPKTS * SerialInputMessage.SUBPKT_SIZE;
 
         public void Open(string port)
         {
@@ -99,7 +105,7 @@ namespace Robocup.SerialControl
             serialport = Robocup.Utilities.SerialPortManager.OpenSerialPort(port);
             stopReceiving = false;
             pktsAccepted = pktsMismatched = pktsReceived = 0;
-            serialport.DataReceived += serial_DataReceived;            
+            serialport.DataReceived += serial_DataReceived;
         }
         public void Close()
         {
@@ -111,24 +117,8 @@ namespace Robocup.SerialControl
             serialport = null;
         }
 
-        /// <summary>
-        /// Protocol for spewed data:
-        /// First three bytes are a header.
-        /// (numgroups) groups follow, each of which is (group_size) bytes large
-        /// In current implementation, group_size == 5
-        /// bytes 1,2 - High and Low part of encoder packet (offset by 0x80 to fit it an unsigned int)
-        /// byte 3 - Duty cycle high
-        /// byte 4 - Duty cycle low
-        /// byte 5 - Wheel command
-        /// </summary>
         void serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            const int HEADER_LEN = 2; // chksum, address (\\H is not counted, it doesn't end up in data variable)
-            const int FOOTER_LEN = 2; // '\\', 'E'
-            const int NUM_SUBPKTS = 1;
-            const int SUBPKT_SIZE = 8;
-            const int PAYLOAD_SIZE = NUM_SUBPKTS * SUBPKT_SIZE;
-
             byte[] data = new byte[PAYLOAD_SIZE + HEADER_LEN];
             byte[] payload = new byte[PAYLOAD_SIZE];
 
@@ -137,44 +127,36 @@ namespace Robocup.SerialControl
                 while (serialport.BytesToRead >= HEADER_LEN + PAYLOAD_SIZE + FOOTER_LEN)
                 {
                     string s = serialport.ReadTo("\\H"); // TODO: shouldn't use this                    
-                    serialport.Read(data, 0, PAYLOAD_SIZE+HEADER_LEN);                    
+                    serialport.Read(data, 0, PAYLOAD_SIZE + HEADER_LEN);
 
                     Console.Write(pktsReceived + ": ");
                     for (int i = 0; i < data.Length; i++)
                     {
                         Console.Write(data[i] + " ");
-                        if (i > HEADER_LEN-1)
-                            payload[i-HEADER_LEN] = data[i];
+                        if (i > HEADER_LEN - 1)
+                            payload[i - HEADER_LEN] = data[i];
                     }
                     Console.WriteLine();
-                    pktsReceived++;                 
+                    pktsReceived++;
 
                     // verify chksum
                     if (data[0] != Checksum.Compute(payload))
                     {
                         pktsMismatched++;
-                        Console.WriteLine("Checksum mismatch. Stats: acc " + pktsAccepted + 
+                        Console.WriteLine("Checksum mismatch. Stats: acc " + pktsAccepted +
                             " / mism " + pktsMismatched + " / rcv " + pktsReceived);
                         return;
                     }
 
-                    SerialInputMessage[] rtn = new SerialInputMessage[NUM_SUBPKTS];
+                    // Parse messages
+                    List<SerialInputMessage> rtn = new List<SerialInputMessage>();
                     for (int i = 0; i < NUM_SUBPKTS; i++)
-                    {
-                        rtn[i] = new SerialInputMessage();
-                        rtn[i].Encoder = (Int16)(((UInt16)(payload[i * SUBPKT_SIZE]) << 8) + //Hi
-                                            (UInt16)(payload[i * SUBPKT_SIZE + 1])); //Lo
-                        //- (1 << 15)); //Off-center
-                        rtn[i].Duty = (int)(((Int16)payload[i * SUBPKT_SIZE + 2] << 8) +
-                                       ((Int16)payload[i * SUBPKT_SIZE + 3]));
-                        rtn[i].WheelCommand = (sbyte)payload[i * SUBPKT_SIZE + 4];
-                        rtn[i].PktsReceived = (byte)payload[i * SUBPKT_SIZE + 5];
-                        rtn[i].PktsAccepted = (byte)payload[i * SUBPKT_SIZE + 6];
-                        rtn[i].PktsMismatched = (byte)payload[i * SUBPKT_SIZE + 7];                        
-                    }
+                        rtn.Add(new SerialInputMessage((char)data[1], (char)data[2], payload, i * SerialInputMessage.SUBPKT_SIZE));
+
                     pktsAccepted++;
+                    // And call appropriate handler
                     if (ValueReceived != null)
-                        ValueReceived(rtn);
+                        ValueReceived(rtn.ToArray());
                 }
             }
             catch (IOException except)
@@ -197,6 +179,6 @@ namespace Robocup.SerialControl
                 if (!stopReceiving)
                     throw except;
             }
-        }        
+        }
     }
 }

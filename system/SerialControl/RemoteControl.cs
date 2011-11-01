@@ -820,7 +820,7 @@ namespace Robocup.SerialControl {
             }
         }
 
-        private void serialDataReceived(SerialInput.SerialInputMessage[] values)
+        private void serialDataReceived(SerialInputMessage[] values)
         {
             _wheelSpeedFunctionTimer.Stop();
             double t = _wheelSpeedFunctionTimer.Duration;
@@ -844,13 +844,18 @@ namespace Robocup.SerialControl {
                 }
             }
 
+
             String[] itemsArray = new string[values.Length+1];
-
-            itemsArray[0] = SerialInput.SerialInputMessage.ToStringHeader();
-            for(int i=1; i<=values.Length; i++)
-                itemsArray[i] = values[i-1].ToString();
-
+            itemsArray[0] = SerialInputMessage.ToStringHeader();
+            for (int i = 1; i <= values.Length; i++)
+                // Encoder messages are printed in the GUI
+                if (values[i - 1].MessageType == MessageType.EncoderSpew)
+                    itemsArray[i] = values[i - 1].ToString();
+                // Others are sent back to ControlForm
+                //else
+                //    sendMessage(values[i-1]);
             showItemRange(listBoxInputHistory, itemsArray);
+
             _lastSerialData = t;
         }
 
