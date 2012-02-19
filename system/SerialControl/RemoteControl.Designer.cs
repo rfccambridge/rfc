@@ -412,7 +412,7 @@ namespace Robocup.SerialControl
             // 
             this.udKickStrength.Location = new System.Drawing.Point(30, 69);
             this.udKickStrength.Maximum = new decimal(new int[] {
-            5,
+            25,
             0,
             0,
             0});

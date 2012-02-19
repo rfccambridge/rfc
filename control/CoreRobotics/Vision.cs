@@ -76,8 +76,6 @@ namespace Robocup.CoreRobotics
                     SSL_DetectionFrame detection = packet.detection;
 
                     double t_processing = detection.t_sent - detection.t_capture;
-                    if (t_processing > 0.010)
-                        Console.WriteLine("Vision processing too slow: {0}", t_processing);
 
                     //Frame info:
                     int balls_n = detection.balls.Count;
