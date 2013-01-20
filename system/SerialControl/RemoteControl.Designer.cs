@@ -425,7 +425,7 @@ namespace Robocup.SerialControl
             this.udKickStrength.Size = new System.Drawing.Size(110, 20);
             this.udKickStrength.TabIndex = 63;
             this.udKickStrength.Value = new decimal(new int[] {
-            5,
+            25,
             0,
             0,
             0});
