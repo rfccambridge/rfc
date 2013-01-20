@@ -681,6 +681,20 @@ namespace Robocup.Core
             }
         }
 
+        static public class RadioProtocol
+        {
+            /// <summary> Calculate a checksum when sending commands to the brushless boards. </summary>
+            static public bool SEND_BRUSHLESSBOARD_CHECKSUM { get { InitializeIfNeeded(); return _SEND_BRUSHLESSBOARD_CHECKSUM; } } static volatile bool _SEND_BRUSHLESSBOARD_CHECKSUM;
+
+            /// <summary> Calculate a checksum when sending commands to the aux kicker boards. </summary>
+            static public bool SEND_AUXBOARD_CHECKSUM { get { InitializeIfNeeded(); return _SEND_AUXBOARD_CHECKSUM; } } static volatile bool _SEND_AUXBOARD_CHECKSUM;
+
+            static public void Reload()
+            {
+                _SEND_BRUSHLESSBOARD_CHECKSUM = ConstantsRaw.get<bool>("default", "SEND_BRUSHLESSBOARD_CHECKSUM");
+                _SEND_AUXBOARD_CHECKSUM = ConstantsRaw.get<bool>("default", "SEND_AUXBOARD_CHECKSUM");
+            }
+        }
 
         //INITIALIZATION AND RELOAD MECHANISM---------------------------------------------------------
 
@@ -723,6 +737,7 @@ namespace Robocup.Core
                 Predictor.Reload();
                 RobotInfo.Reload();
                 Plays.Reload();
+                RadioProtocol.Reload();
                 _is_reloading = false;
             }
         }

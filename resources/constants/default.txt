@@ -87,3 +87,6 @@ bool ROBOT_HAS_KICKER_11 true
 
 bool ROBOT_IS_GOALIE_3 true
 
+#PROTOCOL-----------------------------------------------------------
+bool SEND_AUXBOARD_CHECKSUM false
+bool SEND_BRUSHLESSBOARD_CHECKSUM true

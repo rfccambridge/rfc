@@ -105,13 +105,44 @@ namespace Robocup.CoreRobotics
             return s;
         }
 
+        /// <summary>
+        /// Create a packet follwing the EE/CS protocol
+        /// </summary>
+        /// <param name="use_checksum">Send a checksum after the header bytes</param>
+        /// <param name="values">Packet payload</param>
+        /// <returns>Ready-to-transmit packet</returns>
+        private byte[] createPacket(bool use_checksum, params byte[] values)
+        {
+            List<byte> curr_packet = new List<byte>();
+            // add header
+            curr_packet.Add((byte)'\\');
+            curr_packet.Add((byte)'H');
+
+            // add checksum byte if necessary
+            if (use_checksum)
+            {
+                byte checksum = Checksum.Compute(values);
+                curr_packet.Add(checksum);
+            }
+
+            // add the actual packet
+            curr_packet.AddRange(values);
+
+            // add footer
+            curr_packet.Add((byte)'\\');
+            curr_packet.Add((byte)'E');
+
+            return curr_packet.ToArray();
+        }
+
         public byte[] ToPacket()
         {
             byte id = (byte)('0' + ID);
-            byte chksum, source, port, arg0, arg1; // source: w for brushless board, v for kicker board
+            byte source, port; // source: w for brushless board, v for kicker board
 
             switch (command)
             {
+                #region Brushless board commands
                 case Command.MOVE:
 
                     int lf = clampWheelSpeed(Speeds.lf),
@@ -125,74 +156,75 @@ namespace Robocup.CoreRobotics
                     if (rf == '\\') rf++;
                     if (rb == '\\') rb++;                    
 
+                    Console.WriteLine("id " + ID + ": setting speeds to: " + Speeds.ToString());
+                    
                     //robots expect wheel powers in this order:
                     //rf lf lb rb                                       
                     
                     source = (byte)'w'; port = (byte)'w';
-                    chksum = Checksum.Compute(new byte[] { id, source, port, 
-                                                                         (byte)rf, (byte)lf, (byte)lb, (byte)rb });
-                    Console.WriteLine("id " + ID + ": setting speeds to: " + Speeds.ToString() + " parity: " + chksum.ToString());
-
-                    return new byte[]{(byte)'\\', (byte)'H', chksum, id, source, port,
-                                      (byte)rf, (byte)lf, (byte)lb, (byte)rb,
-                                      (byte)'\\', (byte)'E'};                                
+                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port, 
+                        (byte)rf, (byte)lf, (byte)lb, (byte)rb);
                 case Command.SET_PID:
                     source = (byte)'w'; port = (byte)'f';
-                    chksum = Checksum.Compute(new byte[] { id, source, port, P, I, D });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, P, I, D,
-                                      (byte)'\\', (byte)'E'};
+                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port, 
+                        P, I, D);
                 case Command.SET_CFG_FLAGS:
                     source = (byte)'w'; port = (byte)'c';
-                    chksum = Checksum.Compute(new byte[] { id, source, port, BoardID, Flags });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, BoardID, Flags,
-                                      (byte)'\\', (byte)'E'};
+                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port, 
+                        BoardID, Flags);
+                case Command.RESET:
+                    source = (byte)'w'; port = (byte)'r';
+                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port);
+                #endregion
+
+                #region Aux board commands
                 case Command.START_DRIBBLER:
-                    source = (byte)'v'; port = (byte)'d'; arg0 = (byte)('0' + (byte)DribblerSpeed);
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0,
-                                      (byte)'\\', (byte)'E'};
+                    source = (byte)'v'; port = (byte)'d';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port, 
+                        (byte)('0' + (byte)DribblerSpeed));
                 case Command.STOP_DRIBBLER:
-                    source = (byte)'v'; port = (byte)'d'; arg0 = (byte)'0';
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0,
-                                      (byte)'\\', (byte)'E'};
+                    source = (byte)'v'; port = (byte)'d';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port, 
+                        (byte)'0');
                 case Command.START_VARIABLE_CHARGING:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'v'; arg0 = (byte)KickerStrength;
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0,
-                                      (byte)'\\', (byte)'E'};
+                    source = (byte)'v'; port = (byte)'v';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
+                        (byte)KickerStrength);
                 case Command.FULL_BREAKBEAM_KICK:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'f'; arg0 = (byte) KickerStrength;
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0 });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0,
-                                      (byte)'\\', (byte)'E'};
+                    source = (byte)'v'; port = (byte)'f';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
+                        (byte)KickerStrength);
                 case Command.MIN_BREAKBEAM_KICK:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
                     if (MinKickerStrength > MAX_KICKER_STRENGTH) MinKickerStrength = MAX_KICKER_STRENGTH;
                     if (MinKickerStrength < MIN_KICKER_STRENGTH) MinKickerStrength = MIN_KICKER_STRENGTH;
                     source = (byte)'v'; port = (byte)'m';
-                    arg0 = (byte)KickerStrength; arg1 = (byte) MinKickerStrength;
-                    chksum = Checksum.Compute(new byte[] { id, source, port, arg0, arg1 });
-                    return new byte[] {(byte)'\\', (byte)'H', chksum, id, source, port, arg0, arg1,
-                                      (byte)'\\', (byte)'E'};
-                case Command.KICK:              source = (byte)'v'; port = (byte)'k'; break;
-                case Command.START_CHARGING:    source = (byte)'v'; port = (byte)'c'; break;
-                case Command.STOP_CHARGING:     source = (byte)'v'; port = (byte)'s'; break;
-                case Command.BREAKBEAM_KICK:    source = (byte)'v'; port = (byte)'b'; break;
-                case Command.DISCHARGE:         source = (byte)'v'; port = (byte)'p'; break;
-                case Command.RESET:             source = (byte)'v'; port = (byte)'r'; break;
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
+                        (byte)KickerStrength, (byte)MinKickerStrength);
+                case Command.KICK:
+                    source = (byte)'v'; port = (byte)'k';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
+                case Command.START_CHARGING:
+                    source = (byte)'v'; port = (byte)'c';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
+                case Command.STOP_CHARGING:
+                    source = (byte)'v'; port = (byte)'s';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
+                case Command.BREAKBEAM_KICK:
+                    source = (byte)'v'; port = (byte)'b';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
+                case Command.DISCHARGE:
+                    source = (byte)'v'; port = (byte)'p';
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
                 default:
                     throw new ApplicationException("Don't know how to package command: " + command.ToString());
+                #endregion
             }
-
-            // simplest commands fall through to here
-            chksum = Checksum.Compute(new byte[] { id, source, port });
-            return new byte[] { (byte)'\\', (byte)'H', chksum, id, source, port, (byte)'\\', (byte)'E' };
         }        
 
         #region IByteSerializable<RobotCommand> Members
