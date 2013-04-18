@@ -239,7 +239,7 @@ namespace Robocup.ControlForm
             _fieldDrawer.UpdateInterpretDuration(_interpretLoop.GetLoopDuration() * 1000);
         }
 
-        protected virtual void doAction()
+        public virtual void doAction()
         {
             PlayType playType = _refbox.GetCurrentPlayType();
             Score score = _refbox.GetScore();

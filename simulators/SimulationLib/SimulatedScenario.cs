@@ -225,4 +225,40 @@ namespace Robocup.Simulation
             _engine.ResetScenarioScene();
         }
     }
+
+    /// <summary>
+    /// A test scenario for evaluating cooperation for multi-agent motion planning
+    /// </summary>
+    public class MultiMotionTestScenario : SimulatedScenario
+    {
+        public MultiMotionTestScenario(string name, PhysicsEngine engine)
+            : base(name, engine) { }
+
+        public override bool SupportsNumbers { get { return false; } }
+
+        public override void GoalScored() { return; }
+
+        public override void BallOut(Vector2 lastPosition) { return; }
+
+        public override SimulatorScene GetScene()
+        {
+            SimulatorScene scene = new SimulatorScene();
+
+            Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
+
+            List<RobotInfo> yellowRobots = new List<RobotInfo>();
+            List<RobotInfo> blueRobots = new List<RobotInfo>();
+
+            yellowRobots.Add(new RobotInfo(new Vector2(1.0, -0.5), 0.0, Team.Yellow, 0));
+            yellowRobots.Add(new RobotInfo(new Vector2(1.0, 0.5), 0.0, Team.Yellow, 1));
+
+            robots[Team.Yellow] = yellowRobots;
+            robots[Team.Blue] = blueRobots;
+
+            scene.Robots = robots;
+            scene.Ball = new BallInfo(new Vector2(0,0));
+
+            return scene;
+        }
+    }
 }

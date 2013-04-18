@@ -130,6 +130,8 @@ namespace Robocup.ControlForm {
             Player bplayerFollower = new PathFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
             Player yplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
             Player bplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
+            Player yplayerMultiFollower = new MultiFollowerPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
+            Player bplayerMultiFollower = new MultiFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
             Player yplayerKick = new KickPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
             Player bplayerKick = new KickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
             Player yplayerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
@@ -139,10 +141,12 @@ namespace Robocup.ControlForm {
             lstPlayers.Items.Add(player2);
             lstPlayers.Items.Add(yplayerFollower);
         	lstPlayers.Items.Add(yplayerMeasuringFollower);
+            lstPlayers.Items.Add(yplayerMultiFollower);
             lstPlayers.Items.Add(yplayerKick);
             lstPlayers.Items.Add(yplayerBeamKick);
             lstPlayers.Items.Add(bplayerFollower);
             lstPlayers.Items.Add(bplayerMeasuringFollower);
+            lstPlayers.Items.Add(bplayerMultiFollower);
             lstPlayers.Items.Add(bplayerKick);
             lstPlayers.Items.Add(bplayerBeamKick);
 
@@ -150,10 +154,12 @@ namespace Robocup.ControlForm {
             // Color list is defined in FieldDrawer form.
             _waypointColors[yplayerFollower as WaypointPlayer] = Color.Cyan;
 			_waypointColors[yplayerMeasuringFollower as WaypointPlayer] = Color.Cyan;
+            _waypointColors[yplayerMultiFollower as WaypointPlayer] = Color.Cyan;
             _waypointColors[yplayerKick as WaypointPlayer] = Color.Red;
             _waypointColors[yplayerBeamKick as WaypointPlayer] = Color.Red;
             _waypointColors[bplayerFollower as WaypointPlayer] = Color.Cyan;
             _waypointColors[bplayerMeasuringFollower as WaypointPlayer] = Color.Cyan;
+            _waypointColors[bplayerMultiFollower as WaypointPlayer] = Color.Cyan;
             _waypointColors[bplayerKick as WaypointPlayer] = Color.Red;
             _waypointColors[bplayerBeamKick as WaypointPlayer] = Color.Red;
         }        

@@ -10,17 +10,13 @@ using Robocup.Geometry;
 
 namespace Robocup.ControlForm
 {
-    public class WaypointPlayer : Player
+    abstract public class WaypointPlayer : Player
     {
         protected List<RobotInfo> _waypoints = new List<RobotInfo>();
         protected int _waypointIndex = 0;
         protected int _robotID = 0;
 
-        public int RobotID
-        {
-            get { return _robotID; }
-            set { _robotID = value; }
-        }
+        abstract public int RobotID { get; set; }
 
         public WaypointPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor) :
             base("", team, fieldHalf, fieldDrawer, predictor) {
@@ -78,14 +74,20 @@ namespace Robocup.ControlForm
             LoadConstants();
         }
 
+        public override int RobotID
+        {
+            get { return _robotID; }
+            set { _robotID = value; }
+        }
+
         public override void LoadConstants()
         {
             base.LoadConstants();
             MIN_GOAL_DIST = ConstantsRaw.get<double>("motionplanning", "PFP_MIN_GOAL_DIST");
             MIN_GOAL_DIFF_ORIENTATION = ConstantsRaw.get<double>("motionplanning", "PFP_MIN_GOAL_DIFF_ORIENTATION");
-        }      
+        }
 
-        protected override void doAction()
+        protected virtual void doRobotAction(int robotID)
         {
             if (_waypoints.Count == 0)
                 return;
@@ -94,26 +96,26 @@ namespace Robocup.ControlForm
             RobotInfo curinfo = null;
             try
             {
-                 curinfo = _predictor.GetRobot(_team, _robotID);
+                curinfo = _predictor.GetRobot(_team, robotID);
             }
             catch
             {
-                Console.WriteLine("Predictor did not find Robot " + _robotID.ToString());
+                Console.WriteLine("Predictor did not find Robot " + robotID.ToString());
                 return;
             }
 
-        	if(BeforeMoving != null)
-				BeforeMoving(curinfo);
-            
-			_controller.Move(_robotID, false, _waypoints[_waypointIndex].Position, _waypoints[_waypointIndex].Orientation);
+            if (BeforeMoving != null)
+                BeforeMoving(curinfo);
+
+            _controller.Move(robotID, false, _waypoints[_waypointIndex].Position, _waypoints[_waypointIndex].Orientation);
 
             if (curinfo == null)
             {
-                Console.WriteLine("Robot #" + _robotID + " not found on team " + _team.ToString());
+                Console.WriteLine("Robot #" + robotID + " not found on team " + _team.ToString());
                 return;
             }
-            
-            
+
+
             double sqDistToGoal = curinfo.Position.distanceSq(_waypoints[_waypointIndex].Position);
             double diffOrientation = Math.Abs(Angle.AngleDifference(curinfo.Orientation, _waypoints[_waypointIndex].Orientation));
 
@@ -126,24 +128,28 @@ namespace Robocup.ControlForm
                         Console.WriteLine("Ending lap...");
                         _lapTimer.Stop();
 
-                    	_lapping = false;
-						if(OnLapEnd != null)
-							OnLapEnd();
-                        _fieldDrawer.UpdateLapDuration(_lapTimer.Duration);                        
+                        _lapping = false;
+                        if (OnLapEnd != null)
+                            OnLapEnd();
+                        _fieldDrawer.UpdateLapDuration(_lapTimer.Duration);
                     }
 
                     Console.WriteLine("Starting lap...");
-					
-					if (OnLapStart != null)
-						OnLapStart();
 
-                	_lapping = true;					
-					_lapTimer.Start();
+                    if (OnLapStart != null)
+                        OnLapStart();
+
+                    _lapping = true;
+                    _lapTimer.Start();
                     _firstLoop = false;
                 }
                 _waypointIndex = (_waypointIndex + 1) % _waypoints.Count;
             }
+        }
 
+        public override void doAction()
+        {
+            doRobotAction(_robotID);
         }
 
 		public override void Stop()
@@ -152,6 +158,30 @@ namespace Robocup.ControlForm
 
 			_lapping = false;
 		}
+    }
+
+    public class MultiFollowerPlayer : PathFollowerPlayer
+    {
+        private const int NUM_FOLLOWERS = 2;
+        private int _startID;
+
+        public MultiFollowerPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor)
+            : base (team, fieldHalf, fieldDrawer, predictor)
+        {
+        }
+
+        public override int RobotID
+        {
+            get { return _startID; }
+            set { _startID = value; }
+        }
+
+        public override void doAction()
+        {
+            for (int i = 0; i < NUM_FOLLOWERS; i++)
+                doRobotAction(_startID + i);
+        }
+
     }
 
 	public class MeasuringFollowerPlayer : PathFollowerPlayer
@@ -228,6 +258,12 @@ namespace Robocup.ControlForm
         protected Vector2 _target = new Vector2(0, 0);
         protected ActionInterpreter _actionInterpreter;
 
+        public override int RobotID
+        {
+            get { return _robotID; }
+            set { _robotID = value; }
+        }
+
         public Vector2 Target
         {
             get { return _target; }
@@ -249,7 +285,7 @@ namespace Robocup.ControlForm
                 _actionInterpreter.LoadConstants();
         }
 
-        protected override void doAction()
+        public override void doAction()
         {
             if (_waypoints.Count > 0)
                 _actionInterpreter.Kick(_robotID, _waypoints[0].Position);
@@ -265,7 +301,7 @@ namespace Robocup.ControlForm
         {
         }
 
-        protected override void doAction()
+        public override void doAction()
         {
             if (_waypoints.Count > 0)
                 _actionInterpreter.BeamKick(_robotID, _waypoints[0].Position, 15);

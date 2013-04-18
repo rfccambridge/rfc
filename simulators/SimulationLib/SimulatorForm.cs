@@ -46,9 +46,11 @@ namespace Robocup.Simulation
         {
             SimulatedScenario normal = new NormalGameScenario("Normal game", _physicsEngine);
             SimulatedScenario shootout = new ShootoutGameScenario("Shootout", _physicsEngine);
+            SimulatedScenario multi_motion = new MultiMotionTestScenario("Motion test", _physicsEngine);
 
             lstScenarios.Items.Add(normal);
             lstScenarios.Items.Add(shootout);
+            lstScenarios.Items.Add(multi_motion);
 
             lstScenarios.SelectedIndex = 0;
         }
