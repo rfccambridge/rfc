@@ -63,6 +63,7 @@
     <Compile Include="BasicRRTPlanner.cs" />
     <Compile Include="BidirectionalRRTPlanner.cs" />
     <Compile Include="CirclePlanner.cs" />
+    <Compile Include="SmoothDMARRTPlanner.cs" />
     <Compile Include="TwoDTreeMap.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="SmoothRRTPlanner.cs" />

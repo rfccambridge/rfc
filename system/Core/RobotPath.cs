@@ -13,6 +13,7 @@ namespace Robocup.Core {
         Team _team;
         int _id;
         bool empty;
+        double _score;
 
         // Store final goal for planners that do not store it as a waypoint
         RobotInfo _finalState;
@@ -25,6 +26,7 @@ namespace Robocup.Core {
         public RobotPath() {
             // Create empty path
             _path = new List<RobotInfo>();
+            _score = Double.NegativeInfinity;
         }
 
         public RobotPath(Team team, int id) {
@@ -33,6 +35,7 @@ namespace Robocup.Core {
             _id = id;
             empty = true;
             _path = new List<RobotInfo>();
+            _score = Double.NegativeInfinity;
         }
 
         /// <summary>
@@ -52,6 +55,25 @@ namespace Robocup.Core {
         }
 
         /// <summary>
+        /// Given a list of RobotInfo waypoints and a score
+        /// </summary>
+        /// <param name="waypoints">RobotInfo waypoints along determined path</param>
+        /// <param name="score">Score returned by the motion planner</param>
+        public RobotPath(List<RobotInfo> waypoints, double score)
+        {
+            // take id and path from given waypoints
+            if (waypoints.Count == 0)
+                throw new Exception("Empty path given to path constructor");
+
+            _team = waypoints[0].Team;
+            _id = waypoints[0].ID;
+
+            _path = waypoints;
+            empty = false;
+            _score = score;
+        }
+
+        /// <summary>
         /// Given a single Vector2 waypoint
         /// </summary>
         /// <param name="waypoints"></param>
@@ -64,6 +86,7 @@ namespace Robocup.Core {
 
             _path = waypoints;
 			empty = false;
+            _score = Double.NegativeInfinity;
         }
 
 		/// <summary>
@@ -80,6 +103,7 @@ namespace Robocup.Core {
 
 			_path = waypoints;
 			empty = false;
+            _score = Double.NegativeInfinity;
 		}
 
         /// <summary>
@@ -95,6 +119,7 @@ namespace Robocup.Core {
             _path = waypoints1;
             _path.AddRange(makeRobotInfoList(_id, waypoints2));
 			empty = false;
+            _score = Double.NegativeInfinity;
         }
 
         /// <summary>
@@ -108,6 +133,7 @@ namespace Robocup.Core {
             _id = id;
             _path = makeRobotInfoList(_id, waypoints);
 			empty = false;
+            _score = Double.NegativeInfinity;
         }
 
 
@@ -122,6 +148,13 @@ namespace Robocup.Core {
 
         public List<RobotInfo> Waypoints {
             get { return _path; }
+        }
+
+        /// <summary>
+        /// Score that the motion planner uses to choose paths. Kept here to keep the planner stateless (and parallel)
+        /// </summary>
+        public double Score {
+            get { return _score; }
         }
 
         /// <summary>
