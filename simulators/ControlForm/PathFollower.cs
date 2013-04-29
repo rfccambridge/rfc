@@ -180,6 +180,8 @@ namespace Robocup.ControlForm
         {
             for (int i = 0; i < NUM_FOLLOWERS; i++)
                 doRobotAction(_startID + i);
+            Auction.FinishRound(_team);
+            System.Threading.Thread.Sleep(100);
         }
 
     }

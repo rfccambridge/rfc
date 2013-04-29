@@ -97,7 +97,6 @@ namespace Robocup.MotionControl
             }
         }
 
-
         private bool includeCurStateInPath;
 
         public SmoothDMARRTPlanner(bool includeCurStateInPath)
@@ -673,6 +672,8 @@ namespace Robocup.MotionControl
         public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
             RobotPath oldPath, List<Geom> obstacles)
         {
+            List<Vector2> bestPath;
+            double bestPathScore;
             Team team = desiredState.Team;
             int id = desiredState.ID;
 
@@ -687,25 +688,22 @@ namespace Robocup.MotionControl
                 return new RobotPath(team, id);
             }
 
+            // We don't have the winner token, we must avoid the winner path
+            if (!Auction.HasWinnerToken(team, id))
+            {
+                // We'll just add static circular obstacles at winner path waypoints.
+                // Avoiding those will approximate avoiding crossing the path.
+                RobotPath winnerPath = Auction.GetWinnerPath(team);
+                if (winnerPath != null)
+                {
+                    foreach (RobotInfo wp in winnerPath.Waypoints)
+                        obstacles.Add(new Circle(wp.Position, Constants.Basic.ROBOT_RADIUS));
+                }
+            }
+
             Tuple<List<Vector2>, double> bestPathResult = GetBestPointPath(team, id, predictor, new RobotInfo(desiredState), avoidBallRadius, oldPath, obstacles);
-            List<Vector2> bestPath = bestPathResult.Item1;
-            double bestPathScore = bestPathResult.Item2;
-
-            // This path is the most favorable for the whole team, we get to plan!
-            if (hasWinnerToken)
-            {
-                // Broadcast winning path to the whole team
-                int winnerID = GetWiningBid(team);
-                BroadcastPath(team, bestPath, winnerID);
-                hasWinnerToken = false;
-            }
-            else // We lost the bid for best path, skip commiting to path and place another bid
-            {
-                double bid = bestPathScore - oldPath.Score;
-                PlaceAgentBid(team, id, bid);
-                return oldPath;
-            }
-
+            bestPath = bestPathResult.Item1;
+            bestPathScore = bestPathResult.Item2;
 
             //Convert the path
             List<RobotInfo> robotPath = new List<RobotInfo>();
@@ -725,10 +723,33 @@ namespace Robocup.MotionControl
                 robotPath.Add(waypoint);
             }
 
+            RobotPath scoredPath = new RobotPath(robotPath, bestPathScore);
+
+            // This path is the most favorable for the whole team, we get to plan!
+            if (Auction.HasWinnerToken(team, id))
+            {
+                // Broadcast winning path to the whole team
+                Auction.BroadcastPath(scoredPath);
+                Auction.ReleaseWinnerToken(team, id);
+                double newScore = curinfo.Position.distance(desiredState.Position);
+                double oldScore = oldPath.Waypoints[0].Position.distance(desiredState.Position);
+                double bid = -(newScore - oldScore);
+                Auction.PlaceBid(scoredPath, bid);
+            }
+            else // We lost the bid for best path, place another bid and execute old path
+            {
+                //double bid = bestPathScore -oldPath.Score;
+                double newScore = curinfo.Position.distance(desiredState.Position);
+                double oldScore = oldPath.Waypoints[0].Position.distance(desiredState.Position);
+                double bid = -(newScore - oldScore);
+                Auction.PlaceBid(scoredPath, bid);
+                return oldPath;
+            }
+
             if (robotPath.Count <= 0)
                 return new RobotPath(team, id);
 
-            return new RobotPath(robotPath, bestPathScore);
+            return scoredPath;
         }
 
         private Rectangle ExpandRectangle(Rectangle r, double d)

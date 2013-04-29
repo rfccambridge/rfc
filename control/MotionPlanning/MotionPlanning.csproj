@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auction.cs" />
     <Compile Include="BasicRRTPlanner.cs" />
     <Compile Include="BidirectionalRRTPlanner.cs" />
     <Compile Include="CirclePlanner.cs" />
