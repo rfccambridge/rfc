@@ -1087,4 +1087,15 @@ namespace Robocup.MotionControl
         }
     }
 
+    public class SmoothedDMARRTVelocityPlanner : PlannerDriver
+    {
+        static SmoothDMARRTPlanner pathplanner = new SmoothDMARRTPlanner(true);
+        public static VelocityDriver pathdriver = new VelocityDriver();
+
+        public SmoothedDMARRTVelocityPlanner()
+            : base(pathplanner, pathdriver)
+        {
+            LoadConstants();
+        }
+    }
 }
