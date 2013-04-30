@@ -37,7 +37,7 @@ namespace Robocup.CoreRobotics
             RobotPath path = _planner.GetPath(desiredState, predictor, avoidBallRadius, oldPath, leftAvoid, rightAvoid);
 
             // if path is empty, don't move
-            if (path.isEmpty()) {
+            if (path == null || path.isEmpty()) {
                 return path;
             }
 

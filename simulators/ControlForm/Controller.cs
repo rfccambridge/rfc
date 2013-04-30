@@ -293,7 +293,7 @@ namespace Robocup.ControlForm
             if (_fieldDrawer != null)
             {
                 //Path commited for following
-                if (DRAW_PATH)
+                if (DRAW_PATH && newPath != null)
                     _fieldDrawer.DrawPath(newPath);
                 //Arrow showing final destination
                 _fieldDrawer.DrawArrow(_team, id, ArrowType.Destination, destination.Position);

@@ -18,11 +18,23 @@ namespace Robocup.Core
         // Token from previous round. Tells us if we get to plan this round or not.
         static private RobotPath[] _winnerPath = new RobotPath[Enum.GetValues(typeof(Team)).Length];
 
+        static Auction()
+        {
+            for (int i = 0; i < Enum.GetValues(typeof(Team)).Length; i++)
+            {
+                _winnerPath[i] = new RobotPath();
+            }
+
+        }
+
         /// <summary>
         /// Checks if robot @id is the winner of the auction at team @team
         /// </summary>
         static public bool HasWinnerToken(Team team, int id)
         {
+            if (_winnerPath[(int)team] == null)
+                return false;
+
             return _winnerPath[(int)team].ID == id;
         }
 
@@ -83,9 +95,9 @@ namespace Robocup.Core
         /// </summary>
         static public void FinishRound(Team team)
         {
-            _currentBids.RemoveAll(x => x.First.Team == team);
             RobotPath winner = getWinningBid(team);
             _winnerPath[(int)team] = winner;
+            _currentBids.RemoveAll(x => x.First.Team == team);
         }
     }
 }

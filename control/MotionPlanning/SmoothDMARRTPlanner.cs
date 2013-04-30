@@ -175,8 +175,9 @@ namespace Robocup.MotionControl
         //Get the future position of a robot, extrapolating based on its velocity
         private Vector2 GetFuturePos(Vector2 obsPos, Vector2 obsVel, double time)
         {
-            time = Math.Max(time, ROBOT_MAX_TIME_EXTRAPOLATED);
-            return obsPos + obsVel * time;
+            //time = Math.Max(time, ROBOT_MAX_TIME_EXTRAPOLATED);
+            //return obsPos + obsVel * time;
+            return obsPos;
         }
 
         //Check if the given extension by nextSegment would be allowed by all the obstacles
@@ -213,7 +214,7 @@ namespace Robocup.MotionControl
 
             //Avoid all robots, except myself
             int count = robots.Count;
-            for(int i = 0; i<count; i++)
+            /*for(int i = 0; i<count; i++)
             {
                 RobotInfo info = robots[i];
                 if (info.Team != currentState.Team || info.ID != currentState.ID)
@@ -230,7 +231,7 @@ namespace Robocup.MotionControl
                     if (IntersectsObstacle(dest, obsPosNext, robotAvoidDist, rayUnit))
                     { return false; }
                 }
-            }
+            }*/
 
             //If needed, avoid ball
             if (avoidBallRadius > 0 &&
@@ -498,7 +499,7 @@ namespace Robocup.MotionControl
                 }
 
                 //Try to generate an extension to our target
-                Vector2 segment = GetAcceleratedExtension(activeNode, currentTarget, ball, robots, desiredPosition, 
+                Vector2 segment = GetAcceleratedExtension(activeNode, currentTarget, ball, new List<RobotInfo>(), desiredPosition, 
                     avoidBallRadius, currentTarget == desiredPosition);
                 if (segment == null)
                 {
@@ -697,7 +698,7 @@ namespace Robocup.MotionControl
                 if (winnerPath != null)
                 {
                     foreach (RobotInfo wp in winnerPath.Waypoints)
-                        obstacles.Add(new Circle(wp.Position, Constants.Basic.ROBOT_RADIUS));
+                       obstacles.Add(new Circle(wp.Position, 3*Constants.Basic.ROBOT_RADIUS));
                 }
             }
 
@@ -732,18 +733,20 @@ namespace Robocup.MotionControl
                 Auction.BroadcastPath(scoredPath);
                 Auction.ReleaseWinnerToken(team, id);
                 double newScore = curinfo.Position.distance(desiredState.Position);
-                double oldScore = oldPath.Waypoints[0].Position.distance(desiredState.Position);
-                double bid = -(newScore - oldScore);
+                double oldScore = (oldPath != null) ? oldPath.Waypoints[0].Position.distance(desiredState.Position) : 0;
+                //double bid = -(newScore - oldScore);
+                double bid = -newScore;
                 Auction.PlaceBid(scoredPath, bid);
             }
             else // We lost the bid for best path, place another bid and execute old path
             {
                 //double bid = bestPathScore -oldPath.Score;
                 double newScore = curinfo.Position.distance(desiredState.Position);
-                double oldScore = oldPath.Waypoints[0].Position.distance(desiredState.Position);
-                double bid = -(newScore - oldScore);
+                double oldScore = (oldPath != null) ? oldPath.Waypoints[0].Position.distance(desiredState.Position) : 0;
+                //double bid = -(newScore - oldScore);
+                double bid = -newScore;
                 Auction.PlaceBid(scoredPath, bid);
-                return oldPath;
+                //return oldPath;
             }
 
             if (robotPath.Count <= 0)
@@ -820,7 +823,6 @@ namespace Robocup.MotionControl
                 else if (g is Circle && ((Circle)g).contains(desiredState.Position))
                     Console.WriteLine("Warning: SmoothDMARRTPlanner desired state inside obstacle!");
             }
-
 
             return GetPath(desiredState, predictor, avoidBallRadius, oldPath, obstacles);
         }

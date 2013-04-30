@@ -87,7 +87,7 @@ namespace Robocup.ControlForm
             MIN_GOAL_DIFF_ORIENTATION = ConstantsRaw.get<double>("motionplanning", "PFP_MIN_GOAL_DIFF_ORIENTATION");
         }
 
-        protected virtual void doRobotAction(int robotID)
+        protected virtual void doRobotAction(int robotID, int waypointStep)
         {
             if (_waypoints.Count == 0)
                 return;
@@ -143,13 +143,13 @@ namespace Robocup.ControlForm
                     _lapTimer.Start();
                     _firstLoop = false;
                 }
-                _waypointIndex = (_waypointIndex + 1) % _waypoints.Count;
+                _waypointIndex = (_waypointIndex + waypointStep) % _waypoints.Count;
             }
         }
 
         public override void doAction()
         {
-            doRobotAction(_robotID);
+            doRobotAction(_robotID, 1);
         }
 
 		public override void Stop()
@@ -179,9 +179,11 @@ namespace Robocup.ControlForm
         public override void doAction()
         {
             for (int i = 0; i < NUM_FOLLOWERS; i++)
-                doRobotAction(_startID + i);
+            {
+                doRobotAction(_startID + i, 1);//NUM_FOLLOWERS);
+            }
             Auction.FinishRound(_team);
-            System.Threading.Thread.Sleep(100);
+            //System.Threading.Thread.Sleep(100);
         }
 
     }
