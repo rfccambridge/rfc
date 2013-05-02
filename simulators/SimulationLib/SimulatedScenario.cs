@@ -255,11 +255,11 @@ namespace Robocup.Simulation
             yellowRobots.Add(new RobotInfo(new Vector2(2.0, 0), 0.0, Team.Yellow, 3));
             yellowRobots.Add(new RobotInfo(new Vector2(2.5, 0), 0.0, Team.Yellow, 4));
 
-            blueRobots.Add(new RobotInfo(new Vector2(0.75, 1.0), 0.0, Team.Blue, 0));
-            blueRobots.Add(new RobotInfo(new Vector2(1.00, 1.0), 0.0, Team.Blue, 1));
-            blueRobots.Add(new RobotInfo(new Vector2(1.25, 1.0), 0.0, Team.Blue, 2));
-            blueRobots.Add(new RobotInfo(new Vector2(1.50, 1.0), 0.0, Team.Blue, 3));
-            blueRobots.Add(new RobotInfo(new Vector2(1.75, 1.0), 0.0, Team.Blue, 4));
+            blueRobots.Add(new RobotInfo(new Vector2(-0.5, -1.0), 0.0, Team.Blue, 0));
+            blueRobots.Add(new RobotInfo(new Vector2(-1.0, -1.0), 0.0, Team.Blue, 1));
+            blueRobots.Add(new RobotInfo(new Vector2(-1.5, -1.0), 0.0, Team.Blue, 2));
+            blueRobots.Add(new RobotInfo(new Vector2(-2.0, -1.0), 0.0, Team.Blue, 3));
+            blueRobots.Add(new RobotInfo(new Vector2(-2.5, -1.0), 0.0, Team.Blue, 4));
 
             robots[Team.Yellow] = yellowRobots;
             robots[Team.Blue] = blueRobots;

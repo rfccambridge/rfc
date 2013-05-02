@@ -689,17 +689,17 @@ namespace Robocup.MotionControl
             }
 
             // We don't have the winner token, we must avoid the winner path
-            if (!Auction.HasWinnerToken(team, id))
-            {
-                // We'll just add static circular obstacles at winner path waypoints.
-                // Avoiding those will approximate avoiding crossing the path.
-                RobotPath winnerPath = Auction.GetWinnerPath(team);
-                if (winnerPath != null)
-                {
-                    foreach (RobotInfo wp in winnerPath.Waypoints)
-                        obstacles.Add(new Circle(wp.Position, 3 * Constants.Basic.ROBOT_RADIUS));
-                }
-            }
+            //if (!Auction.HasWinnerToken(team, id))
+            //{
+            //    // We'll just add static circular obstacles at winner path waypoints.
+            //    // Avoiding those will approximate avoiding crossing the path.
+            //    RobotPath winnerPath = Auction.GetWinnerPath(team);
+            //    if (winnerPath != null)
+            //    {
+            //        foreach (RobotInfo wp in winnerPath.Waypoints)
+            //            obstacles.Add(new Circle(wp.Position, 3 * Constants.Basic.ROBOT_RADIUS));
+            //    }
+            //}
 
             Tuple<List<Vector2>, double> bestPathResult = GetBestPointPath(team, id, predictor, new RobotInfo(desiredState), avoidBallRadius, oldPath, obstacles);
             bestPath = bestPathResult.Item1;

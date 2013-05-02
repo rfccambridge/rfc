@@ -60,8 +60,8 @@ namespace Robocup.ControlForm
         protected double MIN_GOAL_DIST;
         protected double MIN_GOAL_DIFF_ORIENTATION;
 
-		protected delegate void LapStart();
-		protected delegate void LapEnd();
+		protected delegate void LapStart(int id);
+		protected delegate void LapEnd(int id);
 		protected delegate void UpdateState(RobotInfo currInfo);
 
     	protected LapStart OnLapStart;
@@ -130,14 +130,14 @@ namespace Robocup.ControlForm
 
                         _lapping = false;
                         if (OnLapEnd != null)
-                            OnLapEnd();
+                            OnLapEnd(robotID);
                         _fieldDrawer.UpdateLapDuration(_lapTimer.Duration);
                     }
 
                     Console.WriteLine("Starting lap...");
 
                     if (OnLapStart != null)
-                        OnLapStart();
+                        OnLapStart(robotID);
 
                     _lapping = true;
                     _lapTimer.Start();
@@ -162,16 +162,27 @@ namespace Robocup.ControlForm
 
     public class MultiFollowerPlayer : PathFollowerPlayer
     {
-        private const int NUM_FOLLOWERS = 4;
+        private const int NUM_FOLLOWERS = 2;
         private int _startID;
         private int[] _waypointsIndex = new int[NUM_FOLLOWERS];
+
+        private double[] _lapDistance = new double[NUM_FOLLOWERS];
+        private HighResTimer[] _lapTimers = new HighResTimer[NUM_FOLLOWERS];
+        private RobotInfo[] _lastPosition = new RobotInfo[NUM_FOLLOWERS];
+
+        private String stateFileName = "../../resources/laps.txt";
 
         public MultiFollowerPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor)
             : base (team, fieldHalf, fieldDrawer, predictor)
         {
             for (int i = 0; i < NUM_FOLLOWERS; i++) {
                 _waypointsIndex[i] = 0;
+                _lapTimers[i] = new HighResTimer();
             }
+
+            OnLapEnd = LapEnded;
+            OnLapStart = LapStarted;
+            BeforeMoving = StateUpdating;
         }
 
         public override int RobotID
@@ -197,6 +208,63 @@ namespace Robocup.ControlForm
             System.Threading.Thread.Sleep(10);
         }
 
+        void StateUpdating(RobotInfo currInfo)
+        {
+            if (currInfo == null)
+                throw new Exception("MeasuringFollowerPlayer.StateUpdating called without a robot.");
+
+            int id = currInfo.ID;
+
+            if (_lastPosition[id] == null)
+            {
+                _lastPosition[id] = currInfo;
+                return;
+            }
+
+            if (!_lapping)
+                return;
+
+            _lapDistance[id] += Math.Sqrt(_lastPosition[id].Position.distanceSq(currInfo.Position));
+            _lastPosition[id] = currInfo;
+        }
+
+        void LapStarted(int id)
+        {
+            _lapDistance[id] = 0;
+            _lapTimers[id].Start();
+        }
+
+
+        void LapEnded(int id)
+        {
+            _lapTimers[id].Stop();
+            double pathLength = 0;
+            //Compute theoretical path length
+            for (int i = 0; i < _waypoints.Count; i++)
+            {
+                pathLength += Math.Sqrt(_waypoints[i].Position.distanceSq(
+                    _waypoints[(i + 1) % _waypoints.Count].Position));
+            }
+
+            double excessDistance = (_lapDistance[id] - pathLength) / pathLength;
+
+            StreamWriter outFile;
+            if (!File.Exists(stateFileName))
+            {
+                outFile = File.CreateText(stateFileName);
+                outFile.WriteLine("ID\tLap(th)\tLap(r)\tExcess\tTime(s)");
+            }
+            else
+            {
+                outFile = File.AppendText(stateFileName);
+            }
+
+            string state = string.Format("{0}\t{1}\t{2}\t{3}\t{4}",
+                id, pathLength.ToString("F2"), _lapDistance[id].ToString("F2"),
+                excessDistance.ToString("F2"), _lapTimers[id].Duration.ToString("F2"));
+            outFile.WriteLine(state);
+            outFile.Close();
+        }
     }
 
 	public class MeasuringFollowerPlayer : PathFollowerPlayer
@@ -232,12 +300,12 @@ namespace Robocup.ControlForm
 			_lastPosition = currInfo;
 		}
 		
-		void LapStarted()
+		void LapStarted(int id)
 		{
 			_lapDistance = 0;
 		}
 
-		void LapEnded()
+		void LapEnded(int id)
 		{
 			double pathLength = 0;
 			//Compute theoretical path length
