@@ -87,7 +87,7 @@ namespace Robocup.ControlForm
             MIN_GOAL_DIFF_ORIENTATION = ConstantsRaw.get<double>("motionplanning", "PFP_MIN_GOAL_DIFF_ORIENTATION");
         }
 
-        protected virtual void doRobotAction(int robotID, int waypointStep)
+        protected virtual void doRobotAction(int robotID)
         {
             if (_waypoints.Count == 0)
                 return;
@@ -143,13 +143,13 @@ namespace Robocup.ControlForm
                     _lapTimer.Start();
                     _firstLoop = false;
                 }
-                _waypointIndex = (_waypointIndex + waypointStep) % _waypoints.Count;
+                _waypointIndex = (_waypointIndex + 1) % _waypoints.Count;
             }
         }
 
         public override void doAction()
         {
-            doRobotAction(_robotID, 1);
+            doRobotAction(_robotID);
         }
 
 		public override void Stop()
@@ -164,10 +164,14 @@ namespace Robocup.ControlForm
     {
         private const int NUM_FOLLOWERS = 2;
         private int _startID;
+        private int[] _waypointsIndex = new int[NUM_FOLLOWERS];
 
         public MultiFollowerPlayer(Team team, FieldHalf fieldHalf, FieldDrawer fieldDrawer, IPredictor predictor)
             : base (team, fieldHalf, fieldDrawer, predictor)
         {
+            for (int i = 0; i < NUM_FOLLOWERS; i++) {
+                _waypointsIndex[i] = 0;
+            }
         }
 
         public override int RobotID
@@ -180,10 +184,17 @@ namespace Robocup.ControlForm
         {
             for (int i = 0; i < NUM_FOLLOWERS; i++)
             {
-                doRobotAction(_startID + i, 1);//NUM_FOLLOWERS);
+                // stupid hack to have the gui working with waypoints and to let bots keep track of waypoints separately
+                _waypointIndex = _waypointsIndex[i];    
+                doRobotAction(_startID + i);
+                _waypointsIndex[i] = _waypointIndex;
             }
             Auction.FinishRound(_team);
-            //System.Threading.Thread.Sleep(100);
+            
+            // This simulates the delays from the rest of the
+            // system when we are not running a simple motion tester.
+            // Most of that time is spent in Interpreter.Interpret()
+            System.Threading.Thread.Sleep(10);
         }
 
     }
