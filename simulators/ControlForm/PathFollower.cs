@@ -162,7 +162,7 @@ namespace Robocup.ControlForm
 
     public class MultiFollowerPlayer : PathFollowerPlayer
     {
-        private const int NUM_FOLLOWERS = 2;
+        private const int NUM_FOLLOWERS = 4;
         private int _startID;
         private int[] _waypointsIndex = new int[NUM_FOLLOWERS];
 

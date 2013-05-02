@@ -131,7 +131,7 @@ namespace Robocup.ControlForm {
             Player yplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
             Player bplayerMeasuringFollower = new MeasuringFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
             Player yplayerMultiFollower = new MultiFollowerPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
-            Player bplayerMultiFollower = new MultiFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer, _predictor);
+            Player bplayerMultiFollower = new MultiFollowerPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
             Player yplayerKick = new KickPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
             Player bplayerKick = new KickPlayer(Team.Blue, FieldHalf.Right, _fieldDrawer2, _predictor);
             Player yplayerBeamKick = new BeamKickPlayer(Team.Yellow, FieldHalf.Left, _fieldDrawer, _predictor);
@@ -159,7 +159,7 @@ namespace Robocup.ControlForm {
             _waypointColors[yplayerBeamKick as WaypointPlayer] = Color.Red;
             _waypointColors[bplayerFollower as WaypointPlayer] = Color.Cyan;
             _waypointColors[bplayerMeasuringFollower as WaypointPlayer] = Color.Cyan;
-            _waypointColors[bplayerMultiFollower as WaypointPlayer] = Color.Cyan;
+            _waypointColors[bplayerMultiFollower as WaypointPlayer] = Color.Red;
             _waypointColors[bplayerKick as WaypointPlayer] = Color.Red;
             _waypointColors[bplayerBeamKick as WaypointPlayer] = Color.Red;
         }        

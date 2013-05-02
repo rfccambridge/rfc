@@ -175,9 +175,8 @@ namespace Robocup.MotionControl
         //Get the future position of a robot, extrapolating based on its velocity
         private Vector2 GetFuturePos(Vector2 obsPos, Vector2 obsVel, double time)
         {
-            //time = Math.Max(time, ROBOT_MAX_TIME_EXTRAPOLATED);
-            //return obsPos + obsVel * time;
-            return obsPos;
+            time = Math.Max(time, ROBOT_MAX_TIME_EXTRAPOLATED);
+            return obsPos + obsVel * time;
         }
 
         //Check if the given extension by nextSegment would be allowed by all the obstacles
@@ -214,7 +213,7 @@ namespace Robocup.MotionControl
 
             //Avoid all robots, except myself
             int count = robots.Count;
-            /*for(int i = 0; i<count; i++)
+            for(int i = 0; i<count; i++)
             {
                 RobotInfo info = robots[i];
                 if (info.Team != currentState.Team || info.ID != currentState.ID)
@@ -231,7 +230,7 @@ namespace Robocup.MotionControl
                     if (IntersectsObstacle(dest, obsPosNext, robotAvoidDist, rayUnit))
                     { return false; }
                 }
-            }*/
+            }
 
             //If needed, avoid ball
             if (avoidBallRadius > 0 &&
@@ -698,7 +697,7 @@ namespace Robocup.MotionControl
                 if (winnerPath != null)
                 {
                     foreach (RobotInfo wp in winnerPath.Waypoints)
-                       obstacles.Add(new Circle(wp.Position, 3*Constants.Basic.ROBOT_RADIUS));
+                        obstacles.Add(new Circle(wp.Position, 3 * Constants.Basic.ROBOT_RADIUS));
                 }
             }
 

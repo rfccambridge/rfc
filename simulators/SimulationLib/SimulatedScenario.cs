@@ -249,8 +249,17 @@ namespace Robocup.Simulation
             List<RobotInfo> yellowRobots = new List<RobotInfo>();
             List<RobotInfo> blueRobots = new List<RobotInfo>();
 
-            yellowRobots.Add(new RobotInfo(new Vector2(1.0, -0.5), 0.0, Team.Yellow, 0));
-            yellowRobots.Add(new RobotInfo(new Vector2(1.0, 0.5), 0.0, Team.Yellow, 1));
+            yellowRobots.Add(new RobotInfo(new Vector2(0.5, 0), 0.0, Team.Yellow, 0));
+            yellowRobots.Add(new RobotInfo(new Vector2(1.0, 0), 0.0, Team.Yellow, 1));
+            yellowRobots.Add(new RobotInfo(new Vector2(1.5, 0), 0.0, Team.Yellow, 2));
+            yellowRobots.Add(new RobotInfo(new Vector2(2.0, 0), 0.0, Team.Yellow, 3));
+            yellowRobots.Add(new RobotInfo(new Vector2(2.5, 0), 0.0, Team.Yellow, 4));
+
+            blueRobots.Add(new RobotInfo(new Vector2(0.75, 1.0), 0.0, Team.Blue, 0));
+            blueRobots.Add(new RobotInfo(new Vector2(1.00, 1.0), 0.0, Team.Blue, 1));
+            blueRobots.Add(new RobotInfo(new Vector2(1.25, 1.0), 0.0, Team.Blue, 2));
+            blueRobots.Add(new RobotInfo(new Vector2(1.50, 1.0), 0.0, Team.Blue, 3));
+            blueRobots.Add(new RobotInfo(new Vector2(1.75, 1.0), 0.0, Team.Blue, 4));
 
             robots[Team.Yellow] = yellowRobots;
             robots[Team.Blue] = blueRobots;
