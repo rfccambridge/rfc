@@ -162,7 +162,7 @@ namespace Robocup.ControlForm
 
     public class MultiFollowerPlayer : PathFollowerPlayer
     {
-        private const int NUM_FOLLOWERS = 2;
+        private const int NUM_FOLLOWERS = 4;
         private int _startID;
         private int[] _waypointsIndex = new int[NUM_FOLLOWERS];
 
@@ -200,7 +200,7 @@ namespace Robocup.ControlForm
                 doRobotAction(_startID + i);
                 _waypointsIndex[i] = _waypointIndex;
             }
-            Auction.FinishRound(_team);
+            Auction.FinishRound(_team, _predictor);
             
             // This simulates the delays from the rest of the
             // system when we are not running a simple motion tester.
