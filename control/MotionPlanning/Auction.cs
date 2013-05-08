@@ -10,7 +10,9 @@ namespace Robocup.Core
 {
     static public class Auction
     {
+        // Rounds until reconsidering auction assignment
         public const int ROUNDS_BEFORE_REASSIGN = 10;
+        // Radius of circle for forming an auction. Setting to >4 ensures global auctions.
         public const double ISLAND_RADIUS = 1.0; //m
         static private int _roundsCount = 0;
 
